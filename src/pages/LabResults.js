@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { supabase } from '../supabase'
 
-const ANTHROPIC_API_KEY = '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'
+const ANTHROPIC_API_KEY = process.env.REACT_APP_ANTHROPIC_KEY
 
 const s = {
   wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column' },
