@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sage: #3D5C3C;
+  --sage-light: #EDF3ED;
+  --sage-mid: #8BAE8A;
+  --cream: #FAF8F4;
+  --warm: #FFFFFF;
+  --charcoal: #1C1C1C;
+  --muted: #7A7A72;
+  --border: rgba(0,0,0,0.08);
+  --amber: #D4894A;
+  --amber-light: #FDF2EA;
+  --red: #C95B5B;
+  --red-light: #FAEAEA;
+  --green: #4A8C6A;
+  --green-light: #EAF4EE;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--charcoal);
+  margin: 0;
+}
+
+input, textarea, select {
+  font-family: 'DM Sans', sans-serif;
+}
+
+button {
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}

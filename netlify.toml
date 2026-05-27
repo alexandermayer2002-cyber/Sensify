@@ -1,0 +1,16 @@
+[build]
+  command = "npm run build"
+  publish = "build"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "zisi"
+  external_node_modules = ["twilio", "@supabase/supabase-js"]
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions."daily-sms-scheduler"]
+  schedule = "0 * * * *"
