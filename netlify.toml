@@ -3,6 +3,9 @@
   publish = "build"
   functions = "netlify/functions"
 
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "REACT_APP_SUPABASE_URL,SUPABASE_URL"
+
 [functions]
   node_bundler = "zisi"
   external_node_modules = ["twilio", "@supabase/supabase-js"]
