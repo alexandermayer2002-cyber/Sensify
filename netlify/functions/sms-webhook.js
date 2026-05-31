@@ -21,7 +21,7 @@ exports.handler = async (event) => {
     }
 
     // Normalize phone number — strip non-digits then add +1
-    const cleanPhone = from.replace(/\D/g, '')
+    const cleanPhone = from.replace(/\D/g, '').replace(/^1(\d{10})$/, '$1')
 
     // Find user by phone number
     const { data: profile, error } = await supabase
