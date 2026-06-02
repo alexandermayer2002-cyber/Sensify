@@ -43,10 +43,11 @@ const css = `
   }
   .snfy-logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; color: #1C1C1C; letter-spacing: -0.3px; }
   .snfy-logo em { color: #3D5C3C; font-style: italic; }
-  .snfy-nav-tabs { display: flex; gap: 1px; background: rgba(0,0,0,0.05); border-radius: 10px; padding: 3px; }
-  .snfy-tab { font-size: 12.5px; font-weight: 500; color: #7A7A72; padding: 6px 14px; border-radius: 8px; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; letter-spacing: -0.1px; }
-  .snfy-tab.active { background: #FFFFFF; color: #1C1C1C; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .snfy-nav-tabs { display: flex; gap: 2px; }
+  .snfy-tab { font-size: 13px; font-weight: 400; color: #7A7A72; padding: 6px 12px; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.15s; letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
+  .snfy-tab.active { color: #1C1C1C; font-weight: 500; border-bottom: 2px solid #3D5C3C; }
   .snfy-tab:hover:not(.active) { color: #1C1C1C; }
+  @media (max-width: 600px) { .snfy-tab { font-size: 12px; padding: 6px 8px; } }
   .snfy-nav-right { display: flex; align-items: center; gap: 10px; }
   .snfy-phase-pill { font-size: 11.5px; color: #3D5C3C; background: #EDF3ED; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
   .snfy-signout { font-size: 12px; color: #7A7A72; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
