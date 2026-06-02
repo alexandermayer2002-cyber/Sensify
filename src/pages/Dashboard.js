@@ -376,8 +376,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   })()
 
   // Calculate current day and phase from protocol_start_date
+  // Only counts if intake is completed AND lab results approved
   const calculateProtocolDay = () => {
     if (!profile?.protocol_start_date) return 0
+    if (!profile?.intake_completed_at) return 0
+    if (profile?.program_phase === 'pending_review' || profile?.program_phase === 'awaiting_results') return 0
     const start = new Date(profile.protocol_start_date)
     const today = new Date()
     const diffMs = today - start
@@ -387,6 +390,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
   const calculatePhase = (day) => {
     if (!profile?.protocol_start_date) return profile?.program_phase || null
+    if (!profile?.intake_completed_at) return profile?.program_phase || null
     if (day <= 56) return 'elimination'
     return 'reintroduction'
   }
