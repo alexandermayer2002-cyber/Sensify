@@ -130,6 +130,201 @@ const BADGE = {
   Low: { bg: '#EAF4EE', color: '#4A8C6A', dot: '#4A8C6A', cls: 'low' },
 }
 
+// Confetti overlay — brand colors, 3.5 seconds, fades out
+function ConfettiOverlay() {
+  const canvasRef = React.useRef(null)
+  const pieces = React.useRef([])
+  const raf = React.useRef(null)
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+
+    const colors = ['#3D5C3C', '#8BAE8A', '#D4894A', '#FAF8F4', '#EDF3ED', '#4A8C6A', '#C8D8C8']
+    for (let i = 0; i < 120; i++) {
+      pieces.current.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 10 + 5,
+        h: Math.random() * 5 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 4,
+        vx: (Math.random() - 0.5) * 2,
+        vy: Math.random() * 3 + 2,
+        opacity: 1,
+      })
+    }
+
+    let start = null
+    const duration = 3500
+
+    const animate = (ts) => {
+      if (!start) start = ts
+      const elapsed = ts - start
+      const progress = Math.min(elapsed / duration, 1)
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      pieces.current.forEach(p => {
+        p.x += p.vx
+        p.y += p.vy
+        p.rotation += p.rotSpeed
+        p.opacity = progress > 0.6 ? 1 - ((progress - 0.6) / 0.4) : 1
+
+        ctx.save()
+        ctx.globalAlpha = p.opacity
+        ctx.translate(p.x + p.w / 2, p.y + p.h / 2)
+        ctx.rotate((p.rotation * Math.PI) / 180)
+        ctx.fillStyle = p.color
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h)
+        ctx.restore()
+      })
+
+      if (progress < 1) raf.current = requestAnimationFrame(animate)
+    }
+
+    raf.current = requestAnimationFrame(animate)
+    return () => { if (raf.current) cancelAnimationFrame(raf.current) }
+  }, [])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 999 }}
+    />
+  )
+}
+
+// Interactive symptom graph
+function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
+  const metrics = []
+  if (profile?.baseline_bloating) metrics.push({ id: 'bloating', label: 'Bloating', baseline: profile.baseline_bloating, color: '#C95B5B', lowerIsBetter: true })
+  if (profile?.baseline_energy) metrics.push({ id: 'energy', label: 'Energy', baseline: profile.baseline_energy, color: '#3D5C3C', lowerIsBetter: false })
+  if (profile?.baseline_clarity) metrics.push({ id: 'clarity', label: 'Clarity', baseline: profile.baseline_clarity, color: '#4A8C6A', lowerIsBetter: false })
+  if (profile?.baseline_sleep) metrics.push({ id: 'sleep', label: 'Sleep', baseline: profile.baseline_sleep, color: '#D4894A', lowerIsBetter: false })
+  if (profile?.baseline_gas) metrics.push({ id: 'gas', label: 'Gas', baseline: profile.baseline_gas, color: '#7A7A72', lowerIsBetter: true })
+
+  const selected = activeMetric || metrics[0]?.id
+  const metric = metrics.find(m => m.id === selected) || metrics[0]
+
+  if (!metric || checkins.length === 0) {
+    return (
+      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '20px', marginTop: '14px' }}>
+        <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '10px' }}>Symptom trends</div>
+        <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.65 }}>
+          {metrics.length === 0 ? 'Complete your intake survey to set baselines.' : 'Your symptom trends will appear here after your first weekly check-in.'}
+        </div>
+      </div>
+    )
+  }
+
+  const sortedCheckins = [...checkins].sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at))
+  const points = [{ week: 0, val: metric.baseline, label: 'Baseline' }]
+  sortedCheckins.forEach((c, i) => {
+    if (c.answers?.[metric.id] !== undefined) {
+      points.push({ week: c.week_number || i + 1, val: c.answers[metric.id], label: `Week ${c.week_number || i + 1}` })
+    }
+  })
+
+  const latest = points[points.length - 1]
+  const change = latest && metric.baseline
+    ? Math.round(((latest.val - metric.baseline) / metric.baseline) * 100)
+    : 0
+  const improved = metric.lowerIsBetter ? change < 0 : change > 0
+  const changeLabel = change === 0 ? 'No change' : `${change > 0 ? '+' : ''}${change}% from baseline`
+
+  // SVG graph
+  const W = 240, H = 90
+  const padL = 20, padR = 10, padT = 10, padB = 20
+  const gW = W - padL - padR
+  const gH = H - padT - padB
+  const maxVal = 10, minVal = 0
+
+  const toX = (i) => padL + (i / Math.max(points.length - 1, 1)) * gW
+  const toY = (v) => padT + gH - ((v - minVal) / (maxVal - minVal)) * gH
+
+  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${toX(i)} ${toY(p.val)}`).join(' ')
+  const areaD = points.length > 0
+    ? `${pathD} L ${toX(points.length - 1)} ${H - padB} L ${toX(0)} ${H - padB} Z`
+    : ''
+
+  return (
+    <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '18px', marginTop: '14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+        <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72' }}>Symptom trends</div>
+        <div style={{ fontSize: '11px', fontWeight: 500, color: improved ? '#4A8C6A' : change === 0 ? '#7A7A72' : '#C95B5B' }}>{changeLabel}</div>
+      </div>
+
+      {/* Metric selector pills */}
+      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
+        {metrics.map(m => (
+          <button
+            key={m.id}
+            onClick={() => setActiveMetric(m.id)}
+            style={{
+              padding: '4px 10px', borderRadius: '20px', border: 'none', cursor: 'pointer',
+              fontSize: '11px', fontWeight: 500, fontFamily: 'DM Sans, sans-serif',
+              background: selected === m.id ? m.color : 'rgba(0,0,0,0.04)',
+              color: selected === m.id ? 'white' : '#7A7A72',
+              transition: 'all 0.15s',
+            }}
+          >{m.label}</button>
+        ))}
+      </div>
+
+      {/* SVG graph */}
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: 'visible' }}>
+        {/* Grid lines */}
+        {[2, 4, 6, 8, 10].map(v => (
+          <line key={v} x1={padL} y1={toY(v)} x2={W - padR} y2={toY(v)} stroke="rgba(0,0,0,0.05)" strokeWidth="1" />
+        ))}
+        {/* Baseline reference line */}
+        <line x1={padL} y1={toY(metric.baseline)} x2={W - padR} y2={toY(metric.baseline)} stroke={metric.color} strokeWidth="1" strokeDasharray="3,3" opacity="0.4" />
+
+        {/* Area fill */}
+        {areaD && <path d={areaD} fill={metric.color} opacity="0.07" />}
+        {/* Line */}
+        <path d={pathD} fill="none" stroke={metric.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+
+        {/* Points */}
+        {points.map((p, i) => (
+          <g key={i}>
+            <circle cx={toX(i)} cy={toY(p.val)} r="4" fill="white" stroke={metric.color} strokeWidth="2" />
+            {i === points.length - 1 && (
+              <text x={toX(i)} y={toY(p.val) - 8} textAnchor="middle" fontSize="10" fill={metric.color} fontFamily="DM Sans, sans-serif" fontWeight="500">{p.val}</text>
+            )}
+          </g>
+        ))}
+
+        {/* X axis labels */}
+        {points.map((p, i) => (
+          <text key={i} x={toX(i)} y={H - 4} textAnchor="middle" fontSize="8" fill="#7A7A72" fontFamily="DM Sans, sans-serif">{p.label}</text>
+        ))}
+      </svg>
+
+      {/* Summary row */}
+      <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
+        <div style={{ flex: 1, background: '#FAF8F4', borderRadius: '8px', padding: '10px 12px' }}>
+          <div style={{ fontSize: '10px', color: '#7A7A72', marginBottom: '3px' }}>Baseline</div>
+          <div style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: 300 }}>{metric.baseline}</div>
+        </div>
+        <div style={{ flex: 1, background: '#FAF8F4', borderRadius: '8px', padding: '10px 12px' }}>
+          <div style={{ fontSize: '10px', color: '#7A7A72', marginBottom: '3px' }}>Latest</div>
+          <div style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: 300, color: improved ? '#4A8C6A' : change === 0 ? '#1C1C1C' : '#C95B5B' }}>{latest?.val ?? '—'}</div>
+        </div>
+        <div style={{ flex: 1, background: '#FAF8F4', borderRadius: '8px', padding: '10px 12px' }}>
+          <div style={{ fontSize: '10px', color: '#7A7A72', marginBottom: '3px' }}>Check-ins</div>
+          <div style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: 300 }}>{points.length - 1}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [screen, setScreen] = useState('dashboard')
   const [tab, setTab] = useState('home')
@@ -142,7 +337,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [loading, setLoading] = useState(true)
   const [milestoneMessage, setMilestoneMessage] = useState(null)
   const [milestoneKey, setMilestoneKey] = useState(null)
+  const [showConfetti, setShowConfetti] = useState(false)
   const [checkins, setCheckins] = useState([])
+  const [activeGraphMetric, setActiveGraphMetric] = useState(null)
 
   const name = session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there'
 
@@ -286,6 +483,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           const msg = await generateDay1Message({ name, profile: p, labResult: lab })
           setMilestoneMessage(msg)
           setMilestoneKey('day1')
+          setShowConfetti(true)
+          setTimeout(() => setShowConfetti(false), 3500)
           await markMilestoneShown(supabase, session.user.id, 'day1')
         } catch (e) {}
       }
@@ -311,6 +510,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           const msg = await generateDay14Message({ name, profile: p, checkins: c })
           setMilestoneMessage(msg)
           setMilestoneKey('day14')
+          setShowConfetti(true)
+          setTimeout(() => setShowConfetti(false), 3500)
           await markMilestoneShown(supabase, session.user.id, 'day14')
         } catch (e) {}
       }
@@ -323,11 +524,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           const msg = await generateDay28Message({ name, profile: p, checkins: c })
           setMilestoneMessage(msg)
           setMilestoneKey('day28')
+          setShowConfetti(true)
+          setTimeout(() => setShowConfetti(false), 3500)
           await markMilestoneShown(supabase, session.user.id, 'day28')
         } catch (e) {}
       }
     }
-    // Day 57 — reintroduction unlocks
     else if (day === 57) {
       const shown = await checkMilestoneShown(supabase, session.user.id, 'day57')
       if (!shown) {
@@ -335,6 +537,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           const msg = await generateDay57Message({ name, profile: p, labResult: lab })
           setMilestoneMessage(msg)
           setMilestoneKey('day57')
+          setShowConfetti(true)
+          setTimeout(() => setShowConfetti(false), 3500)
           await markMilestoneShown(supabase, session.user.id, 'day57')
         } catch (e) {}
       }
@@ -670,30 +874,15 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </p>
             </div>
 
-            {/* BASELINE STAT CARDS — right column, below insight */}
-            <div className="snfy-stats">
-              <div className="snfy-stat">
-                <div className="snfy-stat-label">Bloating baseline</div>
-                <div className="snfy-stat-val">{profile?.baseline_bloating || '—'}</div>
-                <div className="snfy-stat-sub">{profile?.baseline_bloating ? 'from your intake survey' : 'complete intake to set'}</div>
-                {profile?.latest_bloating && profile?.baseline_bloating && (
-                  <div className="snfy-stat-change">
-                    {profile.latest_bloating < profile.baseline_bloating
-                      ? `↓ ${Math.round(((profile.baseline_bloating - profile.latest_bloating) / profile.baseline_bloating) * 100)}% this week`
-                      : 'No change yet'}
-                  </div>
-                )}
-              </div>
-              <div className="snfy-stat">
-                <div className="snfy-stat-label">Energy baseline</div>
-                <div className="snfy-stat-val">{profile?.baseline_energy || '—'}</div>
-                <div className="snfy-stat-sub">{profile?.baseline_energy ? 'from your intake survey' : 'complete intake to set'}</div>
-              </div>
-            </div>
+            {/* BASELINE STAT CARDS — replaced with interactive symptom graph */}
+            <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
           </div>
 
         </div>
       )}
+
+      {/* CONFETTI OVERLAY */}
+      {showConfetti && <ConfettiOverlay />}
     </div>
   )
 }
