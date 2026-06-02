@@ -99,7 +99,113 @@ function IntakeMilestoneCard({ profile, formatDate }) {
   )
 }
 
-const s = {
+const SCORE_METRICS = [
+  { id: 'bloating', label: 'Bloating' },
+  { id: 'gas', label: 'Gas' },
+  { id: 'reflux', label: 'Reflux' },
+  { id: 'digestive', label: 'Digestive' },
+  { id: 'energy', label: 'Energy' },
+  { id: 'clarity', label: 'Clarity' },
+  { id: 'afternoon', label: 'Afternoon energy' },
+  { id: 'sleep', label: 'Sleep' },
+  { id: 'wellbeing', label: 'Wellbeing' },
+]
+
+function CheckinCard({ checkin: c, index: i, profile, formatDate, complianceColors, styles: s }) {
+  const [expanded, setExpanded] = useState(false)
+  const compliance = c.answers?.compliance
+  const compStyle = complianceColors[compliance] || { bg: '#FAF8F4', color: '#7A7A72' }
+  const weekNum = c.week_number || i + 1
+
+  const scores = SCORE_METRICS.filter(m => c.answers?.[m.id] !== undefined)
+  const contextChanges = c.answers?.context_changes?.filter(ch => ch !== 'Nothing unusual — normal week') || []
+  const overallFeeling = c.answers?.overall_feeling
+  const notes = c.answers?.notes
+
+  return (
+    <div style={s.checkinCard}>
+      <div style={s.checkinHeader}>
+        <div style={s.checkinWeek}>Week <em style={s.checkinWeekEm}>{weekNum}</em></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={s.checkinDate}>{formatDate(c.submitted_at)}</div>
+          <button
+            onClick={() => setExpanded(!expanded)}
+            style={{ background: 'rgba(0,0,0,0.04)', border: 'none', borderRadius: '7px', padding: '4px 10px', fontSize: '11px', color: '#7A7A72', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500 }}
+          >
+            {expanded ? 'Less' : 'More'}
+          </button>
+        </div>
+      </div>
+
+      {/* Always visible — scores */}
+      <div style={s.checkinScores}>
+        {scores.map(m => {
+          const val = c.answers[m.id]
+          const baseline = profile?.[`baseline_${m.id}`]
+          const change = baseline ? Math.round(((val - baseline) / baseline) * 100) : null
+          const lowerIsBetter = ['bloating', 'gas', 'reflux'].includes(m.id)
+          const improved = lowerIsBetter ? change < 0 : change > 0
+          return (
+            <div key={m.id} style={s.scoreChip}>
+              <div style={s.scoreLabel}>{m.label}</div>
+              <div style={s.scoreVal}>{val}</div>
+              {change !== null && (
+                <div style={{ fontSize: '10px', fontWeight: 500, color: improved ? '#4A8C6A' : change === 0 ? '#7A7A72' : '#C95B5B', marginTop: '1px' }}>
+                  {change > 0 ? '+' : ''}{change}%
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {compliance && (
+        <div style={{ ...s.compliancePill, background: compStyle.bg, color: compStyle.color }}>
+          {compliance} compliant
+        </div>
+      )}
+
+      {/* Expanded section */}
+      {expanded && (
+        <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '14px', marginTop: '10px' }}>
+
+          {overallFeeling && (
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#7A7A72', marginBottom: '5px' }}>Overall feeling</div>
+              <div style={{ fontSize: '13px', color: '#1C1C1C', fontWeight: 500 }}>{overallFeeling} compared to last week</div>
+            </div>
+          )}
+
+          {contextChanges.length > 0 && (
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#7A7A72', marginBottom: '6px' }}>What changed</div>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {contextChanges.map(ch => (
+                  <span key={ch} style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '20px', fontSize: '11px', padding: '4px 10px', color: '#1C1C1C' }}>{ch}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {notes && (
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#7A7A72', marginBottom: '5px' }}>Notes</div>
+              <div style={{ fontSize: '13px', color: '#7A7A72', fontStyle: 'italic', lineHeight: 1.6 }}>"{notes}"</div>
+            </div>
+          )}
+
+        </div>
+      )}
+
+      {c.ai_insight && (
+        <div style={s.insightBox}>
+          <div style={s.insightTag}>AI insight</div>
+          <div style={s.insightText}>{c.ai_insight}</div>
+        </div>
+      )}
+    </div>
+  )
+}
   wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column' },
   content: { flex: 1, padding: '24px 20px 48px', maxWidth: '960px', margin: '0 auto', width: '100%' },
   header: { marginBottom: '24px' },
@@ -282,72 +388,9 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
         {!loading && checkins.length > 0 && (
           <>
             <div style={s.secLabel}>Past entries</div>
-            {checkins.map((c, i) => {
-              const compliance = c.answers?.compliance
-              const compStyle = COMPLIANCE_COLORS[compliance] || { bg: '#FAF8F4', color: '#7A7A72' }
-              return (
-                <div key={i} style={s.checkinCard}>
-                  <div style={s.checkinHeader}>
-                    <div style={s.checkinWeek}>Week <em style={s.checkinWeekEm}>{c.week_number || i + 1}</em></div>
-                    <div style={s.checkinDate}>{formatDate(c.submitted_at)}</div>
-                  </div>
-
-                  <div style={s.checkinScores}>
-                    {c.answers?.bloating && (
-                      <div style={s.scoreChip}>
-                        <div>
-                          <div style={s.scoreLabel}>Bloating</div>
-                          <div style={s.scoreVal}>{c.answers.bloating}</div>
-                        </div>
-                      </div>
-                    )}
-                    {c.answers?.energy && (
-                      <div style={s.scoreChip}>
-                        <div>
-                          <div style={s.scoreLabel}>Energy</div>
-                          <div style={s.scoreVal}>{c.answers.energy}</div>
-                        </div>
-                      </div>
-                    )}
-                    {c.answers?.skin && (
-                      <div style={s.scoreChip}>
-                        <div>
-                          <div style={s.scoreLabel}>Skin</div>
-                          <div style={s.scoreVal}>{c.answers.skin}</div>
-                        </div>
-                      </div>
-                    )}
-                    {c.answers?.brain_fog && (
-                      <div style={s.scoreChip}>
-                        <div>
-                          <div style={s.scoreLabel}>Brain fog</div>
-                          <div style={s.scoreVal}>{c.answers.brain_fog}</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {compliance && (
-                    <div style={{ ...s.compliancePill, background: compStyle.bg, color: compStyle.color }}>
-                      {compliance} compliant
-                    </div>
-                  )}
-
-                  {c.answers?.notes && (
-                    <div style={{ fontSize: '12px', color: '#7A7A72', marginBottom: '10px', fontStyle: 'italic' }}>
-                      "{c.answers.notes}"
-                    </div>
-                  )}
-
-                  {c.ai_insight && (
-                    <div style={s.insightBox}>
-                      <div style={s.insightTag}>AI insight</div>
-                      <div style={s.insightText}>{c.ai_insight}</div>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+            {checkins.map((c, i) => (
+              <CheckinCard key={i} checkin={c} index={i} profile={profile} formatDate={formatDate} complianceColors={COMPLIANCE_COLORS} styles={s} />
+            ))}
           </>
         )}
 
