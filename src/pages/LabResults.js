@@ -272,15 +272,21 @@ Rules:
 
         <div style={s.methodRow}>
           <div style={method === 'pdf' ? s.methodBtnActive : s.methodBtn} onClick={() => { setMethod('pdf'); setExtractedFoods(null); setError('') }}>
-            <div style={s.methodIcon}>📄</div>
+            <div style={s.methodIcon}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
             <div style={s.methodLabel}>Upload PDF</div>
           </div>
           <div style={method === 'photo' ? s.methodBtnActive : s.methodBtn} onClick={() => { setMethod('photo'); setExtractedFoods(null); setError('') }}>
-            <div style={s.methodIcon}>📷</div>
+            <div style={s.methodIcon}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
             <div style={s.methodLabel}>Take photo</div>
           </div>
           <div style={method === 'manual' ? s.methodBtnActive : s.methodBtn} onClick={() => { setMethod('manual'); setExtractedFoods(null); setError('') }}>
-            <div style={s.methodIcon}>✏️</div>
+            <div style={s.methodIcon}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
             <div style={s.methodLabel}>Manual entry</div>
           </div>
         </div>
@@ -305,7 +311,14 @@ Rules:
 
             {file && (
               <div style={s.fileCard}>
-                <div style={s.fileIcon}>{method === 'photo' ? '🖼️' : '📄'}</div>
+                <div style={s.fileIcon}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {method === 'photo'
+                      ? <><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></>
+                      : <><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></>
+                    }
+                  </svg>
+                </div>
                 <div>
                   <div style={s.fileName}>{file.name}</div>
                   <div style={s.fileSize}>{(file.size / 1024).toFixed(0)} KB · Ready to analyze</div>
