@@ -147,6 +147,49 @@ Write only the insight. No labels, no formatting.`
   return data.content[0].text.trim()
 }
 
+function ConfettiCanvas() {
+  const ref = React.useRef(null)
+  React.useEffect(() => {
+    const canvas = ref.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    const colors = ['#3D5C3C', '#8BAE8A', '#D4894A', '#FAF8F4', '#EDF3ED', '#4A8C6A']
+    const pieces = Array.from({ length: 120 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 10 + 5, h: Math.random() * 5 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 4,
+      vx: (Math.random() - 0.5) * 2, vy: Math.random() * 3 + 2,
+    }))
+    let start = null
+    const duration = 3500
+    let raf
+    const animate = (ts) => {
+      if (!start) start = ts
+      const progress = Math.min((ts - start) / duration, 1)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      pieces.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.rotation += p.rotSpeed
+        const opacity = progress > 0.6 ? 1 - ((progress - 0.6) / 0.4) : 1
+        ctx.save()
+        ctx.globalAlpha = opacity
+        ctx.translate(p.x + p.w / 2, p.y + p.h / 2)
+        ctx.rotate((p.rotation * Math.PI) / 180)
+        ctx.fillStyle = p.color
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h)
+        ctx.restore()
+      })
+      if (progress < 1) raf = requestAnimationFrame(animate)
+    }
+    raf = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+  return <canvas ref={ref} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 999 }} />
+}
+
 export default function WeeklyCheckin({ session, weekNumber = 1, profile, currentFoods = [], phase = 'elimination', onComplete, onBack }) {
   const [answers, setAnswers] = useState({})
   const [submitted, setSubmitted] = useState(false)
@@ -155,6 +198,9 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
   const [insight, setInsight] = useState('')
   const [previousAnswers, setPreviousAnswers] = useState(null)
   const [insightError, setInsightError] = useState(false)
+  const [showConfetti, setShowConfetti] = useState(false)
+  const [streakMessage, setStreakMessage] = useState('')
+  const [showStreakCard, setShowStreakCard] = useState(false)
 
   const name = session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there'
   const symptomScales = getSymptomScales(profile)
@@ -221,6 +267,29 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       current_week: weekNumber,
     }).eq('id', session.user.id)
 
+    // Fire confetti if compliance was good
+    const goodCompliance = answers.compliance === 'Fully' || answers.compliance === 'Mostly'
+    if (goodCompliance) {
+      setShowConfetti(true)
+      setTimeout(() => {
+        setShowConfetti(false)
+        // Generate streak congratulations message
+        const STREAK_MSGS = {
+          1: `Week one done. That's the hardest stretch — your body is already adjusting. Keep the same energy next week.`,
+          2: `Two weeks of elimination. Most people don't make it this far. You're building real data now.`,
+          3: `Three weeks in. This is where the signal starts getting clearer. Whatever you're noticing this week — that's real.`,
+          4: `One month of compliance. That's rare. The data you're building over the next four weeks will tell you everything.`,
+          5: `Five weeks. You're deep into elimination now. The patterns are forming — your AI insights are getting more accurate every check-in.`,
+          6: `Six weeks. Two more and reintroduction begins. You're closer to your Food Map than you've ever been.`,
+          7: `Seven weeks clean. Almost there. The last stretch of elimination is the most important — stay sharp.`,
+          8: `Eight weeks done. Elimination complete. Everything you've built over the last two months is about to pay off.`,
+        }
+        const msg = STREAK_MSGS[weekNumber] || `Week ${weekNumber} done. Keep going — every check-in makes your Food Map more accurate.`
+        setStreakMessage(msg)
+        setShowStreakCard(true)
+      }, 3500)
+    }
+
     setSubmitting(false)
   }
 
@@ -230,13 +299,23 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
     const secondScale = symptomScales[1]
     return (
       <div style={s.wrap}>
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } } @keyframes slideUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }`}</style>
         <div style={s.topBar}>
           <div style={{ width: 40 }} />
           <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
           <div style={s.weekBadge}>Week {weekNumber}</div>
         </div>
         <div style={s.content}>
+
+          {/* Streak celebration card — appears after confetti */}
+          {showStreakCard && (
+            <div style={{ background: '#1C1C1C', borderRadius: '14px', padding: '22px 20px', marginBottom: '16px', animation: 'slideUp 0.4s ease', position: 'relative' }}>
+              <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'rgba(255,255,255,0.35)', marginBottom: '8px' }}>Week {weekNumber} complete</div>
+              <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.75, margin: 0 }}>{streakMessage}</p>
+              <button onClick={() => setShowStreakCard(false)} style={{ position: 'absolute', top: '14px', right: '14px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
+            </div>
+          )}
+
           <div style={s.successCard}>
             <div style={s.successIcon}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -287,6 +366,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
 
           <button style={{ ...s.cta, marginTop: '8px' }} onClick={onComplete}>Back to dashboard →</button>
         </div>
+        {showConfetti && <ConfettiCanvas />}
       </div>
     )
   }
