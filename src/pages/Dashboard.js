@@ -49,27 +49,45 @@ const css = `
   .snfy-tab:hover:not(.active) { color: #1C1C1C; }
   @media (max-width: 600px) { .snfy-tab { font-size: 12px; padding: 6px 8px; } }
   .snfy-nav-right { display: flex; align-items: center; gap: 10px; }
-  .snfy-phase-pill { font-size: 11.5px; color: #3D5C3C; background: #EDF3ED; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
+  .snfy-phase-pill { font-size: 11.5px; color: #3D5C3C; background: #EDF3ED; padding: 4px 12px; border-radius: 20px; font-weight: 500; border: 1px solid rgba(61,92,60,0.15); }
   .snfy-signout { font-size: 12px; color: #7A7A72; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
   .snfy-signout:hover { color: #1C1C1C; }
 
   .snfy-layout { padding: 24px 20px 40px; max-width: 960px; margin: 0 auto; }
   @media (min-width: 680px) {
-    .snfy-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 28px 28px 48px; align-items: start; }
-    .snfy-layout > div:last-child { padding-top: 0; }
+    .snfy-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px 28px 48px; align-items: start; }
   }
 
-  .snfy-greeting { margin-bottom: 22px; }
+  /* Greeting */
+  .snfy-greeting { margin-bottom: 16px; }
   .snfy-greeting h1 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1.2; margin-bottom: 5px; letter-spacing: -0.5px; }
   .snfy-greeting h1 em { font-style: italic; color: #3D5C3C; }
   .snfy-greeting p { font-size: 13px; color: #7A7A72; line-height: 1.55; }
 
-  .snfy-action { background: #FFFFFF; border-radius: 16px; padding: 20px; margin-bottom: 14px; border: 1.5px solid #3D5C3C; }
-  .snfy-action.amber { border-color: #D4894A; }
-  .snfy-action.red { border-color: rgba(201,91,91,0.5); }
-  .snfy-action-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; color: #3D5C3C; background: #EDF3ED; padding: 3px 9px; border-radius: 20px; display: inline-block; margin-bottom: 10px; }
+  /* Dark protocol card */
+  .snfy-phase { background: #1C1C1C; border-radius: 16px; padding: 22px; color: white; margin-bottom: 14px; position: relative; overflow: hidden; }
+  .snfy-phase::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(139,174,138,0.15) 0%, transparent 70%); pointer-events: none; }
+  .snfy-phase-eyebrow { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.35); margin-bottom: 10px; }
+  .snfy-phase-day { font-family: 'Fraunces', serif; font-size: 68px; font-weight: 300; line-height: 0.9; color: white; margin-bottom: 4px; }
+  .snfy-phase-of { font-size: 14px; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
+  .snfy-pbar { background: rgba(255,255,255,0.08); border-radius: 2px; height: 2px; margin-bottom: 8px; }
+  .snfy-pfill { height: 2px; background: #8BAE8A; border-radius: 2px; transition: width 0.6s ease; }
+  .snfy-plabel { font-size: 11px; color: rgba(255,255,255,0.25); display: flex; justify-content: space-between; }
+  .snfy-phase-streak { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .snfy-streak-dot { width: 7px; height: 7px; border-radius: 50%; background: #8BAE8A; flex-shrink: 0; }
+  .snfy-streak-text { font-size: 12px; color: rgba(255,255,255,0.4); }
+  .snfy-streak-num { font-weight: 500; color: #8BAE8A; }
+
+  /* Action cards */
+  .snfy-action { background: #FFFFFF; border-radius: 16px; padding: 20px; margin-bottom: 14px; border: 1px solid rgba(61,92,60,0.2); }
+  .snfy-action.amber { border-color: rgba(212,137,74,0.3); }
+  .snfy-action.red { border-color: rgba(201,91,91,0.25); }
+  .snfy-action.neutral { border-color: rgba(0,0,0,0.07); }
+  .snfy-action-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #3D5C3C; background: #EDF3ED; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
   .snfy-action-tag.amber { color: #D4894A; background: #FDF2EA; }
   .snfy-action-tag.red { color: #C95B5B; background: #FAEAEA; }
+  .snfy-action-dot { width: 5px; height: 5px; border-radius: 50%; background: #3D5C3C; animation: snfy-pulse 2s infinite; }
+  @keyframes snfy-pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
   .snfy-action h2 { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 300; margin-bottom: 6px; line-height: 1.3; letter-spacing: -0.3px; }
   .snfy-action h2 em { font-style: italic; color: #3D5C3C; }
   .snfy-action h2 em.amber { color: #D4894A; }
@@ -80,45 +98,58 @@ const css = `
   .snfy-btn.amber { background: #D4894A; }
   .snfy-btn.red { background: #C95B5B; }
 
-  .snfy-phase { background: #3D5C3C; border-radius: 16px; padding: 20px; color: white; margin-bottom: 14px; }
-  .snfy-phase-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-  .snfy-phase-meta span { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; opacity: 0.55; }
-  .snfy-phase-meta small { font-size: 11px; opacity: 0.65; font-weight: 500; }
-  .snfy-phase h3 { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 300; margin-bottom: 16px; letter-spacing: -0.3px; }
-  .snfy-pbar { background: rgba(255,255,255,0.15); border-radius: 4px; height: 5px; margin-bottom: 8px; overflow: hidden; }
-  .snfy-pfill { height: 100%; background: rgba(255,255,255,0.9); border-radius: 4px; transition: width 0.6s ease; }
-  .snfy-plabel { font-size: 11px; opacity: 0.65; display: flex; justify-content: space-between; }
+  /* Stat cards — 3 column */
+  .snfy-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+  .snfy-stat { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 12px; padding: 14px; }
+  .snfy-stat-label { font-size: 10px; color: #7A7A72; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .snfy-stat-val { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; margin-bottom: 3px; }
+  .snfy-stat-change { font-size: 10px; font-weight: 500; margin-top: 3px; color: #4A8C6A; }
 
+  /* Compliance dots */
+  .snfy-comp { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 16px; margin-bottom: 0; }
+  .snfy-comp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .snfy-comp-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #7A7A72; }
+  .snfy-comp-streak { font-size: 12px; font-weight: 500; color: #3D5C3C; }
+  .snfy-comp-dots { display: flex; gap: 6px; }
+  .snfy-dot { width: 32px; height: 32px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+  .snfy-dot.yes { background: #EDF3ED; border: 1px solid rgba(74,140,106,0.2); }
+  .snfy-dot.no { background: rgba(201,91,91,0.07); border: 1px solid rgba(201,91,91,0.15); }
+  .snfy-dot.empty { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06); }
+  .snfy-dot-day { font-size: 8px; color: #7A7A72; font-weight: 500; }
+  .snfy-dot-mark { font-size: 10px; font-weight: 600; }
+  .snfy-dot.yes .snfy-dot-mark { color: #4A8C6A; }
+  .snfy-dot.no .snfy-dot-mark { color: #C95B5B; }
+  .snfy-dot.empty .snfy-dot-mark { color: rgba(0,0,0,0.15); }
+
+  /* Pending cards */
   .snfy-pending { background: #FDF2EA; border: 1px solid rgba(212,137,74,0.18); border-radius: 13px; padding: 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
   .snfy-pending-icon { width: 34px; height: 34px; background: #D4894A; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .snfy-audit-pending { background: #FAF8F4; border: 1px solid rgba(0,0,0,0.08); border-radius: 13px; padding: 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
   .snfy-audit-icon { width: 34px; height: 34px; background: #EDF3ED; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-  .snfy-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  .snfy-stat { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 13px; padding: 15px; }
-  .snfy-stat-label { font-size: 10px; color: #7A7A72; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .snfy-stat-val { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 300; line-height: 1; margin-bottom: 3px; letter-spacing: -0.5px; }
-  .snfy-stat-sub { font-size: 11px; color: #7A7A72; }
-  .snfy-stat-change { font-size: 11px; font-weight: 500; margin-top: 3px; color: #4A8C6A; }
-
+  /* Right column */
   .snfy-sec-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-bottom: 9px; }
 
-  .snfy-avoiding { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
-  .snfy-avoid-scroll { max-height: 220px; overflow-y: auto; }
-  .snfy-avoid-scroll::-webkit-scrollbar { width: 3px; }
-  .snfy-avoid-scroll::-webkit-scrollbar-track { background: transparent; }
-  .snfy-avoid-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
-  .snfy-avoid-group { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 9px 14px 6px; color: #7A7A72; background: #FAF8F4; }
-  .snfy-avoid-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-top: 1px solid rgba(0,0,0,0.05); font-size: 13px; }
-  .snfy-avoid-left { display: flex; align-items: center; gap: 9px; }
-  .snfy-avoid-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .snfy-badge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; }
-  .snfy-badge.high { background: #FAEAEA; color: #C95B5B; }
-  .snfy-badge.moderate { background: #FDF2EA; color: #D4894A; }
-  .snfy-badge.low { background: #EAF4EE; color: #4A8C6A; }
+  /* Avoiding list — full categorized */
+  .snfy-avoiding { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 20px; margin-bottom: 0; }
+  .snfy-avoid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .snfy-avoid-count { font-size: 11px; color: #7A7A72; }
+  .snfy-avoid-level { margin-bottom: 16px; }
+  .snfy-avoid-level:last-child { margin-bottom: 0; }
+  .snfy-avoid-level-header { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); margin-bottom: 8px; }
+  .snfy-avoid-level-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .snfy-avoid-level-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  .snfy-avoid-level-count { font-size: 10px; color: #7A7A72; margin-left: auto; }
+  .snfy-avoid-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 13px; }
+  .snfy-avoid-item:last-child { border-bottom: none; }
+  .snfy-badge { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
+  .snfy-badge.high { background: rgba(201,91,91,0.08); color: #C95B5B; }
+  .snfy-badge.moderate { background: rgba(212,137,74,0.08); color: #D4894A; }
+  .snfy-badge.low { background: rgba(74,140,106,0.08); color: #4A8C6A; }
 
-  .snfy-insight { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-left: 3px solid #3D5C3C; border-radius: 0 13px 13px 0; padding: 16px; margin-bottom: 14px; }
-  .snfy-insight-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #3D5C3C; margin-bottom: 8px; }
+  /* AI Insight — tucked below avoiding list */
+  .snfy-insight { background: #FAF8F4; border-left: 2px solid #3D5C3C; border-radius: 0 10px 10px 0; padding: 14px; margin-top: 16px; }
+  .snfy-insight-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #3D5C3C; margin-bottom: 7px; }
   .snfy-insight p { font-size: 13px; line-height: 1.75; color: #1C1C1C; }
 
   .snfy-loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; font-size: 14px; color: #7A7A72; }
@@ -703,16 +734,43 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   {milestoneKey === 'day1' ? 'Day 1' : milestoneKey === 'day3' ? 'Day 3' : milestoneKey === 'day14' ? '2 week milestone' : milestoneKey === 'day28' ? 'One month in' : milestoneKey === 'day57' ? 'Reintroduction unlocked' : milestoneKey === 'day113' ? 'Moderate tier unlocked' : milestoneKey === 'day169' ? 'Final tier unlocked' : 'Milestone'}
                 </div>
                 <p style={{ color: 'rgba(255,255,255,0.85)', lineHeight: 1.75, marginBottom: 0, fontSize: '14px' }}>{milestoneMessage}</p>
-                <button
-                  onClick={() => setMilestoneMessage(null)}
-                  style={{ position: 'absolute', top: '14px', right: '14px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '18px', lineHeight: 1, fontFamily: 'DM Sans, sans-serif' }}
-                >×</button>
+                <button onClick={() => setMilestoneMessage(null)} style={{ position: 'absolute', top: '14px', right: '14px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '18px', lineHeight: 1, fontFamily: 'DM Sans, sans-serif' }}>×</button>
               </div>
             )}
 
+            {/* DARK PROTOCOL CARD */}
+            {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && (
+              <div className="snfy-phase">
+                <div className="snfy-phase-eyebrow">{calculatedPhase === 'elimination' ? 'Elimination phase' : 'Reintroduction phase'}</div>
+                <div className="snfy-phase-day">{currentDay}</div>
+                <div className="snfy-phase-of">of {calculatedPhase === 'elimination' ? '56' : '168'} days</div>
+                <div className="snfy-pbar"><div className="snfy-pfill" style={{ width: `${eliminationProgressPct}%` }}></div></div>
+                <div className="snfy-plabel">
+                  <span>Day 1</span>
+                  <span>{daysUntilReintro !== null && daysUntilReintro > 0 ? `${daysUntilReintro} days to reintroduction` : calculatedPhase === 'reintroduction' ? 'Reintroduction active' : '56 days total'}</span>
+                </div>
+                <div className="snfy-phase-streak">
+                  <div className="snfy-streak-dot"></div>
+                  <div className="snfy-streak-text"><span className="snfy-streak-num">{cleanDays} day</span> clean streak</div>
+                </div>
+              </div>
+            )}
+
+            {/* AWAITING APPROVAL state */}
+            {profile?.program_phase === 'pending_review' && !showIntakeCard && !showLabCard && (
+              <div className="snfy-phase" style={{ background: '#3D5C3C' }}>
+                <div className="snfy-phase-eyebrow">Your program</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, color: 'white', marginBottom: '8px' }}>Awaiting <em style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>approval.</em></div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>Complete setup to begin</div>
+                <div className="snfy-pbar" style={{ marginTop: '16px' }}><div className="snfy-pfill" style={{ width: '0%' }}></div></div>
+                <div className="snfy-plabel"><span></span><span>6 months total</span></div>
+              </div>
+            )}
+
+            {/* ACTION CARDS */}
             {showIntakeCard && (
               <div className="snfy-action">
-                <div className="snfy-action-tag">Complete your setup</div>
+                <div className="snfy-action-tag"><div className="snfy-action-dot"></div>Complete your setup</div>
                 <h2>Start your <em>intake survey.</em></h2>
                 <p>Tell us about your symptoms and how often you eat certain foods. Takes about 5 minutes.</p>
                 <button className="snfy-btn" onClick={() => setScreen('intake')}>Start intake survey →</button>
@@ -721,7 +779,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             {showLabCard && (
               <div className="snfy-action">
-                <div className="snfy-action-tag">Action needed</div>
+                <div className="snfy-action-tag"><div className="snfy-action-dot"></div>Action needed</div>
                 <h2>Upload your <em>lab results.</em></h2>
                 <p>PDF, photo, or manual entry — the AI reads your results and builds your elimination list in seconds.</p>
                 <button className="snfy-btn" onClick={() => setScreen('labresults')}>Upload results →</button>
@@ -772,7 +830,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             {showCheckinCard && (
               <div className="snfy-action">
-                <div className="snfy-action-tag">Due now</div>
+                <div className="snfy-action-tag"><div className="snfy-action-dot"></div>Due now</div>
                 <h2>Your weekly <em>check-in.</em></h2>
                 <p>Takes 2 minutes. The AI uses your answers to generate this week's personalized insight.</p>
                 <button className="snfy-btn" onClick={() => setScreen('checkin')}>Start check-in →</button>
@@ -788,94 +846,120 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
-            <div className="snfy-phase">
-              <div className="snfy-phase-meta">
-                <span>Your program</span>
-                <small>{profile?.protocol_start_date ? `Day ${currentDay} of 56` : '—'}</small>
-              </div>
-              <h3>{phaseFull}</h3>
-              <div className="snfy-pbar">
-                <div className="snfy-pfill" style={{ width: `${eliminationProgressPct}%` }}></div>
-              </div>
-              <div className="snfy-plabel">
-                <span>
-                  {profile?.protocol_start_date
-                    ? calculatedPhase === 'elimination'
-                      ? `Week ${currentWeek} of 8`
-                      : 'Reintroduction phase active'
-                    : 'Complete setup to begin'}
-                </span>
-                <span>
-                  {daysUntilReintro !== null && daysUntilReintro > 0
-                    ? `Reintro unlocks in ${daysUntilReintro} day${daysUntilReintro !== 1 ? 's' : ''}`
-                    : '6 months total'}
-                </span>
-              </div>
-            </div>
+            {/* STAT CARDS — 3 column */}
+            {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && checkins.length > 0 && (() => {
+              const latest = checkins[0]
+              const metrics = []
+              if (profile?.baseline_bloating && latest?.answers?.bloating !== undefined) metrics.push({ label: 'Bloating', val: latest.answers.bloating, baseline: profile.baseline_bloating, lowerBetter: true })
+              if (profile?.baseline_energy && latest?.answers?.energy !== undefined) metrics.push({ label: 'Energy', val: latest.answers.energy, baseline: profile.baseline_energy, lowerBetter: false })
+              if (profile?.baseline_clarity && latest?.answers?.clarity !== undefined) metrics.push({ label: 'Clarity', val: latest.answers.clarity, baseline: profile.baseline_clarity, lowerBetter: false })
+              if (metrics.length === 0) return null
+              return (
+                <div className="snfy-stats" style={{ gridTemplateColumns: `repeat(${Math.min(metrics.length, 3)}, 1fr)`, marginTop: '14px' }}>
+                  {metrics.slice(0, 3).map((m, i) => {
+                    const change = Math.round(((m.val - m.baseline) / m.baseline) * 100)
+                    const improved = m.lowerBetter ? change < 0 : change > 0
+                    return (
+                      <div key={i} className="snfy-stat">
+                        <div className="snfy-stat-label">{m.label}</div>
+                        <div className="snfy-stat-val">{m.val}</div>
+                        <div className="snfy-stat-change" style={{ color: improved ? '#4A8C6A' : change === 0 ? '#7A7A72' : '#C95B5B' }}>
+                          {change > 0 ? '↑' : change < 0 ? '↓' : '—'} {Math.abs(change)}% baseline
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })()}
 
-            <DailyComplianceDisplay complianceData={complianceData} cleanDays={cleanDays} />
+            {/* COMPLIANCE DOTS */}
+            {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
+              <div className="snfy-comp" style={{ marginTop: '14px' }}>
+                <div className="snfy-comp-top">
+                  <div className="snfy-comp-label">This week</div>
+                  <div className="snfy-comp-streak">{cleanDays} day streak</div>
+                </div>
+                <div className="snfy-comp-dots">
+                  {['M','T','W','T','F','S','S'].map((day, i) => {
+                    const date = new Date()
+                    const dayOfWeek = date.getDay()
+                    const monday = new Date(date)
+                    monday.setDate(date.getDate() - ((dayOfWeek + 6) % 7))
+                    const targetDate = new Date(monday)
+                    targetDate.setDate(monday.getDate() + i)
+                    const dateStr = targetDate.toISOString().split('T')[0]
+                    const entry = complianceData.find(c => c.date === dateStr)
+                    const isPast = targetDate <= date
+                    const cls = entry?.response === 'YES' ? 'yes' : entry?.response === 'NO' ? 'no' : isPast ? 'empty' : 'empty'
+                    const mark = entry?.response === 'YES' ? '✓' : entry?.response === 'NO' ? '✗' : '·'
+                    return (
+                      <div key={i} className={`snfy-dot ${cls}`}>
+                        <span className="snfy-dot-day">{day}</span>
+                        <span className="snfy-dot-mark">{mark}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* RIGHT COLUMN */}
-          <div style={{ marginTop: 0 }}>
-            {/* ALWAYS-VISIBLE AVOIDING LIST */}
-            <div className="snfy-sec-label" style={{ marginTop: '55px' }}>Currently avoiding</div>
+          <div>
+            {/* FULL CATEGORIZED AVOIDING LIST */}
             <div className="snfy-avoiding">
-              {showAvoidingList && (highFoods.length > 0 || moderateFoods.length > 0) ? (
-                <div className="snfy-avoid-scroll">
-                  {highFoods.length > 0 && (
-                    <>
-                      <div className="snfy-avoid-group">High sensitivity</div>
-                      {highFoods.map((food, i) => (
-                        <div key={i} className="snfy-avoid-item">
-                          <div className="snfy-avoid-left">
-                            <div className="snfy-avoid-dot" style={{ background: '#C95B5B' }}></div>
-                            {food.name}
-                          </div>
-                          <div className="snfy-badge high">High</div>
+              <div className="snfy-avoid-header">
+                <div className="snfy-sec-label" style={{ marginBottom: 0 }}>Currently avoiding</div>
+                {showAvoidingList && <div className="snfy-avoid-count">{labResult?.foods?.length || 0} foods total</div>}
+              </div>
+
+              {showAvoidingList && labResult?.foods?.length > 0 ? (
+                <>
+                  {['High', 'Moderate', 'Low'].map(level => {
+                    const foods = labResult.foods.filter(f => f.level === level)
+                    if (foods.length === 0) return null
+                    const colors = { High: '#C95B5B', Moderate: '#D4894A', Low: '#4A8C6A' }
+                    const cls = { High: 'high', Moderate: 'moderate', Low: 'low' }
+                    return (
+                      <div key={level} className="snfy-avoid-level">
+                        <div className="snfy-avoid-level-header">
+                          <div className="snfy-avoid-level-dot" style={{ background: colors[level] }}></div>
+                          <div className="snfy-avoid-level-name" style={{ color: colors[level] }}>{level} sensitivity</div>
+                          <div className="snfy-avoid-level-count">{foods.length} food{foods.length !== 1 ? 's' : ''}</div>
                         </div>
-                      ))}
-                    </>
-                  )}
-                  {moderateFoods.length > 0 && (
-                    <>
-                      <div className="snfy-avoid-group">Moderate sensitivity</div>
-                      {moderateFoods.map((food, i) => (
-                        <div key={i} className="snfy-avoid-item">
-                          <div className="snfy-avoid-left">
-                            <div className="snfy-avoid-dot" style={{ background: '#D4894A' }}></div>
-                            {food.name}
+                        {foods.map((food, i) => (
+                          <div key={i} className="snfy-avoid-item">
+                            <span>{food.name}</span>
+                            <span className={`snfy-badge ${cls[level]}`}>{level}</span>
                           </div>
-                          <div className="snfy-badge moderate">Moderate</div>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                </div>
+                        ))}
+                      </div>
+                    )
+                  })}
+                </>
               ) : (
-                <div style={{ padding: '28px 20px', textAlign: 'center' }}>
+                <div style={{ padding: '20px 0', textAlign: 'center' }}>
                   <div style={{ fontSize: '13px', fontWeight: 500, color: '#1C1C1C', marginBottom: '6px' }}>No foods yet</div>
                   <div style={{ fontSize: '12px', color: '#7A7A72', lineHeight: 1.65 }}>
-                    {!labResult
-                      ? 'Your elimination list will appear here once your lab results are uploaded and approved.'
-                      : labResult.status === 'pending_review'
-                      ? 'Your lab results are under review. Your elimination list will appear here once approved.'
+                    {!labResult ? 'Your elimination list will appear here once your lab results are uploaded and approved.'
+                      : labResult.status === 'pending_review' ? 'Your lab results are under review.'
                       : 'No foods flagged on your elimination list.'}
                   </div>
                 </div>
               )}
+
+              {/* AI INSIGHT — tucked below food list */}
+              <div className="snfy-insight">
+                <div className="snfy-insight-tag">{profile?.latest_insight ? `AI insight — week ${profile?.latest_insight_week || 1}` : 'Getting started'}</div>
+                <p>{profile?.latest_insight || 'Once you complete your setup and upload your lab results, the AI will start tracking your symptoms and generating personalized weekly insights here.'}</p>
+              </div>
             </div>
 
-            {/* AI INSIGHT */}
-            <div className="snfy-insight">
-              <div className="snfy-insight-tag">{profile?.latest_insight ? `AI insight — week ${profile?.latest_insight_week || 1}` : 'Getting started'}</div>
-              <p>
-                {profile?.latest_insight || 'Once you complete your setup and upload your lab results, the AI will start tracking your symptoms and generating personalized weekly insights here.'}
-              </p>
+            {/* SYMPTOM GRAPH */}
+            <div style={{ marginTop: '14px' }}>
+              <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
             </div>
-
-            {/* BASELINE STAT CARDS — replaced with interactive symptom graph */}
-            <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
           </div>
 
         </div>
