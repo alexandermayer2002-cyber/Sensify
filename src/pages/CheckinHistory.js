@@ -206,6 +206,8 @@ function CheckinCard({ checkin: c, index: i, profile, formatDate, complianceColo
     </div>
   )
 }
+
+const s = {
   wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column' },
   content: { flex: 1, padding: '24px 20px 48px', maxWidth: '960px', margin: '0 auto', width: '100%' },
   header: { marginBottom: '24px' },
