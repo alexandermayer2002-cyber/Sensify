@@ -1,6 +1,104 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 
+const BASELINE_LABELS = {
+  baseline_bloating: { label: 'Bloating', lowerIsBetter: true },
+  baseline_gas: { label: 'Gas / cramping', lowerIsBetter: true },
+  baseline_reflux: { label: 'Reflux / heartburn', lowerIsBetter: true },
+  baseline_digestive: { label: 'Digestive comfort', lowerIsBetter: false },
+  baseline_energy: { label: 'Energy levels', lowerIsBetter: false },
+  baseline_clarity: { label: 'Mental clarity', lowerIsBetter: false },
+  baseline_afternoon: { label: 'Afternoon energy', lowerIsBetter: false },
+  baseline_sleep: { label: 'Sleep quality', lowerIsBetter: false },
+  baseline_wellbeing: { label: 'Overall wellbeing', lowerIsBetter: false },
+}
+
+function IntakeMilestoneCard({ profile, formatDate }) {
+  const [expanded, setExpanded] = useState(false)
+
+  const baselines = Object.entries(BASELINE_LABELS)
+    .filter(([key]) => profile?.[key])
+    .map(([key, meta]) => ({ key, ...meta, value: profile[key] }))
+
+  const topFoods = profile?.food_frequency
+    ? Object.entries(profile.food_frequency)
+        .filter(([_, freq]) => freq === 'daily' || freq === '3-5x')
+        .map(([food]) => food)
+        .slice(0, 8)
+    : []
+
+  return (
+    <>
+      <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '10px' }}>Program milestones</div>
+      <div style={{ background: '#EDF3ED', border: '1px solid rgba(61,92,60,0.15)', borderRadius: '14px', padding: '18px', marginBottom: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: expanded ? '16px' : '0' }}>
+          <div>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '16px', fontWeight: 300 }}>
+              Intake survey <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>complete.</em>
+            </div>
+            <div style={{ fontSize: '12px', color: '#7A7A72', marginTop: '2px' }}>{formatDate(profile.intake_completed_at)}</div>
+          </div>
+          <button
+            onClick={() => setExpanded(!expanded)}
+            style={{ background: 'rgba(61,92,60,0.1)', border: 'none', borderRadius: '8px', padding: '6px 12px', fontSize: '12px', color: '#3D5C3C', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+          >
+            {expanded ? 'Hide' : 'View all responses'}
+          </button>
+        </div>
+
+        {expanded && (
+          <div style={{ borderTop: '1px solid rgba(61,92,60,0.15)', paddingTop: '16px' }}>
+
+            {/* Symptom focus */}
+            {profile?.symptoms?.length > 0 && (
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', marginBottom: '8px' }}>Symptom focus</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {profile.symptoms.map(s => (
+                    <span key={s} style={{ background: 'rgba(61,92,60,0.15)', color: '#3D5C3C', fontSize: '12px', fontWeight: 500, padding: '4px 10px', borderRadius: '20px' }}>{s}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Baseline scores */}
+            {baselines.length > 0 && (
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', marginBottom: '10px' }}>Baseline scores</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  {baselines.map(b => (
+                    <div key={b.key} style={{ background: 'rgba(255,255,255,0.6)', borderRadius: '10px', padding: '10px 12px' }}>
+                      <div style={{ fontSize: '11px', color: '#7A7A72', marginBottom: '4px' }}>{b.label}</div>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                        <span style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, color: '#1C1C1C' }}>{b.value}</span>
+                        <span style={{ fontSize: '11px', color: '#7A7A72' }}>/10</span>
+                      </div>
+                      <div style={{ fontSize: '10px', color: '#7A7A72', marginTop: '2px' }}>{b.lowerIsBetter ? 'lower is better' : 'higher is better'}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Most frequent foods */}
+            {topFoods.length > 0 && (
+              <div>
+                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', marginBottom: '8px' }}>Foods eaten most often</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {topFoods.map(f => (
+                    <span key={f} style={{ background: 'rgba(255,255,255,0.6)', color: '#1C1C1C', fontSize: '12px', padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(61,92,60,0.15)' }}>{f}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
+      </div>
+    </>
+  )
+}
+
 const s = {
   wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column' },
   content: { flex: 1, padding: '24px 20px 48px', maxWidth: '960px', margin: '0 auto', width: '100%' },
@@ -177,33 +275,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
 
         {/* INTAKE MILESTONE */}
         {profile?.intake_completed_at && (
-          <>
-            {checkins.length === 0 && <div style={s.secLabel}>Program milestones</div>}
-            <div style={{ ...s.checkinCard, background: '#EDF3ED', border: '1px solid rgba(61,92,60,0.15)', marginBottom: '10px' }}>
-              <div style={s.checkinHeader}>
-                <div style={s.checkinWeek}>Intake survey <em style={s.checkinWeekEm}>complete.</em></div>
-                <div style={s.checkinDate}>{formatDate(profile.intake_completed_at)}</div>
-              </div>
-              <div style={s.checkinScores}>
-                {profile.symptoms?.length > 0 && (
-                  <div style={s.scoreChip}>
-                    <div>
-                      <div style={s.scoreLabel}>Focus areas</div>
-                      <div style={{ fontSize: '12px', color: '#3D5C3C', fontWeight: 500, marginTop: '2px' }}>{profile.symptoms.join(' · ')}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
-                {profile.baseline_bloating && (
-                  <div style={{ fontSize: '12px', color: '#3D5C3C' }}>Bloating baseline: <strong>{profile.baseline_bloating}/10</strong></div>
-                )}
-                {profile.baseline_energy && (
-                  <div style={{ fontSize: '12px', color: '#3D5C3C' }}>Energy baseline: <strong>{profile.baseline_energy}/10</strong></div>
-                )}
-              </div>
-            </div>
-          </>
+          <IntakeMilestoneCard profile={profile} formatDate={formatDate} />
         )}
 
         {/* CHECK-IN HISTORY */}
