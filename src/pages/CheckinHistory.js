@@ -199,7 +199,7 @@ function CheckinCard({ checkin: c, index: i, profile, formatDate, complianceColo
 
       {c.ai_insight && (
         <div style={s.insightBox}>
-          <div style={s.insightTag}>AI insight</div>
+          <div style={s.insightTag}>Weekly insight</div>
           <div style={s.insightText}>{c.ai_insight}</div>
         </div>
       )}
@@ -313,7 +313,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
       <div style={s.content}>
         <div style={s.header}>
           <div style={s.title}>Your <em style={s.titleEm}>history.</em></div>
-          <div style={s.sub}>Weekly symptom scores, AI insights, and compliance trends over time.</div>
+          <div style={s.sub}>Weekly symptom scores, insights, and compliance trends over time.</div>
         </div>
 
         {/* DUE STATE */}
@@ -321,7 +321,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
           <div style={s.dueCard}>
             <div style={s.dueTag}>Due now</div>
             <div style={s.dueTitle}>Your weekly <em style={s.dueTitleEm}>check-in is ready.</em></div>
-            <div style={s.dueSub}>Takes 2 minutes. Complete it to log this week's symptoms and get your AI insight. It will appear in your history once submitted.</div>
+            <div style={s.dueSub}>Takes 2 minutes. Complete it to log this week's symptoms and get your weekly insight. It will appear in your history once submitted.</div>
             <button style={s.dueBtn} onClick={onStartCheckin}>Start check-in →</button>
           </div>
         )}
@@ -333,7 +333,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             </div>
             <div style={s.lockedTitle}>Next check-in <em style={s.lockedTitleEm}>coming soon.</em></div>
-            <div style={s.lockedSub}>Weekly check-ins unlock every 7 days to keep your symptom data consistent and your AI insights accurate.</div>
+            <div style={s.lockedSub}>Weekly check-ins unlock every 7 days to keep your symptom data consistent and your insights accurate.</div>
             <div style={s.countdown}>
               <div style={s.countdownNum}>{daysUntilNext()}</div>
               <div style={s.countdownLabel}>{daysUntilNext() === 1 ? 'day until next check-in' : 'days until next check-in'}</div>
@@ -403,7 +403,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A7A72" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             </div>
             <div style={s.emptyTitle}>Nothing <em style={s.emptyTitleEm}>yet.</em></div>
-            <div style={s.emptySub}>Your symptom scores, compliance data, and AI insights will appear here after your first weekly check-in.</div>
+            <div style={s.emptySub}>Your symptom scores, compliance data, and weekly insights will appear here after your first weekly check-in.</div>
           </div>
         )}
       </div>

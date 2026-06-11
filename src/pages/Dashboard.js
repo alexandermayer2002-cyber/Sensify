@@ -850,7 +850,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="snfy-action red">
                 <div className="snfy-action-tag red">Slip-up logged today</div>
                 <h2>What <em className="red">happened today?</em></h2>
-                <p>Takes 60 seconds. No judgment — just data that makes your AI insights more accurate.</p>
+                <p>Takes 60 seconds. No judgment — just data that makes your weekly insights more accurate.</p>
                 <button className="snfy-btn red" onClick={() => setScreen('slipup')}>Tell us what happened →</button>
               </div>
             )}
@@ -978,8 +978,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
               {/* AI INSIGHT — tucked below food list */}
               <div className="snfy-insight">
-                <div className="snfy-insight-tag">{profile?.latest_insight ? `AI insight — week ${profile?.latest_insight_week || 1}` : 'Getting started'}</div>
-                <p>{profile?.latest_insight || 'Once you complete your setup and upload your lab results, the AI will start tracking your symptoms and generating personalized weekly insights here.'}</p>
+                <div className="snfy-insight-tag">{profile?.latest_insight ? `Your weekly insight — week ${profile?.latest_insight_week || 1}` : 'Getting started'}</div>
+                <p>{profile?.latest_insight || 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.'}</p>
               </div>
             </div>
 

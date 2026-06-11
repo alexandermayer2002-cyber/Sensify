@@ -19,7 +19,7 @@ export const generateDay1Message = async ({ name, profile, labResult }) => {
   const totalFoods = labResult?.foods?.length || 0
   const symptoms = formatSymptoms(profile?.symptoms)
 
-  const prompt = `You are the AI health coach inside Sensify, a food sensitivity wellness program. Write a Day 1 activation message for a new program participant.
+  const prompt = `You are the analysis engine inside Sensify, a food sensitivity wellness program. Write a Day 1 activation message for a new program participant.
 
 USER:
 - Name: ${name}
@@ -33,10 +33,12 @@ Write a 3-4 sentence Day 1 message. Rules:
 - Reference their specific flagged foods by name
 - Acknowledge week 1 is an adjustment period — some feel worse before better
 - Tell them what to focus on this week (full compliance, nothing else)
-- Confident, warm, specific — not generic
+- Direct, specific, calm. Not a cheerleader, not a coach
 - Do NOT mention texts, replies, or daily check-ins via SMS
 - Do NOT start with "Welcome" or "Congratulations"
-- Sound like a smart health coach who knows their case
+- Voice: a sharp analyst who knows their case. Never use cheerleader phrases like momentum, journey, or wins
+- Never use em dashes or hyphens as punctuation. Use commas or periods instead
+- Maximum 4 sentences
 
 Write only the message. No labels.`
 
@@ -51,7 +53,7 @@ export const generateDay3Message = async ({ name, profile, labResult }) => {
   })?.name || labResult?.foods?.[0]?.name || 'your flagged foods'
   const symptoms = formatSymptoms(profile?.symptoms)
 
-  const prompt = `You are the AI health coach inside Sensify. Write a Day 3 check-in message for a program participant.
+  const prompt = `You are the analysis engine inside Sensify. Write a Day 3 check-in message for a program participant.
 
 USER:
 - Name: ${name}
@@ -85,7 +87,7 @@ export const generateDay14Message = async ({ name, profile, checkins }) => {
   const bloatingChange = bloatingW1 && bloatingW2 ? Math.round(((bloatingW1 - bloatingW2) / bloatingW1) * 100) : null
   const energyChange = energyW1 && energyW2 ? Math.round(((energyW2 - energyW1) / energyW1) * 100) : null
 
-  const prompt = `You are the AI health coach inside Sensify. Write a Day 14 milestone message.
+  const prompt = `You are the analysis engine inside Sensify. Write a Day 14 milestone message.
 
 USER:
 - Name: ${name}
@@ -126,7 +128,7 @@ export const generateDay28Message = async ({ name, profile, checkins }) => {
     ? Math.round(((latest.answers.energy - profile.baseline_energy) / profile.baseline_energy) * 100)
     : null
 
-  const prompt = `You are the AI health coach inside Sensify. Write a Day 28 one-month progress summary.
+  const prompt = `You are the analysis engine inside Sensify. Write a Day 28 one-month progress summary.
 
 USER:
 - Name: ${name}
@@ -157,7 +159,7 @@ Write only the message. No labels.`
 
 // SLIP-UP ACKNOWLEDGMENT
 export const generateSlipupMessage = async ({ name, food, sensitivityLevel, currentDay }) => {
-  const prompt = `You are the AI health coach inside Sensify. Write a slip-up acknowledgment message.
+  const prompt = `You are the analysis engine inside Sensify. Write a slip-up acknowledgment message.
 
 USER:
 - Name: ${name}
@@ -193,7 +195,7 @@ export const generateDay57Message = async ({ name, profile, labResult }) => {
     ? 'tracked throughout elimination'
     : 'not yet recorded'
 
-  const prompt = `You are the AI health coach inside Sensify. Write a Day 57 reintroduction unlock message.
+  const prompt = `You are the analysis engine inside Sensify. Write a Day 57 reintroduction unlock message.
 
 USER:
 - Name: ${name}
@@ -221,7 +223,7 @@ export const generateReintroFoodBriefing = async ({ name, food, sensitivityLevel
   const hasDigestive = profile?.symptoms?.includes('Digestive')
   const hasEnergy = profile?.symptoms?.includes('Energy')
 
-  const prompt = `You are the AI health coach inside Sensify. Write a food briefing for a reintroduction cycle.
+  const prompt = `You are the analysis engine inside Sensify. Write a food briefing for a reintroduction cycle.
 
 USER:
 - Name: ${name}
@@ -254,7 +256,7 @@ export const generateModerateUnlockMessage = async ({ name, profile, labResult }
     })
     ?.map(f => f.name) || []
 
-  const prompt = `You are the AI health coach inside Sensify. Write a Moderate tier unlock message for day 113.
+  const prompt = `You are the analysis engine inside Sensify. Write a Moderate tier unlock message for day 113.
 
 USER:
 - Name: ${name}
@@ -282,7 +284,7 @@ export const generateHighUnlockMessage = async ({ name, profile, labResult }) =>
     })
     ?.map(f => f.name) || []
 
-  const prompt = `You are the AI health coach inside Sensify. Write a High sensitivity tier unlock message for day 169.
+  const prompt = `You are the analysis engine inside Sensify. Write a High sensitivity tier unlock message for day 169.
 
 USER:
 - Name: ${name}
@@ -315,7 +317,7 @@ export const generateProgramCompleteMessage = async ({ name, profile, labResult,
     ? Math.round(((latest.answers.energy - profile.baseline_energy) / profile.baseline_energy) * 100)
     : null
 
-  const prompt = `You are the AI health coach inside Sensify. Write the program completion Food Map reveal message.
+  const prompt = `You are the analysis engine inside Sensify. Write the program completion Food Map reveal message.
 
 USER:
 - Name: ${name}

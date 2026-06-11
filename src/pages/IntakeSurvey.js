@@ -329,7 +329,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       <div style={s.content}>
         <div style={s.eyebrow}>Step 1 of 4</div>
         <div style={s.title}>What are you hoping<br />to <em style={s.titleEm}>understand?</em></div>
-        <div style={s.hint}>Select up to two. This shapes every question, baseline score, and AI insight throughout your program.</div>
+        <div style={s.hint}>Select up to two. This shapes every question, baseline score, and weekly insight throughout your program.</div>
         <div style={s.categoryGrid}>
           {[
             { id: 'digestive', title: 'Digestive health', desc: 'Bloating, gas, cramping, reflux, irregular digestion, discomfort after eating' },
@@ -371,7 +371,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       <div style={s.content}>
         <div style={s.eyebrow}>Step 2 of 4</div>
         <div style={s.title}>Tell us about<br /><em style={s.titleEm}>your symptoms.</em></div>
-        <div style={s.hint}>Be honest — not your best day, not your worst. Your typical reality. The more accurate your answers, the more useful your AI insights will be.</div>
+        <div style={s.hint}>Be honest — not your best day, not your worst. Your typical reality. The more accurate your answers, the more useful your weekly insights will be.</div>
 
         {symptomQuestions.map((q, i) => (
           <div key={q.id}>

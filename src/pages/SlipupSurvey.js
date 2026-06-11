@@ -141,7 +141,7 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
 
         <div style={{ ...s.infoCard, marginBottom: 0 }}>
           <div style={s.infoLabel}>What happens next</div>
-          <div style={s.infoText}>This gets factored into your weekly AI insight. Patterns across multiple days tell us much more than any single day.</div>
+          <div style={s.infoText}>This gets factored into your weekly insight. Patterns across multiple days tell us much more than any single day.</div>
         </div>
       </div>
       <div style={s.footer}>
@@ -161,7 +161,7 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
       <div style={s.content}>
         <div style={s.eyebrow}>Slip-up logged</div>
         <div style={s.title}>What <em style={s.titleEm}>happened today?</em></div>
-        <div style={s.hint}>No judgment — this is just data. The more we know, the better your AI insights become.</div>
+        <div style={s.hint}>No judgment — this is just data. The more we know, the better your weekly insights become.</div>
 
         <div style={s.label}>What did you eat that wasn't on your plan?</div>
         <input

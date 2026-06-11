@@ -323,7 +323,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="how-content">
                 <div className="how-tag">Daily</div>
                 <div className="how-title">Get your daily compliance text</div>
-                <div className="how-desc">Every evening at your chosen time — anywhere from 6pm to 10pm — you get a text from Sensify. Reply YES if you stayed on plan or NO if something came up. That's it. One second, every day. YES builds your streak. NO triggers a quick slip-up log where you tell us what happened — the data feeds your AI insights.</div>
+                <div className="how-desc">Every evening at your chosen time — anywhere from 6pm to 10pm — you get a text from Sensify. Reply YES if you stayed on plan or NO if something came up. That's it. One second, every day. YES builds your streak. NO triggers a quick slip-up log where you tell us what happened — the data feeds your weekly insights.</div>
               </div>
             </div>
             <div className="how-step">

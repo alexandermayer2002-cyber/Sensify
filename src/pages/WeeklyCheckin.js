@@ -119,16 +119,17 @@ COMPLIANCE: ${answers.compliance || 'not specified'}
 ${answers.notes ? `USER NOTES: ${answers.notes}` : ''}
 
 YOUR TASK:
-Write a 2-4 sentence personalized weekly insight. Rules:
-- Reference specific numbers and percentage changes — never be vague
+Write a personalized weekly insight. Rules:
+- Maximum 3 sentences. Shorter is better.
+- Lead with the single most significant change, with its specific number or percentage
+- Reference specific numbers and percentage changes, never be vague
 - Factor in what changed this week (travel, stress, etc.) when explaining score shifts
-- Match tone to week: early weeks = encouraging, mid = analytical, late = celebratory if improving
-- Sound like a warm smart health coach — not a doctor, not a chatbot
+- Voice: a sharp analyst who respects the reader. Direct, specific, calm. NOT a cheerleader, NOT a coach. Never use phrases like "wins you've earned", "keep crushing it", "you've got this", "momentum", or "journey"
+- Never use em dashes or hyphens as punctuation. Use commas or periods instead
 - Never say "based on your data" or "according to your responses"
-- Don't start with "Great job" or generic praise
-- Use ${name}'s name naturally if it fits
-- If compliance was poor and scores are bad, connect them honestly
-- If they had a tough week (travel, stress, illness) acknowledge it and frame next week
+- Use ${name}'s name only if it reads naturally, at most once
+- If compliance was poor and scores are bad, connect them plainly and without judgment
+- If this is the first check-in with data, compare against baseline scores only and do not reference prior weeks
 
 Write only the insight. No labels, no formatting.`
 
@@ -310,7 +311,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
             <div style={s.successTitle}>Week {weekNumber} check-in <em style={s.successTitleEm}>complete.</em></div>
-            <div style={s.successSub}>Your scores are saved. Your AI insight is below.</div>
+            <div style={s.successSub}>Your scores are saved. Your weekly insight is below.</div>
           </div>
 
           {firstScale && secondScale && (
