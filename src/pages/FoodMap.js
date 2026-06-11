@@ -2,77 +2,93 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=DM+Mono:wght@400;500&display=swap');
 
-  .fm-wrap { min-height: 100vh; background: #FAF8F4; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
-  .fm-content { max-width: 680px; margin: 0 auto; padding: 24px 20px 60px; }
+  .fm-wrap { min-height: calc(100vh - 56px); background: #FAF8F4; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
+  .fm-content { max-width: 760px; margin: 0 auto; padding: 24px 20px 56px; }
+  .fm-loading { display: flex; align-items: center; justify-content: center; min-height: 50vh; font-size: 14px; color: #7A7A72; }
 
-  .fm-header { background: #1C1C1C; border-radius: 18px; padding: 26px; margin-bottom: 14px; color: white; }
-  .fm-header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
-  .fm-logo { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 300; opacity: 0.45; letter-spacing: -0.2px; }
-  .fm-logo em { font-style: italic; }
-  .fm-complete-badge { font-size: 10px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; opacity: 0.65; }
-  .fm-name { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 300; letter-spacing: -0.5px; margin-bottom: 4px; line-height: 1.2; }
+  /* DARK INSTRUMENT HEADER */
+  .fm-header { background: #0E0E0C; border-radius: 18px; padding: 26px 26px 24px; margin-bottom: 18px; position: relative; overflow: hidden; }
+  .fm-header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 240px; height: 240px; background: radial-gradient(circle, rgba(139,174,138,0.13) 0%, transparent 65%); pointer-events: none; }
+  .fm-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; position: relative; }
+  .fm-eyebrow { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.6px; color: rgba(139,174,138,0.7); margin-bottom: 8px; }
+  .fm-name { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 300; color: white; letter-spacing: -0.5px; }
   .fm-name em { font-style: italic; color: #8BAE8A; }
-  .fm-subtitle { font-size: 12px; opacity: 0.4; margin-bottom: 20px; }
-  .fm-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; }
-  .fm-sum-card { background: rgba(255,255,255,0.06); border-radius: 11px; padding: 13px; text-align: center; }
-  .fm-sum-num { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1; margin-bottom: 4px; }
-  .fm-sum-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.45; }
-  .fm-sum-card.safe .fm-sum-num { color: #6DBF8A; }
-  .fm-sum-card.limit .fm-sum-num { color: #D4894A; }
-  .fm-sum-card.avoid .fm-sum-num { color: #E07070; }
+  .fm-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.3); text-align: right; line-height: 1.9; }
+  .fm-meta span { color: rgba(139,174,138,0.8); }
 
-  .fm-section { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; overflow: hidden; margin-bottom: 10px; }
-  .fm-section.empty { opacity: 0.5; }
-  .fm-section-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; border-bottom: 1px solid rgba(0,0,0,0.06); }
-  .fm-section-left { display: flex; align-items: center; gap: 12px; }
-  .fm-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; }
-  .fm-icon.safe { background: #EAF4EE; }
-  .fm-icon.limit { background: #FDF2EA; }
-  .fm-icon.avoid { background: #FAEAEA; }
-  .fm-section-title { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
-  .fm-section-title.safe { color: #2D6B42; }
-  .fm-section-title.limit { color: #9A5F1A; }
-  .fm-section-title.avoid { color: #8B2E2E; }
-  .fm-section-desc { font-size: 12px; color: #7A7A72; }
-  .fm-count { font-size: 12px; color: #7A7A72; font-weight: 500; }
-  .fm-pills { padding: 14px 18px; display: flex; flex-wrap: wrap; gap: 8px; }
-  .fm-pill { font-size: 13px; font-weight: 500; padding: 7px 14px; border-radius: 22px; letter-spacing: -0.1px; }
-  .fm-pill.safe { background: #EAF4EE; color: #2D6B42; }
-  .fm-pill.limit { background: #FDF2EA; color: #9A5F1A; }
-  .fm-pill.avoid { background: #FAEAEA; color: #8B2E2E; }
-  .fm-pill.empty { background: #FAF8F4; color: #7A7A72; border: 1.5px dashed rgba(0,0,0,0.1); font-size: 12px; font-weight: 400; }
+  .fm-scan { display: flex; gap: 16px; align-items: center; position: relative; }
+  @media (max-width: 540px) { .fm-scan { flex-direction: column; align-items: stretch; } .fm-ring-wrap { margin: 0 auto; } }
+  .fm-ring-wrap { position: relative; width: 104px; height: 104px; flex-shrink: 0; }
+  .fm-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .fm-ring-num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; color: white; }
+  .fm-ring-sub { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.35); margin-top: 3px; }
+  .fm-dist { flex: 1; }
+  .fm-dist-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .fm-dist-row:last-child { margin-bottom: 0; }
+  .fm-dist-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; width: 42px; }
+  .fm-dist-track { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .fm-dist-fill { height: 4px; border-radius: 2px; transition: width 0.7s ease; }
+  .fm-dist-count { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.45); width: 20px; text-align: right; }
 
-  .fm-flagged { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; overflow: hidden; margin-bottom: 10px; opacity: 0.75; }
-  .fm-flagged-header { padding: 11px 18px; background: #FAF8F4; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; }
-  .fm-flagged-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 18px; font-size: 13px; }
-  .fm-flagged-item + .fm-flagged-item { border-top: 1px solid rgba(0,0,0,0.04); }
-  .fm-flagged-left { display: flex; align-items: center; gap: 10px; }
-  .fm-flagged-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .fm-flagged-right { display: flex; align-items: center; gap: 8px; }
-  .fm-flagged-status { font-size: 11px; color: #7A7A72; font-style: italic; }
-  .fm-badge { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
-  .fm-badge.high { background: #FAEAEA; color: #8B2E2E; }
-  .fm-badge.moderate { background: #FDF2EA; color: #9A5F1A; }
-  .fm-badge.low { background: #EAF4EE; color: #2D6B42; }
+  /* SECTIONS */
+  .fm-section { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 18px 20px; margin-bottom: 12px; }
+  .fm-section.empty { opacity: 0.65; }
+  .fm-sec-head { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
+  .fm-sec-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .fm-sec-dot.safe { background: #4A8C6A; box-shadow: 0 0 8px rgba(74,140,106,0.5); }
+  .fm-sec-dot.limit { background: #D4894A; box-shadow: 0 0 8px rgba(212,137,74,0.45); }
+  .fm-sec-dot.avoid { background: #C95B5B; box-shadow: 0 0 8px rgba(201,91,91,0.45); }
+  .fm-sec-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  .fm-sec-name.safe { color: #2D6B42; }
+  .fm-sec-name.limit { color: #9A5F1A; }
+  .fm-sec-name.avoid { color: #8B2E2E; }
+  .fm-sec-desc { font-size: 11px; color: #7A7A72; margin-left: 4px; }
+  .fm-sec-line { flex: 1; height: 1px; background: rgba(0,0,0,0.05); }
+  .fm-sec-count { font-family: 'DM Mono', monospace; font-size: 10px; color: #7A7A72; }
 
-  .fm-no-sensitivity { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; overflow: hidden; margin-bottom: 10px; opacity: 0.6; }
+  .fm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 7px; }
+  .fm-chip { border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .fm-chip.safe { background: rgba(74,140,106,0.06); border: 1px solid rgba(74,140,106,0.2); }
+  .fm-chip.limit { background: rgba(212,137,74,0.06); border: 1px solid rgba(212,137,74,0.2); }
+  .fm-chip.avoid { background: rgba(201,91,91,0.05); border: 1px solid rgba(201,91,91,0.2); }
+  .fm-chip.empty { background: #FAF8F4; border: 1px dashed rgba(0,0,0,0.1); justify-content: center; }
+  .fm-chip-name { font-size: 12.5px; font-weight: 400; color: #1C1C1C; }
+  .fm-chip-empty-text { font-size: 12px; color: #7A7A72; }
+  .fm-chip-val { font-family: 'DM Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .fm-chip.safe .fm-chip-val { color: #2D6B42; }
+  .fm-chip.limit .fm-chip-val { color: #9A5F1A; }
+  .fm-chip.avoid .fm-chip-val { color: #8B2E2E; }
 
-  .fm-footer { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 14px; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px; }
-  .fm-footer-text { font-size: 12px; color: #7A7A72; line-height: 1.6; flex: 1; }
-  .fm-share-btn { background: #1C1C1C; color: white; border: none; border-radius: 9px; padding: 9px 18px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; flex-shrink: 0; transition: opacity 0.15s; }
-  .fm-share-btn:hover { opacity: 0.85; }
+  /* FLAGGED AWAITING */
+  .fm-flagged { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 18px 20px; margin-bottom: 12px; }
+  .fm-flagged-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 13px; }
+  .fm-flagged-item:last-child { border-bottom: none; }
+  .fm-flagged-left { display: flex; align-items: center; gap: 9px; }
+  .fm-flagged-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .fm-flagged-status { font-family: 'DM Mono', monospace; font-size: 9.5px; color: #7A7A72; text-transform: uppercase; letter-spacing: 0.4px; }
 
-  .fm-empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 56px 24px; text-align: center; }
-  .fm-empty-icon { width: 56px; height: 56px; background: #EDF3ED; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-  .fm-empty-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; margin-bottom: 8px; }
+  /* NO SENSITIVITY */
+  .fm-nosens { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 18px 20px; margin-bottom: 12px; }
+  .fm-nosens-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .fm-nosens-pill { font-size: 12px; padding: 6px 12px; border-radius: 20px; background: #FAF8F4; color: #7A7A72; border: 1px solid rgba(0,0,0,0.07); }
+
+  /* FOOTER */
+  .fm-footer { background: #0E0E0C; border-radius: 16px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+  @media (max-width: 540px) { .fm-footer { flex-direction: column; align-items: stretch; text-align: center; } }
+  .fm-verify { font-family: 'DM Mono', monospace; font-size: 9.5px; color: rgba(255,255,255,0.3); letter-spacing: 0.5px; line-height: 1.7; }
+  .fm-share-btn { background: #8BAE8A; color: #0E0E0C; border: none; border-radius: 9px; padding: 11px 18px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; transition: opacity 0.15s; }
+  .fm-share-btn:hover { opacity: 0.88; }
+
+  /* EMPTY STATE */
+  .fm-empty-state { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 18px; padding: 44px 28px; text-align: center; max-width: 480px; margin: 40px auto; }
+  .fm-empty-icon { width: 52px; height: 52px; border-radius: 14px; background: #EDF3ED; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+  .fm-empty-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; margin-bottom: 10px; }
   .fm-empty-title em { font-style: italic; color: #3D5C3C; }
-  .fm-empty-sub { font-size: 13px; color: #7A7A72; line-height: 1.7; max-width: 280px; margin: 0 auto 24px; }
-  .fm-info-card { background: #EDF3ED; border-radius: 12px; padding: 14px 16px; }
-  .fm-info-text { font-size: 13px; color: #3D5C3C; line-height: 1.75; }
-
-  .fm-loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; font-size: 14px; color: #7A7A72; font-family: 'Fraunces', serif; font-style: italic; }
+  .fm-empty-sub { font-size: 13px; color: #7A7A72; line-height: 1.7; margin-bottom: 20px; }
+  .fm-info-card { background: #FAF8F4; border-radius: 12px; padding: 16px; text-align: left; }
+  .fm-info-text { font-size: 13px; line-height: 1.7; color: #1C1C1C; }
 `
 
 export default function FoodMap({ session, profile, labResult }) {
@@ -112,6 +128,32 @@ export default function FoodMap({ session, profile, labResult }) {
   const hasNoResults = !labResult || labResult.status === 'pending_review'
   const totalTested = foodMap.length
   const completedDate = foodMap.length > 0 ? new Date(Math.max(...foodMap.map(f => new Date(f.updated_at)))).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : null
+
+  // Protocol day count for the metadata readout
+  const protocolDays = profile?.protocol_start_date
+    ? Math.max(Math.floor((new Date() - new Date(profile.protocol_start_date)) / (1000 * 60 * 60 * 24)) + 1, 1)
+    : 0
+  const isComplete = profile?.program_phase === 'complete'
+  const memberId = session?.user?.id ? `SF-${session.user.id.slice(0, 4).toUpperCase()}-${session.user.id.slice(4, 8).toUpperCase()}` : 'SF-0000'
+
+  // Reaction label from stored reintro data if present
+  const reactionLabel = (f) => {
+    if (f.verdict === 'Safe') return 'no reaction'
+    if (f.verdict === 'Limit') return 'mild'
+    if (f.verdict === 'Avoid') return 'strong'
+    return ''
+  }
+
+  // Segmented ring math
+  const ringTotal = Math.max(totalTested, 1)
+  const C = 2 * Math.PI * 44 // circumference at r=44
+  const gap = totalTested > 1 ? 4 : 0
+  const seg = (count) => Math.max((count / ringTotal) * C - gap, 0)
+  const safeLen = seg(safeFoods.length)
+  const limitLen = seg(limitFoods.length)
+  const avoidLen = seg(avoidFoods.length)
+  const limitOffset = -((safeFoods.length / ringTotal) * C)
+  const avoidOffset = -(((safeFoods.length + limitFoods.length) / ringTotal) * C)
 
   if (loading) return (
     <div className="fm-wrap">
@@ -163,111 +205,138 @@ export default function FoodMap({ session, profile, labResult }) {
       <style>{css}</style>
       <div className="fm-content">
 
-        {/* DARK HEADER */}
+        {/* DARK INSTRUMENT HEADER */}
         <div className="fm-header">
           <div className="fm-header-top">
-            <div className="fm-logo">sensi<em>fy</em></div>
-            <div className="fm-complete-badge">
-              {totalTested > 0 ? `${totalTested} food${totalTested !== 1 ? 's' : ''} tested` : 'In progress'}
+            <div>
+              <div className="fm-eyebrow">Sensify · {isComplete ? 'Verified result' : 'Building'}</div>
+              <div className="fm-name"><em>{name}'s</em> Food Map.</div>
+            </div>
+            <div className="fm-meta">
+              PROTOCOL <span>{isComplete ? 'COMPLETE' : 'ACTIVE'}</span><br />
+              {protocolDays > 0 ? `${protocolDays} DAYS` : '—'} · {totalTested} REINTRO{totalTested !== 1 ? 'S' : ''}<br />
+              {completedDate ? `UPDATED ${completedDate.toUpperCase()}` : 'IN PROGRESS'}
             </div>
           </div>
-          <div className="fm-name"><em>{name}'s</em> Food Map.</div>
-          <div className="fm-subtitle">
-            {completedDate ? `Last updated ${completedDate}` : 'Building as reintroductions complete'} · 6-month elimination & reintroduction protocol
-          </div>
-          <div className="fm-summary">
-            <div className="fm-sum-card safe">
-              <div className="fm-sum-num">{safeFoods.length}</div>
-              <div className="fm-sum-label">Safe</div>
+
+          <div className="fm-scan">
+            <div className="fm-ring-wrap">
+              <svg viewBox="0 0 104 104" width="104" height="104">
+                <circle cx="52" cy="52" r="44" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+                {safeFoods.length > 0 && (
+                  <circle cx="52" cy="52" r="44" fill="none" stroke="#8BAE8A" strokeWidth="6" strokeLinecap="round"
+                    strokeDasharray={`${safeLen} ${C}`} transform="rotate(-90 52 52)" />
+                )}
+                {limitFoods.length > 0 && (
+                  <circle cx="52" cy="52" r="44" fill="none" stroke="#D4894A" strokeWidth="6" strokeLinecap="round"
+                    strokeDasharray={`${limitLen} ${C}`} strokeDashoffset={limitOffset} transform="rotate(-90 52 52)" />
+                )}
+                {avoidFoods.length > 0 && (
+                  <circle cx="52" cy="52" r="44" fill="none" stroke="#E06A6A" strokeWidth="6" strokeLinecap="round"
+                    strokeDasharray={`${avoidLen} ${C}`} strokeDashoffset={avoidOffset} transform="rotate(-90 52 52)" />
+                )}
+              </svg>
+              <div className="fm-ring-label">
+                <div className="fm-ring-num">{totalTested}</div>
+                <div className="fm-ring-sub">food{totalTested !== 1 ? 's' : ''} mapped</div>
+              </div>
             </div>
-            <div className="fm-sum-card limit">
-              <div className="fm-sum-num">{limitFoods.length}</div>
-              <div className="fm-sum-label">Limit</div>
-            </div>
-            <div className="fm-sum-card avoid">
-              <div className="fm-sum-num">{avoidFoods.length}</div>
-              <div className="fm-sum-label">Avoid</div>
+            <div className="fm-dist">
+              <div className="fm-dist-row">
+                <div className="fm-dist-label" style={{ color: '#A8C5A7' }}>Safe</div>
+                <div className="fm-dist-track"><div className="fm-dist-fill" style={{ width: `${totalTested ? (safeFoods.length / totalTested) * 100 : 0}%`, background: '#8BAE8A' }}></div></div>
+                <div className="fm-dist-count">{safeFoods.length}</div>
+              </div>
+              <div className="fm-dist-row">
+                <div className="fm-dist-label" style={{ color: '#E0A977' }}>Limit</div>
+                <div className="fm-dist-track"><div className="fm-dist-fill" style={{ width: `${totalTested ? (limitFoods.length / totalTested) * 100 : 0}%`, background: '#D4894A' }}></div></div>
+                <div className="fm-dist-count">{limitFoods.length}</div>
+              </div>
+              <div className="fm-dist-row">
+                <div className="fm-dist-label" style={{ color: '#EC9A9A' }}>Avoid</div>
+                <div className="fm-dist-track"><div className="fm-dist-fill" style={{ width: `${totalTested ? (avoidFoods.length / totalTested) * 100 : 0}%`, background: '#E06A6A' }}></div></div>
+                <div className="fm-dist-count">{avoidFoods.length}</div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* SAFE */}
         <div className={`fm-section${safeFoods.length === 0 ? ' empty' : ''}`}>
-          <div className="fm-section-header">
-            <div className="fm-section-left">
-              <div className="fm-icon safe">
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#2D6B42' }}></div>
-              </div>
-              <div>
-                <div className="fm-section-title safe">Safe</div>
-                <div className="fm-section-desc">Tested and tolerated. Eat freely.</div>
-              </div>
-            </div>
-            <div className="fm-count">{safeFoods.length} food{safeFoods.length !== 1 ? 's' : ''}</div>
+          <div className="fm-sec-head">
+            <div className="fm-sec-dot safe"></div>
+            <div className="fm-sec-name safe">Safe — eat freely</div>
+            <div className="fm-sec-line"></div>
+            <div className="fm-sec-count">{safeFoods.length} FOOD{safeFoods.length !== 1 ? 'S' : ''}</div>
           </div>
-          <div className="fm-pills">
+          <div className="fm-grid">
             {safeFoods.length > 0
-              ? safeFoods.map((f, i) => <div key={i} className="fm-pill safe">{f.food}</div>)
-              : <div className="fm-pill empty">No safe foods confirmed yet</div>}
+              ? safeFoods.map((f, i) => (
+                  <div key={i} className="fm-chip safe">
+                    <span className="fm-chip-name">{f.food}</span>
+                    <span className="fm-chip-val">{reactionLabel(f)}</span>
+                  </div>
+                ))
+              : <div className="fm-chip empty"><span className="fm-chip-empty-text">No safe foods confirmed yet</span></div>}
           </div>
         </div>
 
         {/* LIMIT */}
         <div className={`fm-section${limitFoods.length === 0 ? ' empty' : ''}`}>
-          <div className="fm-section-header">
-            <div className="fm-section-left">
-              <div className="fm-icon limit">
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#9A5F1A' }}></div>
-              </div>
-              <div>
-                <div className="fm-section-title limit">Limit</div>
-                <div className="fm-section-desc">Dose-sensitive. Fine in small amounts.</div>
-              </div>
-            </div>
-            <div className="fm-count">{limitFoods.length} food{limitFoods.length !== 1 ? 's' : ''}</div>
+          <div className="fm-sec-head">
+            <div className="fm-sec-dot limit"></div>
+            <div className="fm-sec-name limit">Limit — small amounts</div>
+            <div className="fm-sec-line"></div>
+            <div className="fm-sec-count">{limitFoods.length} FOOD{limitFoods.length !== 1 ? 'S' : ''}</div>
           </div>
-          <div className="fm-pills">
+          <div className="fm-grid">
             {limitFoods.length > 0
-              ? limitFoods.map((f, i) => <div key={i} className="fm-pill limit">{f.food}</div>)
-              : <div className="fm-pill empty">No limit foods confirmed yet</div>}
+              ? limitFoods.map((f, i) => (
+                  <div key={i} className="fm-chip limit">
+                    <span className="fm-chip-name">{f.food}</span>
+                    <span className="fm-chip-val">{reactionLabel(f)}</span>
+                  </div>
+                ))
+              : <div className="fm-chip empty"><span className="fm-chip-empty-text">No limit foods confirmed yet</span></div>}
           </div>
         </div>
 
         {/* AVOID */}
         <div className={`fm-section${avoidFoods.length === 0 ? ' empty' : ''}`}>
-          <div className="fm-section-header">
-            <div className="fm-section-left">
-              <div className="fm-icon avoid">
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#8B2E2E' }}></div>
-              </div>
-              <div>
-                <div className="fm-section-title avoid">Avoid</div>
-                <div className="fm-section-desc">Clear trigger confirmed. Skip it.</div>
-              </div>
-            </div>
-            <div className="fm-count">{avoidFoods.length} food{avoidFoods.length !== 1 ? 's' : ''}</div>
+          <div className="fm-sec-head">
+            <div className="fm-sec-dot avoid"></div>
+            <div className="fm-sec-name avoid">Avoid — clear triggers</div>
+            <div className="fm-sec-line"></div>
+            <div className="fm-sec-count">{avoidFoods.length} FOOD{avoidFoods.length !== 1 ? 'S' : ''}</div>
           </div>
-          <div className="fm-pills">
+          <div className="fm-grid">
             {avoidFoods.length > 0
-              ? avoidFoods.map((f, i) => <div key={i} className="fm-pill avoid">{f.food}</div>)
-              : <div className="fm-pill empty">No trigger foods confirmed yet</div>}
+              ? avoidFoods.map((f, i) => (
+                  <div key={i} className="fm-chip avoid">
+                    <span className="fm-chip-name">{f.food}</span>
+                    <span className="fm-chip-val">{reactionLabel(f)}</span>
+                  </div>
+                ))
+              : <div className="fm-chip empty"><span className="fm-chip-empty-text">No trigger foods confirmed yet</span></div>}
           </div>
         </div>
 
         {/* FLAGGED NOT YET TESTED */}
         {flaggedFoods.length > 0 && (
           <div className="fm-flagged">
-            <div className="fm-flagged-header">Flagged — awaiting reintroduction ({flaggedFoods.length})</div>
+            <div className="fm-sec-head">
+              <div className="fm-sec-dot" style={{ background: 'rgba(0,0,0,0.2)' }}></div>
+              <div className="fm-sec-name" style={{ color: '#7A7A72' }}>Awaiting reintroduction</div>
+              <div className="fm-sec-line"></div>
+              <div className="fm-sec-count">{flaggedFoods.length} FOOD{flaggedFoods.length !== 1 ? 'S' : ''}</div>
+            </div>
             {flaggedFoods.map((f, i) => (
               <div key={i} className="fm-flagged-item">
                 <div className="fm-flagged-left">
                   <div className="fm-flagged-dot" style={{ background: f.level === 'High' ? '#C95B5B' : f.level === 'Moderate' ? '#D4894A' : '#4A8C6A' }} />
                   {f.name}
                 </div>
-                <div className="fm-flagged-right">
-                  <div className="fm-flagged-status">Awaiting reintroduction</div>
-                  <div className={`fm-badge ${f.level.toLowerCase()}`}>{f.level}</div>
-                </div>
+                <div className="fm-flagged-status">{f.level} · QUEUED</div>
               </div>
             ))}
           </div>
@@ -275,30 +344,26 @@ export default function FoodMap({ session, profile, labResult }) {
 
         {/* NO SENSITIVITY */}
         {noSensitivityFoods.length > 0 && (
-          <div className="fm-no-sensitivity">
-            <div className="fm-section-header">
-              <div className="fm-section-left">
-                <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'rgba(0,0,0,0.15)' }}></div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '15px', fontWeight: 500, color: '#7A7A72', marginBottom: '2px' }}>No sensitivity detected</div>
-                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Lab showed no reaction. Likely safe.</div>
-                </div>
-              </div>
-              <div className="fm-count">{noSensitivityFoods.length} foods</div>
+          <div className="fm-nosens">
+            <div className="fm-sec-head">
+              <div className="fm-sec-dot" style={{ background: 'rgba(0,0,0,0.12)' }}></div>
+              <div className="fm-sec-name" style={{ color: '#7A7A72' }}>No sensitivity detected</div>
+              <div className="fm-sec-line"></div>
+              <div className="fm-sec-count">{noSensitivityFoods.length} FOODS</div>
             </div>
-            <div className="fm-pills">
+            <div className="fm-nosens-pills">
               {noSensitivityFoods.map((f, i) => (
-                <div key={i} style={{ fontSize: '13px', fontWeight: 500, padding: '7px 14px', borderRadius: '22px', background: '#FAF8F4', color: '#7A7A72', border: '1px solid rgba(0,0,0,0.07)' }}>{f.name}</div>
+                <div key={i} className="fm-nosens-pill">{f.name}</div>
               ))}
             </div>
           </div>
         )}
 
-        {/* FOOTER */}
+        {/* VERIFICATION FOOTER */}
         <div className="fm-footer">
-          <div className="fm-footer-text">Sensitivities can change over time. After completing your program you can retest any food in your Avoid list.</div>
+          <div className="fm-verify">
+            SENSIFY VERIFIED · {memberId}{protocolDays > 0 ? ` · TESTED OVER ${protocolDays} DAYS` : ''}
+          </div>
           <button className="fm-share-btn">Share my Food Map →</button>
         </div>
 
