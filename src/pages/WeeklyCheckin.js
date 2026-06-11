@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
+import { aiPrompt } from '../utils/aiClient'
 
-const ANTHROPIC_API_KEY = process.env.REACT_APP_ANTHROPIC_KEY
 
 const CONTEXT_OPTIONS = [
   'I traveled or was away from home',
@@ -132,19 +132,7 @@ Write a 2-4 sentence personalized weekly insight. Rules:
 
 Write only the insight. No labels, no formatting.`
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
-    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 300, messages: [{ role: 'user', content: prompt }] })
-  })
-  const data = await response.json()
-  if (data.error) throw new Error(data.error.message)
-  return data.content[0].text.trim()
+  return aiPrompt(prompt, 300)
 }
 
 function ConfettiCanvas() {

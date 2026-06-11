@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
-
-const ANTHROPIC_API_KEY = process.env.REACT_APP_ANTHROPIC_KEY
+import { aiPrompt } from '../utils/aiClient'
 
 const s = {
   wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column' },
@@ -88,23 +87,11 @@ RULES:
 
 Write only the message text, no labels or formatting.`
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 200,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  })
-
-  const data = await response.json()
-  return data.content?.[0]?.text?.trim() || "Thank you for sharing what's been going on. We're reviewing everything you told us and will have your personalized guidance ready within 24 hours."
+  try {
+    return await aiPrompt(prompt, 200)
+  } catch (e) {
+    return "Thank you for sharing what's been going on. We're reviewing everything you told us and will have your personalized guidance ready within 24 hours."
+  }
 }
 
 export default function ComplianceAudit({ session, eliminatedFoods = [], onComplete, onBack }) {

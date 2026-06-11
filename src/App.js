@@ -29,20 +29,20 @@ export default function App() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Admin check — hardcoded bypass for RLS recursion issue
-  const ADMIN_IDS = ['826ea0a1-148b-4a2b-8e3f-2d40e1023d4b']
-
+  // Admin check — uses is_admin_check() SECURITY DEFINER function (no RLS recursion)
   useEffect(() => {
     if (!session) return
-    // First check hardcoded list as bypass for RLS issues
-    if (ADMIN_IDS.includes(session.user.id)) {
-      setIsAdmin(true)
-      return
-    }
-    // Fall back to database check
-    supabase.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()
-      .then(({ data }) => setIsAdmin(data?.is_admin === true))
-      .catch(() => setIsAdmin(false))
+    supabase.rpc('is_admin_check')
+      .then(({ data, error }) => {
+        if (error) {
+          // Fallback to direct profile read if the function doesn't exist yet
+          supabase.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()
+            .then(({ data: p }) => setIsAdmin(p?.is_admin === true))
+            .catch(() => setIsAdmin(false))
+        } else {
+          setIsAdmin(data === true)
+        }
+      })
   }, [session])
 
   // 24 hour inactivity logout

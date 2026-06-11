@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 
-const ANTHROPIC_API_KEY = process.env.REACT_APP_ANTHROPIC_KEY
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
@@ -203,7 +202,14 @@ export default function AdminDashboard({ session, onBack }) {
       if (labs) {
         const enriched = await Promise.all(labs.map(async (l) => {
           const { data: p } = await supabase.from('profiles').select('full_name, phone_number').eq('id', l.user_id).maybeSingle()
-          return { ...l, profile: p }
+          // Prefer a short-lived signed URL (works with a private bucket).
+          // Falls back to legacy public file_url if no path stored.
+          let viewUrl = l.file_url
+          if (l.file_path) {
+            const { data: signed } = await supabase.storage.from('lab-results').createSignedUrl(l.file_path, 3600)
+            if (signed?.signedUrl) viewUrl = signed.signedUrl
+          }
+          return { ...l, profile: p, view_url: viewUrl }
         }))
         setLabResults(enriched)
       }
@@ -384,17 +390,17 @@ export default function AdminDashboard({ session, onBack }) {
                       </div>
 
                       <div className="adm-food-groups">
-                        {lab.file_url && (
+                        {(lab.view_url || lab.file_url) && (
                           <div style={{ marginBottom: '14px' }}>
                             <div className="adm-food-group-label" style={{ marginBottom: '8px' }}>Original submission</div>
-                            {lab.file_url.endsWith('.pdf') ? (
-                              <a href={lab.file_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: '#3D5C3C', fontWeight: 500, textDecoration: 'none', background: '#EDF3ED', padding: '8px 14px', borderRadius: '9px' }}>
+                            {(lab.file_path || lab.file_url || '').endsWith('.pdf') ? (
+                              <a href={lab.view_url || lab.file_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: '#3D5C3C', fontWeight: 500, textDecoration: 'none', background: '#EDF3ED', padding: '8px 14px', borderRadius: '9px' }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                                 View PDF
                               </a>
                             ) : (
-                              <a href={lab.file_url} target="_blank" rel="noopener noreferrer">
-                                <img src={lab.file_url} alt="Lab results" style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.08)', objectFit: 'contain' }} />
+                              <a href={lab.view_url || lab.file_url} target="_blank" rel="noopener noreferrer">
+                                <img src={lab.view_url || lab.file_url} alt="Lab results" style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.08)', objectFit: 'contain' }} />
                               </a>
                             )}
                           </div>

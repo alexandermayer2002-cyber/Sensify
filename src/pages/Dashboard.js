@@ -362,6 +362,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [profile, setProfile] = useState(null)
   const [labResult, setLabResult] = useState(null)
   const [weeklyDue, setWeeklyDue] = useState(false)
+  const [checkinLate, setCheckinLate] = useState(false)
   const [complianceData, setComplianceData] = useState([])
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
   const [pendingAudit, setPendingAudit] = useState(false)
@@ -422,7 +423,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           const daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24))
 
           // Windows open every 7 days: day 7, 14, 21, 28...
-          // Each window stays open for 48 hours (days 7-8, 14-15, 21-22...)
+          // On-time window is 48 hours (days 7-8, 14-15...). If missed, the
+          // check-in stays available as LATE until the next window opens —
+          // users are never silently stranded with a gap week.
           if (daysSinceStart >= 7) {
             const currentWindowWeek = Math.floor(daysSinceStart / 7) // which week we're in
             const windowOpenDay = currentWindowWeek * 7 // day 7, 14, 21...
@@ -432,12 +435,16 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             const completedThisWindow = c && c.some(checkin => {
               const checkinDay = Math.floor((new Date(checkin.submitted_at) - startDate) / (1000 * 60 * 60 * 24))
-              return checkinDay >= windowOpenDay && checkinDay <= windowCloseDay
+              return checkinDay >= windowOpenDay && checkinDay < windowOpenDay + 7
             })
 
-            setWeeklyDue(inWindow && !completedThisWindow)
+            // Late grace: anywhere past the 48h window but before the next
+            // window, the current week's check-in is still completable
+            setWeeklyDue(!completedThisWindow)
+            setCheckinLate(!inWindow && !completedThisWindow)
           } else {
             setWeeklyDue(false)
+            setCheckinLate(false)
           }
         } else {
           setWeeklyDue(false)
@@ -829,11 +836,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
 
             {showCheckinCard && (
-              <div className="snfy-action">
-                <div className="snfy-action-tag"><div className="snfy-action-dot"></div>Due now</div>
-                <h2>Your weekly <em>check-in.</em></h2>
-                <p>Takes 2 minutes. The AI uses your answers to generate this week's personalized insight.</p>
-                <button className="snfy-btn" onClick={() => setScreen('checkin')}>Start check-in →</button>
+              <div className={`snfy-action${checkinLate ? ' amber' : ''}`}>
+                <div className={`snfy-action-tag${checkinLate ? ' amber' : ''}`}>{checkinLate ? 'Catch up' : <><div className="snfy-action-dot"></div>Due now</>}</div>
+                <h2>Your weekly <em className={checkinLate ? 'amber' : ''}>check-in.</em></h2>
+                <p>{checkinLate ? "You missed this week's window — but your data still matters. Complete it now to keep your insights on track." : "Takes 2 minutes. The AI uses your answers to generate this week's personalized insight."}</p>
+                <button className={`snfy-btn${checkinLate ? ' amber' : ''}`} onClick={() => setScreen('checkin')}>Start check-in →</button>
               </div>
             )}
 

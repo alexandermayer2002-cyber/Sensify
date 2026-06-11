@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { supabase } from '../supabase'
-
-const ANTHROPIC_API_KEY = process.env.REACT_APP_ANTHROPIC_KEY
+import { aiCall } from '../utils/aiClient'
 
 const s = {
   wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column' },
@@ -118,18 +117,7 @@ export default function LabResults({ session, onComplete, onBack }) {
       setTimeout(() => setProcessingMsg('Identifying flagged foods...'), 1200)
       setTimeout(() => setProcessingMsg('Categorizing sensitivity levels...'), 2400)
 
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{
+      const messages = [{
             role: 'user',
             content: [
               {
@@ -162,18 +150,8 @@ Rules:
               }
             ]
           }]
-        })
-      })
 
-      const data = await response.json()
-
-      if (data.error) {
-        setError('Could not read your results. Please try manual entry instead.')
-        setProcessing(false)
-        return
-      }
-
-      const text = data.content[0].text.trim()
+      const text = await aiCall(messages, 1000)
       const clean = text.replace(/```json|```/g, '').trim()
       const parsed = JSON.parse(clean)
 
@@ -218,6 +196,7 @@ Rules:
     }
 
     let file_url = null
+    let file_path = null
     if (uploadedFile) {
       const fileExt = uploadedFile.name?.split('.').pop() || 'jpg'
       const fileName = `${session.user.id}-${Date.now()}.${fileExt}`
@@ -225,8 +204,11 @@ Rules:
         .from('lab-results')
         .upload(fileName, uploadedFile, { contentType: uploadedFile.type, upsert: true })
       if (!storageError && storageData) {
+        // Store the path, not a public URL — bucket should be private.
+        // Admin dashboard generates short-lived signed URLs for viewing.
+        file_path = fileName
         const { data: urlData } = supabase.storage.from('lab-results').getPublicUrl(fileName)
-        file_url = urlData?.publicUrl
+        file_url = urlData?.publicUrl // legacy fallback while bucket is still public
       }
     }
 
@@ -235,6 +217,7 @@ Rules:
       user_name: session.user.user_metadata?.full_name || session.user.email,
       foods,
       file_url,
+      file_path,
       submitted_at: new Date().toISOString(),
       status: 'pending_review',
     })
