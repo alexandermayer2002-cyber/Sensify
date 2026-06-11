@@ -363,6 +363,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [labResult, setLabResult] = useState(null)
   const [weeklyDue, setWeeklyDue] = useState(false)
   const [checkinLate, setCheckinLate] = useState(false)
+  const [activeCheckinWeek, setActiveCheckinWeek] = useState(1)
   const [complianceData, setComplianceData] = useState([])
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
   const [pendingAudit, setPendingAudit] = useState(false)
@@ -413,7 +414,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       setPendingAudit(!!audit)
 
       if (p?.program_phase === 'elimination' || p?.program_phase === 'reintroduction') {
-        const { data: c } = await supabase.from('weekly_checkins').select('submitted_at, answers').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(4)
+        const { data: c } = await supabase.from('weekly_checkins').select('submitted_at, answers, week_number').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(8)
 
         // Calculate check-in availability based on protocol_start_date
         const protocolStart = p?.protocol_start_date
@@ -437,15 +438,16 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             const inWindow = daysSinceStart >= windowOpenDay && daysSinceStart <= windowCloseDay
 
-            const completedThisWindow = c && c.some(checkin => {
-              const checkinDay = Math.floor((new Date(checkin.submitted_at) - startDate) / (1000 * 60 * 60 * 24)) + 1
-              return checkinDay >= windowOpenDay && checkinDay < windowOpenDay + 7
-            })
+            // A window is complete if a check-in exists for that week number.
+            // Uses the stored week_number (not timestamps) so manual
+            // protocol_start_date adjustments during testing behave sanely.
+            const completedThisWindow = c && c.some(checkin => checkin.week_number === currentWindowWeek)
 
             // Late grace: anywhere past the 48h window but before the next
             // window, the current week's check-in is still completable
             setWeeklyDue(!completedThisWindow)
             setCheckinLate(!inWindow && !completedThisWindow)
+            setActiveCheckinWeek(currentWindowWeek)
           } else {
             setWeeklyDue(false)
             setCheckinLate(false)
@@ -676,7 +678,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
   if (screen === 'intake') return <IntakeSurvey session={session} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'labresults') return <LabResults session={session} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
-  if (screen === 'checkin') return <WeeklyCheckin session={session} weekNumber={currentWeek || 1} profile={profile} currentFoods={labResult?.foods?.map(f => f.name) || []} phase={calculatedPhase || 'elimination'} onBack={() => setScreen('checkin-history')} onComplete={() => { setWeeklyDue(false); setScreen('checkin-history') }} />
+  if (screen === 'checkin') return <WeeklyCheckin session={session} weekNumber={activeCheckinWeek || currentWeek || 1} profile={profile} currentFoods={labResult?.foods?.map(f => f.name) || []} phase={calculatedPhase || 'elimination'} onBack={() => setScreen('checkin-history')} onComplete={() => { setWeeklyDue(false); setScreen('checkin-history') }} />
   if (screen === 'slipup') return <SlipupSurvey session={session} profile={profile} labResult={labResult} currentDay={currentDay} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'audit') return <ComplianceAudit session={session} eliminatedFoods={labResult?.foods?.map(f => f.name) || []} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'reintro-survey') return <ReintroductionSurvey session={session} food={profile?.current_reintro_food || 'Eggs'} cycleNumber={profile?.reintro_cycle || 1} baselineScores={{ bloating: profile?.baseline_bloating, energy: profile?.baseline_energy }} symptoms={profile?.symptoms || []} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
