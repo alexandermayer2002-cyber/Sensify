@@ -234,8 +234,10 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
     let aiInsight = ''
     try {
       aiInsight = await generateInsight({ name, weekNumber, profile, answers, previousAnswers, currentFoods, phase })
+      if (!aiInsight || aiInsight.trim().length === 0) throw new Error('empty insight')
       setInsight(aiInsight)
     } catch (e) {
+      aiInsight = '' // never persist junk
       setInsightError(true)
     }
     setGeneratingInsight(false)
@@ -249,8 +251,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
     })
 
     await supabase.from('profiles').update({
-      latest_insight: aiInsight,
-      latest_insight_week: weekNumber,
+      ...(aiInsight ? { latest_insight: aiInsight, latest_insight_week: weekNumber } : {}),
       last_checkin_at: new Date().toISOString(),
       current_week: weekNumber,
     }).eq('id', session.user.id)
