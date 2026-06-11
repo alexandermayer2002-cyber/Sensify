@@ -131,9 +131,16 @@ Write a personalized weekly insight. Rules:
 - If compliance was poor and scores are bad, connect them plainly and without judgment
 - If this is the first check-in with data, compare against baseline scores only and do not reference prior weeks
 
-Write only the insight. No labels, no formatting.`
+Write only the insight. No labels, no formatting.
 
-  return aiPrompt(prompt, 300)
+CRITICAL STYLE RULE: Do not use the em dash character or use hyphens as sentence punctuation anywhere in your response. Restructure with commas, periods, or the word "and" instead.`
+
+  const raw = await aiPrompt(prompt, 300)
+  // Hard guarantee: convert any dash punctuation that slips through
+  return raw
+    .replace(/\s+[—–]\s+/g, ', ')
+    .replace(/\s+-\s+/g, ', ')
+    .replace(/[—–]/g, ', ')
 }
 
 function ConfettiCanvas() {

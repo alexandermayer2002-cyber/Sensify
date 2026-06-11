@@ -1,7 +1,13 @@
 import { aiPrompt } from './aiClient'
 
+const stripDashes = (text = '') => text
+  .replace(/\s+[—–]\s+/g, ', ')
+  .replace(/\s+-\s+/g, ', ')
+  .replace(/[—–]/g, ', ')
+
 const callClaude = async (prompt, maxTokens = 200) => {
-  return aiPrompt(prompt, maxTokens)
+  const raw = await aiPrompt(prompt, maxTokens)
+  return stripDashes(raw)
 }
 
 const formatFoods = (foods = [], level = null) => {
