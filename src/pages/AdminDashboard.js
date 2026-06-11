@@ -251,13 +251,21 @@ export default function AdminDashboard({ session, onBack }) {
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     const tomorrowStr = tomorrow.toISOString().split('T')[0]
-    await supabase.from('lab_results').update({ status: 'approved' }).eq('id', labId)
-    await supabase.from('profiles').update({
+
+    const { error: labError } = await supabase.from('lab_results').update({ status: 'approved' }).eq('id', labId)
+    const { error: profileError, data: updated } = await supabase.from('profiles').update({
       program_phase: 'elimination',
       protocol_start_date: tomorrowStr,
-    }).eq('id', userId)
-    setApproved(prev => ({ ...prev, [labId]: true }))
+    }).eq('id', userId).select()
+
     setApproving(prev => ({ ...prev, [labId]: false }))
+
+    // RLS silently "succeeds" with 0 rows updated — treat that as failure too
+    if (labError || profileError || !updated || updated.length === 0) {
+      alert(`Approval failed: ${labError?.message || profileError?.message || 'profile update blocked (check RLS admin policy)'}`)
+      return
+    }
+    setApproved(prev => ({ ...prev, [labId]: true }))
   }
 
   const respondToAudit = async (auditId, userId, outcome) => {
