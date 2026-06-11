@@ -418,9 +418,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         // Calculate check-in availability based on protocol_start_date
         const protocolStart = p?.protocol_start_date
         if (protocolStart) {
-          const startDate = new Date(protocolStart)
-          const today = new Date()
-          const daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24))
+          // Parse as LOCAL date — same as calculateProtocolDay — so both agree
+          const [sy, sm, sd] = protocolStart.split('T')[0].split('-').map(Number)
+          const startDate = new Date(sy, sm - 1, sd)
+          const now = new Date()
+          const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+          // daysSinceStart aligns with protocol day: start date itself = day 1
+          const daysSinceStart = Math.round((todayLocal - startDate) / (1000 * 60 * 60 * 24)) + 1
 
           // Windows open every 7 days: day 7, 14, 21, 28...
           // On-time window is 48 hours (days 7-8, 14-15...). If missed, the
@@ -434,7 +438,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             const inWindow = daysSinceStart >= windowOpenDay && daysSinceStart <= windowCloseDay
 
             const completedThisWindow = c && c.some(checkin => {
-              const checkinDay = Math.floor((new Date(checkin.submitted_at) - startDate) / (1000 * 60 * 60 * 24))
+              const checkinDay = Math.floor((new Date(checkin.submitted_at) - startDate) / (1000 * 60 * 60 * 24)) + 1
               return checkinDay >= windowOpenDay && checkinDay < windowOpenDay + 7
             })
 
@@ -623,11 +627,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     if (!profile?.protocol_start_date) return 0
     if (!profile?.intake_completed_at) return 0
     if (profile?.program_phase === 'pending_review' || profile?.program_phase === 'awaiting_results') return 0
-    const start = new Date(profile.protocol_start_date)
-    const today = new Date()
-    const diffMs = today - start
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1
-    return Math.max(1, diffDays)
+    // Parse as LOCAL date (new Date('YYYY-MM-DD') is UTC and shifts the day in US timezones)
+    const [y, m, d] = profile.protocol_start_date.split('T')[0].split('-').map(Number)
+    const start = new Date(y, m - 1, d)
+    const now = new Date()
+    const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const diffDays = Math.round((todayLocal - start) / (1000 * 60 * 60 * 24)) + 1
+    // Day 0 = approved, starts tomorrow. Never negative.
+    return Math.max(0, diffDays)
   }
 
   const calculatePhase = (day) => {
@@ -749,17 +756,28 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && (
               <div className="snfy-phase">
                 <div className="snfy-phase-eyebrow">{calculatedPhase === 'elimination' ? 'Elimination phase' : 'Reintroduction phase'}</div>
-                <div className="snfy-phase-day">{currentDay}</div>
-                <div className="snfy-phase-of">of {calculatedPhase === 'elimination' ? '56' : '168'} days</div>
-                <div className="snfy-pbar"><div className="snfy-pfill" style={{ width: `${eliminationProgressPct}%` }}></div></div>
-                <div className="snfy-plabel">
-                  <span>Day 1</span>
-                  <span>{daysUntilReintro !== null && daysUntilReintro > 0 ? `${daysUntilReintro} days to reintroduction` : calculatedPhase === 'reintroduction' ? 'Reintroduction active' : '56 days total'}</span>
-                </div>
-                <div className="snfy-phase-streak">
-                  <div className="snfy-streak-dot"></div>
-                  <div className="snfy-streak-text"><span className="snfy-streak-num">{cleanDays} day</span> clean streak</div>
-                </div>
+                {currentDay === 0 ? (
+                  <>
+                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: '34px', fontWeight: 300, color: 'white', lineHeight: 1.15, marginBottom: '6px' }}>Starts <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>tomorrow.</em></div>
+                    <div className="snfy-phase-of">Day 1 begins at midnight — use today to prepare your kitchen.</div>
+                    <div className="snfy-pbar"><div className="snfy-pfill" style={{ width: '0%' }}></div></div>
+                    <div className="snfy-plabel"><span>Day 1</span><span>56 days total</span></div>
+                  </>
+                ) : (
+                  <>
+                    <div className="snfy-phase-day">{currentDay}</div>
+                    <div className="snfy-phase-of">of {calculatedPhase === 'elimination' ? '56' : '168'} days</div>
+                    <div className="snfy-pbar"><div className="snfy-pfill" style={{ width: `${eliminationProgressPct}%` }}></div></div>
+                    <div className="snfy-plabel">
+                      <span>Day 1</span>
+                      <span>{daysUntilReintro !== null && daysUntilReintro > 0 ? `${daysUntilReintro} days to reintroduction` : calculatedPhase === 'reintroduction' ? 'Reintroduction active' : '56 days total'}</span>
+                    </div>
+                    <div className="snfy-phase-streak">
+                      <div className="snfy-streak-dot"></div>
+                      <div className="snfy-streak-text"><span className="snfy-streak-num">{cleanDays} day</span> clean streak</div>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
