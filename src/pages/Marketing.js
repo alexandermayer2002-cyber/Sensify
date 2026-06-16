@@ -85,6 +85,29 @@ const css = `
   .how-step:last-child { border-bottom: none; }
   .how-n { font-family: 'Fraunces', serif; font-size: 52px; font-weight: 300; color: #EDF3ED; line-height: 1; flex-shrink: 0; width: 64px; }
   .how-content { padding-top: 8px; }
+  .ph-head { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .ph-badge { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: white; background: #3D5C3C; padding: 6px 13px; border-radius: 8px; flex-shrink: 0; letter-spacing: 0.5px; }
+  .ph-name { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1; }
+  .ph-name em { font-style: italic; color: #3D5C3C; }
+  .ph-time { font-size: 12px; color: #A8A69E; margin-top: 5px; font-family: 'DM Mono', monospace; }
+  .spine { position: relative; padding-left: 44px; }
+  .spine::before { content: ''; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(#3D5C3C, rgba(61,92,60,0.15)); }
+  .spine-step { position: relative; margin-bottom: 26px; }
+  .spine-step:last-child { margin-bottom: 0; }
+  .spine-dot { position: absolute; left: -36px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: white; border: 3px solid #3D5C3C; }
+  .spine-tag { display: inline-block; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #3D5C3C; background: #EDF3ED; padding: 3px 9px; border-radius: 20px; margin-bottom: 8px; }
+  .spine-tag.amber { color: #9A5F1A; background: #FCEFD9; }
+  .spine-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .spine-desc { font-size: 13px; color: #7A7A72; line-height: 1.65; max-width: 520px; }
+  .cyclebox { background: #0E0E0C; border-radius: 14px; padding: 20px; margin-top: 16px; max-width: 520px; }
+  .cb-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: rgba(139,174,138,0.7); margin-bottom: 14px; }
+  .cb-dots { display: flex; gap: 3px; margin-bottom: 10px; }
+  .cb-dot { flex: 1; height: 9px; border-radius: 3px; }
+  .cb-labels { display: flex; font-size: 10px; color: rgba(255,255,255,0.45); }
+  @media (max-width: 700px) {
+    .spine-desc, .cyclebox { max-width: 100%; }
+    .ph-name { font-size: 22px; }
+  }
   .how-title { font-size: 16px; font-weight: 500; margin-bottom: 6px; color: #1C1C1C; }
   .how-desc { font-size: 14px; color: #7A7A72; line-height: 1.75; margin-bottom: 0; }
   .how-tag { display: inline-flex; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #3D5C3C; background: #EDF3ED; padding: 3px 9px; border-radius: 20px; margin-bottom: 8px; }
@@ -95,6 +118,30 @@ const css = `
   .sci-icon { width: 36px; height: 36px; border-radius: 11px; background: #EDF3ED; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
   .sci-t { font-size: 14px; font-weight: 500; margin-bottom: 7px; }
   .sci-d { font-size: 13px; color: #7A7A72; line-height: 1.7; }
+  .sci-badge { display: inline-block; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 9px; border-radius: 20px; background: #EDF3ED; color: #3D5C3C; margin-top: 12px; }
+  .sci-compare { background: #0E0E0C; border-radius: 20px; padding: 36px; margin: 8px 0 40px; }
+  .sci-compare-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; color: rgba(139,174,138,0.7); margin-bottom: 26px; text-align: center; }
+  .sci-compare-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 22px; align-items: stretch; }
+  .sci-cside { padding: 26px; border-radius: 16px; }
+  .sci-cside.test { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+  .sci-cside.verdict { background: rgba(139,174,138,0.1); border: 1px solid rgba(139,174,138,0.25); }
+  .sci-cside-tag { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .sci-cside.test .sci-cside-tag { color: rgba(255,255,255,0.4); }
+  .sci-cside.verdict .sci-cside-tag { color: #8BAE8A; }
+  .sci-cside-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; color: white; margin-bottom: 12px; line-height: 1.2; }
+  .sci-cside-desc { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.55); }
+  .sci-cside.verdict .sci-cside-desc { color: rgba(255,255,255,0.72); }
+  .sci-arrow { display: flex; align-items: center; justify-content: center; color: rgba(139,174,138,0.6); font-size: 24px; }
+  .sci-disclaimers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .sci-disc { display: flex; gap: 10px; align-items: flex-start; padding: 16px; background: #FAF8F4; border-radius: 12px; }
+  .sci-disc-t { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+  .sci-disc-d { font-size: 11.5px; color: #7A7A72; line-height: 1.55; }
+  @media (max-width: 700px) {
+    .sci-grid { grid-template-columns: 1fr; }
+    .sci-compare-grid { grid-template-columns: 1fr; }
+    .sci-arrow { transform: rotate(90deg); padding: 4px 0; }
+    .sci-disclaimers { grid-template-columns: 1fr; }
+  }
 
   .pricing-wrap { max-width: 440px; }
   .pricing-card { background: #FFFFFF; border: 2px solid #3D5C3C; border-radius: 18px; padding: 32px; }
@@ -272,7 +319,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     <div>
       <style>{css}</style>
       <Nav />
-      <div className="mk-hero" style={{ padding: '72px 64px 64px' }}>
+      <div className="mk-hero" style={{ padding: '72px 64px 48px' }}>
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>The complete program</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>How Sensify <em>works.</em></div>
@@ -280,108 +327,106 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
+      {/* PHASE 1 — SETUP */}
       <div className="mk-section alt">
         <div className="mk-section-inner">
-          <div className="ey">Phase 1 — Setup</div>
-          <div className="sh" style={{ fontSize: '28px', marginBottom: '32px' }}>Before the protocol <em>begins.</em></div>
-          <div className="how-steps">
-            <div className="how-step">
-              <div className="how-n">1</div>
-              <div className="how-content">
-                <div className="how-tag">One time</div>
-                <div className="how-title">Complete your intake survey</div>
-                <div className="how-desc">Tell us about your symptoms — bloating, fatigue, skin issues, brain fog, or digestive issues. Rate your baseline severity on a 1-10 scale. This becomes the comparison point for every improvement throughout your program. You also tell us how often you eat common foods, so we already know your habits before your lab results arrive.</div>
-              </div>
+          <div className="ph-head">
+            <span className="ph-badge">SETUP</span>
+            <div><div className="ph-name">Before the protocol <em>begins.</em></div><div className="ph-time">One time</div></div>
+          </div>
+          <div className="spine">
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag">Step 1</div>
+              <div className="spine-title">Complete your intake survey</div>
+              <div className="spine-desc">Tell us about your symptoms and rate your baseline severity on a 1 to 10 scale. This becomes the comparison point for every improvement throughout your program. You also tell us how often you eat common foods, so we know your habits before your lab results even arrive.</div>
             </div>
-            <div className="how-step">
-              <div className="how-n">2</div>
-              <div className="how-content">
-                <div className="how-tag">One time</div>
-                <div className="how-title">Order your lab test — we guide you to the right one</div>
-                <div className="how-desc">We point you to our certified lab partner and walk you through exactly which test to order. It ships to your door, you complete it at home, and send it back. Results arrive in about a week. No clinic visits.</div>
-              </div>
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag">Step 2</div>
+              <div className="spine-title">Order your lab test, we guide you to the right one</div>
+              <div className="spine-desc">We point you to our certified lab partner and walk you through exactly which test to order. It ships to your door, you complete it at home, and send it back. Results arrive in about a week. No clinic visits.</div>
             </div>
-            <div className="how-step">
-              <div className="how-n">3</div>
-              <div className="how-content">
-                <div className="how-tag">One time</div>
-                <div className="how-title">Upload your results — AI reads them instantly</div>
-                <div className="how-desc">Upload your lab PDF, take a photo of your results, or enter them manually. The AI extracts every flagged food and categorizes it as High, Moderate, or Low sensitivity. Because we already know how often you eat each food, it immediately cross-references your results with your eating habits to build your elimination list. You review and confirm before anything starts.</div>
-              </div>
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag">Step 3</div>
+              <div className="spine-title">Upload your results, read instantly</div>
+              <div className="spine-desc">Upload your lab PDF, take a photo, or enter results manually. Every flagged food is extracted and categorized as High, Moderate, or Low sensitivity, then cross-referenced with your eating habits to build your elimination list. You review and confirm before anything starts.</div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* PHASE 2 — ELIMINATION */}
       <div className="mk-section">
         <div className="mk-section-inner">
-          <div className="ey">Phase 2 — Elimination (Months 1-2)</div>
-          <div className="sh" style={{ fontSize: '28px', marginBottom: '32px' }}>Eight weeks of <em>clean signal.</em></div>
-          <div className="how-steps">
-            <div className="how-step">
-              <div className="how-n">4</div>
-              <div className="how-content">
-                <div className="how-tag">Daily</div>
-                <div className="how-title">Get your daily compliance text</div>
-                <div className="how-desc">Every evening at your chosen time — anywhere from 6pm to 10pm — you get a text from Sensify. Reply YES if you stayed on plan or NO if something came up. That's it. One second, every day. YES builds your streak. NO triggers a quick slip-up log where you tell us what happened — the data feeds your weekly insights.</div>
-              </div>
+          <div className="ph-head">
+            <span className="ph-badge">ELIMINATION</span>
+            <div><div className="ph-name">Eight weeks of <em>clean signal.</em></div><div className="ph-time">Months 1–2</div></div>
+          </div>
+          <div className="spine">
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag">Daily</div>
+              <div className="spine-title">Daily compliance check-in</div>
+              <div className="spine-desc">A quick daily check to confirm you stayed on plan. One second, every day. Staying on plan builds your streak. A slip-up triggers a short log where you tell us what happened, and that data feeds your weekly insights.</div>
             </div>
-            <div className="how-step">
-              <div className="how-n">5</div>
-              <div className="how-content">
-                <div className="how-tag">Weekly</div>
-                <div className="how-title">Complete your weekly check-in</div>
-                <div className="how-desc">Every 7 days, a check-in card appears on your dashboard. Takes about 2 minutes. Rate your symptoms on a 1-10 scale — questions are personalized to what you told us in your intake survey. Submit and the AI immediately generates a personalized insight based on your symptom trend, compliance data, and baseline scores. It appears on your dashboard and gets smarter every week.</div>
-              </div>
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag">Weekly</div>
+              <div className="spine-title">Weekly symptom check-in</div>
+              <div className="spine-desc">Every 7 days a check-in appears on your dashboard. Takes about 2 minutes. Rate your symptoms on a 1 to 10 scale, with questions personalized to your intake. Submit and a personalized insight is generated from your symptom trend, compliance, and baseline, and it sharpens every week.</div>
             </div>
-            <div className="how-step">
-              <div className="how-n">6</div>
-              <div className="how-content">
-                <div className="how-tag amber">If needed</div>
-                <div className="how-title">Compliance support — if you hit a wall</div>
-                <div className="how-desc">Three consecutive NO replies trigger a personalized compliance conversation in the app. You tell us what's been hardest — cravings, social situations, hidden ingredients, cost, cooking for others, not knowing what to eat. The app responds with specific approved guidance for your situation. Our team reviews every audit personally before any plan recommendation is made.</div>
-              </div>
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag amber">If needed</div>
+              <div className="spine-title">Compliance support, if you hit a wall</div>
+              <div className="spine-desc">If staying on plan gets hard, you tell us what's toughest, cravings, social situations, hidden ingredients, cost, and the app responds with specific guidance for your situation. Our team reviews every case personally before any plan recommendation is made.</div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* PHASE 3 — REINTRODUCTION */}
       <div className="mk-section alt">
         <div className="mk-section-inner">
-          <div className="ey">Phase 3 — Reintroduction (Months 2-6)</div>
-          <div className="sh" style={{ fontSize: '28px', marginBottom: '32px' }}>Where you get your <em>answers.</em></div>
-          <div className="how-steps">
-            <div className="how-step">
-              <div className="how-n">7</div>
-              <div className="how-content">
-                <div className="how-tag">Month 2</div>
-                <div className="how-title">Low sensitivity foods unlock first</div>
-                <div className="how-desc">At the start of month 2, your Low sensitivity foods become available to reintroduce. Moderate foods unlock at month 4. High sensitivity foods unlock at month 6. This staggered approach lets you build a clear symptom baseline before testing your most reactive foods.</div>
+          <div className="ph-head">
+            <span className="ph-badge">REINTRODUCTION</span>
+            <div><div className="ph-name">Where you get your <em>answers.</em></div><div className="ph-time">Months 2–6</div></div>
+          </div>
+          <div className="spine">
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag">Staggered</div>
+              <div className="spine-title">Foods unlock by tier</div>
+              <div className="spine-desc">Low sensitivity foods unlock first, Moderate at month 4, High at month 6. This staggered approach lets you build a clear symptom baseline before testing your most reactive foods.</div>
+            </div>
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag">14 days each</div>
+              <div className="spine-title">Each food gets a structured 14-day cycle</div>
+              <div className="spine-desc">Three days eating the food as you normally would, then eleven days off to let symptoms settle. This exposure-washout pattern is the clinically validated method for isolating how a single food affects you.</div>
+              <div className="cyclebox">
+                <div className="cb-label">One 14-day cycle</div>
+                <div className="cb-dots">
+                  {[...Array(14)].map((_, i) => (
+                    <div key={i} className="cb-dot" style={{ background: i < 3 ? '#6DBF8A' : '#E0A977', marginRight: i === 2 ? '6px' : undefined }}></div>
+                  ))}
+                </div>
+                <div className="cb-labels"><span style={{ flex: 3 }}>Exposure (days 1–3)</span><span style={{ flex: 11, textAlign: 'right' }}>Washout (days 4–14)</span></div>
               </div>
             </div>
-            <div className="how-step">
-              <div className="how-n">8</div>
-              <div className="how-content">
-                <div className="how-tag">14 days per food</div>
-                <div className="how-title">Each food gets a structured 14-day cycle</div>
-                <div className="how-desc">Days 1-3 are the exposure phase — eat the food as you normally would. Days 4-14 are the washout phase — avoid the food completely and let your symptoms settle. This exposure-washout pattern is the clinically validated method for isolating food responses. Daily texts continue throughout.</div>
-              </div>
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag">Day 14</div>
+              <div className="spine-title">Get your verdict</div>
+              <div className="spine-desc">Your daily logs across the cycle produce a verdict: Safe, Limit, or Avoid. Each verdict updates your Food Map permanently. No food gets labeled without real evidence from your own body.</div>
             </div>
-            <div className="how-step">
-              <div className="how-n">9</div>
-              <div className="how-content">
-                <div className="how-tag">Day 14</div>
-                <div className="how-title">Complete your reintroduction survey — get your verdict</div>
-                <div className="how-desc">On day 14 a verdict survey appears on your dashboard. You compare your symptoms during the exposure phase against your baseline, tell us your confidence level, and the AI delivers a verdict: Safe, Limit, or Avoid. Each verdict updates your Food Map permanently. No food gets labeled without real evidence from your own body.</div>
-              </div>
-            </div>
-            <div className="how-step">
-              <div className="how-n">10</div>
-              <div className="how-content">
-                <div className="how-tag">End of program</div>
-                <div className="how-title">Receive your personal Food Map</div>
-                <div className="how-desc">After 6 months every tested food is categorized by real symptom evidence. Safe, Limit, Avoid — all earned. Your Food Map is permanent, personalized, and yours to keep forever. You can also continue with our Maintain plan for ongoing tracking and annual retesting as your sensitivities evolve over time.</div>
-              </div>
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag">End of program</div>
+              <div className="spine-title">Receive your personal Food Map</div>
+              <div className="spine-desc">After 6 months every tested food is categorized by real symptom evidence. Safe, Limit, Avoid, all earned. Your Food Map is permanent, personal, and yours to keep. You can continue with our Maintain plan for ongoing tracking and annual retesting as your sensitivities evolve.</div>
             </div>
           </div>
         </div>
@@ -400,26 +445,41 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     <div>
       <style>{css}</style>
       <Nav />
-      <div className="mk-hero" style={{ padding: '72px 64px 64px' }}>
+      <div className="mk-hero" style={{ padding: '72px 64px 48px' }}>
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>The science</div>
-          <div className="mk-h1" style={{ fontSize: '46px' }}>Why this <em>works.</em></div>
-          <div className="mk-sub" style={{ marginBottom: 0 }}>The elimination and reintroduction protocol is the gold standard for identifying food sensitivities. Here's what you should know before you start.</div>
+          <div className="mk-h1" style={{ fontSize: '46px' }}>Your lab test is a <em>hypothesis.</em><br />Your body gives the <em>verdict.</em></div>
+          <div className="mk-sub" style={{ marginBottom: 0 }}>IgG tests measure exposure, not reaction. A high reading for eggs might just mean you eat eggs every day. Sensify confirms what's real by testing it in your actual life.</div>
         </div>
       </div>
       <div className="mk-section alt">
         <div className="mk-section-inner">
-          <div className="ey">The honest truth about IgG tests</div>
-          <div className="sh" style={{ fontSize: '30px' }}>Your lab test is a <em>hypothesis,</em> not a verdict.</div>
-          <div className="ss">IgG tests measure how much your immune system has been exposed to a food — not whether it's actually causing your symptoms. A high reading for eggs might just mean you eat eggs every day. What matters is what happens when you remove and reintroduce it in real life. That's what Sensify tests.</div>
-          <div className="sci-grid">
+          {/* Hypothesis vs verdict centerpiece */}
+          <div className="sci-compare">
+            <div className="sci-compare-label">The difference that matters</div>
+            <div className="sci-compare-grid">
+              <div className="sci-cside test">
+                <div className="sci-cside-tag">The lab test</div>
+                <div className="sci-cside-title">A hypothesis</div>
+                <div className="sci-cside-desc">Measures how much your immune system has been exposed to a food. Flags what's worth investigating. It cannot tell you what's actually causing your symptoms.</div>
+              </div>
+              <div className="sci-arrow">→</div>
+              <div className="sci-cside verdict">
+                <div className="sci-cside-tag">Sensify</div>
+                <div className="sci-cside-title">A verdict</div>
+                <div className="sci-cside-desc">Removes and reintroduces each flagged food in real life, tracks your response daily, and confirms the truth: Safe, Limit, or Avoid.</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="ey">Why the method works</div>
+          <div className="sh" style={{ fontSize: '28px', marginBottom: '8px' }}>Built on the <em>clinical gold standard.</em></div>
+          <div className="sci-grid" style={{ marginTop: '24px' }}>
             {[
-              { title: 'Elimination and reintroduction', desc: 'The structured elimination diet is the most clinically validated method for identifying food sensitivities. Used by gastroenterologists and functional medicine practitioners worldwide.' },
-              { title: '14-day reintroduction cycles', desc: 'Each food is reintroduced for 3 days then removed for 11. This exposure-washout pattern isolates symptom responses with enough signal to draw reliable conclusions.' },
-              { title: 'Daily compliance tracking', desc: 'Daily SMS check-ins give the AI 7 data points per week instead of one. That resolution makes it possible to spot patterns — like symptoms spiking the day after a slip-up — that weekly surveys miss entirely.' },
-              { title: 'Physician-reviewed protocol', desc: 'Our elimination timelines, reintroduction structure, symptom tracking methodology, and AI response copy have all been reviewed and approved by a licensed physician advisor.' },
-              { title: 'Human review for plan changes', desc: 'The AI generates insights and patterns — but any recommendation to change your protocol is reviewed by our team first. No automated plan decisions that bypass human judgment.' },
-              { title: 'Wellness program, not medical diagnosis', desc: 'Sensify is an educational wellness tool. It does not diagnose, treat, or cure any condition. Always consult a healthcare provider if you have serious or concerning symptoms.' },
+              { title: 'Elimination & reintroduction', desc: 'The most clinically validated method for identifying food sensitivities. Used by gastroenterologists and functional medicine practitioners worldwide.', badge: null },
+              { title: '14-day reintroduction cycles', desc: 'Each food is reintroduced for 3 days then removed for 11. This exposure-washout pattern isolates symptom responses with enough signal to draw reliable conclusions.', badge: null },
+              { title: 'Daily compliance tracking', desc: 'Daily check-ins give seven data points per week instead of one. That resolution makes it possible to spot patterns, like symptoms spiking the day after a slip-up, that weekly surveys miss entirely.', badge: null },
+              { title: 'Physician-reviewed protocol', desc: 'Our elimination timelines, reintroduction structure, and symptom tracking methodology have been reviewed and approved by a licensed physician advisor.', badge: 'MD reviewed' },
             ].map((item, i) => (
               <div key={i} className="sci-card">
                 <div className="sci-icon">
@@ -428,16 +488,36 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                     {i === 1 && <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>}
                     {i === 2 && <><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></>}
                     {i === 3 && <><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></>}
-                    {i === 4 && <><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></>}
-                    {i === 5 && <><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></>}
                   </svg>
                 </div>
                 <div className="sci-t">{item.title}</div>
                 <div className="sci-d">{item.desc}</div>
+                {item.badge && <div className="sci-badge">{item.badge}</div>}
               </div>
             ))}
           </div>
+
+          {/* Honest disclaimers — smaller, footnote style */}
+          <div className="sci-disclaimers">
+            <div className="sci-disc">
+              <div>
+                <div className="sci-disc-t">Human review for plan changes</div>
+                <div className="sci-disc-d">Insights are generated automatically, but any recommendation to change your protocol is reviewed by our team first. No automated plan decisions that bypass human judgment.</div>
+              </div>
+            </div>
+            <div className="sci-disc">
+              <div>
+                <div className="sci-disc-t">A wellness program, not a diagnosis</div>
+                <div className="sci-disc-d">Sensify is an educational wellness tool. It does not diagnose, treat, or cure any condition. Always consult a healthcare provider for serious or concerning symptoms.</div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+      <div className="cta-section">
+        <h2>Test the <em>hypothesis.</em></h2>
+        <p>The complete system — test, protocol, and answers — for $399.</p>
+        <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
       </div>
       <Footer />
     </div>
