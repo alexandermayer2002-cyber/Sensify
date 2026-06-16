@@ -85,13 +85,14 @@ const css = `
   .rt-phase-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 16px; }
   .rt-phase-badge.exposure { background: rgba(109,191,138,0.2); color: #6DBF8A; }
   .rt-phase-badge.washout { background: rgba(212,137,74,0.2); color: #D4894A; }
-  .rt-timeline { display: flex; gap: 4px; margin-bottom: 16px; }
-  .rt-day-dot { flex: 1; height: 8px; border-radius: 4px; }
-  .rt-day-dot.past { background: rgba(255,255,255,0.5); }
-  .rt-day-dot.current { background: white; }
-  .rt-day-dot.exposure-future { background: rgba(109,191,138,0.25); }
-  .rt-day-dot.washout-future { background: rgba(212,137,74,0.2); }
-  .rt-timeline-labels { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.45; margin-bottom: 16px; }
+  .rt-timeline { display: flex; gap: 4px; margin-bottom: 10px; }
+  .rt-day-dot { flex: 1; height: 9px; border-radius: 4px; }
+  .rt-day-dot.past { background: rgba(255,255,255,0.55); }
+  .rt-day-dot.current { background: white; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
+  .rt-day-dot.exposure-future { background: #6DBF8A; }
+  .rt-day-dot.washout-future { background: #E0A977; }
+  .rt-day-dot.exp-divider { margin-right: 8px; }
+  .rt-timeline-labels { display: flex; font-size: 10px; opacity: 0.55; margin-bottom: 16px; }
   .rt-instruction { background: rgba(255,255,255,0.07); border-radius: 11px; padding: 14px; }
   .rt-instruction-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.5; margin-bottom: 6px; }
   .rt-instruction-text { font-size: 14px; line-height: 1.65; }
@@ -159,30 +160,25 @@ function CycleSummary({ logs = [], food, exposureDaysCompleted = 0, expanded, on
   const exposureSymptomDays = eatenDays.filter(l => l.had_symptoms).length
   const washoutSymptomDays = washoutLogs.filter(l => l.had_symptoms).length
 
-  // Neutral one-line factual read.
-  // Frame exposure against the 3-day TARGET (what the user understands),
-  // not eaten-days-with-symptoms over eaten-days (which reads as nonsense).
+  // Neutral factual read, framed against the 3-day target.
   const parts = []
   if (exposureDaysCompleted > 0 || eatenDays.length > 0) {
     const done = exposureDaysCompleted
-    let line = `${done} of 3 exposure days logged`
     if (exposureSymptomDays > 0) {
-      line += `, symptoms on ${exposureSymptomDays}`
-    } else if (eatenDays.length > 0) {
-      line += `, no symptoms so far`
+      parts.push(`${exposureSymptomDays} of ${done} exposure day${done !== 1 ? 's' : ''} had symptoms`)
+    } else {
+      parts.push(`${done} of 3 exposure days done, none with symptoms`)
     }
-    parts.push(line)
   }
   if (washoutLogs.length > 0) {
     parts.push(washoutSymptomDays === 0
-      ? `quiet washout so far`
-      : `symptoms on ${washoutSymptomDays} washout day${washoutSymptomDays !== 1 ? 's' : ''}`)
+      ? `washout quiet so far`
+      : `${washoutSymptomDays} washout day${washoutSymptomDays !== 1 ? 's' : ''} with symptoms`)
   }
-  // Only mention "remaining" if still in exposure and nothing else covered it
-  if (exposureDaysCompleted < 3 && washoutLogs.length === 0 && parts.length === 0) {
-    parts.push(`${3 - exposureDaysCompleted} exposure day${3 - exposureDaysCompleted !== 1 ? 's' : ''} to go`)
+  if (parts.length === 0) {
+    parts.push('Your daily check-ins will build a record here')
   }
-  const oneLiner = parts.length ? parts.join('. ').replace(/\.\.$/, '.') + '.' : 'Your daily check-ins will build a record here.'
+  const oneLiner = parts.join('. ') + '.'
 
   const dayLabel = (log) => {
     const d = new Date(log.log_date)
@@ -589,15 +585,13 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                   const isCurrent = day === cycleDay
                   const isExp = day <= 3
                   return (
-                    <div key={i} className={`rt-day-dot ${isPast ? 'past' : isCurrent ? 'current' : isExp ? 'exposure-future' : 'washout-future'}`} />
+                    <div key={i} className={`rt-day-dot ${day === 3 ? 'exp-divider ' : ''}${isPast ? 'past' : isCurrent ? 'current' : isExp ? 'exposure-future' : 'washout-future'}`} />
                   )
                 })}
               </div>
               <div className="rt-timeline-labels">
-                <span>Day 1</span>
-                <span>Exposure (1-3)</span>
-                <span>Washout (4-14)</span>
-                <span>Day 14</span>
+                <span style={{ flex: 3, textAlign: 'left' }}>Exposure (days 1 to 3)</span>
+                <span style={{ flex: 11, textAlign: 'right' }}>Washout (days 4 to 14)</span>
               </div>
 
               <div className="rt-instruction">
