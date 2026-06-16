@@ -169,19 +169,26 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const startReintro = async (food, level) => {
     setStarting(food)
     const today = new Date().toISOString().split('T')[0]
-    await supabase.from('reintroduction_results').insert({
+    const { error: insertError } = await supabase.from('reintroduction_results').insert({
       user_id: session.user.id,
       food,
       sensitivity_level: level,
       started_at: today,
       cycle_day: 1,
     })
-    await supabase.from('profiles').update({
+    const { error: profileError, data: updated } = await supabase.from('profiles').update({
       current_reintro_food: food,
       current_reintro_day: 1,
       reintro_started_at: today,
-    }).eq('id', session.user.id)
+    }).eq('id', session.user.id).select()
+
     setStarting(null)
+
+    if (insertError || profileError || !updated || updated.length === 0) {
+      alert(`Could not start cycle: ${insertError?.message || profileError?.message || 'update blocked (check RLS policy on reintroduction_results / profiles)'}`)
+      return
+    }
+
     await loadData()
 
     // Generate food briefing
