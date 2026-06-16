@@ -86,6 +86,8 @@ const css = `
   .mk-section { padding: 72px 64px; border-bottom: 1px solid rgba(0,0,0,0.07); max-width: 100%; }
   .mk-section-inner { max-width: 960px; margin: 0 auto; }
   .mk-section.alt { background: #FFFFFF; }
+  .mk-section.sage { background: #F2F5EF; }
+  .mk-section.cream { background: #FAF8F4; }
   .ey { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #3D5C3C; margin-bottom: 14px; }
   .sh { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 300; line-height: 1.2; margin-bottom: 16px; letter-spacing: -0.5px; }
   .sh em { font-style: italic; color: #3D5C3C; }
@@ -316,7 +318,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       </div>
 
       {/* The Food Map — its own showcase section */}
-      <div className="mk-section">
+      <div className="mk-section cream">
         <div className="mk-section-inner">
           <div className="fmshow">
             <div className="fmshow-copy">
@@ -358,7 +360,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="mk-section">
+      <div className="mk-section alt">
         <div className="mk-section-inner">
           <div className="ey">The problem</div>
           <div className="sh">Most people suspect food.<br />Almost none ever <em>confirm it.</em></div>
@@ -379,7 +381,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="mk-section alt">
+      <div className="mk-section sage">
         <div className="mk-section-inner">
           <div className="ey">The outcome</div>
           <div className="sh">A Food Map that's <em>actually earned.</em></div>
