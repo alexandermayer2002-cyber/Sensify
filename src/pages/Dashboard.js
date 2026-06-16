@@ -650,7 +650,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const currentWeek = Math.ceil(currentDay / 7)
   const calculatedPhase = calculatePhase(currentDay)
   const eliminationProgressPct = profile?.protocol_start_date ? Math.min((currentDay / 56) * 100, 100) : 0
-  const daysUntilReintro = profile?.protocol_start_date ? Math.max(56 - currentDay, 0) : null
+  const daysUntilReintro = profile?.protocol_start_date ? Math.max(57 - currentDay, 0) : null
 
   const today = new Date().toISOString().split('T')[0]
   const todayEntry = complianceData.find(c => c.date === today)
