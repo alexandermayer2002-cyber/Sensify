@@ -159,22 +159,30 @@ function CycleSummary({ logs = [], food, exposureDaysCompleted = 0, expanded, on
   const exposureSymptomDays = eatenDays.filter(l => l.had_symptoms).length
   const washoutSymptomDays = washoutLogs.filter(l => l.had_symptoms).length
 
-  // Neutral one-line factual read
+  // Neutral one-line factual read.
+  // Frame exposure against the 3-day TARGET (what the user understands),
+  // not eaten-days-with-symptoms over eaten-days (which reads as nonsense).
   const parts = []
-  if (eatenDays.length > 0) {
-    parts.push(exposureSymptomDays === 0
-      ? `No symptoms logged across ${eatenDays.length} exposure day${eatenDays.length !== 1 ? 's' : ''}`
-      : `Symptoms on ${exposureSymptomDays} of ${eatenDays.length} exposure day${eatenDays.length !== 1 ? 's' : ''}`)
+  if (exposureDaysCompleted > 0 || eatenDays.length > 0) {
+    const done = exposureDaysCompleted
+    let line = `${done} of 3 exposure days logged`
+    if (exposureSymptomDays > 0) {
+      line += `, symptoms on ${exposureSymptomDays}`
+    } else if (eatenDays.length > 0) {
+      line += `, no symptoms so far`
+    }
+    parts.push(line)
   }
   if (washoutLogs.length > 0) {
     parts.push(washoutSymptomDays === 0
       ? `quiet washout so far`
-      : `${washoutSymptomDays} washout day${washoutSymptomDays !== 1 ? 's' : ''} with symptoms`)
+      : `symptoms on ${washoutSymptomDays} washout day${washoutSymptomDays !== 1 ? 's' : ''}`)
   }
-  if (exposureDaysCompleted < 3) {
-    parts.push(`${3 - exposureDaysCompleted} exposure day${3 - exposureDaysCompleted !== 1 ? 's' : ''} remaining`)
+  // Only mention "remaining" if still in exposure and nothing else covered it
+  if (exposureDaysCompleted < 3 && washoutLogs.length === 0 && parts.length === 0) {
+    parts.push(`${3 - exposureDaysCompleted} exposure day${3 - exposureDaysCompleted !== 1 ? 's' : ''} to go`)
   }
-  const oneLiner = parts.join(', ') + '.'
+  const oneLiner = parts.length ? parts.join('. ').replace(/\.\.$/, '.') + '.' : 'Your daily check-ins will build a record here.'
 
   const dayLabel = (log) => {
     const d = new Date(log.log_date)
@@ -235,8 +243,8 @@ const cs = {
   empty: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.6 },
   log: { marginTop: '14px', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '12px' },
   phaseLabel: { fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', margin: '8px 0 6px' },
-  logRow: { display: 'flex', gap: '12px', padding: '6px 0', borderBottom: '1px solid rgba(0,0,0,0.03)', alignItems: 'baseline' },
-  logDate: { fontSize: '11px', color: '#7A7A72', fontFamily: 'DM Mono, monospace', minWidth: '46px', flexShrink: 0 },
+  logRow: { display: 'flex', gap: '14px', padding: '7px 0', borderBottom: '1px solid rgba(0,0,0,0.03)', alignItems: 'flex-start' },
+  logDate: { fontSize: '11px', color: '#7A7A72', fontFamily: 'DM Mono, monospace', minWidth: '52px', flexShrink: 0, paddingTop: '2px' },
   logBody: { fontSize: '12.5px', flex: 1 },
   clean: { color: '#4A8C6A', fontSize: '12.5px' },
   skip: { color: '#7A7A72', fontStyle: 'italic', fontSize: '12.5px' },
