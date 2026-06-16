@@ -23,9 +23,9 @@ const s = {
   disclaimer: { fontSize: '11px', color: '#7A7A72', textAlign: 'center', marginTop: '14px', lineHeight: 1.6 }
 }
 
-export default function Signup({ onSuccess, onLogin }) {
+export default function Signup({ onSuccess, onLogin, prefillEmail }) {
   const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(prefillEmail || '')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
@@ -79,6 +79,11 @@ export default function Signup({ onSuccess, onLogin }) {
         <div style={s.divider}><div style={s.divLine}></div><span style={s.divText}>or</span><div style={s.divLine}></div></div>
         {error && <div style={s.error}>{error}</div>}
         {success && <div style={s.success}>{success}</div>}
+        {prefillEmail && !success && (
+          <div style={{ background: '#EDF3ED', border: '1px solid rgba(61,92,60,0.2)', borderRadius: '10px', padding: '12px 14px', marginBottom: '16px', fontSize: '13px', color: '#2D6B42', lineHeight: 1.55 }}>
+            ✓ Payment confirmed. Create your account to begin your program.
+          </div>
+        )}
         {!success && (
           <form onSubmit={handleSignup}>
             <label style={s.label}>First name</label>

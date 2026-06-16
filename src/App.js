@@ -6,12 +6,38 @@ import Signup from './pages/Signup'
 import Onboarding from './pages/Onboarding'
 import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/AdminDashboard'
+import { startCheckout } from './utils/checkout'
 
 export default function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState('marketing')
   const [isAdmin, setIsAdmin] = useState(false)
+  const [paidEmail, setPaidEmail] = useState(null)
+
+  // Detect return from Stripe Checkout and verify the payment was real
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('paid') === 'true' && params.get('session_id')) {
+      const sid = params.get('session_id')
+      fetch('/.netlify/functions/verify-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sid }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.paid) {
+            setPaidEmail(data.email || null)
+            setPage('signup')
+          } else {
+            setPage('marketing')
+          }
+          window.history.replaceState({}, '', '/')
+        })
+        .catch(() => { setPage('marketing'); window.history.replaceState({}, '', '/') })
+    }
+  }, [])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -83,9 +109,9 @@ export default function App() {
     setIsAdmin(false)
   }
 
-  if (page === 'marketing') return <Marketing onGetStarted={() => setPage('signup')} onSignIn={() => setPage('login')} />
-  if (page === 'login') return <Login onSuccess={() => setPage('dashboard')} onSignup={() => setPage('signup')} />
-  if (page === 'signup') return <Signup onSuccess={() => setPage('onboarding')} onLogin={() => setPage('login')} />
+  if (page === 'marketing') return <Marketing onGetStarted={() => startCheckout()} onSignIn={() => setPage('login')} />
+  if (page === 'login') return <Login onSuccess={() => setPage('dashboard')} onSignup={() => startCheckout()} />
+  if (page === 'signup') return <Signup prefillEmail={paidEmail} onSuccess={() => setPage('onboarding')} onLogin={() => setPage('login')} />
   if (page === 'onboarding') return <Onboarding onComplete={() => setPage('dashboard')} session={session} />
   if (page === 'admin') return <AdminDashboard session={session} onBack={() => setPage('dashboard')} />
   if (page === 'dashboard') return <Dashboard session={session} onLogout={handleLogout} isAdmin={isAdmin} onAdmin={() => setPage('admin')} />
