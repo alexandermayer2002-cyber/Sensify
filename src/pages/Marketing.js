@@ -153,12 +153,17 @@ const css = `
   .p-check { width: 19px; height: 19px; background: #EDF3ED; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
   .price-note { font-size: 12px; color: #7A7A72; margin-top: 16px; line-height: 1.65; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.07); }
 
-  .faq-list { max-width: 620px; }
-  .faq-item { border-bottom: 1px solid rgba(0,0,0,0.07); cursor: pointer; }
-  .faq-item:first-child { border-top: 1px solid rgba(0,0,0,0.07); }
-  .faq-q { font-size: 15px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 0; line-height: 1.4; }
-  .faq-a { font-size: 14px; color: #7A7A72; line-height: 1.78; padding-bottom: 22px; }
-  .faq-plus { font-size: 22px; color: #7A7A72; flex-shrink: 0; font-weight: 300; line-height: 1; }
+  .faq-wrap { max-width: 660px; margin: 0 auto; }
+  .faq-group { margin-bottom: 32px; }
+  .faq-group:last-child { margin-bottom: 0; }
+  .faq-group-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #3D5C3C; margin-bottom: 14px; }
+  .faq-list { display: flex; flex-direction: column; gap: 10px; }
+  .faq-item { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 13px; cursor: pointer; padding: 0 18px; transition: border-color 0.15s, box-shadow 0.15s; }
+  .faq-item:hover { border-color: rgba(61,92,60,0.25); }
+  .faq-item.open { border-color: rgba(61,92,60,0.3); box-shadow: 0 2px 12px rgba(61,92,60,0.06); }
+  .faq-q { font-size: 14.5px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 17px 0; line-height: 1.45; }
+  .faq-a { font-size: 13.5px; color: #7A7A72; line-height: 1.75; padding: 0 0 18px; }
+  .faq-plus { font-size: 20px; color: #3D5C3C; flex-shrink: 0; font-weight: 300; line-height: 1; width: 20px; text-align: center; }
 
   .cta-section { padding: 80px 64px; text-align: center; background: #FFFFFF; border-top: 1px solid rgba(0,0,0,0.07); }
   .cta-section h2 { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 300; margin-bottom: 14px; letter-spacing: -0.5px; }
@@ -179,25 +184,54 @@ const css = `
   .prob-d { font-size: 13px; color: #7A7A72; line-height: 1.65; }
 `
 
-const FAQS = [
-  { q: 'Do I need to already have a lab test?', a: 'No. When you purchase the program we guide you through ordering your food sensitivity test during onboarding. We tell you exactly which test to get and how to do it from home.' },
-  { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify takes that list and runs each food through a controlled 14-day reintroduction cycle with daily compliance tracking — so by the end you know for certain what your body does and doesn\'t tolerate. The test finds the suspects. Sensify simplifies the truth.' },
-  { q: 'How does the daily text check-in work?', a: 'Every evening at your chosen time we send you a text — just reply YES if you stayed on plan or NO if something came up. YES builds your streak. NO triggers a quick slip-up log in the app. Three consecutive NOs triggers a personalized compliance conversation reviewed by our team.' },
-  { q: 'Is this a medical diagnosis?', a: 'No. Sensify is a wellness and educational program. It does not diagnose, treat, or cure any medical condition. If you have serious symptoms, always consult a licensed healthcare provider.' },
-  { q: 'How accurate are IgG food sensitivity tests?', a: 'IgG tests measure immune reactivity, not confirmed intolerance. We treat your results as a starting hypothesis. The real evidence comes from the elimination and reintroduction protocol — that\'s why the protocol is the product, not the test.' },
-  { q: 'What if I don\'t see improvement during elimination?', a: 'The AI monitors your symptom trends weekly and flags when improvement isn\'t occurring. We investigate compliance, hidden ingredients, and stress — and our team reviews the situation personally before any plan changes are recommended.' },
-  { q: 'How much time does it take each week?', a: 'The daily text takes 1 second to reply to. The weekly check-in takes about 2 minutes. During reintroduction cycles you\'ll spend a few extra minutes logging symptoms. Built to fit into normal life.' },
-  { q: 'What happens after 6 months?', a: 'You receive your completed Food Map — permanent, personalized, yours to keep forever. You can also continue with our Maintain plan for ongoing symptom tracking, meal logging against your Food Map, and annual retesting.' },
+const FAQ_GROUPS = [
+  {
+    group: 'Getting started',
+    items: [
+      { q: 'Do I need to already have a lab test?', a: 'No. When you purchase the program we guide you through ordering your food sensitivity test during onboarding. We tell you exactly which test to get and how to complete it from home.' },
+      { q: "What's included in the $399?", a: 'Everything: your lab test, the full 6-month physician-reviewed elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your permanent Food Map. There is no separate lab bill and nothing else to buy.' },
+      { q: 'How much time does it take each week?', a: 'The daily check-in takes a second. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
+    ],
+  },
+  {
+    group: 'The program',
+    items: [
+      { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
+      { q: 'How do the daily check-ins work?', a: 'Each day you confirm whether you stayed on plan. Staying on plan builds your streak. A slip-up opens a quick log where you note what happened, and that data feeds your weekly insights. It takes a second a day.' },
+      { q: "What if I don't see improvement during elimination?", a: 'Your symptom trends are monitored every week and flagged when improvement is not occurring. We look at compliance, hidden ingredients, and stress, and our team reviews the situation personally before any plan changes are suggested.' },
+      { q: 'Do I have to do all 6 months?', a: 'The full value comes from completing the protocol, since the reintroduction phase is where your verdicts are earned. You can stop anytime, but your Food Map is only complete once each food has been tested. We designed the program to keep each step light so finishing feels doable.' },
+      { q: 'What happens after 6 months?', a: 'You receive your completed Food Map, permanent and yours to keep. You can also continue with our Maintain plan for ongoing symptom tracking, meal logging against your Food Map, and annual retesting as your sensitivities evolve.' },
+    ],
+  },
+  {
+    group: 'Medical & safety',
+    items: [
+      { q: 'Is this a medical diagnosis?', a: 'No. Sensify is a wellness and educational program. It does not diagnose, treat, or cure any medical condition. If you have serious symptoms, always consult a licensed healthcare provider.' },
+      { q: 'How accurate are IgG food sensitivity tests?', a: 'IgG tests measure immune reactivity, not confirmed intolerance. We treat your results as a starting hypothesis. The real evidence comes from the elimination and reintroduction protocol, which is why the protocol is the product, not the test.' },
+      { q: 'Is the protocol reviewed by a professional?', a: 'Our elimination timelines, reintroduction structure, and symptom tracking methodology are reviewed and approved by a licensed physician advisor. Any recommendation to change your protocol is reviewed by our team before it reaches you.' },
+    ],
+  },
 ]
 
 function Faq() {
-  const [open, setOpen] = useState(null)
+  const [open, setOpen] = useState('0-0')
   return (
-    <div className="faq-list">
-      {FAQS.map((f, i) => (
-        <div key={i} className="faq-item" onClick={() => setOpen(open === i ? null : i)}>
-          <div className="faq-q">{f.q}<span className="faq-plus">{open === i ? '×' : '+'}</span></div>
-          {open === i && <div className="faq-a">{f.a}</div>}
+    <div className="faq-wrap">
+      {FAQ_GROUPS.map((grp, gi) => (
+        <div key={gi} className="faq-group">
+          <div className="faq-group-label">{grp.group}</div>
+          <div className="faq-list">
+            {grp.items.map((f, i) => {
+              const key = `${gi}-${i}`
+              const isOpen = open === key
+              return (
+                <div key={key} className={`faq-item${isOpen ? ' open' : ''}`} onClick={() => setOpen(isOpen ? null : key)}>
+                  <div className="faq-q">{f.q}<span className="faq-plus">{isOpen ? '–' : '+'}</span></div>
+                  {isOpen && <div className="faq-a">{f.a}</div>}
+                </div>
+              )
+            })}
+          </div>
         </div>
       ))}
     </div>
@@ -577,6 +611,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>Questions</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>Things people <em>ask us.</em></div>
+          <div className="mk-sub" style={{ marginBottom: 0 }}>Everything you might want to know before you start. Still curious about something? Reach out anytime.</div>
         </div>
       </div>
       <div className="mk-section alt">
