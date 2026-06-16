@@ -137,10 +137,118 @@ const css = `
 const FREQ_RANK = { 'daily': 1, '3-5x': 2, '1-2x': 3, 'rarely': 4, 'never': 5 }
 const FREQ_LABEL = { 'daily': 'Daily', '3-5x': '3–5x per week', '1-2x': '1–2x per week', 'rarely': 'Rarely', 'never': 'Never' }
 
+// Cycle-so-far summary. FACTUAL ONLY — never hints at the verdict
+// (mid-cycle interpretation would bias the user's daily reporting and
+// corrupt the data the verdict depends on). States what was logged.
+function CycleSummary({ logs = [], food, exposureDaysCompleted = 0, expanded, onToggle, cycleStart }) {
+  if (!logs || logs.length === 0) {
+    return (
+      <div style={cs.wrap}>
+        <div style={cs.label}>Your cycle so far</div>
+        <div style={cs.empty}>No days logged yet. Your daily check-ins will build a record here as you go.</div>
+      </div>
+    )
+  }
+
+  const intensityColor = { mild: '#4A8C6A', moderate: '#D4894A', severe: '#C95B5B' }
+  const intensityRank = { mild: 1, moderate: 2, severe: 3 }
+
+  const exposureLogs = logs.filter(l => l.phase === 'exposure')
+  const washoutLogs = logs.filter(l => l.phase === 'washout')
+  const eatenDays = exposureLogs.filter(l => l.ate_food)
+  const exposureSymptomDays = eatenDays.filter(l => l.had_symptoms).length
+  const washoutSymptomDays = washoutLogs.filter(l => l.had_symptoms).length
+
+  // Neutral one-line factual read
+  const parts = []
+  if (eatenDays.length > 0) {
+    parts.push(exposureSymptomDays === 0
+      ? `No symptoms logged across ${eatenDays.length} exposure day${eatenDays.length !== 1 ? 's' : ''}`
+      : `Symptoms on ${exposureSymptomDays} of ${eatenDays.length} exposure day${eatenDays.length !== 1 ? 's' : ''}`)
+  }
+  if (washoutLogs.length > 0) {
+    parts.push(washoutSymptomDays === 0
+      ? `quiet washout so far`
+      : `${washoutSymptomDays} washout day${washoutSymptomDays !== 1 ? 's' : ''} with symptoms`)
+  }
+  if (exposureDaysCompleted < 3) {
+    parts.push(`${3 - exposureDaysCompleted} exposure day${3 - exposureDaysCompleted !== 1 ? 's' : ''} remaining`)
+  }
+  const oneLiner = parts.join(', ') + '.'
+
+  const dayLabel = (log) => {
+    const d = new Date(log.log_date)
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+
+  const renderSymptoms = (log) => {
+    if (!log.ate_food && log.phase === 'exposure') return <span style={cs.skip}>Did not eat</span>
+    if (!log.had_symptoms) return <span style={cs.clean}>No symptoms</span>
+    const syms = Array.isArray(log.symptoms) ? [...log.symptoms].sort((a, b) => (intensityRank[b.intensity] || 0) - (intensityRank[a.intensity] || 0)) : []
+    return (
+      <span style={cs.symRow}>
+        {syms.map((s, i) => (
+          <span key={i} style={{ ...cs.symPill, color: intensityColor[s.intensity], borderColor: intensityColor[s.intensity] + '40' }}>
+            {s.name} · {s.intensity}
+          </span>
+        ))}
+      </span>
+    )
+  }
+
+  return (
+    <div style={cs.wrap}>
+      <div style={cs.header}>
+        <div style={cs.label}>Your cycle so far</div>
+        <button style={cs.toggle} onClick={onToggle}>{expanded ? 'Hide log' : 'View daily log'}</button>
+      </div>
+      <div style={cs.oneLiner}>{oneLiner}</div>
+
+      {expanded && (
+        <div style={cs.log}>
+          {exposureLogs.length > 0 && <div style={cs.phaseLabel}>Exposure</div>}
+          {exposureLogs.map((l, i) => (
+            <div key={`e${i}`} style={cs.logRow}>
+              <span style={cs.logDate}>{dayLabel(l)}</span>
+              <span style={cs.logBody}>{renderSymptoms(l)}</span>
+            </div>
+          ))}
+          {washoutLogs.length > 0 && <div style={cs.phaseLabel}>Washout</div>}
+          {washoutLogs.map((l, i) => (
+            <div key={`w${i}`} style={cs.logRow}>
+              <span style={cs.logDate}>{dayLabel(l)}</span>
+              <span style={cs.logBody}>{renderSymptoms(l)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const cs = {
+  wrap: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '16px', marginBottom: '14px' },
+  header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' },
+  label: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72' },
+  toggle: { background: 'rgba(0,0,0,0.04)', border: 'none', borderRadius: '7px', padding: '4px 10px', fontSize: '11px', color: '#3D5C3C', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
+  oneLiner: { fontSize: '13.5px', color: '#1C1C1C', lineHeight: 1.6 },
+  empty: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.6 },
+  log: { marginTop: '14px', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '12px' },
+  phaseLabel: { fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', margin: '8px 0 6px' },
+  logRow: { display: 'flex', gap: '12px', padding: '6px 0', borderBottom: '1px solid rgba(0,0,0,0.03)', alignItems: 'baseline' },
+  logDate: { fontSize: '11px', color: '#7A7A72', fontFamily: 'DM Mono, monospace', minWidth: '46px', flexShrink: 0 },
+  logBody: { fontSize: '12.5px', flex: 1 },
+  clean: { color: '#4A8C6A', fontSize: '12.5px' },
+  skip: { color: '#7A7A72', fontStyle: 'italic', fontSize: '12.5px' },
+  symRow: { display: 'flex', gap: '5px', flexWrap: 'wrap' },
+  symPill: { fontSize: '11px', padding: '2px 8px', borderRadius: '20px', border: '1px solid', textTransform: 'capitalize' },
+}
+
 export default function ReintroTab({ session, profile, labResult, currentDay, onStartVerdictSurvey }) {
   const [foodMap, setFoodMap] = useState([])
   const [activeReintro, setActiveReintro] = useState(null)
   const [dailyLogs, setDailyLogs] = useState([])
+  const [logExpanded, setLogExpanded] = useState(false)
   const [showDailyCheckin, setShowDailyCheckin] = useState(false)
   const [restartNotice, setRestartNotice] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -500,6 +608,16 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                 <div style={{ fontSize: '13px', color: '#1C1C1C', lineHeight: 1.75 }}>{foodBriefing}</div>
               </div>
             )}
+
+            {/* CYCLE SO FAR — factual summary, expands to full log */}
+            <CycleSummary
+              logs={dailyLogs}
+              food={activeReintro.food}
+              exposureDaysCompleted={exposureDaysCompleted}
+              expanded={logExpanded}
+              onToggle={() => setLogExpanded(v => !v)}
+              cycleStart={activeReintro.started_at}
+            />
 
             {isVerdictDay && (
               <div style={{ background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: '14px', padding: '18px', marginBottom: '14px' }}>
