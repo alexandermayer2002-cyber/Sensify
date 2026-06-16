@@ -141,20 +141,18 @@ const css = `
 
   /* Avoiding list — full categorized */
   .snfy-avoiding { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 20px; margin-bottom: 0; }
-  .snfy-avoid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-  .snfy-avoid-count { font-size: 11px; color: #7A7A72; }
-  .snfy-avoid-level { margin-bottom: 16px; }
-  .snfy-avoid-level:last-child { margin-bottom: 0; }
-  .snfy-avoid-level-header { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); margin-bottom: 8px; }
-  .snfy-avoid-level-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .snfy-avoid-level-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
-  .snfy-avoid-level-count { font-size: 10px; color: #7A7A72; margin-left: auto; }
-  .snfy-avoid-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 13px; }
-  .snfy-avoid-item:last-child { border-bottom: none; }
-  .snfy-badge { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
-  .snfy-badge.high { background: rgba(214,69,69,0.1); color: #A32D2D; }
-  .snfy-badge.moderate { background: rgba(232,148,31,0.12); color: #8A5410; }
-  .snfy-badge.low { background: rgba(44,157,138,0.12); color: #1A6256; }
+  .snfy-avoid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .snfy-avoid-count { font-size: 11px; color: #A8A69E; }
+  .snfy-avoid-bar { display: flex; gap: 2px; height: 8px; border-radius: 5px; overflow: hidden; margin-bottom: 20px; }
+  .snfy-avoid-bar-seg { height: 8px; transition: flex 0.4s ease; }
+  .snfy-avoid-group { margin-bottom: 18px; }
+  .snfy-avoid-group:last-child { margin-bottom: 0; }
+  .snfy-avoid-group-head { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
+  .snfy-avoid-level-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .snfy-avoid-level-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .snfy-avoid-level-count { font-size: 10px; color: #A8A69E; margin-left: auto; font-family: 'DM Mono', monospace; }
+  .snfy-avoid-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .snfy-avoid-chip { font-size: 13px; padding: 7px 13px; border-radius: 10px; font-weight: 500; }
 
   /* AI Insight — tucked below avoiding list */
   .snfy-insight { background: #FAF8F4; border-left: 2px solid #3D5C3C; border-radius: 0 10px 10px 0; padding: 14px; margin-top: 16px; }
@@ -978,28 +976,42 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
               {showAvoidingList && labResult?.foods?.length > 0 ? (
                 <>
-                  {['High', 'Moderate', 'Low'].map(level => {
-                    const foods = labResult.foods.filter(f => f.level === level)
-                    if (foods.length === 0) return null
+                  {(() => {
                     const colors = { High: '#D64545', Moderate: '#E8941F', Low: '#2C9D8A' }
                     const textColors = { High: '#A32D2D', Moderate: '#8A5410', Low: '#1A6256' }
-                    const cls = { High: 'high', Moderate: 'moderate', Low: 'low' }
+                    const chipBg = { High: '#FBE9E9', Moderate: '#FCEFD9', Low: '#DEF2EE' }
+                    const order = ['High', 'Moderate', 'Low']
+                    const grouped = order.map(level => ({
+                      level,
+                      foods: labResult.foods.filter(f => f.level === level),
+                    })).filter(g => g.foods.length > 0)
+
                     return (
-                      <div key={level} className="snfy-avoid-level">
-                        <div className="snfy-avoid-level-header">
-                          <div className="snfy-avoid-level-dot" style={{ background: colors[level] }}></div>
-                          <div className="snfy-avoid-level-name" style={{ color: textColors[level] }}>{level} sensitivity</div>
-                          <div className="snfy-avoid-level-count">{foods.length} food{foods.length !== 1 ? 's' : ''}</div>
+                      <>
+                        {/* Proportion bar — whole sensitivity profile at a glance */}
+                        <div className="snfy-avoid-bar">
+                          {grouped.map(g => (
+                            <div key={g.level} className="snfy-avoid-bar-seg" style={{ flex: g.foods.length, background: colors[g.level] }} />
+                          ))}
                         </div>
-                        {foods.map((food, i) => (
-                          <div key={i} className="snfy-avoid-item">
-                            <span>{food.name}</span>
-                            <span className={`snfy-badge ${cls[level]}`}>{level}</span>
+
+                        {grouped.map(g => (
+                          <div key={g.level} className="snfy-avoid-group">
+                            <div className="snfy-avoid-group-head">
+                              <div className="snfy-avoid-level-dot" style={{ background: colors[g.level] }}></div>
+                              <div className="snfy-avoid-level-name" style={{ color: textColors[g.level] }}>{g.level} sensitivity</div>
+                              <div className="snfy-avoid-level-count">{g.foods.length}</div>
+                            </div>
+                            <div className="snfy-avoid-chips">
+                              {g.foods.map((food, i) => (
+                                <span key={i} className="snfy-avoid-chip" style={{ background: chipBg[g.level], color: textColors[g.level] }}>{food.name}</span>
+                              ))}
+                            </div>
                           </div>
                         ))}
-                      </div>
+                      </>
                     )
-                  })}
+                  })()}
                 </>
               ) : (
                 <div style={{ padding: '20px 0', textAlign: 'center' }}>
