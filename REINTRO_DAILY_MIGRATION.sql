@@ -26,6 +26,7 @@ alter table reintroduction_results add column if not exists verdict_due_date dat
 alter table reintroduction_results add column if not exists restart_count int default 0;
 alter table reintroduction_results add column if not exists stopped_early boolean default false;
 alter table reintroduction_results add column if not exists verdict_reason text;
+alter table reintroduction_results add column if not exists food_briefing text;
 
 -- RLS
 alter table reintro_daily_logs enable row level security;

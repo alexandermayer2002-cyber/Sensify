@@ -276,6 +276,19 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
         .single()
       if (active) {
         setActiveReintro(active)
+        if (active.food_briefing) {
+          setFoodBriefing(active.food_briefing)
+        } else {
+          // Active cycle with no saved briefing (started before persistence): regenerate
+          setLoadingBriefing(true)
+          try {
+            const nm = profile?.full_name?.split(' ')[0] || 'there'
+            const msg = await generateReintroFoodBriefing({ name: nm, food: active.food, sensitivityLevel: active.sensitivity_level, profile })
+            setFoodBriefing(msg)
+            if (msg) await supabase.from('reintroduction_results').update({ food_briefing: msg }).eq('id', active.id)
+          } catch (e) {}
+          setLoadingBriefing(false)
+        }
         const { data: logs } = await supabase
           .from('reintro_daily_logs')
           .select('*')
@@ -316,6 +329,13 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
     try {
       const msg = await generateReintroFoodBriefing({ name, food, sensitivityLevel: level, profile })
       setFoodBriefing(msg)
+      // Persist so it shows every time the active cycle is viewed, not just at start
+      if (msg) {
+        await supabase.from('reintroduction_results')
+          .update({ food_briefing: msg })
+          .eq('user_id', session.user.id)
+          .is('verdict', null)
+      }
     } catch (e) {}
     setLoadingBriefing(false)
   }
