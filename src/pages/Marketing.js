@@ -40,6 +40,8 @@ const css = `
 
   .mk-hero { padding: 88px 64px 80px; background: #FFFFFF; border-bottom: 1px solid rgba(0,0,0,0.07); }
   .mk-hero-inner { max-width: 960px; margin: 0 auto; }
+  .mk-hero-split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; max-width: 1080px; margin: 0 auto; }
+  @media (max-width: 860px) { .mk-hero-split { grid-template-columns: 1fr; gap: 36px; } .mk-hero-fmcard { order: -1; } }
   .mk-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: #3D5C3C; background: #EDF3ED; padding: 5px 13px; border-radius: 20px; margin-bottom: 28px; }
   .mk-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: #3D5C3C; flex-shrink: 0; }
   .mk-h1 { font-family: 'Fraunces', serif; font-size: 58px; font-weight: 300; line-height: 1.06; margin-bottom: 22px; letter-spacing: -1px; max-width: 680px; }
@@ -59,6 +61,17 @@ const css = `
   .mk-proof-num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; }
   .mk-proof-label { font-size: 11px; color: #7A7A72; margin-top: 2px; }
   .mk-proof-div { width: 1px; height: 38px; background: rgba(0,0,0,0.08); }
+  .fmcard { background: #0E0E0C; border-radius: 20px; padding: 24px; position: relative; overflow: hidden; }
+  .fmcard::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(139,174,138,0.14) 0%, transparent 65%); pointer-events: none; }
+  .fmcard-eyebrow { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; color: rgba(139,174,138,0.7); margin-bottom: 7px; }
+  .fmcard-title { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 300; color: white; margin-bottom: 18px; }
+  .fmcard-title em { font-style: italic; color: #8BAE8A; }
+  .fmcard-cat { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .fmcard-catdot { width: 5px; height: 5px; border-radius: 50%; }
+  .fmcard-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 16px; }
+  .fmcard-chip { font-size: 11.5px; font-weight: 500; padding: 4px 11px; border-radius: 20px; }
+  .fmcard-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .fmcard-verify { font-family: 'DM Mono', monospace; font-size: 8.5px; color: rgba(255,255,255,0.3); letter-spacing: 0.4px; }
 
   .mk-section { padding: 72px 64px; border-bottom: 1px solid rgba(0,0,0,0.07); max-width: 100%; }
   .mk-section-inner { max-width: 960px; margin: 0 auto; }
@@ -281,27 +294,55 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <style>{css}</style>
       <Nav />
       <div className="mk-hero">
-        <div className="mk-hero-inner">
-          <div className="mk-tag"><div className="mk-tag-dot"></div>Physician-reviewed · AI-guided · 6 months</div>
-          <div className="mk-h1">The complete system for finding your <em>food triggers.</em></div>
-          <div className="mk-sub">Sensitivity meets simplicity. Sensify guides you from test to answers — with a personal Food Map that tells you exactly what your body can and can't handle.</div>
-          <div className="mk-three">
-            <div className="mk-3c"><div className="mk-3n">01</div><div className="mk-3t">The test</div><div className="mk-3d">Order your certified food sensitivity test. We guide you to the right one.</div></div>
-            <div className="mk-3c"><div className="mk-3n">02</div><div className="mk-3t">The protocol</div><div className="mk-3d">6-month AI-guided elimination and reintroduction program with daily check-ins.</div></div>
-            <div className="mk-3c"><div className="mk-3n">03</div><div className="mk-3t">The answers</div><div className="mk-3d">A personal Food Map based on how your body actually responds.</div></div>
+        <div className="mk-hero-split">
+          <div>
+            <div className="mk-tag"><div className="mk-tag-dot"></div>Physician-reviewed · 6-month program</div>
+            <div className="mk-h1">Stop guessing what your body <em>can't handle.</em></div>
+            <div className="mk-sub">Lab testing, a structured 6-month elimination and reintroduction protocol, and daily guidance — ending in a personal Food Map that tells you exactly what's safe, what to limit, and what to avoid.</div>
+            <div className="mk-actions">
+              <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
+              <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
+            </div>
+            <div className="mk-proof">
+              <div><div className="mk-proof-num">96</div><div className="mk-proof-label">Foods testable</div></div>
+              <div className="mk-proof-div"></div>
+              <div><div className="mk-proof-num">6mo</div><div className="mk-proof-label">Guided protocol</div></div>
+              <div className="mk-proof-div"></div>
+              <div><div className="mk-proof-num">1</div><div className="mk-proof-label">Personal Food Map</div></div>
+            </div>
           </div>
-          <div className="mk-actions">
-            <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
-            <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
-          </div>
-          <div className="mk-proof">
-            <div><div className="mk-proof-num">6mo</div><div className="mk-proof-label">Guided program</div></div>
-            <div className="mk-proof-div"></div>
-            <div><div className="mk-proof-num">AI</div><div className="mk-proof-label">Weekly insights</div></div>
-            <div className="mk-proof-div"></div>
-            <div><div className="mk-proof-num">Daily</div><div className="mk-proof-label">SMS check-ins</div></div>
-            <div className="mk-proof-div"></div>
-            <div><div className="mk-proof-num">MD</div><div className="mk-proof-label">Reviewed protocol</div></div>
+
+          {/* Food Map card — shows the product's payoff */}
+          <div className="mk-hero-fmcard">
+            <div className="fmcard">
+              <div className="fmcard-eyebrow">Sensify · Verified result</div>
+              <div className="fmcard-title">Sarah's <em>Food Map.</em></div>
+
+              <div className="fmcard-cat" style={{ color: '#A8C5A7' }}><span className="fmcard-catdot" style={{ background: '#8BAE8A' }}></span>Safe — eat freely</div>
+              <div className="fmcard-row">
+                {['Chicken', 'Rice', 'Salmon', 'Oats', 'Almonds'].map(f => (
+                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(139,174,138,0.16)', color: '#A8C5A7' }}>{f}</span>
+                ))}
+              </div>
+
+              <div className="fmcard-cat" style={{ color: '#E0A977' }}><span className="fmcard-catdot" style={{ background: '#E8941F' }}></span>Limit — small amounts</div>
+              <div className="fmcard-row">
+                {['Wheat', 'Corn', 'Tomato'].map(f => (
+                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(232,148,31,0.16)', color: '#E0A977' }}>{f}</span>
+                ))}
+              </div>
+
+              <div className="fmcard-cat" style={{ color: '#E89090' }}><span className="fmcard-catdot" style={{ background: '#D64545' }}></span>Avoid — clear triggers</div>
+              <div className="fmcard-row">
+                {['Dairy', 'Eggs', 'Gluten'].map(f => (
+                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(214,69,69,0.15)', color: '#E89090' }}>{f}</span>
+                ))}
+              </div>
+
+              <div className="fmcard-foot">
+                <div className="fmcard-verify">SENSIFY VERIFIED · TESTED OVER 184 DAYS</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -319,8 +360,8 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="dark-strip">
             <div className="ds-label">The Sensify system</div>
             <div className="ds-grid">
-              <div className="ds-step"><div className="ds-sl">Step 1</div><div className="ds-st">Test</div><div className="ds-sd">Order your certified food sensitivity test. Upload results. AI reads them in seconds.</div></div>
-              <div className="ds-step"><div className="ds-sl">Step 2</div><div className="ds-st">Protocol</div><div className="ds-sd">6 months of structured elimination and daily compliance tracking. AI watches your symptoms every week.</div></div>
+              <div className="ds-step"><div className="ds-sl">Step 1</div><div className="ds-st">Test</div><div className="ds-sd">Order your certified food sensitivity test. Upload results. They are read in seconds.</div></div>
+              <div className="ds-step"><div className="ds-sl">Step 2</div><div className="ds-st">Protocol</div><div className="ds-sd">6 months of structured elimination and daily compliance tracking. Your symptoms are tracked every week.</div></div>
               <div className="ds-step"><div className="ds-sl">Step 3</div><div className="ds-st">Answers</div><div className="ds-sd">Your personal Food Map. Safe, Limit, Avoid — earned through real-world testing, not lab guesswork.</div></div>
             </div>
           </div>
@@ -333,9 +374,9 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="sh">A Food Map that's <em>actually earned.</em></div>
           <div className="ss">No food gets labeled Safe without being tested. No food gets labeled Avoid without structured evidence. Every category is earned through 6 months of real experimentation.</div>
           <div className="outcome-list">
-            <div className="outcome-row" style={{ background: '#EAF4EE' }}><div className="outcome-dot" style={{ background: '#4A8C6A' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#4A8C6A', marginBottom: '3px' }}>Safe — tested and confirmed</div><div style={{ fontSize: '12px', color: '#4A8C6A', opacity: 0.85 }}>Reintroduced, monitored, tolerated. Eat freely.</div></div></div>
-            <div className="outcome-row" style={{ background: '#FDF2EA' }}><div className="outcome-dot" style={{ background: '#D4894A' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#D4894A', marginBottom: '3px' }}>Limit — dose-sensitive</div><div style={{ fontSize: '12px', color: '#D4894A', opacity: 0.85 }}>Fine in small amounts. Worth being mindful of.</div></div></div>
-            <div className="outcome-row" style={{ background: '#FAEAEA' }}><div className="outcome-dot" style={{ background: '#C95B5B' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#C95B5B', marginBottom: '3px' }}>Avoid — clear trigger confirmed</div><div style={{ fontSize: '12px', color: '#C95B5B', opacity: 0.85 }}>Repeatable symptom pattern. Confirmed by your own body.</div></div></div>
+            <div className="outcome-row" style={{ background: '#DEF2EE' }}><div className="outcome-dot" style={{ background: '#2C9D8A' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#1A6256', marginBottom: '3px' }}>Safe — tested and confirmed</div><div style={{ fontSize: '12px', color: '#1A6256', opacity: 0.85 }}>Reintroduced, monitored, tolerated. Eat freely.</div></div></div>
+            <div className="outcome-row" style={{ background: '#FCEFD9' }}><div className="outcome-dot" style={{ background: '#E8941F' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#8A5410', marginBottom: '3px' }}>Limit — dose-sensitive</div><div style={{ fontSize: '12px', color: '#8A5410', opacity: 0.85 }}>Fine in small amounts. Worth being mindful of.</div></div></div>
+            <div className="outcome-row" style={{ background: '#FBE9E9' }}><div className="outcome-dot" style={{ background: '#D64545' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#A32D2D', marginBottom: '3px' }}>Avoid — clear trigger confirmed</div><div style={{ fontSize: '12px', color: '#A32D2D', opacity: 0.85 }}>Repeatable symptom pattern. Confirmed by your own body.</div></div></div>
           </div>
         </div>
       </div>
