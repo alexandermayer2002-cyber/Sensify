@@ -303,13 +303,6 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
               <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
             </div>
-            <div className="mk-proof">
-              <div><div className="mk-proof-num">96</div><div className="mk-proof-label">Foods testable</div></div>
-              <div className="mk-proof-div"></div>
-              <div><div className="mk-proof-num">6mo</div><div className="mk-proof-label">Guided protocol</div></div>
-              <div className="mk-proof-div"></div>
-              <div><div className="mk-proof-num">1</div><div className="mk-proof-label">Personal Food Map</div></div>
-            </div>
           </div>
 
           {/* Food Map card — shows the product's payoff */}
