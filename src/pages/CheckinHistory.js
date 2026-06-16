@@ -13,6 +13,103 @@ const BASELINE_LABELS = {
   baseline_wellbeing: { label: 'Overall wellbeing', lowerIsBetter: false },
 }
 
+function SymptomProgress({ profile, checkins }) {
+  const sorted = [...checkins].sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at))
+  const latest = sorted[sorted.length - 1]
+  if (!latest) return null
+
+  const rows = Object.entries(BASELINE_LABELS)
+    .filter(([key]) => profile?.[key] != null)
+    .map(([key, meta]) => {
+      const answerKey = key.replace('baseline_', '')
+      const baseline = profile[key]
+      const now = latest.answers?.[answerKey]
+      if (now == null) return null
+      const rawPct = baseline ? Math.round(((now - baseline) / baseline) * 100) : 0
+      const improved = meta.lowerIsBetter ? now < baseline : now > baseline
+      const worsened = meta.lowerIsBetter ? now > baseline : now < baseline
+      const magnitude = Math.abs(rawPct)
+      let deltaText, deltaCls, barColor
+      if (now === baseline) {
+        deltaText = `${baseline} → ${now} · no change`; deltaCls = 'flat'; barColor = '#C8C6BE'
+      } else if (improved) {
+        const dir = meta.lowerIsBetter ? 'down' : 'up'
+        deltaText = `${baseline} → ${now} · ${dir} ${magnitude}%`; deltaCls = 'good'
+        barColor = meta.lowerIsBetter ? '#2C9D8A' : '#5DBF8A'
+      } else {
+        const dir = meta.lowerIsBetter ? 'up' : 'down'
+        deltaText = `${baseline} → ${now} · ${dir} ${magnitude}%`; deltaCls = 'bad'; barColor = '#D4894A'
+      }
+      return { label: meta.label, baseline, now, deltaText, deltaCls, barColor }
+    })
+    .filter(Boolean)
+
+  if (rows.length === 0) return null
+
+  // Headline: average improvement across all tracked symptoms
+  const improvements = rows.map(r => {
+    const meta = Object.values(BASELINE_LABELS).find(m => m.label === r.label)
+    const lowerBetter = meta?.lowerIsBetter
+    const pct = r.baseline ? ((r.now - r.baseline) / r.baseline) * 100 : 0
+    return lowerBetter ? -pct : pct // normalize so positive = better
+  })
+  const avgImprovement = Math.round(improvements.reduce((a, b) => a + b, 0) / improvements.length)
+
+  const pg = {
+    card: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '16px', padding: '22px', marginBottom: '16px' },
+    title: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72' },
+    bigwrap: { display: 'flex', alignItems: 'baseline', gap: '9px', margin: '10px 0 6px' },
+    big: { fontFamily: 'Fraunces, serif', fontSize: '36px', fontWeight: 300, color: avgImprovement > 0 ? '#2C9D8A' : avgImprovement < 0 ? '#D4894A' : '#7A7A72', lineHeight: 1 },
+    bigsub: { fontSize: '13px', color: '#7A7A72' },
+    weeks: { fontSize: '11px', color: '#A8A69E', marginBottom: '20px' },
+    legend: { display: 'flex', gap: '16px', marginBottom: '18px', paddingBottom: '16px', borderBottom: '1px solid rgba(0,0,0,0.06)' },
+    lgi: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#7A7A72' },
+    lgtick: { width: '2px', height: '13px', background: '#999', borderRadius: '1px' },
+    lgbar: { width: '14px', height: '7px', borderRadius: '3px', background: '#2C9D8A' },
+    row: { marginBottom: '16px' },
+    rtop: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '7px' },
+    rname: { fontSize: '13px', fontWeight: 500, color: '#1C1C1C' },
+    rdelta: { fontSize: '11px', fontFamily: 'DM Mono, monospace', fontWeight: 500 },
+    tube: { position: 'relative', height: '9px', background: '#F1EFE8', borderRadius: '5px' },
+    base: { position: 'absolute', top: '-3.5px', width: '2px', height: '16px', background: '#999', borderRadius: '1px', zIndex: 2 },
+    now: { position: 'absolute', height: '9px', borderRadius: '5px', top: 0 },
+    scaleline: { display: 'flex', justifyContent: 'space-between', marginTop: '5px' },
+    sc: { fontSize: '9px', color: '#C8C6BE', fontFamily: 'DM Mono, monospace' },
+  }
+  const deltaColor = { good: '#2C9D8A', bad: '#D4894A', flat: '#A8A69E' }
+
+  return (
+    <div style={pg.card}>
+      <div style={pg.title}>Your progress so far</div>
+      <div style={pg.bigwrap}>
+        <span style={pg.big}>{avgImprovement > 0 ? avgImprovement : Math.abs(avgImprovement)}%</span>
+        <span style={pg.bigsub}>{avgImprovement > 0 ? 'average symptom improvement' : avgImprovement < 0 ? 'average change to watch' : 'holding at baseline'}</span>
+      </div>
+      <div style={pg.weeks}>Across {checkins.length} weekly check-in{checkins.length !== 1 ? 's' : ''}</div>
+
+      <div style={pg.legend}>
+        <div style={pg.lgi}><span style={pg.lgtick}></span>Where you started</div>
+        <div style={pg.lgi}><span style={pg.lgbar}></span>Where you are now</div>
+      </div>
+
+      {rows.map((r, i) => (
+        <div key={i} style={pg.row}>
+          <div style={pg.rtop}>
+            <span style={pg.rname}>{r.label}</span>
+            <span style={{ ...pg.rdelta, color: deltaColor[r.deltaCls] }}>{r.deltaText}</span>
+          </div>
+          <div style={pg.tube}>
+            <div style={{ ...pg.now, width: `${(r.now / 10) * 100}%`, background: r.barColor }}></div>
+            <div style={{ ...pg.base, left: `${(r.baseline / 10) * 100}%` }}></div>
+          </div>
+        </div>
+      ))}
+
+      <div style={pg.scaleline}><span style={pg.sc}>0</span><span style={pg.sc}>5</span><span style={pg.sc}>10</span></div>
+    </div>
+  )
+}
+
 function IntakeMilestoneCard({ profile, formatDate }) {
   const [expanded, setExpanded] = useState(false)
 
@@ -352,33 +449,9 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
           </div>
         )}
 
-        {/* TREND CHART — only if 2+ check-ins */}
-        {checkins.length >= 2 && (
-          <div style={s.chartCard}>
-            <div style={s.chartLabel}>Symptom trend</div>
-            <div style={s.chartArea}>
-              {[...checkins].reverse().slice(-8).map((c, i) => {
-                const bloating = c.answers?.bloating || 0
-                const energy = c.answers?.energy || 0
-                const maxVal = 10
-                return (
-                  <div key={i} style={{ flex: 1, display: 'flex', gap: '3px', alignItems: 'flex-end', height: '100%' }}>
-                    <div style={{ ...s.chartBar, background: '#C95B5B', height: `${(bloating / maxVal) * 100}%`, opacity: 0.7 }} title={`Bloating: ${bloating}`} />
-                    <div style={{ ...s.chartBar, background: '#3D5C3C', height: `${(energy / maxVal) * 100}%`, opacity: 0.7 }} title={`Energy: ${energy}`} />
-                  </div>
-                )
-              })}
-            </div>
-            <div style={s.chartWeekLabels}>
-              {[...checkins].reverse().slice(-8).map((c, i) => (
-                <div key={i} style={s.chartWeekLabel}>W{c.week_number || i + 1}</div>
-              ))}
-            </div>
-            <div style={s.chartLegend}>
-              <div style={s.chartLegendItem}><div style={{ ...s.chartLegendDot, background: '#C95B5B' }}></div>Bloating</div>
-              <div style={s.chartLegendItem}><div style={{ ...s.chartLegendDot, background: '#3D5C3C' }}></div>Energy</div>
-            </div>
-          </div>
+        {/* SYMPTOM PROGRESS — all tracked symptoms vs baseline */}
+        {checkins.length >= 1 && (
+          <SymptomProgress profile={profile} checkins={checkins} />
         )}
 
         {/* INTAKE MILESTONE */}
