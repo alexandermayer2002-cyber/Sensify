@@ -1,8 +1,12 @@
 import { aiPrompt } from './aiClient'
 
 const stripDashes = (text = '') => text
+  // Numeric ranges like "1-3" or "4 – 14" become "1 to 3" (not a comma)
+  .replace(/(\d)\s*[—–-]\s*(\d)/g, '$1 to $2')
+  // Sentence dashes (space-dash-space) become commas
   .replace(/\s+[—–]\s+/g, ', ')
   .replace(/\s+-\s+/g, ', ')
+  // Any stray em/en dash left becomes a comma
   .replace(/[—–]/g, ', ')
 
 const callClaude = async (prompt, maxTokens = 200) => {

@@ -138,6 +138,7 @@ CRITICAL STYLE RULE: Do not use the em dash character or use hyphens as sentence
   const raw = await aiPrompt(prompt, 300)
   // Hard guarantee: convert any dash punctuation that slips through
   return raw
+    .replace(/(\d)\s*[—–-]\s*(\d)/g, '$1 to $2')
     .replace(/\s+[—–]\s+/g, ', ')
     .replace(/\s+-\s+/g, ', ')
     .replace(/[—–]/g, ', ')
