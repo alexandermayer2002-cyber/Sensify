@@ -174,7 +174,6 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
       food,
       sensitivity_level: level,
       started_at: today,
-      cycle_day: 1,
     })
     const { error: profileError, data: updated } = await supabase.from('profiles').update({
       current_reintro_food: food,
