@@ -395,3 +395,52 @@ export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
     }
   } catch (e) {}
 }
+
+// ── REINTRODUCTION VERDICT ──────────────────────────────────
+// The provisional verdict comes from the rule engine (verdictEngine.js)
+// based on logged daily data. The AI may CONFIRM it, or adjust by ONE
+// level with a stated reason. It never overrides the data wholesale.
+// Returns { verdict, analysis }.
+export const generateReintroVerdict = async ({ name, food, provisionalVerdict, signals, dailyLogs = [], surveyAnswers = {}, triggerBelief, confidence }) => {
+  const exposureSummary = dailyLogs
+    .filter(l => l.phase === 'exposure')
+    .map(l => `Day(ate:${l.ate_food ? 'yes' : 'no'}, symptoms:${(l.symptoms || []).map(s => `${s.name}/${s.intensity}`).join(',') || 'none'})`)
+    .join(' ')
+  const washoutSummary = dailyLogs
+    .filter(l => l.phase === 'washout')
+    .map(l => (l.symptoms || []).map(s => `${s.name}/${s.intensity}`).join(',') || 'none')
+    .join(' | ')
+
+  const prompt = `You are the analysis engine inside Sensify reviewing a completed food reintroduction.
+
+FOOD: ${food}
+PROVISIONAL VERDICT (computed from logged data by a rule engine): ${provisionalVerdict}
+LOGGED EXPOSURE DAYS: ${exposureSummary || 'no daily logs'}
+LOGGED WASHOUT SYMPTOMS: ${washoutSummary || 'none logged'}
+SIGNALS: ${JSON.stringify(signals || {})}
+USER END-OF-CYCLE BELIEF: thinks it was a trigger = ${triggerBelief}, confidence ${confidence}/10
+
+YOUR TASK:
+Decide the final verdict: Safe, Limit, or Avoid. Then write a 2 to 3 sentence explanation.
+
+CRITICAL RULES:
+- The provisional verdict is based on real logged data. You may CONFIRM it, or move it by AT MOST one level (Safe<->Limit or Limit<->Avoid) and only if the logged pattern or context clearly justifies it. NEVER jump Safe<->Avoid.
+- If a severe reaction was logged, the verdict is Avoid and cannot be changed.
+- Base the decision on the logged exposure and washout data first, the user's belief second.
+- Explain in plain language what in their data drove the verdict.
+- Do NOT diagnose a medical condition. Do NOT give dosage, portion, or treatment instructions.
+- Do NOT predict the future ("you will react"). Describe what their data showed.
+- No em dashes or hyphens as punctuation. No coach language.
+
+Respond in EXACTLY this format with no extra text:
+VERDICT: <Safe|Limit|Avoid>
+ANALYSIS: <2 to 3 sentences>`
+
+  const raw = await callClaude(prompt, 260)
+  const verdictMatch = raw.match(/VERDICT:\s*(Safe|Limit|Avoid)/i)
+  const analysisMatch = raw.match(/ANALYSIS:\s*([\s\S]+)/i)
+  return {
+    verdict: verdictMatch ? verdictMatch[1].replace(/^\w/, c => c.toUpperCase()) : provisionalVerdict,
+    analysis: analysisMatch ? stripDashes(analysisMatch[1].trim()) : '',
+  }
+}

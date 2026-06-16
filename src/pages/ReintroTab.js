@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
+import ReintroDailyCheckin from './ReintroDailyCheckin'
+import { computeProvisionalVerdict } from '../utils/verdictEngine'
 import { generateReintroFoodBriefing, generateProgramCompleteMessage } from '../utils/aiInsights'
 
 function ProgramComplete({ session, profile, labResult, completedFoods }) {
@@ -138,6 +140,9 @@ const FREQ_LABEL = { 'daily': 'Daily', '3-5x': '3–5x per week', '1-2x': '1–2
 export default function ReintroTab({ session, profile, labResult, currentDay, onStartVerdictSurvey }) {
   const [foodMap, setFoodMap] = useState([])
   const [activeReintro, setActiveReintro] = useState(null)
+  const [dailyLogs, setDailyLogs] = useState([])
+  const [showDailyCheckin, setShowDailyCheckin] = useState(false)
+  const [restartNotice, setRestartNotice] = useState(false)
   const [loading, setLoading] = useState(true)
   const [starting, setStarting] = useState(null)
   const [foodBriefing, setFoodBriefing] = useState('')
@@ -161,7 +166,15 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
         .order('started_at', { ascending: false })
         .limit(1)
         .single()
-      if (active) setActiveReintro(active)
+      if (active) {
+        setActiveReintro(active)
+        const { data: logs } = await supabase
+          .from('reintro_daily_logs')
+          .select('*')
+          .eq('reintro_id', active.id)
+          .order('log_date', { ascending: true })
+        setDailyLogs(logs || [])
+      }
     } catch (e) {}
     setLoading(false)
   }
@@ -199,6 +212,56 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
     setLoadingBriefing(false)
   }
 
+  // Handle a completed daily check-in
+  const handleDailyComplete = async ({ ateFood, symptoms }) => {
+    if (!activeReintro) return
+    const wasExposure = (activeReintro.exposure_days_completed || 0) < 3
+
+    if (wasExposure && ateFood) {
+      const newCount = (activeReintro.exposure_days_completed || 0) + 1
+      const updates = { exposure_days_completed: newCount }
+      // Hitting the 3rd exposure day starts washout
+      if (newCount >= 3) {
+        updates.washout_started_at = new Date().toISOString().split('T')[0]
+      }
+      await supabase.from('reintroduction_results').update(updates).eq('id', activeReintro.id)
+    }
+    setShowDailyCheckin(false)
+    await loadData()
+  }
+
+  // Severe reaction -> stop cycle, auto-verdict Avoid
+  const handleStopCycle = async () => {
+    if (!activeReintro) return
+    await supabase.from('reintroduction_results')
+      .update({ stopped_early: true, verdict: 'Avoid', verdict_reason: 'Cycle stopped early due to a severe reaction.' })
+      .eq('id', activeReintro.id)
+    await supabase.from('food_map').upsert({
+      user_id: session.user.id,
+      food: activeReintro.food,
+      verdict: 'Avoid',
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,food' })
+    setShowDailyCheckin(false)
+    setActiveReintro(null)
+    await loadData()
+  }
+
+  // Restart cycle after exceeding the 5-day exposure cap
+  const handleRestartCycle = async () => {
+    if (!activeReintro) return
+    const today = new Date().toISOString().split('T')[0]
+    await supabase.from('reintro_daily_logs').delete().eq('reintro_id', activeReintro.id)
+    await supabase.from('reintroduction_results').update({
+      started_at: today,
+      exposure_days_completed: 0,
+      washout_started_at: null,
+      restart_count: (activeReintro.restart_count || 0) + 1,
+    }).eq('id', activeReintro.id)
+    setRestartNotice(false)
+    await loadData()
+  }
+
   // Get foods from lab results — filter out never/rarely eaten
   const foodFrequency = profile?.food_frequency || {}
   const completedFoods = foodMap.filter(f => f.verdict)
@@ -233,17 +296,46 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const daysUntilHigh = Math.max(169 - currentDay, 0)
 
   // Active reintro day calculation
-  const getActiveCycleDay = () => {
-    if (!activeReintro?.started_at) return 1
-    const start = new Date(activeReintro.started_at)
-    const today = new Date()
-    const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24)) + 1
-    return Math.min(diff, 14)
-  }
+  // ── Floating schedule ────────────────────────────────────
+  // Exposure requires 3 days where the food was actually eaten.
+  // Skips extend exposure. If 3 eaten days aren't reached within
+  // 5 calendar days, the cycle restarts (with an explanation).
+  const EXPOSURE_TARGET = 3
+  const EXPOSURE_CALENDAR_CAP = 5
+  const WASHOUT_LENGTH = 11
 
-  const cycleDay = getActiveCycleDay()
-  const isExposure = cycleDay <= 3
-  const isVerdictDay = cycleDay >= 14
+  const cycleStart = activeReintro?.started_at ? new Date(activeReintro.started_at) : null
+  const today = new Date()
+  const calDaysSinceStart = cycleStart
+    ? Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate())) / (1000 * 60 * 60 * 24)) + 1
+    : 1
+
+  const exposureDaysCompleted = activeReintro?.exposure_days_completed || 0
+  const inExposure = exposureDaysCompleted < EXPOSURE_TARGET
+  const phase = inExposure ? 'exposure' : 'washout'
+
+  // Restart trigger: too many calendar days without hitting exposure target
+  const needsRestart = inExposure && calDaysSinceStart > EXPOSURE_CALENDAR_CAP && exposureDaysCompleted < EXPOSURE_TARGET
+
+  // Has today already been logged?
+  const todayStr = today.toISOString().split('T')[0]
+  const loggedToday = dailyLogs?.some(l => l.log_date === todayStr)
+
+  // Which exposure number they'd be logging next
+  const nextExposureNumber = exposureDaysCompleted + 1
+
+  // Days into washout + verdict readiness
+  const washoutStart = activeReintro?.washout_started_at ? new Date(activeReintro.washout_started_at) : null
+  const washoutDay = washoutStart
+    ? Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - new Date(washoutStart.getFullYear(), washoutStart.getMonth(), washoutStart.getDate())) / (1000 * 60 * 60 * 24)) + 1
+    : 0
+  const isVerdictDay = !inExposure && washoutDay > WASHOUT_LENGTH
+
+  // For the timeline display: total planned days floats with skips
+  const skippedSoFar = Math.max(0, calDaysSinceStart - exposureDaysCompleted - 1)
+  const totalPlannedDays = EXPOSURE_TARGET + skippedSoFar + WASHOUT_LENGTH
+  const cycleDay = calDaysSinceStart
+  const isExposure = phase === 'exposure'
 
   if (loading) return (
     <div className="rt-wrap">
@@ -251,6 +343,46 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
       <div className="rt-content"><div className="rt-spinner" /></div>
     </div>
   )
+
+  // Daily check-in screen for the active cycle
+  if (showDailyCheckin && activeReintro) {
+    return (
+      <ReintroDailyCheckin
+        session={session}
+        profile={profile}
+        reintro={activeReintro}
+        phase={phase}
+        exposureNumber={nextExposureNumber}
+        onComplete={handleDailyComplete}
+        onStopCycle={handleStopCycle}
+      />
+    )
+  }
+
+  // Restart notice after exceeding 5-day exposure cap
+  if (restartNotice && activeReintro) {
+    return (
+      <div className="rt-wrap">
+        <style>{css}</style>
+        <div className="rt-content">
+          <div style={{ maxWidth: '460px', margin: '40px auto', background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '18px', padding: '28px' }}>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '12px' }}>Let's restart this <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>cycle.</em></div>
+            <p style={{ fontSize: '14px', color: '#7A7A72', lineHeight: 1.7, marginBottom: '20px' }}>
+              Getting three exposure days close together gives the clearest read on how {activeReintro.food} affects you. It's been more than five days without reaching three, so we'll start fresh whenever you're ready. Nothing you logged counts against you.
+            </p>
+            <button onClick={handleRestartCycle} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+              Restart {activeReintro.food} cycle
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Auto-surface restart notice when needed
+  if (needsRestart && !restartNotice) {
+    setTimeout(() => setRestartNotice(true), 0)
+  }
 
   // Not in reintroduction yet
   if (!lowUnlocked) return (
@@ -336,11 +468,23 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                 <div className="rt-instruction-label">Today's instruction</div>
                 <div className="rt-instruction-text">
                   {isVerdictDay
-                    ? `Day 14 — your ${activeReintro.food} cycle is complete. Complete your verdict survey to get your result.`
+                    ? `Your ${activeReintro.food} cycle is complete. Complete your verdict survey to get your result.`
                     : isExposure
-                    ? `Eat ${activeReintro.food} today as you normally would. Don't change anything else about your diet.`
-                    : `Avoid ${activeReintro.food} completely today. Continue your elimination diet as usual and note any symptom changes.`}
+                    ? `Eat ${activeReintro.food} today as you normally would. You're on exposure day ${nextExposureNumber} of 3. Don't change anything else about your diet.`
+                    : `Avoid ${activeReintro.food} completely today. This is washout day ${washoutDay} of ${WASHOUT_LENGTH}. Continue your elimination diet as usual.`}
                 </div>
+                {!isVerdictDay && (
+                  loggedToday ? (
+                    <div style={{ marginTop: '14px', fontSize: '12px', color: '#4A8C6A', fontWeight: 500 }}>✓ Logged for today. See you tomorrow.</div>
+                  ) : (
+                    <button
+                      onClick={() => setShowDailyCheckin(true)}
+                      style={{ marginTop: '14px', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '10px', padding: '11px 20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+                    >
+                      {isExposure ? 'Log today\u2019s check-in \u2192' : 'Log washout check \u2192'}
+                    </button>
+                  )
+                )}
               </div>
             </div>
 

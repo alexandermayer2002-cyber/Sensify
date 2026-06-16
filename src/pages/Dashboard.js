@@ -364,6 +364,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [weeklyDue, setWeeklyDue] = useState(false)
   const [checkinLate, setCheckinLate] = useState(false)
   const [activeCheckinWeek, setActiveCheckinWeek] = useState(1)
+  const [activeReintroId, setActiveReintroId] = useState(null)
   const [complianceData, setComplianceData] = useState([])
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
   const [pendingAudit, setPendingAudit] = useState(false)
@@ -396,6 +397,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
       const { data: c } = await supabase.from('weekly_checkins').select('*').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(8)
       if (c) setCheckins(c)
+
+      // Active reintro cycle id (for the verdict survey)
+      if (p?.current_reintro_food) {
+        const { data: ar } = await supabase.from('reintroduction_results')
+          .select('id').eq('user_id', session.user.id).is('verdict', null)
+          .order('started_at', { ascending: false }).limit(1).maybeSingle()
+        setActiveReintroId(ar?.id || null)
+      }
 
       const sevenDaysAgo = new Date()
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
@@ -681,7 +690,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   if (screen === 'checkin') return <WeeklyCheckin session={session} weekNumber={activeCheckinWeek || currentWeek || 1} profile={profile} currentFoods={labResult?.foods?.map(f => f.name) || []} phase={calculatedPhase || 'elimination'} onBack={() => { setTab('history'); setScreen('checkin-history') }} onComplete={() => { setWeeklyDue(false); setTab('history'); setScreen('checkin-history') }} />
   if (screen === 'slipup') return <SlipupSurvey session={session} profile={profile} labResult={labResult} currentDay={currentDay} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'audit') return <ComplianceAudit session={session} eliminatedFoods={labResult?.foods?.map(f => f.name) || []} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
-  if (screen === 'reintro-survey') return <ReintroductionSurvey session={session} food={profile?.current_reintro_food || 'Eggs'} cycleNumber={profile?.reintro_cycle || 1} baselineScores={{ bloating: profile?.baseline_bloating, energy: profile?.baseline_energy }} symptoms={profile?.symptoms || []} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
+  if (screen === 'reintro-survey') return <ReintroductionSurvey session={session} food={profile?.current_reintro_food || 'Eggs'} cycleNumber={profile?.reintro_cycle || 1} baselineScores={{ bloating: profile?.baseline_bloating, energy: profile?.baseline_energy }} symptoms={profile?.symptoms || []} profile={profile} activeReintroId={activeReintroId} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
 
   return (
     <div className="snfy-app">

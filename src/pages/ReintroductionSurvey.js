@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
+import { computeProvisionalVerdict, applyAiAdjustment } from '../utils/verdictEngine'
+import { generateReintroVerdict } from '../utils/aiInsights'
 
 const s = {
   wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column' },
@@ -70,7 +72,7 @@ const VERDICT_CONFIG = {
   },
 }
 
-export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumber = 1, baselineScores = {}, symptoms = [], onComplete, onBack }) {
+export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumber = 1, baselineScores = {}, symptoms = [], profile = null, activeReintroId = null, onComplete, onBack }) {
   const [answers, setAnswers] = useState({})
   const [trigger, setTrigger] = useState(null)
   const [confidence, setConfidence] = useState(null)
@@ -86,10 +88,9 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
   }
 
   const computeVerdict = (answers, trigger, confidence) => {
-    // Simple verdict logic — will be enhanced with Anthropic API
+    // Fallback heuristic if no daily logs exist (legacy / safety net)
     const scores = Object.values(answers).filter(v => typeof v === 'number')
-    const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length
-
+    const avgScore = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0
     if (trigger === 'No' && avgScore <= 4) return 'Safe'
     if (trigger === 'Yes' && avgScore >= 6 && confidence >= 7) return 'Avoid'
     if (trigger === 'Unsure' || avgScore >= 3) return 'Limit'
@@ -99,34 +100,71 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
   const handleSubmit = async () => {
     setSubmitting(true)
 
-    const computedVerdict = computeVerdict(answers, trigger, confidence)
+    // Pull the logged daily data for this cycle to compute a data-driven verdict
+    let provisional = null
+    let dailyLogs = []
+    try {
+      if (activeReintroId) {
+        const { data: logs } = await supabase.from('reintro_daily_logs').select('*').eq('reintro_id', activeReintroId)
+        dailyLogs = logs || []
+        if (dailyLogs.length > 0) provisional = computeProvisionalVerdict(dailyLogs)
+      }
+    } catch (e) {}
 
-    // Save to Supabase
-    await supabase.from('reintroduction_results').insert({
-      user_id: session.user.id,
-      food,
-      cycle_number: cycleNumber,
-      answers,
-      trigger_belief: trigger,
-      confidence,
-      verdict: computedVerdict,
-      submitted_at: new Date().toISOString(),
-    })
+    // Provisional from data, or heuristic fallback if no logs
+    let computedVerdict = provisional ? provisional.verdict : computeVerdict(answers, trigger, confidence)
 
-    // Update food map
+    // AI refines (may adjust by one level with reason) — never against data
+    let aiReason = ''
+    try {
+      const aiResult = await generateReintroVerdict({
+        name: profile?.full_name?.split(' ')[0] || 'there',
+        food,
+        provisionalVerdict: computedVerdict,
+        signals: provisional?.signals,
+        dailyLogs,
+        surveyAnswers: answers,
+        triggerBelief: trigger,
+        confidence,
+      })
+      if (aiResult?.verdict) computedVerdict = applyAiAdjustment(
+        provisional || { verdict: computedVerdict },
+        aiResult.verdict
+      )
+      aiReason = aiResult?.analysis || ''
+    } catch (e) {}
+
+    // Update the EXISTING active row (don't insert a duplicate)
+    if (activeReintroId) {
+      await supabase.from('reintroduction_results').update({
+        answers,
+        trigger_belief: trigger,
+        confidence,
+        verdict: computedVerdict,
+        verdict_reason: aiReason,
+        submitted_at: new Date().toISOString(),
+      }).eq('id', activeReintroId)
+    } else {
+      await supabase.from('reintroduction_results').insert({
+        user_id: session.user.id, food, cycle_number: cycleNumber,
+        answers, trigger_belief: trigger, confidence,
+        verdict: computedVerdict, submitted_at: new Date().toISOString(),
+      })
+    }
+
+    // Clear the active-cycle pointer on the profile
+    await supabase.from('profiles').update({
+      current_reintro_food: null, current_reintro_day: null, reintro_started_at: null,
+    }).eq('id', session.user.id)
+
     await supabase.from('food_map').upsert({
-      user_id: session.user.id,
-      food,
-      verdict: computedVerdict,
+      user_id: session.user.id, food, verdict: computedVerdict,
       updated_at: new Date().toISOString(),
-    })
+    }, { onConflict: 'user_id,food' })
 
-    // Placeholder analysis — real AI call goes here
-    setTimeout(() => {
-      setAnalysis(`Based on your symptom scores during the ${food.toLowerCase()} reintroduction cycle and your confidence rating of ${confidence}/10, the AI has determined this verdict. This result is based on your real-world response, not your original lab sensitivity level.`)
-      setVerdict(computedVerdict)
-      setSubmitting(false)
-    }, 2500)
+    setAnalysis(aiReason || `This verdict reflects your logged response to ${food} across the exposure and washout days, not your original lab sensitivity level.`)
+    setVerdict(computedVerdict)
+    setSubmitting(false)
   }
 
   if (submitting) return (
