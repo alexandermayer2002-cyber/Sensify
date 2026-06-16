@@ -257,6 +257,8 @@ Write 3 to 4 sentences. Rules:
 - Specific to the actual food, not generic reintroduction advice
 - No em dashes or hyphens as punctuation
 
+CRITICAL: Never state, suggest, or imply a serving size, portion, quantity, or amount to eat (no cups, grams, pieces, "a small portion", "build gradually", etc). Do not give a titration or ramp up schedule. The protocol itself dictates portions, not you. If you mention eating the food, refer only to "your normal serving" without specifying any amount.
+
 Write only the message. No labels.`
 
   return callClaude(prompt, 220)
