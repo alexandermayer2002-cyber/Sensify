@@ -51,9 +51,9 @@ const css = `
   .adm-food-group-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #7A7A72; margin-bottom: 7px; }
   .adm-food-pills { display: flex; flex-wrap: wrap; gap: 6px; }
   .adm-pill { font-size: 12px; font-weight: 500; padding: 4px 11px; border-radius: 20px; }
-  .adm-pill.high { background: #FAEAEA; color: #C95B5B; }
-  .adm-pill.moderate { background: #FDF2EA; color: #D4894A; }
-  .adm-pill.low { background: #EAF4EE; color: #4A8C6A; }
+  .adm-pill.high { background: #FBE9E9; color: #A32D2D; }
+  .adm-pill.moderate { background: #FCEFD9; color: #8A5410; }
+  .adm-pill.low { background: #DEF2EE; color: #1A6256; }
 
   .adm-actions { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
   .adm-btn { border: none; border-radius: 9px; padding: 10px 18px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.15s; }

@@ -152,9 +152,9 @@ const css = `
   .snfy-avoid-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 13px; }
   .snfy-avoid-item:last-child { border-bottom: none; }
   .snfy-badge { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
-  .snfy-badge.high { background: rgba(201,91,91,0.08); color: #C95B5B; }
-  .snfy-badge.moderate { background: rgba(212,137,74,0.08); color: #D4894A; }
-  .snfy-badge.low { background: rgba(74,140,106,0.08); color: #4A8C6A; }
+  .snfy-badge.high { background: rgba(214,69,69,0.1); color: #A32D2D; }
+  .snfy-badge.moderate { background: rgba(232,148,31,0.12); color: #8A5410; }
+  .snfy-badge.low { background: rgba(44,157,138,0.12); color: #1A6256; }
 
   /* AI Insight — tucked below avoiding list */
   .snfy-insight { background: #FAF8F4; border-left: 2px solid #3D5C3C; border-radius: 0 10px 10px 0; padding: 14px; margin-top: 16px; }
@@ -165,9 +165,9 @@ const css = `
 `
 
 const BADGE = {
-  High: { bg: '#FAEAEA', color: '#C95B5B', dot: '#C95B5B', cls: 'high' },
-  Moderate: { bg: '#FDF2EA', color: '#D4894A', dot: '#D4894A', cls: 'moderate' },
-  Low: { bg: '#EAF4EE', color: '#4A8C6A', dot: '#4A8C6A', cls: 'low' },
+  High: { bg: '#FBE9E9', color: '#A32D2D', dot: '#D64545', cls: 'high' },
+  Moderate: { bg: '#FCEFD9', color: '#8A5410', dot: '#E8941F', cls: 'moderate' },
+  Low: { bg: '#DEF2EE', color: '#1A6256', dot: '#2C9D8A', cls: 'low' },
 }
 
 // Confetti overlay — brand colors, 3.5 seconds, fades out
@@ -981,13 +981,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   {['High', 'Moderate', 'Low'].map(level => {
                     const foods = labResult.foods.filter(f => f.level === level)
                     if (foods.length === 0) return null
-                    const colors = { High: '#C95B5B', Moderate: '#D4894A', Low: '#4A8C6A' }
+                    const colors = { High: '#D64545', Moderate: '#E8941F', Low: '#2C9D8A' }
+                    const textColors = { High: '#A32D2D', Moderate: '#8A5410', Low: '#1A6256' }
                     const cls = { High: 'high', Moderate: 'moderate', Low: 'low' }
                     return (
                       <div key={level} className="snfy-avoid-level">
                         <div className="snfy-avoid-level-header">
                           <div className="snfy-avoid-level-dot" style={{ background: colors[level] }}></div>
-                          <div className="snfy-avoid-level-name" style={{ color: colors[level] }}>{level} sensitivity</div>
+                          <div className="snfy-avoid-level-name" style={{ color: textColors[level] }}>{level} sensitivity</div>
                           <div className="snfy-avoid-level-count">{foods.length} food{foods.length !== 1 ? 's' : ''}</div>
                         </div>
                         {foods.map((food, i) => (

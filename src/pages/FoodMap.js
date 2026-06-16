@@ -333,7 +333,7 @@ export default function FoodMap({ session, profile, labResult }) {
             {flaggedFoods.map((f, i) => (
               <div key={i} className="fm-flagged-item">
                 <div className="fm-flagged-left">
-                  <div className="fm-flagged-dot" style={{ background: f.level === 'High' ? '#C95B5B' : f.level === 'Moderate' ? '#D4894A' : '#4A8C6A' }} />
+                  <div className="fm-flagged-dot" style={{ background: f.level === 'High' ? '#D64545' : f.level === 'Moderate' ? '#E8941F' : '#2C9D8A' }} />
                   {f.name}
                 </div>
                 <div className="fm-flagged-status">{f.level} · QUEUED</div>

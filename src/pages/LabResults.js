@@ -33,9 +33,9 @@ const s = {
   foodName: { fontSize: '14px', fontWeight: 400 },
   levelBtns: { display: 'flex', gap: '5px' },
   levelBtn: { padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.1)', background: '#FAF8F4', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#7A7A72', transition: 'all 0.1s' },
-  levelBtnHigh: { padding: '4px 10px', borderRadius: '20px', border: '1px solid #C95B5B', background: '#FAEAEA', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#C95B5B' },
-  levelBtnMod: { padding: '4px 10px', borderRadius: '20px', border: '1px solid #D4894A', background: '#FDF2EA', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#D4894A' },
-  levelBtnLow: { padding: '4px 10px', borderRadius: '20px', border: '1px solid #4A8C6A', background: '#EAF4EE', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#4A8C6A' },
+  levelBtnHigh: { padding: '4px 10px', borderRadius: '20px', border: '1px solid #D64545', background: '#FBE9E9', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#A32D2D' },
+  levelBtnMod: { padding: '4px 10px', borderRadius: '20px', border: '1px solid #E8941F', background: '#FCEFD9', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#8A5410' },
+  levelBtnLow: { padding: '4px 10px', borderRadius: '20px', border: '1px solid #2C9D8A', background: '#DEF2EE', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1A6256' },
   processingCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '32px 24px', textAlign: 'center', marginBottom: '16px' },
   spinner: { width: '36px', height: '36px', border: '3px solid #EDF3ED', borderTopColor: '#3D5C3C', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' },
   processingTitle: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, marginBottom: '6px' },
@@ -69,9 +69,9 @@ const COMMON_FOODS = [
 ]
 
 const SENSITIVITY_COLORS = {
-  High: { bg: '#FAEAEA', color: '#C95B5B', dot: '#C95B5B' },
-  Moderate: { bg: '#FDF2EA', color: '#D4894A', dot: '#D4894A' },
-  Low: { bg: '#EAF4EE', color: '#4A8C6A', dot: '#4A8C6A' },
+  High: { bg: '#FBE9E9', color: '#A32D2D', dot: '#D64545' },
+  Moderate: { bg: '#FCEFD9', color: '#8A5410', dot: '#E8941F' },
+  Low: { bg: '#DEF2EE', color: '#1A6256', dot: '#2C9D8A' },
 }
 
 export default function LabResults({ session, onComplete, onBack }) {
