@@ -160,25 +160,24 @@ function CycleSummary({ logs = [], food, exposureDaysCompleted = 0, expanded, on
   const exposureSymptomDays = eatenDays.filter(l => l.had_symptoms).length
   const washoutSymptomDays = washoutLogs.filter(l => l.had_symptoms).length
 
-  // Neutral factual read, framed against the 3-day target.
+  // Neutral factual read. Progress against the 3-day target + a calm symptom note.
   const parts = []
-  if (exposureDaysCompleted > 0 || eatenDays.length > 0) {
-    const done = exposureDaysCompleted
-    if (exposureSymptomDays > 0) {
-      parts.push(`${exposureSymptomDays} of ${done} exposure day${done !== 1 ? 's' : ''} had symptoms`)
-    } else {
-      parts.push(`${done} of 3 exposure days done, none with symptoms`)
-    }
+
+  if (exposureDaysCompleted > 0 && exposureDaysCompleted < 3) {
+    const note = exposureSymptomDays > 0 ? 'Symptoms noted.' : 'No symptoms noted.'
+    parts.push(`Exposure day ${exposureDaysCompleted} of 3 logged. ${note}`)
+  } else if (exposureDaysCompleted >= 3 && washoutLogs.length === 0) {
+    const note = exposureSymptomDays > 0 ? `Symptoms noted on ${exposureSymptomDays} of 3.` : 'No symptoms noted.'
+    parts.push(`Exposure complete. ${note}`)
+  } else if (washoutLogs.length > 0) {
+    const expNote = exposureSymptomDays > 0 ? `symptoms on ${exposureSymptomDays} of 3 exposure days` : 'no exposure symptoms'
+    const washNote = washoutSymptomDays === 0 ? 'washout clear so far' : `${washoutSymptomDays} washout day${washoutSymptomDays !== 1 ? 's' : ''} with symptoms`
+    parts.push(`Exposure complete, ${expNote}. Washout: ${washNote}.`)
+  } else {
+    parts.push('Your daily check-ins will build a record here.')
   }
-  if (washoutLogs.length > 0) {
-    parts.push(washoutSymptomDays === 0
-      ? `washout quiet so far`
-      : `${washoutSymptomDays} washout day${washoutSymptomDays !== 1 ? 's' : ''} with symptoms`)
-  }
-  if (parts.length === 0) {
-    parts.push('Your daily check-ins will build a record here')
-  }
-  const oneLiner = parts.join('. ') + '.'
+
+  const oneLiner = parts.join(' ')
 
   const dayLabel = (log) => {
     const d = new Date(log.log_date)
