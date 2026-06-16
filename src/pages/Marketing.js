@@ -210,7 +210,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="mk-3c"><div className="mk-3n">03</div><div className="mk-3t">The answers</div><div className="mk-3d">A personal Food Map based on how your body actually responds.</div></div>
           </div>
           <div className="mk-actions">
-            <button className="btn-p" onClick={onGetStarted}>Start your program — $199</button>
+            <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
             <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
           </div>
           <div className="mk-proof">
@@ -261,8 +261,8 @@ export default function Marketing({ onGetStarted, onSignIn }) {
 
       <div className="cta-section">
         <h2>Stop guessing.<br /><em>Start knowing.</em></h2>
-        <p>The complete system — test, protocol, and answers — for $199.</p>
-        <button className="btn-p" onClick={onGetStarted}>Start your program — $199</button>
+        <p>The complete system — test, protocol, and answers — for $399.</p>
+        <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
       </div>
       <Footer />
     </div>
@@ -389,7 +389,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
 
       <div className="cta-section">
         <h2>Ready to <em>start?</em></h2>
-        <p>The complete system is $199. Lab test ordered during onboarding.</p>
+        <p>The complete system is $399, lab test included. Nothing else to buy.</p>
         <button className="btn-p" onClick={onGetStarted}>Get started today</button>
       </div>
       <Footer />
@@ -459,18 +459,18 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="pricing-wrap">
             <div className="pricing-card">
               <div className="price-tag">Complete 6-month system</div>
-              <div className="price-num">$199</div>
-              <div className="price-sub">One-time payment · Lab test ordered during onboarding</div>
+              <div className="price-num">$399</div>
+              <div className="price-sub">One-time payment · Lab test included</div>
               <button className="btn-p" style={{ width: '100%' }} onClick={onGetStarted}>Get started today</button>
               <div className="price-div"></div>
               {[
                 'Intake survey — symptoms, baseline, and food frequency',
                 'Guided lab test ordering — we tell you exactly what to get',
-                'AI reads and extracts your results automatically',
+                'Your results read and extracted automatically',
                 'Full 6-month structured elimination protocol',
                 'Daily SMS compliance check-ins at your chosen time',
-                '14-day reintroduction cycles with AI verdicts',
-                'Weekly AI-generated symptom insights',
+                '14-day reintroduction cycles with clear verdicts',
+                'Weekly symptom insights from your check-ins',
                 'Compliance audit system with human review',
                 'Personal Food Map at program completion',
                 'Physician-reviewed protocol and messaging',
@@ -480,7 +480,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                   {item}
                 </div>
               ))}
-              <div className="price-note">Lab test purchased separately through our certified partner during onboarding. Typical cost $150–$200. Total investment approximately $350–$400. We walk you through every step.</div>
+              <div className="price-note">Everything included: your lab test, the full 6-month physician-reviewed protocol, AI guidance, and your permanent Food Map. No hidden costs, no separate lab bill.</div>
             </div>
           </div>
         </div>
@@ -504,8 +504,8 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       </div>
       <div className="cta-section">
         <h2>Stop guessing.<br /><em>Start knowing.</em></h2>
-        <p>The complete system — test, protocol, and answers — for $199.</p>
-        <button className="btn-p" onClick={onGetStarted}>Start your program — $199</button>
+        <p>The complete system — test, protocol, and answers — for $399.</p>
+        <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
       </div>
       <Footer />
     </div>
