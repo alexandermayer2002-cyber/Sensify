@@ -42,6 +42,16 @@ const css = `
   .mk-hero-inner { max-width: 960px; margin: 0 auto; }
   .mk-hero-split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; max-width: 1080px; margin: 0 auto; }
   @media (max-width: 860px) { .mk-hero-split { grid-template-columns: 1fr; gap: 36px; } .mk-hero-fmcard { order: -1; } }
+  .mk-hero-centered { max-width: 760px; margin: 0 auto; text-align: center; }
+  .mk-h1.centered { max-width: 100%; margin-left: auto; margin-right: auto; }
+  .mk-sub.centered { margin-left: auto; margin-right: auto; }
+  .mk-actions.centered { justify-content: center; }
+  .fmshow { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  @media (max-width: 800px) { .fmshow { grid-template-columns: 1fr; gap: 32px; } }
+  .fmshow-points { display: flex; flex-direction: column; gap: 12px; }
+  .fmshow-point { display: flex; align-items: center; gap: 11px; font-size: 14px; color: #4A4A45; }
+  .fmshow-point strong { font-weight: 600; color: #1C1C1C; }
+  .fmshow-pdot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
   .mk-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: #3D5C3C; background: #EDF3ED; padding: 5px 13px; border-radius: 20px; margin-bottom: 28px; }
   .mk-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: #3D5C3C; flex-shrink: 0; }
   .mk-h1 { font-family: 'Fraunces', serif; font-size: 58px; font-weight: 300; line-height: 1.06; margin-bottom: 22px; letter-spacing: -1px; max-width: 680px; }
@@ -294,44 +304,52 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <style>{css}</style>
       <Nav />
       <div className="mk-hero">
-        <div className="mk-hero-split">
-          <div>
-            <div className="mk-tag"><div className="mk-tag-dot"></div>Physician-reviewed · 6-month program</div>
-            <div className="mk-h1">Stop guessing what your body <em>can't handle.</em></div>
-            <div className="mk-sub">Lab testing, a structured 6-month elimination and reintroduction protocol, and daily guidance — ending in a personal Food Map that tells you exactly what's safe, what to limit, and what to avoid.</div>
-            <div className="mk-actions">
-              <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
-              <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
-            </div>
+        <div className="mk-hero-centered">
+          <div className="mk-tag" style={{ justifyContent: 'center' }}><div className="mk-tag-dot"></div>Physician-reviewed · 6-month program</div>
+          <div className="mk-h1 centered">Stop guessing what your body <em>can't handle.</em></div>
+          <div className="mk-sub centered">Lab testing, a structured 6-month elimination and reintroduction protocol, and daily guidance — ending in a personal Food Map that tells you exactly what's safe, what to limit, and what to avoid.</div>
+          <div className="mk-actions centered">
+            <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
+            <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
           </div>
+        </div>
+      </div>
 
-          {/* Food Map card — shows the product's payoff */}
-          <div className="mk-hero-fmcard">
+      {/* The Food Map — its own showcase section */}
+      <div className="mk-section">
+        <div className="mk-section-inner">
+          <div className="fmshow">
+            <div className="fmshow-copy">
+              <div className="ey">The outcome</div>
+              <div className="sh" style={{ fontSize: '32px', marginBottom: '18px' }}>Your personal <em>Food Map.</em></div>
+              <div className="ss" style={{ marginBottom: '22px' }}>Everything you eat, sorted into three honest categories — earned through six months of real testing, not a lab's best guess. It's the answer you've been missing, and it's yours to keep forever.</div>
+              <div className="fmshow-points">
+                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#2C9D8A' }}></div><div><strong>Safe</strong> — tested, tolerated, eat freely.</div></div>
+                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#E8941F' }}></div><div><strong>Limit</strong> — fine in small amounts.</div></div>
+                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#D64545' }}></div><div><strong>Avoid</strong> — a confirmed trigger.</div></div>
+              </div>
+            </div>
             <div className="fmcard">
               <div className="fmcard-eyebrow">Sensify · Verified result</div>
               <div className="fmcard-title">Sarah's <em>Food Map.</em></div>
-
               <div className="fmcard-cat" style={{ color: '#A8C5A7' }}><span className="fmcard-catdot" style={{ background: '#8BAE8A' }}></span>Safe — eat freely</div>
               <div className="fmcard-row">
                 {['Chicken', 'Rice', 'Salmon', 'Oats', 'Almonds'].map(f => (
                   <span key={f} className="fmcard-chip" style={{ background: 'rgba(139,174,138,0.16)', color: '#A8C5A7' }}>{f}</span>
                 ))}
               </div>
-
               <div className="fmcard-cat" style={{ color: '#E0A977' }}><span className="fmcard-catdot" style={{ background: '#E8941F' }}></span>Limit — small amounts</div>
               <div className="fmcard-row">
                 {['Wheat', 'Corn', 'Tomato'].map(f => (
                   <span key={f} className="fmcard-chip" style={{ background: 'rgba(232,148,31,0.16)', color: '#E0A977' }}>{f}</span>
                 ))}
               </div>
-
               <div className="fmcard-cat" style={{ color: '#E89090' }}><span className="fmcard-catdot" style={{ background: '#D64545' }}></span>Avoid — clear triggers</div>
               <div className="fmcard-row">
                 {['Dairy', 'Eggs', 'Gluten'].map(f => (
                   <span key={f} className="fmcard-chip" style={{ background: 'rgba(214,69,69,0.15)', color: '#E89090' }}>{f}</span>
                 ))}
               </div>
-
               <div className="fmcard-foot">
                 <div className="fmcard-verify">SENSIFY VERIFIED · TESTED OVER 184 DAYS</div>
               </div>
