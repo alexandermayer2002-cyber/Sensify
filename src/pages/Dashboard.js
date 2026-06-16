@@ -106,20 +106,29 @@ const css = `
   .snfy-stat-change { font-size: 10px; font-weight: 500; margin-top: 3px; color: #4A8C6A; }
 
   /* Compliance dots */
-  .snfy-comp { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 16px; margin-bottom: 0; }
-  .snfy-comp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .snfy-comp-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #7A7A72; }
-  .snfy-comp-streak { font-size: 12px; font-weight: 500; color: #3D5C3C; }
-  .snfy-comp-dots { display: flex; gap: 6px; }
-  .snfy-dot { width: 32px; height: 32px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
-  .snfy-dot.yes { background: #EDF3ED; border: 1px solid rgba(74,140,106,0.2); }
-  .snfy-dot.no { background: rgba(201,91,91,0.07); border: 1px solid rgba(201,91,91,0.15); }
-  .snfy-dot.empty { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06); }
-  .snfy-dot-day { font-size: 8px; color: #7A7A72; font-weight: 500; }
-  .snfy-dot-mark { font-size: 10px; font-weight: 600; }
-  .snfy-dot.yes .snfy-dot-mark { color: #4A8C6A; }
-  .snfy-dot.no .snfy-dot-mark { color: #C95B5B; }
+  .snfy-comp { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 18px; margin-bottom: 0; }
+  .snfy-comp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .snfy-comp-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-bottom: 4px; }
+  .snfy-comp-count { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1; color: #1C1C1C; }
+  .snfy-comp-count em { font-style: normal; color: #7A7A72; font-size: 16px; }
+  .snfy-comp-streak-wrap { text-align: right; }
+  .snfy-comp-streak-num { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1; color: #3D5C3C; }
+  .snfy-comp-streak-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-top: 4px; }
+  .snfy-comp-dots { display: flex; gap: 7px; }
+  .snfy-dot { flex: 1; aspect-ratio: 1 / 1.15; border-radius: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: transform 0.15s; }
+  .snfy-dot.yes { background: #4A8C6A; }
+  .snfy-dot.no { background: #C95B5B; }
+  .snfy-dot.empty { background: #F4F2EC; border: 1px solid rgba(0,0,0,0.05); }
+  .snfy-dot.future { background: #FAF8F4; border: 1px dashed rgba(0,0,0,0.1); }
+  .snfy-dot.today { box-shadow: 0 0 0 2px #3D5C3C; }
+  .snfy-dot-day { font-size: 9px; font-weight: 700; letter-spacing: 0.3px; }
+  .snfy-dot.yes .snfy-dot-day, .snfy-dot.no .snfy-dot-day { color: rgba(255,255,255,0.85); }
+  .snfy-dot.empty .snfy-dot-day, .snfy-dot.future .snfy-dot-day { color: #A8A69E; }
+  .snfy-dot-mark { font-size: 14px; font-weight: 700; line-height: 1; }
+  .snfy-dot.yes .snfy-dot-mark { color: white; }
+  .snfy-dot.no .snfy-dot-mark { color: white; }
   .snfy-dot.empty .snfy-dot-mark { color: rgba(0,0,0,0.15); }
+  .snfy-dot.future .snfy-dot-mark { color: rgba(0,0,0,0.12); }
 
   /* Pending cards */
   .snfy-pending { background: #FDF2EA; border: 1px solid rgba(212,137,74,0.18); border-radius: 13px; padding: 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
@@ -912,31 +921,48 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {/* COMPLIANCE DOTS */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
               <div className="snfy-comp" style={{ marginTop: '14px' }}>
-                <div className="snfy-comp-top">
-                  <div className="snfy-comp-label">This week</div>
-                  <div className="snfy-comp-streak">{cleanDays} day streak</div>
-                </div>
-                <div className="snfy-comp-dots">
-                  {['M','T','W','T','F','S','S'].map((day, i) => {
-                    const date = new Date()
-                    const dayOfWeek = date.getDay()
-                    const monday = new Date(date)
-                    monday.setDate(date.getDate() - ((dayOfWeek + 6) % 7))
-                    const targetDate = new Date(monday)
-                    targetDate.setDate(monday.getDate() + i)
-                    const dateStr = targetDate.toISOString().split('T')[0]
+                {(() => {
+                  const now = new Date()
+                  const dow = now.getDay()
+                  const monday = new Date(now)
+                  monday.setDate(now.getDate() - ((dow + 6) % 7))
+                  const todayStr = now.toISOString().split('T')[0]
+                  const days = ['M','T','W','T','F','S','S'].map((day, i) => {
+                    const td = new Date(monday)
+                    td.setDate(monday.getDate() + i)
+                    const dateStr = td.toISOString().split('T')[0]
                     const entry = complianceData.find(c => c.date === dateStr)
-                    const isPast = targetDate <= date
-                    const cls = entry?.response === 'YES' ? 'yes' : entry?.response === 'NO' ? 'no' : isPast ? 'empty' : 'empty'
-                    const mark = entry?.response === 'YES' ? '✓' : entry?.response === 'NO' ? '✗' : '·'
-                    return (
-                      <div key={i} className={`snfy-dot ${cls}`}>
-                        <span className="snfy-dot-day">{day}</span>
-                        <span className="snfy-dot-mark">{mark}</span>
+                    const isFuture = dateStr > todayStr
+                    const isToday = dateStr === todayStr
+                    let cls, mark
+                    if (entry?.response === 'YES') { cls = 'yes'; mark = '\u2713' }
+                    else if (entry?.response === 'NO') { cls = 'no'; mark = '\u2717' }
+                    else if (isFuture) { cls = 'future'; mark = '' }
+                    else { cls = 'empty'; mark = '\u00b7' }
+                    return { day, cls: cls + (isToday ? ' today' : ''), mark }
+                  })
+                  return (
+                    <>
+                      <div className="snfy-comp-top">
+                        <div>
+                          <div className="snfy-comp-label">This week</div>
+                        </div>
+                        <div className="snfy-comp-streak-wrap">
+                          <div className="snfy-comp-streak-num">{cleanDays}</div>
+                          <div className="snfy-comp-streak-label">day streak</div>
+                        </div>
                       </div>
-                    )
-                  })}
-                </div>
+                      <div className="snfy-comp-dots">
+                        {days.map((d, i) => (
+                          <div key={i} className={`snfy-dot ${d.cls}`}>
+                            <span className="snfy-dot-day">{d.day}</span>
+                            <span className="snfy-dot-mark">{d.mark}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )
+                })()}
               </div>
             )}
           </div>
