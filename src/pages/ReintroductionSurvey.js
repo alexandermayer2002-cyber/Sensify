@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { computeProvisionalVerdict, applyAiAdjustment } from '../utils/verdictEngine'
 import { generateReintroVerdict } from '../utils/aiInsights'
@@ -21,6 +21,13 @@ const s = {
   contextValue: { fontWeight: 500 },
   sectionLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '14px' },
   questionBlock: { marginBottom: '28px' },
+  questionSub: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.55, marginTop: '-4px', marginBottom: '12px' },
+  summaryCard: { background: '#0E0E0C', borderRadius: '14px', padding: '20px', marginBottom: '28px' },
+  summaryText: { fontSize: '14.5px', color: 'rgba(255,255,255,0.92)', lineHeight: 1.7 },
+  stackBtns: { display: 'flex', flexDirection: 'column', gap: '8px' },
+  stackBtn: { textAlign: 'left', padding: '14px 16px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.1)', background: '#FFFFFF', fontSize: '13.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1C1C1C', transition: 'all 0.12s' },
+  stackBtnOn: { textAlign: 'left', padding: '14px 16px', borderRadius: '11px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '13.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#2D6B42' },
+  textarea: { width: '100%', boxSizing: 'border-box', padding: '14px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.1)', background: '#FFFFFF', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', resize: 'vertical', lineHeight: 1.5 },
   questionLabel: { fontSize: '14px', fontWeight: 500, marginBottom: '10px', lineHeight: 1.5 },
   scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#7A7A72', marginBottom: '7px' },
   scaleRow: { display: 'flex', gap: '5px' },
@@ -72,47 +79,71 @@ const VERDICT_CONFIG = {
   },
 }
 
+// Turn the cycle's daily logs into a plain-language summary
+function buildSummary(logs, food) {
+  const f = food.toLowerCase()
+  const exposure = logs.filter(l => l.phase === 'exposure' && l.ate_food)
+  const washout = logs.filter(l => l.phase === 'washout')
+  const exposureSymptomDays = exposure.filter(l => l.had_symptoms)
+  const washoutSymptomDays = washout.filter(l => l.had_symptoms)
+
+  // Collect the distinct symptoms reported during exposure
+  const symptomNames = [...new Set(exposureSymptomDays.flatMap(l => (l.symptoms || []).map(s => s.name)))]
+  const symptomPhrase = symptomNames.length === 0 ? '' :
+    symptomNames.length === 1 ? symptomNames[0].toLowerCase() :
+    symptomNames.slice(0, -1).map(s => s.toLowerCase()).join(', ') + ' and ' + symptomNames[symptomNames.length - 1].toLowerCase()
+
+  let part1
+  if (exposure.length === 0) {
+    part1 = `You logged this ${f} cycle, though no exposure days were recorded.`
+  } else if (exposureSymptomDays.length === 0) {
+    part1 = `You ate ${f} on ${exposure.length} day${exposure.length !== 1 ? 's' : ''} and noted no symptoms on any of them.`
+  } else {
+    part1 = `You ate ${f} on ${exposure.length} day${exposure.length !== 1 ? 's' : ''}. On ${exposureSymptomDays.length} of those day${exposureSymptomDays.length !== 1 ? 's' : ''} you noted ${symptomPhrase || 'symptoms'}.`
+  }
+
+  let part2 = ''
+  if (washout.length > 0) {
+    part2 = washoutSymptomDays.length === 0
+      ? ` During the ${washout.length} days after, you stayed clear.`
+      : ` In the ${washout.length} days after, you noted symptoms on ${washoutSymptomDays.length} of them.`
+  }
+
+  return part1 + part2
+}
+
 export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumber = 1, baselineScores = {}, symptoms = [], profile = null, activeReintroId = null, onComplete, onBack }) {
-  const [answers, setAnswers] = useState({})
-  const [trigger, setTrigger] = useState(null)
-  const [confidence, setConfidence] = useState(null)
+  const [accuracy, setAccuracy] = useState(null) // 'accurate' | 'worse' | 'milder'
+  const [context, setContext] = useState('')
+  const [dailyLogs, setDailyLogs] = useState([])
+  const [logsLoaded, setLogsLoaded] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [verdict, setVerdict] = useState(null)
   const [analysis, setAnalysis] = useState('')
 
-  const setAnswer = (id, value) => setAnswers(prev => ({ ...prev, [id]: value }))
+  // Load the cycle's daily logs so we can summarize them back to the user
+  useEffect(() => {
+    let active = true
+    const load = async () => {
+      if (!activeReintroId) { setLogsLoaded(true); return }
+      try {
+        const { data } = await supabase.from('reintro_daily_logs').select('*').eq('reintro_id', activeReintroId).order('log_date', { ascending: true })
+        if (active) { setDailyLogs(data || []); setLogsLoaded(true) }
+      } catch (e) { if (active) setLogsLoaded(true) }
+    }
+    load()
+    return () => { active = false }
+  }, [activeReintroId])
 
-  const allAnswered = () => {
-    const hasSymptomScores = Object.keys(answers).length >= 2
-    return hasSymptomScores && trigger !== null && confidence !== null
-  }
-
-  const computeVerdict = (answers, trigger, confidence) => {
-    // Fallback heuristic if no daily logs exist (legacy / safety net)
-    const scores = Object.values(answers).filter(v => typeof v === 'number')
-    const avgScore = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0
-    if (trigger === 'No' && avgScore <= 4) return 'Safe'
-    if (trigger === 'Yes' && avgScore >= 6 && confidence >= 7) return 'Avoid'
-    if (trigger === 'Unsure' || avgScore >= 3) return 'Limit'
-    return 'Safe'
-  }
+  const allAnswered = () => accuracy !== null
 
   const handleSubmit = async () => {
     setSubmitting(true)
 
-    // Pull the logged daily data for this cycle to compute a data-driven verdict
+    // Compute provisional verdict from logged data
     let provisional = null
-    let dailyLogs = []
-    try {
-      if (activeReintroId) {
-        const { data: logs } = await supabase.from('reintro_daily_logs').select('*').eq('reintro_id', activeReintroId)
-        dailyLogs = logs || []
-        if (dailyLogs.length > 0) provisional = computeProvisionalVerdict(dailyLogs)
-      }
-    } catch (e) {}
-
-    // Provisional from data, or heuristic fallback if no logs
-    let computedVerdict = provisional ? provisional.verdict : computeVerdict(answers, trigger, confidence)
+    if (dailyLogs.length > 0) provisional = computeProvisionalVerdict(dailyLogs)
+    let computedVerdict = provisional ? provisional.verdict : 'Limit'
 
     // AI refines (may adjust by one level with reason) — never against data
     let aiReason = ''
@@ -123,9 +154,9 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         provisionalVerdict: computedVerdict,
         signals: provisional?.signals,
         dailyLogs,
-        surveyAnswers: answers,
-        triggerBelief: trigger,
-        confidence,
+        surveyAnswers: { accuracy, context },
+        accuracyNote: accuracy,
+        contextNote: context,
       })
       if (aiResult?.verdict) computedVerdict = applyAiAdjustment(
         provisional || { verdict: computedVerdict },
@@ -137,9 +168,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
     // Update the EXISTING active row (don't insert a duplicate)
     if (activeReintroId) {
       await supabase.from('reintroduction_results').update({
-        answers,
-        trigger_belief: trigger,
-        confidence,
+        answers: { accuracy, context },
         verdict: computedVerdict,
         verdict_reason: aiReason,
         submitted_at: new Date().toISOString(),
@@ -147,7 +176,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
     } else {
       await supabase.from('reintroduction_results').insert({
         user_id: session.user.id, food, cycle_number: cycleNumber,
-        answers, trigger_belief: trigger, confidence,
+        answers: { accuracy, context },
         verdict: computedVerdict, submitted_at: new Date().toISOString(),
       })
     }
@@ -228,78 +257,41 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
 
       <div style={s.content}>
         <div style={s.foodName}>{food}</div>
-        <div style={s.title}>Reintroduction survey.</div>
-        <div style={s.hint}>This is the most important survey in your program. Your answers determine whether {food} is Safe, Limit, or Avoid on your personal Food Map.</div>
+        <div style={s.title}>Your {food.toLowerCase()} results.</div>
+        <div style={s.hint}>One last step before we map {food} on your Food Map. Confirm what you logged, and tell us if anything unusual happened.</div>
 
-        <div style={s.contextCard}>
-          <div style={s.contextRow}>
-            <div style={s.contextLabel}>Baseline bloating</div>
-            <div style={s.contextValue}>{baselineScores.bloating || '—'}/10</div>
-          </div>
-          <div style={s.contextRow}>
-            <div style={s.contextLabel}>Baseline energy</div>
-            <div style={s.contextValue}>{baselineScores.energy || '—'}/10</div>
-          </div>
-          <div style={s.contextRowLast}>
-            <div style={s.contextLabel}>Reintroduction cycle</div>
-            <div style={s.contextValue}>#{cycleNumber}</div>
-          </div>
+        {/* BLOCK 1 — Their logged data in plain sentences */}
+        <div style={s.sectionLabel}>What you logged</div>
+        <div style={s.summaryCard}>
+          {logsLoaded ? <div style={s.summaryText}>{buildSummary(dailyLogs, food)}</div> : <div style={s.summaryText}>Loading your cycle…</div>}
         </div>
 
-        <div style={s.sectionLabel}>Your symptoms during this cycle</div>
-
+        {/* BLOCK 2 — Confirm accuracy */}
         <div style={s.questionBlock}>
-          <div style={s.questionLabel}>Rate your bloating during the {food.toLowerCase()} reintroduction (days 1–3) vs normally</div>
-          <div style={s.scaleLabels}><span>Much better</span><span>Much worse</span></div>
-          <div style={s.scaleRow}>
-            {[1,2,3,4,5,6,7,8,9,10].map(n => (
-              <button key={n} style={answers.bloating_change === n ? s.sbtOn : s.sbt} onClick={() => setAnswer('bloating_change', n)}>{n}</button>
+          <div style={s.questionLabel}>Does that sound right?</div>
+          <div style={s.questionSub}>This is what you told us day by day. If anything looks off, let us know and we'll factor it in.</div>
+          <div style={s.stackBtns}>
+            {[
+              { id: 'accurate', label: "Yes, that's accurate" },
+              { id: 'worse', label: 'Not quite — it felt worse than that' },
+              { id: 'milder', label: 'Not quite — it felt milder than that' },
+            ].map(opt => (
+              <button key={opt.id} style={accuracy === opt.id ? s.stackBtnOn : s.stackBtn} onClick={() => setAccuracy(opt.id)}>{opt.label}</button>
             ))}
           </div>
         </div>
 
+        {/* BLOCK 3 — Confounders, free text, no examples */}
         <div style={s.questionBlock}>
-          <div style={s.questionLabel}>Rate your energy during the {food.toLowerCase()} reintroduction vs normally</div>
-          <div style={s.scaleLabels}><span>Much worse</span><span>Much better</span></div>
-          <div style={s.scaleRow}>
-            {[1,2,3,4,5,6,7,8,9,10].map(n => (
-              <button key={n} style={answers.energy_change === n ? s.sbtOn : s.sbt} onClick={() => setAnswer('energy_change', n)}>{n}</button>
-            ))}
-          </div>
-        </div>
-
-        {symptoms.includes('Skin issues') && (
-          <div style={s.questionBlock}>
-            <div style={s.questionLabel}>How was your skin during the {food.toLowerCase()} reintroduction?</div>
-            <div style={s.scaleLabels}><span>Much better</span><span>Much worse</span></div>
-            <div style={s.scaleRow}>
-              {[1,2,3,4,5,6,7,8,9,10].map(n => (
-                <button key={n} style={answers.skin_change === n ? s.sbtOn : s.sbt} onClick={() => setAnswer('skin_change', n)}>{n}</button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div style={s.divider}></div>
-        <div style={s.sectionLabel}>Your assessment</div>
-
-        <div style={s.questionBlock}>
-          <div style={s.questionLabel}>Do you believe {food.toLowerCase()} caused or worsened your symptoms?</div>
-          <div style={s.triggerBtns}>
-            <button style={trigger === 'Yes' ? s.triggerBtnOn : s.triggerBtn} onClick={() => setTrigger('Yes')}>Yes</button>
-            <button style={trigger === 'No' ? s.triggerBtnOn : s.triggerBtn} onClick={() => setTrigger('No')}>No</button>
-            <button style={trigger === 'Unsure' ? s.triggerBtnUnsure : s.triggerBtn} onClick={() => setTrigger('Unsure')}>Unsure</button>
-          </div>
-        </div>
-
-        <div style={s.questionBlock}>
-          <div style={s.questionLabel}>How confident are you in your assessment? (1–10)</div>
-          <div style={s.scaleLabels}><span>Not sure at all</span><span>Very confident</span></div>
-          <div style={s.scaleRow}>
-            {[1,2,3,4,5,6,7,8,9,10].map(n => (
-              <button key={n} style={confidence === n ? s.sbtOn : s.sbt} onClick={() => setConfidence(n)}>{n}</button>
-            ))}
-          </div>
+          <div style={s.questionLabel}>Was anything else going on?</div>
+          <div style={s.questionSub}>Things outside of {food.toLowerCase()} can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.</div>
+          <textarea
+            style={s.textarea}
+            value={context}
+            onChange={e => setContext(e.target.value)}
+            rows={3}
+            placeholder=""
+          />
         </div>
       </div>
 

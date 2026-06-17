@@ -401,7 +401,7 @@ export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
 // based on logged daily data. The AI may CONFIRM it, or adjust by ONE
 // level with a stated reason. It never overrides the data wholesale.
 // Returns { verdict, analysis }.
-export const generateReintroVerdict = async ({ name, food, provisionalVerdict, signals, dailyLogs = [], surveyAnswers = {}, triggerBelief, confidence }) => {
+export const generateReintroVerdict = async ({ name, food, provisionalVerdict, signals, dailyLogs = [], surveyAnswers = {}, accuracyNote, contextNote }) => {
   const exposureSummary = dailyLogs
     .filter(l => l.phase === 'exposure')
     .map(l => `Day(ate:${l.ate_food ? 'yes' : 'no'}, symptoms:${(l.symptoms || []).map(s => `${s.name}/${s.intensity}`).join(',') || 'none'})`)
@@ -418,16 +418,17 @@ PROVISIONAL VERDICT (computed from logged data by a rule engine): ${provisionalV
 LOGGED EXPOSURE DAYS: ${exposureSummary || 'no daily logs'}
 LOGGED WASHOUT SYMPTOMS: ${washoutSummary || 'none logged'}
 SIGNALS: ${JSON.stringify(signals || {})}
-USER END-OF-CYCLE BELIEF: thinks it was a trigger = ${triggerBelief}, confidence ${confidence}/10
+USER CONFIRMED ACCURACY: ${accuracyNote === 'accurate' ? 'says the logged data is accurate' : accuracyNote === 'worse' ? 'says it actually felt WORSE than logged' : accuracyNote === 'milder' ? 'says it actually felt MILDER than logged' : 'no response'}
+USER NOTED CONTEXT (other things going on, may explain symptoms): ${contextNote ? `"${contextNote}"` : 'none noted'}
 
 YOUR TASK:
 Decide the final verdict: Safe, Limit, or Avoid. Then write a 2 to 3 sentence explanation.
 
 CRITICAL RULES:
-- The provisional verdict is based on real logged data. You may CONFIRM it, or move it by AT MOST one level (Safe<->Limit or Limit<->Avoid) and only if the logged pattern or context clearly justifies it. NEVER jump Safe<->Avoid.
+- The provisional verdict is based on real logged data. You may CONFIRM it, or move it by AT MOST one level (Safe<->Limit or Limit<->Avoid) and only if clearly justified. NEVER jump Safe<->Avoid.
 - If a severe reaction was logged, the verdict is Avoid and cannot be changed.
-- Base the decision on the logged exposure and washout data first, the user's belief second.
-- Explain in plain language what in their data drove the verdict.
+- Weigh the logged data first. If the user said it felt worse or milder than logged, factor that in. If they noted an outside factor (illness, travel, stress) that could explain a symptom flare, you may discount that flare, which could move the verdict one level toward Safe.
+- Explain in plain language what in their data drove the verdict. Do not reference "the user's belief about whether it's a trigger" since we did not ask that.
 - Do NOT diagnose a medical condition. Do NOT give dosage, portion, or treatment instructions.
 - Do NOT predict the future ("you will react"). Describe what their data showed.
 - No em dashes or hyphens as punctuation. No coach language.
