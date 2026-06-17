@@ -207,6 +207,46 @@ const css = `
   .prob-card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 14px; padding: 20px; }
   .prob-t { font-size: 14px; font-weight: 500; margin-bottom: 7px; }
   .prob-d { font-size: 13px; color: #7A7A72; line-height: 1.65; }
+
+  /* ── MOBILE ─────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .mk-nav { padding: 0 16px; height: 54px; gap: 8px; }
+    .mk-logo { font-size: 18px; flex-shrink: 0; }
+    .mk-tabs { gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; flex: 1; scrollbar-width: none; }
+    .mk-tabs::-webkit-scrollbar { display: none; }
+    .mk-tab { font-size: 12px; padding: 6px 8px; white-space: nowrap; flex-shrink: 0; }
+    .mk-signin { display: none; }
+    .mk-cta { padding: 8px 14px; font-size: 12px; flex-shrink: 0; }
+    .mk-nav-right { gap: 4px; }
+    .mk-hero { padding: 48px 22px 40px !important; }
+    .mk-h1 { font-size: 36px !important; letter-spacing: -0.5px; }
+    .mk-sub { font-size: 15px; }
+    .mk-section { padding: 44px 22px !important; }
+    .mk-three { grid-template-columns: 1fr; }
+    .ds-grid { grid-template-columns: 1fr; }
+    .dark-strip { padding: 24px; }
+    .sci-grid { grid-template-columns: 1fr; }
+    .sci-disclaimers { grid-template-columns: 1fr; }
+    .sci-compare-grid { grid-template-columns: 1fr; }
+    .sci-arrow { transform: rotate(90deg); padding: 4px 0; }
+    .sci-compare { padding: 24px; }
+    .fmshow { grid-template-columns: 1fr; gap: 28px; }
+    .mk-hero-split { grid-template-columns: 1fr; gap: 28px; }
+    .prob-grid { grid-template-columns: 1fr; }
+    .cta-section { padding: 56px 22px !important; }
+    .cta-section h2 { font-size: 32px; }
+    .mk-footer { padding: 28px 22px; flex-direction: column; gap: 14px; text-align: center; }
+    .mk-actions { flex-direction: column; }
+    .mk-actions.centered { flex-direction: column; }
+    .btn-p, .btn-g { width: 100%; }
+    .spine { padding-left: 36px; }
+    .ph-name { font-size: 22px; }
+    .sh { font-size: 26px !important; }
+  }
+  @media (max-width: 380px) {
+    .mk-h1 { font-size: 31px !important; }
+    .mk-tab { font-size: 11px; padding: 6px 5px; }
+  }
 `
 
 const FAQ_GROUPS = [
