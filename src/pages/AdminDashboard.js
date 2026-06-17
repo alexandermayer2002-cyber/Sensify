@@ -297,6 +297,19 @@ export default function AdminDashboard({ session, onBack }) {
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'
   const formatDateTime = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'
 
+  // Protocol day computed from start date (same logic as the user dashboard),
+  // since current_day isn't a live-maintained column.
+  const computeDay = (u) => {
+    if (!u?.protocol_start_date) return null
+    if (u.program_phase === 'pending_review' || u.program_phase === 'awaiting_results' || !u.program_phase) return null
+    const [y, m, d] = u.protocol_start_date.split('T')[0].split('-').map(Number)
+    const start = new Date(y, m - 1, d)
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const day = Math.round((today - start) / (1000 * 60 * 60 * 24)) + 1
+    return Math.max(0, day)
+  }
+
   const isInactive = (u) => {
     if (!u.last_checkin_at && !u.intake_completed_at) return false
     const lastActivity = u.last_checkin_at || u.intake_completed_at
@@ -639,8 +652,8 @@ export default function AdminDashboard({ session, onBack }) {
                         {u.program_phase === 'elimination' ? 'Elimination' : u.program_phase === 'reintroduction' ? 'Reintro' : u.program_phase === 'pending_review' ? 'Pending' : u.program_phase === 'awaiting_results' ? 'Awaiting' : 'Setup'}
                       </div>
                     </div>
-                    <div>{u.current_day ? `Day ${u.current_day}` : '—'}</div>
-                    <div>{u.streak ? `${u.streak}d` : '—'}</div>
+                    <div>{(() => { const d = computeDay(u); return d != null ? `Day ${d}` : '—' })()}</div>
+                    <div>{u.program_phase === 'elimination' || u.program_phase === 'reintroduction' ? `${u.streak || 0}d` : '—'}</div>
                     <div style={{ fontSize: '12px', color: '#7A7A72' }}>{formatDate(u.last_checkin_at)}</div>
                     <div style={{ fontSize: '12px', color: '#7A7A72' }}>{formatDate(u.created_at)}</div>
                     <div style={{ fontSize: '11px' }}>
@@ -694,7 +707,12 @@ export default function AdminDashboard({ session, onBack }) {
                     <div className="adm-profile-card">
                       <div className="adm-profile-label">Program phase</div>
                       <div className="adm-profile-val" style={{ fontSize: '13px' }}>{selectedUser.program_phase || 'Setup'}</div>
-                      <div className="adm-profile-sub">Day {selectedUser.current_day || 0} · Streak {selectedUser.streak || 0}d</div>
+                      <div className="adm-profile-sub">Day {computeDay(selectedUser) ?? 0} · Streak {(() => {
+                        const sorted = [...(userDetail?.comp || [])].sort((a, b) => new Date(b.date) - new Date(a.date))
+                        let count = 0
+                        for (const e of sorted) { if (e.response === 'YES') count++; else break }
+                        return count
+                      })()}d</div>
                     </div>
                   </div>
                   {/* Lab results */}
