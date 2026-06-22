@@ -71,20 +71,33 @@ STYLE (important, the user finds robotic replies off-putting):
 - Be confident on foods that are genuinely fine, but remember preparation risks count as real uncertainty worth a quick mention.
 - No em dashes. No hype. Sound human.
 
-LOGGING:
-- When the user describes food they actually ate (past tense, "I had", "I ate"), treat it as a meal to log.
-- At the very end of your reply, if and only if they described eating something, append a line exactly like:
-[[LOG: food1, food2, food3]]
-listing the individual foods. If they did not describe eating anything, do not append this line.
-
-VERDICT TAG (for "can I eat this" style questions):
+VERDICT (for "can I eat this specific food/dish" questions):
 - When the user asks whether they can eat a specific food or dish, append a metadata line at the very end like:
-[[META: verdict=SAFE|LIMIT|HOLD|AVOID; checked=N; flags=ingredient1, ingredient2]]
+[[META: verdict=SAFE|LIMIT|HOLD|AVOID; checked=N; flags=ingredient1, ingredient2; detail=short phrase]]
 where:
-  - verdict = your overall call. Use SAFE if nothing is a concern, LIMIT if it involves a Limit food, HOLD if it involves a flagged-but-not-yet-tested food (still in elimination), AVOID if it involves a confirmed Avoid food.
+  - verdict = your overall call. SAFE if nothing is a concern, LIMIT if it involves a Limit food, HOLD if it involves a flagged-but-not-yet-tested food (still in elimination), AVOID if it involves a confirmed Avoid food.
   - checked = the number of ingredients you considered.
   - flags = the specific ingredients that triggered caution (empty if none).
-- Only add this line for "can I eat X" questions, not for general chat or logging. Put it after any LOG line.`
+  - detail = a very short phrase naming what to watch and any swap, e.g. "Soy sauce, swap for tamari" or "Macaroni (gluten), check fry oil". Keep it under 8 words. Omit if nothing to watch.
+- Only for single-food/single-dish "can I eat X" questions.
+
+GUIDANCE (for broad "what can I eat at..." or "what should I order" questions):
+- When the user asks an open question about a cuisine, restaurant, or situation (not one specific dish), append:
+[[GUIDE: safe=item1, item2, item3; skip=item1, item2; ask=item1, item2]]
+where:
+  - safe = a few good picks for them in that setting.
+  - skip = things to avoid (with the reason implied, e.g. "pasta", "bread").
+  - ask = things worth checking with staff (e.g. "sauces", "fry oil").
+- Keep each list short, 2 to 4 items. Omit a field if empty.
+
+LOGGING (for "I ate / I had ___"):
+- When the user describes food they actually ate, append:
+[[LOG: food1, food2, food3]]
+listing the individual foods.
+
+GENERAL RULES FOR THESE TAGS:
+- Use at most ONE of META, GUIDE, or LOG per reply, matching what the user did. A specific-food question gets META. A broad "what can I eat" gets GUIDE. Describing a meal eaten gets LOG. General chat gets none.
+- Always put the tag on its very last line. Your conversational reply comes first, then the tag.`
 
 // Send a turn to the assistant. Returns { reply, foodsToLog }
 export async function askSensify({ userMessage, foodMap, labFoods = [], history = [] }) {
@@ -116,15 +129,30 @@ export async function askSensify({ userMessage, foodMap, labFoods = [], history 
     const vMatch = meta.match(/verdict=([A-Z]+)/i)
     const cMatch = meta.match(/checked=(\d+)/i)
     const fMatch = meta.match(/flags=([^;]*)/i)
+    const dMatch = meta.match(/detail=([^;]*)/i)
     verdict = {
       label: vMatch ? vMatch[1].toUpperCase() : null,
       checked: cMatch ? parseInt(cMatch[1], 10) : null,
       flags: fMatch ? fMatch[1].split(',').map(s => s.trim()).filter(Boolean) : [],
+      detail: dMatch ? dMatch[1].trim() : '',
     }
     reply = reply.replace(/\[\[META:[^\]]+\]\]/i, '').trim()
   }
 
-  return { reply, foodsToLog, verdict, mapContext }
+  // Extract the [[GUIDE: ...]] line if present
+  let guide = null
+  const guideMatch = raw.match(/\[\[GUIDE:\s*([^\]]+)\]\]/i)
+  if (guideMatch) {
+    const g = guideMatch[1]
+    const safe = (g.match(/safe=([^;]*)/i) || [])[1]
+    const skip = (g.match(/skip=([^;]*)/i) || [])[1]
+    const ask = (g.match(/ask=([^;]*)/i) || [])[1]
+    const split = (s) => s ? s.split(',').map(x => x.trim()).filter(Boolean) : []
+    guide = { safe: split(safe), skip: split(skip), ask: split(ask) }
+    reply = reply.replace(/\[\[GUIDE:[^\]]+\]\]/i, '').trim()
+  }
+
+  return { reply, foodsToLog, verdict, guide, mapContext }
 }
 
 // Classify a logged food against the map for storage + flagging
