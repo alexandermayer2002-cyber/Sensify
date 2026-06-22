@@ -166,8 +166,8 @@ function verdictStyle(label) {
 }
 
 const s = {
-  wrap: { display: 'flex', flexDirection: 'column', height: '100%', maxWidth: '680px', margin: '0 auto', width: '100%', background: '#FFFFFF' },
-  header: { padding: '20px 20px 14px' },
+  wrap: { display: 'flex', flexDirection: 'column', height: 'calc(100% - 24px)', maxWidth: '680px', margin: '12px auto', width: 'calc(100% - 24px)', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '16px', overflow: 'hidden' },
+  header: { padding: '20px 20px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)' },
   headerTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300 },
   em: { fontStyle: 'italic', color: '#3D5C3C' },
   headerStatus: { display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' },

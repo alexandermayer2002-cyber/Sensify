@@ -133,6 +133,7 @@ const css = `
   .rt-tier-status.unlocked { color: #3D5C3C; font-weight: 500; }
   .rt-spinner { width: 28px; height: 28px; border: 2.5px solid #EDF3ED; border-top-color: #3D5C3C; border-radius: 50%; animation: rt-spin 0.8s linear infinite; margin: 40px auto; }
   @keyframes rt-spin { to { transform: rotate(360deg) } }
+  @keyframes snfyPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 `
 
 const FREQ_RANK = { 'daily': 1, '3-5x': 2, '1-2x': 3, 'rarely': 4, 'never': 5 }
@@ -624,9 +625,13 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               </div>
             )}
             {foodBriefing && !loadingBriefing && (
-              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderLeft: '3px solid #3D5C3C', borderRadius: '0 14px 14px 0', padding: '16px', marginBottom: '14px' }}>
-                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#3D5C3C', marginBottom: '8px' }}>Your briefing</div>
-                <div style={{ fontSize: '13px', color: '#1C1C1C', lineHeight: 1.75 }}>{foodBriefing}</div>
+              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '16px', marginBottom: '14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '9px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2C9D8A', animation: 'snfyPulse 1.6s infinite', flexShrink: 0 }}></span>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#3D5C3C' }}>REINTRODUCTION BRIEFING</span>
+                </div>
+                <div style={{ fontSize: '13.5px', color: '#1C1C1C', lineHeight: 1.7 }}>{foodBriefing}</div>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8.5px', letterSpacing: '0.6px', color: '#A8A69E', textTransform: 'uppercase', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>BASED ON YOUR SENSITIVITY LEVEL</div>
               </div>
             )}
 
