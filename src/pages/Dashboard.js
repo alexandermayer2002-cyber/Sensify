@@ -11,6 +11,7 @@ import CheckinHistory from './CheckinHistory'
 import FoodMap from './FoodMap'
 import ReintroTab from './ReintroTab'
 import AskSensify from './AskSensify'
+import MaintainHub from './MaintainHub'
 import {
   generateDay1Message,
   generateDay3Message,
@@ -719,8 +720,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       <nav className="snfy-nav">
         <div className="snfy-logo">sensi<em>fy</em></div>
         <div className="snfy-nav-tabs">
-          {['Home', 'Reintro', 'History', 'Food Map', 'Ask Sensify'].map(t => (
-            <button key={t} className={`snfy-tab${tab === t.toLowerCase().replace(' ', '-') ? ' active' : ''}`} onClick={() => { setTab(t.toLowerCase().replace(' ', '-')); if (t === 'History') setScreen('checkin-history'); else if (t === 'Food Map') setScreen('food-map'); else if (t === 'Reintro') setScreen('reintro-tab'); else if (t === 'Ask Sensify') setScreen('ask-sensify'); else setScreen('dashboard') }}>{t}</button>
+          {['Home', 'Reintro', 'History', 'Food Map', 'Maintain'].map(t => (
+            <button key={t} className={`snfy-tab${tab === t.toLowerCase().replace(' ', '-') ? ' active' : ''}`} onClick={() => { setTab(t.toLowerCase().replace(' ', '-')); if (t === 'History') setScreen('checkin-history'); else if (t === 'Food Map') setScreen('food-map'); else if (t === 'Reintro') setScreen('reintro-tab'); else if (t === 'Maintain') setScreen('maintain'); else setScreen('dashboard') }}>{t}</button>
           ))}
         </div>
         <div className="snfy-nav-right">
@@ -743,9 +744,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           profile={profile}
           labResult={labResult}
         />
-      ) : screen === 'ask-sensify' ? (
-        <div style={{ height: 'calc(100vh - 60px)' }}>
-          <AskSensify session={session} />
+      ) : screen === 'maintain' ? (
+        <div style={{ height: 'calc(100vh - 60px)', overflowY: 'auto' }}>
+          <MaintainHub session={session} profile={profile} />
         </div>
       ) : screen === 'reintro-tab' ? (
         <ReintroTab
