@@ -4,6 +4,7 @@ import { askSensify, saveMealLog, saveMessage, loadHistory } from '../utils/askS
 
 export default function AskSensify({ session, foodMap: foodMapProp = null }) {
   const [foodMap, setFoodMap] = useState(foodMapProp || [])
+  const [labFoods, setLabFoods] = useState([])
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
@@ -19,6 +20,11 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
           if (data) setFoodMap(data)
         } catch (e) {}
       }
+      // Load lab results so the assistant knows flagged vs clean foods
+      try {
+        const { data: lab } = await supabase.from('lab_results').select('foods').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).single()
+        if (lab?.foods) setLabFoods(lab.foods)
+      } catch (e) {}
       const history = await loadHistory(session.user.id)
       setMessages(history)
       setLoaded(true)
@@ -43,6 +49,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
       const { reply, foodsToLog, mapContext } = await askSensify({
         userMessage: text,
         foodMap,
+        labFoods,
         history: messages.slice(-12),
       })
 

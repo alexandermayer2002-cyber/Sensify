@@ -5,18 +5,38 @@
 import { aiCall } from './aiClient'
 import { supabase } from '../supabase'
 
-// Format the user's Food Map into compact context for the model
-export function buildFoodMapContext(foodMap) {
+// Format the user's Food Map + lab results into compact context for the model.
+// The key insight: most foods are fine. The lab flags a small suspect list.
+// Of those, some are confirmed via reintroduction (Safe/Limit/Avoid) and some
+// are still being tested. Everything NOT flagged by the lab is fine to eat.
+export function buildFoodMapContext(foodMap, labFoods = []) {
   const safe = foodMap.filter(f => f.verdict === 'Safe').map(f => f.food)
   const limit = foodMap.filter(f => f.verdict === 'Limit').map(f => f.food)
   const avoid = foodMap.filter(f => f.verdict === 'Avoid').map(f => f.food)
+
+  // Lab-flagged foods that don't yet have a verdict = still eliminated, treat as AVOID for now
+  const verdictedNames = new Set(foodMap.map(f => (f.food || '').toLowerCase()))
+  const flagged = labFoods.filter(f => ['High', 'Moderate', 'Low'].includes(f.level))
+  const notYetTested = flagged
+    .filter(f => !verdictedNames.has((f.name || '').toLowerCase()))
+    .map(f => f.name)
+  const labClean = labFoods.filter(f => f.level === 'No sensitivity').map(f => f.name)
+
   return {
-    safe,
-    limit,
-    avoid,
-    text: `SAFE (tolerated, eat freely): ${safe.join(', ') || 'none recorded'}
-LIMIT (small amounts only): ${limit.join(', ') || 'none recorded'}
-AVOID (confirmed triggers): ${avoid.join(', ') || 'none recorded'}`,
+    safe, limit, avoid, notYetTested, labClean,
+    text: `The user is in a food sensitivity protocol. Their lab flagged a specific list of foods as showing some sensitivity. Those flagged foods are eliminated and tested one at a time through reintroduction. Everything the lab did NOT flag was never a concern and is fine to eat.
+
+CONFIRMED SAFE (reintroduced and tolerated, eat freely): ${safe.join(', ') || 'none yet'}
+CONFIRMED LIMIT (reintroduced, fine in small amounts only): ${limit.join(', ') || 'none yet'}
+CONFIRMED AVOID (reintroduced, confirmed trigger, do not eat): ${avoid.join(', ') || 'none yet'}
+FLAGGED BUT NOT YET TESTED (showed sensitivity on the lab, not yet reintroduced): ${notYetTested.join(', ') || 'none'}
+LAB CAME BACK CLEAN (never flagged, safe to eat): ${labClean.join(', ') || 'not specified'}
+
+CRITICAL RULES:
+1. FLAGGED BUT NOT YET TESTED foods must be treated as AVOID for now. They showed sensitivity and have not been cleared through reintroduction, so the user should not eat them yet. Tell them it is still being eliminated and they will test it later in the protocol.
+2. CONFIRMED foods follow their verdict exactly (Safe, Limit, or Avoid).
+3. Any food NOT in the lists above was never flagged by the lab and is fine to eat normally. Do not treat unlisted foods as unknown or risky.
+4. So the only foods that are fine to eat are: the Confirmed Safe list, the Lab Clean list, and anything not mentioned at all. Everything on the Avoid, Limit, and Not Yet Tested lists requires caution, with Avoid and Not Yet Tested meaning do not eat.`,
   }
 }
 
@@ -28,9 +48,11 @@ YOUR JOB:
 3. Answer general questions about navigating food given their map (e.g. "what's safe at an Italian restaurant?").
 
 HOW TO REASON ABOUT FOODS:
-- A dish contains many ingredients. Think about the common ingredients of a dish and check each against the map. Example: a cream sauce contains dairy; if dairy is Avoid, flag it.
-- If a food is directly on their map, use that verdict.
-- If a food is NOT on their map, say so plainly. Do not invent a verdict.
+- Most foods are fine. The lab only flagged a small list as showing sensitivity. If a food is not in any of the lists you were given, it was never a concern, so treat it as fine to eat. Do not act like you know nothing about untested foods.
+- A dish contains many ingredients. Think about the common ingredients of a dish and check each against the lists. Example: a cream sauce contains dairy; if dairy is on their Avoid or Not Yet Tested list, flag it. If none of a dish's ingredients are on their Avoid, Limit, or Not Yet Tested lists, the dish is fine.
+- Confirmed foods (Safe, Limit, Avoid) follow their verdict exactly.
+- Flagged-but-not-yet-tested foods are still being eliminated. Treat them as avoid for now. Tell the user it is not cleared yet and they will test it later in their protocol. Do not tell them to eat it.
+- Never invent a verdict.
 
 SAFETY RULES (critical):
 - NEVER give a false all-clear. If you are not sure whether a dish contains one of their trigger foods, say so and suggest they check or ask.
@@ -49,8 +71,8 @@ LOGGING:
 listing the individual foods. If they did not describe eating anything, do not append this line.`
 
 // Send a turn to the assistant. Returns { reply, foodsToLog }
-export async function askSensify({ userMessage, foodMap, history = [] }) {
-  const mapContext = buildFoodMapContext(foodMap)
+export async function askSensify({ userMessage, foodMap, labFoods = [], history = [] }) {
+  const mapContext = buildFoodMapContext(foodMap, labFoods)
 
   const messages = [
     { role: 'user', content: `${SYSTEM_PROMPT}\n\nTHE USER'S FOOD MAP:\n${mapContext.text}` },
