@@ -166,7 +166,7 @@ function verdictStyle(label) {
 }
 
 const s = {
-  wrap: { display: 'flex', flexDirection: 'column', height: '100%', maxWidth: '680px', margin: '0 auto', width: '100%', background: '#FAF8F4' },
+  wrap: { display: 'flex', flexDirection: 'column', height: '100%', maxWidth: '680px', margin: '0 auto', width: '100%', background: '#FFFFFF' },
   header: { padding: '20px 20px 14px' },
   headerTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300 },
   em: { fontStyle: 'italic', color: '#3D5C3C' },
@@ -188,7 +188,7 @@ const s = {
   userRow: { display: 'flex', justifyContent: 'flex-end' },
   aiRow: { display: 'flex', justifyContent: 'flex-start' },
   userBubble: { background: '#3D5C3C', color: 'white', padding: '11px 15px', borderRadius: '16px 16px 4px 16px', fontSize: '14.5px', lineHeight: 1.5, maxWidth: '80%', whiteSpace: 'pre-wrap' },
-  aiBubble: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '16px 16px 16px 4px', padding: '13px 15px', maxWidth: '88%' },
+  aiBubble: { background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '16px 16px 16px 4px', padding: '13px 15px', maxWidth: '88%' },
   aiMeta: { fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#3D5C3C', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '7px' },
   aiText: { color: '#1C1C1C', fontSize: '14.5px', lineHeight: 1.55, whiteSpace: 'pre-wrap' },
   verdictTag: { display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 600, padding: '4px 10px', borderRadius: '6px', fontFamily: 'DM Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: '10px' },

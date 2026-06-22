@@ -168,10 +168,14 @@ const css = `
   .snfy-avoid-chips { display: flex; flex-wrap: wrap; gap: 7px; }
   .snfy-avoid-chip { font-size: 13px; padding: 7px 13px; border-radius: 10px; font-weight: 500; }
 
-  /* AI Insight — tucked below avoiding list */
-  .snfy-insight { background: #FAF8F4; border-left: 2px solid #3D5C3C; border-radius: 0 10px 10px 0; padding: 14px; margin-top: 16px; }
-  .snfy-insight-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #3D5C3C; margin-bottom: 7px; }
-  .snfy-insight p { font-size: 13px; line-height: 1.75; color: #1C1C1C; }
+  /* Weekly insight — instrument style */
+  .snfy-insight { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 16px; margin-top: 16px; }
+  .snfy-insight-head { display: flex; align-items: center; gap: 7px; margin-bottom: 9px; }
+  .snfy-insight-dot { width: 6px; height: 6px; border-radius: 50%; background: #2C9D8A; animation: snfyPulse 1.6s infinite; flex-shrink: 0; }
+  .snfy-insight-tag { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: #3D5C3C; }
+  .snfy-insight p { font-size: 13.5px; line-height: 1.7; color: #1C1C1C; }
+  .snfy-insight-foot { font-family: 'DM Mono', monospace; font-size: 8.5px; letter-spacing: 0.6px; color: #A8A69E; text-transform: uppercase; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.05); }
+  @keyframes snfyPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 
   .snfy-loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; font-size: 14px; color: #7A7A72; }
 `
@@ -1046,10 +1050,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
               )}
 
-              {/* AI INSIGHT — tucked below food list */}
+              {/* WEEKLY INSIGHT — instrument style */}
               <div className="snfy-insight">
-                <div className="snfy-insight-tag">{profile?.latest_insight ? `Your weekly insight — week ${profile?.latest_insight_week || 1}` : 'Getting started'}</div>
+                <div className="snfy-insight-head">
+                  <span className="snfy-insight-dot"></span>
+                  <span className="snfy-insight-tag">{profile?.latest_insight ? `WEEKLY INSIGHT · WEEK ${profile?.latest_insight_week || 1}` : 'GETTING STARTED'}</span>
+                </div>
                 <p>{profile?.latest_insight || 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.'}</p>
+                {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
               </div>
             </div>
 
