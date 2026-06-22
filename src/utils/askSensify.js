@@ -110,7 +110,7 @@ export async function askSensify({ userMessage, foodMap, labFoods = [], history 
     { role: 'user', content: userMessage },
   ]
 
-  const raw = await aiCall(messages, 600)
+  const raw = await aiCall(messages, 600, 'ask')
 
   // Extract the [[LOG: ...]] line if present
   let reply = raw

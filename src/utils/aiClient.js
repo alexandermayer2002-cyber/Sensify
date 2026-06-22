@@ -2,7 +2,7 @@
 // so the Anthropic API key never reaches the browser.
 import { supabase } from '../supabase'
 
-export const aiCall = async (messages, maxTokens = 300) => {
+export const aiCall = async (messages, maxTokens = 300, feature = null) => {
   // Attach the user's auth token so the proxy can verify a logged-in user
   const { data: { session } } = await supabase.auth.getSession()
   const token = session?.access_token
@@ -12,7 +12,7 @@ export const aiCall = async (messages, maxTokens = 300) => {
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify({ messages, max_tokens: maxTokens }),
+    body: JSON.stringify({ messages, max_tokens: maxTokens, ...(feature ? { feature } : {}) }),
   })
   const data = await response.json()
   if (!response.ok || data.error) throw new Error(data.error || 'AI request failed')

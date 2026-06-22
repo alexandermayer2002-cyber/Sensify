@@ -64,7 +64,10 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
       setMessages(prev => [...prev, aiMsg])
       saveMessage({ userId: session.user.id, role: 'assistant', content: reply })
     } catch (e) {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I had trouble with that. Mind trying again?" }])
+      const msg = /limit for Ask Sensify/i.test(e.message)
+        ? e.message
+        : "Sorry, I had trouble with that. Mind trying again?"
+      setMessages(prev => [...prev, { role: 'assistant', content: msg }])
     }
     setSending(false)
   }

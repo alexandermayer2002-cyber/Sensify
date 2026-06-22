@@ -1,9 +1,12 @@
 // AI proxy — keeps the Anthropic API key server-side.
-// Accepts: { messages, max_tokens } and forwards to Anthropic.
+// Accepts: { messages, max_tokens, feature } and forwards to Anthropic.
 // The key never reaches the browser. Requires a valid Supabase auth token
 // so anonymous callers cannot run up the Anthropic bill.
+// Ask Sensify calls (feature: 'ask') are rate-limited per user per day.
 
 const { createClient } = require('@supabase/supabase-js')
+
+const ASK_DAILY_LIMIT = 25
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -16,12 +19,15 @@ exports.handler = async (event) => {
   if (!token) {
     return { statusCode: 401, body: JSON.stringify({ error: 'Authentication required' }) }
   }
+
+  let userId = null
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
   try {
-    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
     const { data: { user }, error } = await supabase.auth.getUser(token)
     if (error || !user) {
       return { statusCode: 401, body: JSON.stringify({ error: 'Invalid session' }) }
     }
+    userId = user.id
   } catch (e) {
     return { statusCode: 401, body: JSON.stringify({ error: 'Auth check failed' }) }
   }
@@ -33,12 +39,31 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) }
   }
 
-  const { messages, max_tokens } = payload
+  const { messages, max_tokens, feature } = payload
 
   // Basic validation — only allow the shapes our app actually uses
   if (!Array.isArray(messages) || messages.length === 0) {
     return { statusCode: 400, body: JSON.stringify({ error: 'messages required' }) }
   }
+
+  // Rate-limit Ask Sensify usage per user per day (protects the AI bill).
+  // Only the conversational assistant is limited; program-essential AI
+  // (insights, verdicts, briefings) is never blocked.
+  if (feature === 'ask') {
+    try {
+      const { data: count, error: rlError } = await supabase.rpc('increment_ai_usage', { p_user_id: userId })
+      if (!rlError && typeof count === 'number' && count > ASK_DAILY_LIMIT) {
+        return {
+          statusCode: 429,
+          body: JSON.stringify({ error: "You've reached today's limit for Ask Sensify. It'll reset tomorrow." }),
+        }
+      }
+    } catch (e) {
+      // If the counter fails, fail open (don't block the user) but log it.
+      console.error('Rate limit check failed:', e.message)
+    }
+  }
+
   const cappedTokens = Math.min(Number(max_tokens) || 300, 1500)
 
   try {
