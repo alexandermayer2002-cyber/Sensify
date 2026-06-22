@@ -72,7 +72,16 @@ LOGGING:
 - When the user describes food they actually ate (past tense, "I had", "I ate"), treat it as a meal to log.
 - At the very end of your reply, if and only if they described eating something, append a line exactly like:
 [[LOG: food1, food2, food3]]
-listing the individual foods. If they did not describe eating anything, do not append this line.`
+listing the individual foods. If they did not describe eating anything, do not append this line.
+
+VERDICT TAG (for "can I eat this" style questions):
+- When the user asks whether they can eat a specific food or dish, append a metadata line at the very end like:
+[[META: verdict=SAFE|LIMIT|HOLD|AVOID; checked=N; flags=ingredient1, ingredient2]]
+where:
+  - verdict = your overall call. Use SAFE if nothing is a concern, LIMIT if it involves a Limit food, HOLD if it involves a flagged-but-not-yet-tested food (still in elimination), AVOID if it involves a confirmed Avoid food.
+  - checked = the number of ingredients you considered.
+  - flags = the specific ingredients that triggered caution (empty if none).
+- Only add this line for "can I eat X" questions, not for general chat or logging. Put it after any LOG line.`
 
 // Send a turn to the assistant. Returns { reply, foodsToLog }
 export async function askSensify({ userMessage, foodMap, labFoods = [], history = [] }) {
@@ -93,10 +102,26 @@ export async function askSensify({ userMessage, foodMap, labFoods = [], history 
   const logMatch = raw.match(/\[\[LOG:\s*([^\]]+)\]\]/i)
   if (logMatch) {
     foodsToLog = logMatch[1].split(',').map(s => s.trim()).filter(Boolean)
-    reply = raw.replace(/\[\[LOG:[^\]]+\]\]/i, '').trim()
+    reply = reply.replace(/\[\[LOG:[^\]]+\]\]/i, '').trim()
   }
 
-  return { reply, foodsToLog, mapContext }
+  // Extract the [[META: ...]] verdict line if present
+  let verdict = null
+  const metaMatch = raw.match(/\[\[META:\s*([^\]]+)\]\]/i)
+  if (metaMatch) {
+    const meta = metaMatch[1]
+    const vMatch = meta.match(/verdict=([A-Z]+)/i)
+    const cMatch = meta.match(/checked=(\d+)/i)
+    const fMatch = meta.match(/flags=([^;]*)/i)
+    verdict = {
+      label: vMatch ? vMatch[1].toUpperCase() : null,
+      checked: cMatch ? parseInt(cMatch[1], 10) : null,
+      flags: fMatch ? fMatch[1].split(',').map(s => s.trim()).filter(Boolean) : [],
+    }
+    reply = reply.replace(/\[\[META:[^\]]+\]\]/i, '').trim()
+  }
+
+  return { reply, foodsToLog, verdict, mapContext }
 }
 
 // Classify a logged food against the map for storage + flagging

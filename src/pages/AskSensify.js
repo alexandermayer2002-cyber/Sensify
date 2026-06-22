@@ -46,7 +46,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
     saveMessage({ userId: session.user.id, role: 'user', content: text })
 
     try {
-      const { reply, foodsToLog, mapContext } = await askSensify({
+      const { reply, foodsToLog, verdict, mapContext } = await askSensify({
         userMessage: text,
         foodMap,
         labFoods,
@@ -58,7 +58,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         await saveMealLog({ userId: session.user.id, rawText: text, foods: foodsToLog, mapContext })
       }
 
-      const aiMsg = { role: 'assistant', content: reply }
+      const aiMsg = { role: 'assistant', content: reply, verdict }
       setMessages(prev => [...prev, aiMsg])
       saveMessage({ userId: session.user.id, role: 'assistant', content: reply })
     } catch (e) {
@@ -82,7 +82,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
       <style>{css}</style>
       <div style={s.header}>
         <div style={s.headerTitle}>Ask <em style={s.em}>Sensify</em></div>
-        <div style={s.headerSub}>Your Food Map, working at every meal.</div>
+        <div style={s.headerStatus}><span style={s.statusDot}></span><span style={s.statusText}>READING YOUR FOOD MAP · LIVE</span></div>
       </div>
 
       <div style={s.thread} ref={scrollRef}>
@@ -103,9 +103,25 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
           </div>
         )}
         {messages.map((m, i) => (
-          <div key={i} style={m.role === 'user' ? s.userRow : s.aiRow}>
-            <div style={m.role === 'user' ? s.userBubble : s.aiBubble}>{m.content}</div>
-          </div>
+          m.role === 'user' ? (
+            <div key={i} style={s.userRow}>
+              <div style={s.userBubble}>{m.content}</div>
+            </div>
+          ) : (
+            <div key={i} style={s.aiRow}>
+              <div style={s.aiBubble}>
+                {m.verdict && m.verdict.checked != null && (
+                  <div style={s.aiMeta}>CROSS-REFERENCED {m.verdict.checked} INGREDIENT{m.verdict.checked !== 1 ? 'S' : ''}</div>
+                )}
+                <div style={s.aiText}>{m.content}</div>
+                {m.verdict && m.verdict.label && (
+                  <div style={{ ...s.verdictTag, ...verdictStyle(m.verdict.label) }}>
+                    {verdictLabel(m.verdict.label)}{m.verdict.flags.length > 0 ? ` · ${m.verdict.flags.length} FLAGGED` : ''}
+                  </div>
+                )}
+              </div>
+            </div>
+          )
         ))}
         {sending && (
           <div style={s.aiRow}>
@@ -136,12 +152,27 @@ const css = `
 @keyframes asPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 `
 
+function verdictLabel(label) {
+  return { SAFE: 'SAFE TO EAT', LIMIT: 'LIMIT', HOLD: 'HOLD FOR NOW', AVOID: 'AVOID' }[label] || label
+}
+function verdictStyle(label) {
+  const map = {
+    SAFE: { background: '#DEF2EE', border: '1px solid rgba(44,157,138,0.3)', color: '#1A6256' },
+    LIMIT: { background: '#FCEFD9', border: '1px solid rgba(232,148,31,0.35)', color: '#8A5410' },
+    HOLD: { background: '#FCEFD9', border: '1px solid rgba(232,148,31,0.35)', color: '#8A5410' },
+    AVOID: { background: '#FBE9E9', border: '1px solid rgba(214,69,69,0.3)', color: '#A32D2D' },
+  }
+  return map[label] || map.LIMIT
+}
+
 const s = {
   wrap: { display: 'flex', flexDirection: 'column', height: '100%', maxWidth: '680px', margin: '0 auto', width: '100%' },
   header: { padding: '20px 20px 14px' },
   headerTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300 },
   em: { fontStyle: 'italic', color: '#3D5C3C' },
-  headerSub: { fontSize: '13px', color: '#7A7A72', marginTop: '2px' },
+  headerStatus: { display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' },
+  statusDot: { width: '6px', height: '6px', borderRadius: '50%', background: '#2C9D8A', animation: 'asPulse 1.6s infinite' },
+  statusText: { fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#7A7A72', letterSpacing: '0.8px' },
   thread: { flex: 1, overflowY: 'auto', padding: '8px 16px 16px', display: 'flex', flexDirection: 'column', gap: '12px' },
   empty: { textAlign: 'center', padding: '36px 16px', margin: 'auto 0' },
   emptyTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '10px' },
@@ -157,7 +188,10 @@ const s = {
   userRow: { display: 'flex', justifyContent: 'flex-end' },
   aiRow: { display: 'flex', justifyContent: 'flex-start' },
   userBubble: { background: '#3D5C3C', color: 'white', padding: '11px 15px', borderRadius: '16px 16px 4px 16px', fontSize: '14.5px', lineHeight: 1.5, maxWidth: '80%', whiteSpace: 'pre-wrap' },
-  aiBubble: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', color: '#1C1C1C', padding: '11px 15px', borderRadius: '16px 16px 16px 4px', fontSize: '14.5px', lineHeight: 1.55, maxWidth: '85%', whiteSpace: 'pre-wrap' },
+  aiBubble: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '16px 16px 16px 4px', padding: '13px 15px', maxWidth: '88%' },
+  aiMeta: { fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#3D5C3C', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '7px' },
+  aiText: { color: '#1C1C1C', fontSize: '14.5px', lineHeight: 1.55, whiteSpace: 'pre-wrap' },
+  verdictTag: { display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 600, padding: '4px 10px', borderRadius: '6px', fontFamily: 'DM Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: '10px' },
   dots: { letterSpacing: '2px', color: '#3D5C3C', animation: 'asPulse 1.2s infinite' },
   inputBar: { display: 'flex', gap: '8px', padding: '12px 16px', borderTop: '1px solid rgba(0,0,0,0.07)', alignItems: 'flex-end' },
   input: { flex: 1, resize: 'none', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '14px', padding: '12px 14px', fontSize: '14.5px', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.4, maxHeight: '120px', outline: 'none' },
