@@ -308,9 +308,9 @@ const Footer = () => (
     <div className="mk-footer-logo">sensi<em>fy</em></div>
     <div className="mk-footer-note">Wellness program only. Not medical advice.</div>
     <div className="mk-footer-links">
-      <span className="mk-footer-link">Privacy</span>
-      <span className="mk-footer-link">Terms</span>
-      <span className="mk-footer-link">Contact</span>
+      <a className="mk-footer-link" href="/privacy.html" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>Privacy</a>
+      <a className="mk-footer-link" href="/terms.html" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>Terms</a>
+      <a className="mk-footer-link" href="mailto:alex@sensifyhealth.com" style={{ textDecoration: 'none' }}>Contact</a>
     </div>
   </div>
 )

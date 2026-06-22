@@ -101,7 +101,7 @@ export default function Signup({ onSuccess, onLogin, prefillEmail }) {
           </form>
         )}
         {success && <button style={s.btn} onClick={onLogin}>Go to sign in →</button>}
-        <div style={s.disclaimer}>By continuing you agree to our Terms of Service. This program is for wellness purposes only and is not a medical diagnosis.</div>
+        <div style={s.disclaimer}>By continuing you agree to our <a href="/terms.html" target="_blank" rel="noopener noreferrer" style={{ color: '#3D5C3C', textDecoration: 'underline' }}>Terms of Service</a> and <a href="/privacy.html" target="_blank" rel="noopener noreferrer" style={{ color: '#3D5C3C', textDecoration: 'underline' }}>Privacy Policy</a>. This program is for wellness purposes only and is not a medical diagnosis.</div>
         <div style={{ ...s.footer, marginTop: '12px' }}>Already have an account? <span style={s.link} onClick={onLogin}>Sign in</span></div>
       </div>
     </div>

@@ -1,10 +1,29 @@
 // AI proxy — keeps the Anthropic API key server-side.
 // Accepts: { messages, max_tokens } and forwards to Anthropic.
-// The key never reaches the browser.
+// The key never reaches the browser. Requires a valid Supabase auth token
+// so anonymous callers cannot run up the Anthropic bill.
+
+const { createClient } = require('@supabase/supabase-js')
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) }
+  }
+
+  // Require a valid logged-in user
+  const authHeader = event.headers.authorization || event.headers.Authorization || ''
+  const token = authHeader.replace(/^Bearer\s+/i, '')
+  if (!token) {
+    return { statusCode: 401, body: JSON.stringify({ error: 'Authentication required' }) }
+  }
+  try {
+    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
+    const { data: { user }, error } = await supabase.auth.getUser(token)
+    if (error || !user) {
+      return { statusCode: 401, body: JSON.stringify({ error: 'Invalid session' }) }
+    }
+  } catch (e) {
+    return { statusCode: 401, body: JSON.stringify({ error: 'Auth check failed' }) }
   }
 
   let payload

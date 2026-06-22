@@ -204,11 +204,9 @@ Rules:
         .from('lab-results')
         .upload(fileName, uploadedFile, { contentType: uploadedFile.type, upsert: true })
       if (!storageError && storageData) {
-        // Store the path, not a public URL — bucket should be private.
-        // Admin dashboard generates short-lived signed URLs for viewing.
+        // Store only the path. The bucket is private; the admin dashboard
+        // generates short-lived signed URLs for viewing. Never a public URL.
         file_path = fileName
-        const { data: urlData } = supabase.storage.from('lab-results').getPublicUrl(fileName)
-        file_url = urlData?.publicUrl // legacy fallback while bucket is still public
       }
     }
 

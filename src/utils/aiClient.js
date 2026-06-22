@@ -1,10 +1,17 @@
 // Client-side AI helper — routes all AI calls through the Netlify proxy
 // so the Anthropic API key never reaches the browser.
+import { supabase } from '../supabase'
 
 export const aiCall = async (messages, maxTokens = 300) => {
+  // Attach the user's auth token so the proxy can verify a logged-in user
+  const { data: { session } } = await supabase.auth.getSession()
+  const token = session?.access_token
   const response = await fetch('/.netlify/functions/ai-proxy', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    },
     body: JSON.stringify({ messages, max_tokens: maxTokens }),
   })
   const data = await response.json()
