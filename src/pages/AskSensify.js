@@ -71,10 +71,10 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
   }
 
-  const suggestions = [
-    'Can I eat pad thai?',
-    'I had eggs and toast for breakfast',
-    "What's safe at an Italian restaurant?",
+  const capabilities = [
+    { icon: 'check', title: 'Check if a food is safe', desc: 'Ask about any food or dish and I\'ll tell you how it fits your Food Map.', example: 'Can I eat pad thai?' },
+    { icon: 'log', title: 'Log what you eat', desc: 'Just tell me what you had and I\'ll record it and flag anything to watch.', example: 'I had a chicken salad for lunch' },
+    { icon: 'menu', title: 'Figure out what to order', desc: 'Heading out? I\'ll help you find safe options anywhere.', example: "What's safe at an Italian restaurant?" },
   ]
 
   return (
@@ -89,12 +89,17 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         {loaded && messages.length === 0 && (
           <div style={s.empty}>
             <div style={s.emptyTitle}>What can I help you eat?</div>
-            <div style={s.emptyText}>Ask if a food is safe for you, tell me what you ate, or ask what to order somewhere. I check everything against your Food Map.</div>
-            <div style={s.chips}>
-              {suggestions.map((sug, i) => (
-                <button key={i} style={s.chip} onClick={() => setInput(sug)}>{sug}</button>
+            <div style={s.emptyText}>I know your Food Map and your lab results, so I can give you guidance that's specific to you. Here's what I can do:</div>
+            <div style={s.capList}>
+              {capabilities.map((c, i) => (
+                <button key={i} style={s.capCard} onClick={() => setInput(c.example)}>
+                  <div style={s.capTitle}>{c.title}</div>
+                  <div style={s.capDesc}>{c.desc}</div>
+                  <div style={s.capExample}>"{c.example}"</div>
+                </button>
               ))}
             </div>
+            <div style={s.emptyFoot}>Tap one to try it, or just type below.</div>
           </div>
         )}
         {messages.map((m, i) => (
@@ -141,6 +146,12 @@ const s = {
   empty: { textAlign: 'center', padding: '36px 16px', margin: 'auto 0' },
   emptyTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '10px' },
   emptyText: { fontSize: '14px', color: '#7A7A72', lineHeight: 1.6, maxWidth: '420px', margin: '0 auto 22px' },
+  capList: { display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '380px', margin: '0 auto' },
+  capCard: { textAlign: 'left', padding: '15px 16px', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.09)', background: '#FFFFFF', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'border-color 0.15s' },
+  capTitle: { fontSize: '14px', fontWeight: 600, color: '#1C1C1C', marginBottom: '3px' },
+  capDesc: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.5, marginBottom: '8px' },
+  capExample: { fontSize: '12.5px', color: '#3D5C3C', fontStyle: 'italic' },
+  emptyFoot: { fontSize: '12px', color: '#A8A69E', marginTop: '18px' },
   chips: { display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '320px', margin: '0 auto' },
   chip: { padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', background: '#FFFFFF', fontSize: '13.5px', color: '#3D5C3C', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500 },
   userRow: { display: 'flex', justifyContent: 'flex-end' },
