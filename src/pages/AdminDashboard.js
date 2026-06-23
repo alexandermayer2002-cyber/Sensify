@@ -1,10 +1,32 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
+import { recommendTrack, countFlags, symptomBurden, COMMON_TRIGGERS } from '../utils/trackRecommendation'
 
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
   .adm { min-height: 100vh; background: #FAF8F4; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
+  .adm-track { background: #0E0E0C; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
+  .adm-track-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+  .adm-track-eye { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: rgba(139,174,138,0.8); }
+  .adm-track-conf { font-family: 'DM Mono', monospace; font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 5px; }
+  .adm-track-conf.high { background: rgba(74,140,106,0.25); color: #8FD9B0; }
+  .adm-track-conf.medium { background: rgba(232,148,31,0.22); color: #F0B468; }
+  .adm-track-conf.low { background: rgba(214,69,69,0.22); color: #F0998F; }
+  .adm-track-rec { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 300; color: white; margin-bottom: 6px; }
+  .adm-track-reason { font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+  .adm-track-signals { display: flex; gap: 16px; font-size: 11px; color: rgba(255,255,255,0.5); font-family: 'DM Mono', monospace; }
+  .adm-track-signals b { color: rgba(255,255,255,0.85); }
+  .adm-track-opts { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .adm-track-opt { padding: 8px 13px; border-radius: 9px; border: 1.5px solid rgba(0,0,0,0.12); background: white; font-size: 12.5px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
+  .adm-track-opt.on { border-color: #3D5C3C; background: #EDF3ED; color: #2D6B42; }
+  .adm-foodpick { background: #F2F5EF; border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+  .adm-foodpick-label { font-size: 11px; font-weight: 600; color: #3D5C3C; margin-bottom: 9px; }
+  .adm-foodpick-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .adm-foodpick-chip { padding: 6px 11px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.12); background: white; font-size: 11.5px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
+  .adm-foodpick-chip.on { border-color: #3D5C3C; background: #3D5C3C; color: white; }
+  .adm-decline-note { font-size: 12px; color: #8A5410; background: #FCEFD9; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+  .adm-btn.amber { background: #E8941F; color: white; }
   .adm-nav { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.07); padding: 0 28px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
   .adm-logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; color: #1C1C1C; }
   .adm-logo em { color: #3D5C3C; font-style: italic; }
@@ -192,6 +214,8 @@ export default function AdminDashboard({ session, onBack }) {
   const [msgBody, setMsgBody] = useState({})
   const [msgSent, setMsgSent] = useState({})
   const [showMsgCompose, setShowMsgCompose] = useState({})
+  const [trackChoice, setTrackChoice] = useState({})    // labId -> chosen track
+  const [trackFoodSel, setTrackFoodSel] = useState({})  // labId -> array of selected food names
 
   useEffect(() => { loadAll() }, [])
 
@@ -201,7 +225,7 @@ export default function AdminDashboard({ session, onBack }) {
       const { data: labs } = await supabase.from('lab_results').select('*').eq('status', 'pending_review').order('submitted_at', { ascending: false })
       if (labs) {
         const enriched = await Promise.all(labs.map(async (l) => {
-          const { data: p } = await supabase.from('profiles').select('full_name, phone_number').eq('id', l.user_id).maybeSingle()
+          const { data: p } = await supabase.from('profiles').select('*').eq('id', l.user_id).maybeSingle()
           // Prefer a short-lived signed URL (works with a private bucket).
           // Falls back to legacy public file_url if no path stored.
           let viewUrl = l.file_url
@@ -245,8 +269,27 @@ export default function AdminDashboard({ session, onBack }) {
     setLoadingUser(false)
   }
 
-  const approveLab = async (labId, userId) => {
+  const approveLab = async (labId, userId, track = 'flagged', trackFoods = null, trackNote = '') => {
     setApproving(prev => ({ ...prev, [labId]: true }))
+
+    // Declining: mark the lab reviewed but do NOT start a protocol.
+    if (track === 'declined') {
+      const { error: labError } = await supabase.from('lab_results').update({ status: 'approved' }).eq('id', labId)
+      const { error: profileError, data: updated } = await supabase.from('profiles').update({
+        program_phase: 'declined',
+        protocol_track: 'declined',
+        track_assigned_at: new Date().toISOString(),
+        track_note: trackNote || null,
+      }).eq('id', userId).select()
+      setApproving(prev => ({ ...prev, [labId]: false }))
+      if (labError || profileError || !updated || updated.length === 0) {
+        alert(`Update failed: ${labError?.message || profileError?.message || 'profile update blocked (check RLS admin policy)'}`)
+        return
+      }
+      setApproved(prev => ({ ...prev, [labId]: true }))
+      return
+    }
+
     // Start date is tomorrow — gives user rest of today to prepare
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
@@ -256,6 +299,10 @@ export default function AdminDashboard({ session, onBack }) {
     const { error: profileError, data: updated } = await supabase.from('profiles').update({
       program_phase: 'elimination',
       protocol_start_date: tomorrowStr,
+      protocol_track: track,
+      track_foods: trackFoods,
+      track_assigned_at: new Date().toISOString(),
+      track_note: trackNote || null,
     }).eq('id', userId).select()
 
     setApproving(prev => ({ ...prev, [labId]: false }))
@@ -453,18 +500,92 @@ export default function AdminDashboard({ session, onBack }) {
                         {isApproved ? (
                           <div className="adm-success-badge">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4A8C6A" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                            Approved — protocol activated
+                            {trackChoice[lab.id] === 'declined' ? 'Reviewed — declined, no protocol started' : 'Approved — protocol activated'}
                           </div>
-                        ) : (
-                          <>
-                            <button className="adm-btn green" disabled={approving[lab.id]} onClick={() => approveLab(lab.id, lab.user_id)}>
-                              {approving[lab.id] ? 'Approving...' : 'Approve →'}
-                            </button>
-                            <button className="adm-btn ghost" onClick={() => setShowMsgCompose(prev => ({ ...prev, [lab.id]: !prev[lab.id] }))}>
-                              Message user
-                            </button>
-                          </>
-                        )}
+                        ) : (() => {
+                          const rec = recommendTrack({ profile: lab.profile, labFoods: lab.foods })
+                          const chosen = trackChoice[lab.id] || rec.track
+                          const burden = symptomBurden(lab.profile)
+                          const flags = countFlags(lab.foods)
+                          const needsFoodPick = chosen === 'common' || chosen === 'wellness'
+                          const selectedFoods = trackFoodSel[lab.id] || []
+                          const toggleFood = (name) => setTrackFoodSel(prev => {
+                            const cur = prev[lab.id] || []
+                            return { ...prev, [lab.id]: cur.includes(name) ? cur.filter(f => f !== name) : [...cur, name] }
+                          })
+                          const trackOptions = [
+                            { id: 'flagged', label: 'Flagged foods' },
+                            { id: 'common', label: 'Common triggers' },
+                            { id: 'wellness', label: 'Wellness' },
+                            { id: 'declined', label: 'Decline' },
+                          ]
+                          const confirmTrack = () => {
+                            let foods = null
+                            if (chosen === 'common' || chosen === 'wellness') {
+                              foods = selectedFoods.map(n => ({ name: n, level: 'Moderate' }))
+                            }
+                            approveLab(lab.id, lab.user_id, chosen, foods)
+                          }
+                          return (
+                          <div style={{ width: '100%' }}>
+                            {/* Recommendation panel */}
+                            <div className="adm-track">
+                              <div className="adm-track-head">
+                                <span className="adm-track-eye">Recommended track</span>
+                                <span className={`adm-track-conf ${rec.confidence}`}>{rec.confidence} confidence</span>
+                              </div>
+                              <div className="adm-track-rec">{rec.label}</div>
+                              <div className="adm-track-reason">{rec.reason}</div>
+                              <div className="adm-track-signals">
+                                <span>Symptom burden <b>{burden.toFixed(1)}/10</b></span>
+                                <span>Lab flags <b>{flags.total}</b> ({flags.high}H/{flags.moderate}M/{flags.low}L)</span>
+                              </div>
+                            </div>
+
+                            {/* Track selector — confirm or override */}
+                            <div className="adm-track-opts">
+                              {trackOptions.map(opt => (
+                                <button key={opt.id}
+                                  className={`adm-track-opt${chosen === opt.id ? ' on' : ''}${rec.track === opt.id ? ' rec' : ''}`}
+                                  onClick={() => setTrackChoice(prev => ({ ...prev, [lab.id]: opt.id }))}>
+                                  {opt.label}{rec.track === opt.id ? ' ★' : ''}
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* Food subset picker for common/wellness */}
+                            {needsFoodPick && (
+                              <div className="adm-foodpick">
+                                <div className="adm-foodpick-label">Select foods to test ({selectedFoods.length} selected)</div>
+                                <div className="adm-foodpick-grid">
+                                  {COMMON_TRIGGERS.map(f => (
+                                    <button key={f.name}
+                                      className={`adm-foodpick-chip${selectedFoods.includes(f.name) ? ' on' : ''}`}
+                                      onClick={() => toggleFood(f.name)}>
+                                      {f.name}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {chosen === 'declined' && (
+                              <div className="adm-decline-note">No protocol will be started. The user will be marked as reviewed-declined.</div>
+                            )}
+
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '14px' }}>
+                              <button className={`adm-btn ${chosen === 'declined' ? 'amber' : 'green'}`}
+                                disabled={approving[lab.id] || (needsFoodPick && selectedFoods.length === 0)}
+                                onClick={confirmTrack}>
+                                {approving[lab.id] ? 'Saving...' : chosen === 'declined' ? 'Confirm decline' : `Approve — ${trackOptions.find(t => t.id === chosen)?.label} →`}
+                              </button>
+                              <button className="adm-btn ghost" onClick={() => setShowMsgCompose(prev => ({ ...prev, [lab.id]: !prev[lab.id] }))}>
+                                Message user
+                              </button>
+                            </div>
+                          </div>
+                          )
+                        })()}
                       </div>
 
                       {showMsgCompose[lab.id] && !isApproved && (
