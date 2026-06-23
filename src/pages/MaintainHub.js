@@ -40,9 +40,6 @@ export default function MaintainHub({ session, profile }) {
   const limit = foodMap.filter(f => f.verdict === 'Limit')
   const avoid = foodMap.filter(f => f.verdict === 'Avoid')
 
-  // Token count (placeholder logic until billing/rewards wired): months with 20+ logged days
-  const tokenCount = 0
-
   if (view === 'ask') {
     return (
       <div style={{ height: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column' }}>
@@ -107,14 +104,11 @@ export default function MaintainHub({ session, profile }) {
           </div>
         </div>
 
-        {/* Free retest tokens */}
-        <div style={s.sectionLabel}>Your free retest</div>
-        <div style={s.tokenCard}>
-          <div style={s.tokenTop}><span style={s.tokenLabel}>Tokens earned</span><span style={s.tokenCount}>{tokenCount} / 10</span></div>
-          <div style={s.tokenDots}>
-            {[...Array(10)].map((_, i) => <div key={i} style={{ ...s.tdot, background: i < tokenCount ? '#3D5C3C' : '#F1EFE8' }} />)}
-          </div>
-          <div style={s.tokenHint}>Earn a token each month you log 20 days, or when a friend joins. Collect 10 toward a free retest.</div>
+        {/* Refer a friend */}
+        <div style={s.sectionLabel}>Refer a friend</div>
+        <div style={s.referCard}>
+          <div style={s.referText}>Know someone who's tired of guessing what their body can't handle? Send them your Food Map. They get 10% off the program, and you get a free month of Maintain when they join.</div>
+          <button style={s.referBtn}>Share your Food Map</button>
         </div>
 
         {/* Recent activity */}
@@ -342,13 +336,9 @@ const s = {
   tileT: { fontSize: '13px', fontWeight: 600, marginBottom: '3px' },
   tileD: { fontSize: '11px', color: '#7A7A72', lineHeight: 1.4 },
 
-  tokenCard: { background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '13px', padding: '16px' },
-  tokenTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '12px' },
-  tokenLabel: { fontSize: '12px', fontWeight: 600 },
-  tokenCount: { fontFamily: 'DM Mono, monospace', fontSize: '12px', color: '#3D5C3C' },
-  tokenDots: { display: 'flex', gap: '5px', marginBottom: '10px' },
-  tdot: { flex: 1, height: '7px', borderRadius: '4px' },
-  tokenHint: { fontSize: '11px', color: '#7A7A72', lineHeight: 1.45 },
+  referCard: { background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '13px', padding: '16px' },
+  referText: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.5, marginBottom: '13px' },
+  referBtn: { width: '100%', padding: '11px', borderRadius: '10px', border: 'none', background: '#3D5C3C', color: 'white', fontSize: '13px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
 
   activity: { background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '13px', padding: '4px 16px' },
   actRow: { display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' },

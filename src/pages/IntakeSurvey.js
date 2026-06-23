@@ -267,12 +267,17 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
                 desc: 'Food sensitivity results are based on your reported symptoms during a structured elimination and reintroduction protocol. Individual results vary.'
               },
               {
+                icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+                title: 'Finding no triggers is a valid result',
+                desc: 'Some people complete the protocol and find their body tolerates everything well. That is a real, useful answer, not a failure. It means food sensitivity is unlikely to be driving your symptoms, and we will tell you so honestly rather than invent a problem.'
+              },
+              {
                 icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
                 title: 'You agree to receive daily SMS check-ins',
                 desc: 'As part of your program you will receive recurring automated text messages from Sensify, including daily check-in reminders and reintroduction updates. Message and data rates may apply. Consent is not a condition of purchase. Reply STOP at any time to opt out, or HELP for assistance.'
               },
             ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', gap: '13px', alignItems: 'flex-start', paddingBottom: i < 4 ? '16px' : 0, borderBottom: i < 4 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
+              <div key={i} style={{ display: 'flex', gap: '13px', alignItems: 'flex-start', paddingBottom: i < 5 ? '16px' : 0, borderBottom: i < 5 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                 <div style={{ width: '32px', height: '32px', background: '#EDF3ED', borderRadius: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>{item.icon}</div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '4px', color: '#1C1C1C' }}>{item.title}</div>

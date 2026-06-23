@@ -158,6 +158,10 @@ const css = `
   .sci-cside.verdict .sci-cside-desc { color: rgba(255,255,255,0.72); }
   .sci-arrow { display: flex; align-items: center; justify-content: center; color: rgba(139,174,138,0.6); font-size: 24px; }
   .sci-disclaimers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .sci-answer { margin-top: 40px; background: #0E0E0C; border-radius: 18px; padding: 32px; }
+  .sci-answer-tag { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(139,174,138,0.8); margin-bottom: 12px; }
+  .sci-answer-h { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 300; color: white; margin-bottom: 14px; }
+  .sci-answer-p { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.72); max-width: 620px; }
   .sci-disc { display: flex; gap: 10px; align-items: flex-start; padding: 16px; background: #FAF8F4; border-radius: 12px; }
   .sci-disc-t { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
   .sci-disc-d { font-size: 11.5px; color: #7A7A72; line-height: 1.55; }
@@ -265,7 +269,7 @@ const FAQ_GROUPS = [
       { q: 'How do the daily check-ins work?', a: 'Each day you confirm whether you stayed on plan. Staying on plan builds your streak. A slip-up opens a quick log where you note what happened, and that data feeds your weekly insights. It takes a second a day.' },
       { q: "What if I don't see improvement during elimination?", a: 'Your symptom trends are monitored every week and flagged when improvement is not occurring. We look at compliance, hidden ingredients, and stress, and our team reviews the situation personally before any plan changes are suggested.' },
       { q: 'Do I have to do all 6 months?', a: 'The full value comes from completing the protocol, since the reintroduction phase is where your verdicts are earned. You can stop anytime, but your Food Map is only complete once each food has been tested. We designed the program to keep each step light so finishing feels doable.' },
-      { q: 'What happens after 6 months?', a: 'You receive your completed Food Map, permanent and yours to keep. You can also continue with our Maintain plan for ongoing symptom tracking, meal logging against your Food Map, and annual retesting as your sensitivities evolve.' },
+      { q: 'What happens after 6 months?', a: 'You receive your completed Food Map, permanent and yours to keep. You can also continue with Maintain, our $12.99/month plan that keeps your Food Map working for you every day, with Ask Sensify on hand to check any food, menu, or meal against your results whenever you need it.' },
     ],
   },
   {
@@ -273,6 +277,7 @@ const FAQ_GROUPS = [
     items: [
       { q: 'Is this a medical diagnosis?', a: 'No. Sensify is a wellness and educational program. It does not diagnose, treat, or cure any medical condition. If you have serious symptoms, always consult a licensed healthcare provider.' },
       { q: 'How accurate are IgG food sensitivity tests?', a: 'IgG tests measure immune reactivity, not confirmed intolerance. We treat your results as a starting hypothesis. The real evidence comes from the elimination and reintroduction protocol, which is why the protocol is the product, not the test.' },
+      { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people go through the protocol and find their body tolerates everything well. That means food sensitivity is unlikely to be driving what you feel, which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. We would rather give you the honest truth than invent a problem that is not there. A clean result is still an answer you can trust and act on.' },
       { q: 'Is the protocol reviewed by a professional?', a: 'Our elimination timelines, reintroduction structure, and symptom tracking methodology are reviewed and approved by a licensed physician advisor. Any recommendation to change your protocol is reviewed by our team before it reaches you.' },
     ],
   },
@@ -349,7 +354,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-hero-centered">
           <div className="mk-tag" style={{ justifyContent: 'center' }}><div className="mk-tag-dot"></div>Physician-reviewed · 6-month program</div>
           <div className="mk-h1 centered">Stop guessing what your body <em>can't handle.</em></div>
-          <div className="mk-sub centered">Lab testing, a structured 6-month elimination and reintroduction protocol, and daily guidance — ending in a personal Food Map that tells you exactly what's safe, what to limit, and what to avoid.</div>
+          <div className="mk-sub centered">Lab testing, a structured 6-month elimination and reintroduction protocol, and daily guidance that gives you a definitive answer about how food affects your body. You end with a personal Food Map, and the certainty of knowing exactly where you stand.</div>
           <div className="mk-actions centered">
             <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
             <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
@@ -554,7 +559,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="spine-dot"></div>
               <div className="spine-tag">End of program</div>
               <div className="spine-title">Receive your personal Food Map</div>
-              <div className="spine-desc">After 6 months every tested food is categorized by real symptom evidence. Safe, Limit, Avoid, all earned. Your Food Map is permanent, personal, and yours to keep. You can continue with our Maintain plan for ongoing tracking and annual retesting as your sensitivities evolve.</div>
+              <div className="spine-desc">After 6 months every tested food is categorized by real symptom evidence. Safe, Limit, Avoid, all earned. Your Food Map is permanent, personal, and yours to keep. You can continue with Maintain, which keeps your Food Map working for you every day with Ask Sensify always on hand.</div>
             </div>
           </div>
         </div>
@@ -623,6 +628,13 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 {item.badge && <div className="sci-badge">{item.badge}</div>}
               </div>
             ))}
+          </div>
+
+          {/* An answer either way */}
+          <div className="sci-answer">
+            <div className="sci-answer-tag">What you walk away with</div>
+            <div className="sci-answer-h">An answer either way.</div>
+            <div className="sci-answer-p">Most people who suspect food never get certainty. They cut things out, feel unsure, and second-guess forever. The protocol ends that. If a food is a trigger, you will know. And if your body turns out to tolerate everything well, you will know that too, with the same confidence. That is not a disappointing result. It means food is not the thing holding you back, which saves you years of needless restriction and tells you where to look instead. We will never invent a problem to justify the program. The honest answer is the whole point.</div>
           </div>
 
           {/* Honest disclaimers — smaller, footnote style */}
