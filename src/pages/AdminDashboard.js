@@ -27,6 +27,23 @@ const css = `
   .adm-foodpick-chip.on { border-color: #3D5C3C; background: #3D5C3C; color: white; }
   .adm-decline-note { font-size: 12px; color: #8A5410; background: #FCEFD9; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
   .adm-btn.amber { background: #E8941F; color: white; }
+  .adm-overview { display: flex; flex-direction: column; gap: 16px; }
+  .adm-metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  @media (max-width: 760px) { .adm-metrics { grid-template-columns: repeat(2, 1fr); } }
+  .adm-metric { background: #0E0E0C; border-radius: 13px; padding: 18px; }
+  .adm-metric.alert { background: #2A1410; }
+  .adm-metric-val { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 300; color: white; line-height: 1; }
+  .adm-metric-label { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255,255,255,0.5); margin-top: 8px; }
+  .adm-ov-card { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 14px; padding: 18px; }
+  .adm-ov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .adm-ov-grid { grid-template-columns: 1fr; } }
+  .adm-ov-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+  .adm-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+  .adm-bar-label { font-size: 12px; color: #3A3A38; width: 130px; flex-shrink: 0; display: flex; align-items: center; }
+  .adm-bar-track { flex: 1; height: 7px; background: #F1EFE8; border-radius: 4px; overflow: hidden; }
+  .adm-bar-fill { height: 7px; background: #3D5C3C; border-radius: 4px; }
+  .adm-bar-val { font-family: 'DM Mono', monospace; font-size: 12px; color: #1C1C1C; width: 28px; text-align: right; }
+  .adm-track-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; }
   .adm-nav { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.07); padding: 0 28px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
   .adm-logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; color: #1C1C1C; }
   .adm-logo em { color: #3D5C3C; font-style: italic; }
@@ -195,7 +212,7 @@ const SUGGESTED_OUTCOME = (audit) => {
 }
 
 export default function AdminDashboard({ session, onBack }) {
-  const [activeTab, setActiveTab] = useState('labs')
+  const [activeTab, setActiveTab] = useState('overview')
   const [labResults, setLabResults] = useState([])
   const [audits, setAudits] = useState([])
   const [users, setUsers] = useState([])
@@ -364,6 +381,39 @@ export default function AdminDashboard({ session, onBack }) {
     return daysSince > 14
   }
 
+  // Aggregate stats across all users for the Overview cockpit
+  const stats = (() => {
+    const total = users.length
+    const byPhase = { setup: 0, awaiting_results: 0, pending_review: 0, elimination: 0, reintroduction: 0, declined: 0, complete: 0 }
+    users.forEach(u => {
+      const p = u.program_phase || 'setup'
+      if (byPhase[p] != null) byPhase[p]++
+      else byPhase.setup++
+    })
+    const active = byPhase.elimination + byPhase.reintroduction
+    const inactive = users.filter(isInactive).length
+
+    // Track distribution
+    const byTrack = { flagged: 0, common: 0, wellness: 0, declined: 0 }
+    users.forEach(u => { if (u.protocol_track && byTrack[u.protocol_track] != null) byTrack[u.protocol_track]++ })
+
+    // Average symptom burden of users who completed intake
+    const burdens = users.map(u => symptomBurden(u)).filter(b => b > 0)
+    const avgBurden = burdens.length ? burdens.reduce((a, b) => a + b, 0) / burdens.length : 0
+
+    // Completion proxy: intake completed
+    const intakeDone = users.filter(u => u.intake_completed_at).length
+    const intakeRate = total ? Math.round((intakeDone / total) * 100) : 0
+
+    // Funnel
+    const signed = total
+    const didIntake = intakeDone
+    const inProtocol = active
+    const completed = byPhase.complete
+
+    return { total, byPhase, active, inactive, byTrack, avgBurden, intakeRate, funnel: { signed, didIntake, inProtocol, completed } }
+  })()
+
   const pendingLabCount = labResults.filter(l => !approved[l.id]).length
   const pendingAuditCount = audits.filter(a => !responded[a.id]).length
   const activeUsers = users.filter(u => u.program_phase === 'elimination' || u.program_phase === 'reintroduction').length
@@ -415,6 +465,9 @@ export default function AdminDashboard({ session, onBack }) {
 
         {/* TABS */}
         <div className="adm-tabs">
+          <button className={`adm-tab${activeTab === 'overview' ? ' active' : ''}`} onClick={() => setActiveTab('overview')}>
+            Overview
+          </button>
           <button className={`adm-tab${activeTab === 'labs' ? ' active' : ''}`} onClick={() => setActiveTab('labs')}>
             Lab results {pendingLabCount > 0 && <span className="adm-tab-count">{pendingLabCount}</span>}
           </button>
@@ -429,6 +482,95 @@ export default function AdminDashboard({ session, onBack }) {
         {loading && <div className="adm-spinner" />}
 
         {/* LAB RESULTS TAB */}
+        {!loading && activeTab === 'overview' && (
+          <div className="adm-overview">
+            {/* Top metric row */}
+            <div className="adm-metrics">
+              <div className="adm-metric">
+                <div className="adm-metric-val">{stats.total}</div>
+                <div className="adm-metric-label">Total users</div>
+              </div>
+              <div className="adm-metric">
+                <div className="adm-metric-val">{stats.active}</div>
+                <div className="adm-metric-label">In protocol</div>
+              </div>
+              <div className="adm-metric">
+                <div className="adm-metric-val">{stats.intakeRate}%</div>
+                <div className="adm-metric-label">Completed intake</div>
+              </div>
+              <div className="adm-metric">
+                <div className="adm-metric-val">{stats.avgBurden.toFixed(1)}</div>
+                <div className="adm-metric-label">Avg symptom burden</div>
+              </div>
+              <div className="adm-metric alert">
+                <div className="adm-metric-val">{stats.inactive}</div>
+                <div className="adm-metric-label">Inactive 14d+</div>
+              </div>
+            </div>
+
+            {/* Phase distribution */}
+            <div className="adm-ov-card">
+              <div className="adm-ov-title">Phase distribution</div>
+              {[
+                { k: 'setup', label: 'Setup' },
+                { k: 'awaiting_results', label: 'Awaiting results' },
+                { k: 'pending_review', label: 'Pending review' },
+                { k: 'elimination', label: 'Elimination' },
+                { k: 'reintroduction', label: 'Reintroduction' },
+                { k: 'complete', label: 'Complete' },
+                { k: 'declined', label: 'Declined' },
+              ].map(({ k, label }) => {
+                const n = stats.byPhase[k] || 0
+                const pct = stats.total ? Math.round((n / stats.total) * 100) : 0
+                return (
+                  <div key={k} className="adm-bar-row">
+                    <div className="adm-bar-label">{label}</div>
+                    <div className="adm-bar-track"><div className="adm-bar-fill" style={{ width: `${pct}%` }} /></div>
+                    <div className="adm-bar-val">{n}</div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Track distribution + funnel */}
+            <div className="adm-ov-grid">
+              <div className="adm-ov-card">
+                <div className="adm-ov-title">Protocol tracks assigned</div>
+                {[
+                  { k: 'flagged', label: 'Flagged foods', c: '#3D5C3C' },
+                  { k: 'common', label: 'Common triggers', c: '#E8941F' },
+                  { k: 'wellness', label: 'Wellness', c: '#2C9D8A' },
+                  { k: 'declined', label: 'Declined', c: '#D64545' },
+                ].map(({ k, label, c }) => (
+                  <div key={k} className="adm-bar-row">
+                    <div className="adm-bar-label"><span className="adm-track-dot" style={{ background: c }} />{label}</div>
+                    <div className="adm-bar-val">{stats.byTrack[k] || 0}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="adm-ov-card">
+                <div className="adm-ov-title">Funnel</div>
+                {[
+                  { label: 'Signed up', n: stats.funnel.signed },
+                  { label: 'Completed intake', n: stats.funnel.didIntake },
+                  { label: 'In protocol', n: stats.funnel.inProtocol },
+                  { label: 'Completed program', n: stats.funnel.completed },
+                ].map((s, i) => {
+                  const pct = stats.funnel.signed ? Math.round((s.n / stats.funnel.signed) * 100) : 0
+                  return (
+                    <div key={i} className="adm-bar-row">
+                      <div className="adm-bar-label">{s.label}</div>
+                      <div className="adm-bar-track"><div className="adm-bar-fill" style={{ width: `${pct}%` }} /></div>
+                      <div className="adm-bar-val">{s.n}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
         {!loading && activeTab === 'labs' && (
           <>
             {labResults.length === 0 ? (
