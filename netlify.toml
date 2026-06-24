@@ -11,5 +11,8 @@
   to = "/index.html"
   status = 200
 
-[functions."daily-sms-scheduler"]
-  schedule = "0 * * * *"
+# PAUSED until A2P 10DLC campaign is approved — every send was being blocked
+# by carriers (undelivered) and still billed. Re-enable by uncommenting the
+# schedule line below once the campaign clears.
+# [functions."daily-sms-scheduler"]
+#   schedule = "0 * * * *"
