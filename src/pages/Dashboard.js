@@ -15,6 +15,7 @@ import MaintainHub from './MaintainHub'
 import { getProtocolFoods } from '../utils/protocolEngine'
 import CommonTrackDecision from './CommonTrackDecision'
 import TrackingLanding from './TrackingLanding'
+import DailyCheckin from './DailyCheckin'
 import {
   generateDay1Message,
   generateDay3Message,
@@ -396,6 +397,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [complianceData, setComplianceData] = useState([])
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
   const [pendingAudit, setPendingAudit] = useState(false)
+  const [dailyDone, setDailyDone] = useState(false)
   const [loading, setLoading] = useState(true)
   const [milestoneMessage, setMilestoneMessage] = useState(null)
   const [milestoneKey, setMilestoneKey] = useState(null)
@@ -436,6 +438,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         resolvedLab = { ...(l || {}), foods: resolved.foods, status: 'approved' }
       }
       setLabResult(resolvedLab)
+
+      // Has the user done today's daily check-in?
+      try {
+        const todayStr = new Date().toISOString().split('T')[0]
+        const { data: df } = await supabase.from('daily_factors').select('id').eq('user_id', session.user.id).eq('log_date', todayStr).maybeSingle()
+        setDailyDone(!!df)
+      } catch (e) {}
 
       const { data: c } = await supabase.from('weekly_checkins').select('*').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(8)
       if (c) setCheckins(c)
@@ -736,6 +745,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   if (screen === 'intake') return <IntakeSurvey session={session} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'labresults') return <LabResults session={session} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'checkin') return <WeeklyCheckin session={session} weekNumber={activeCheckinWeek || currentWeek || 1} profile={profile} currentFoods={labResult?.foods?.map(f => f.name) || []} phase={calculatedPhase || 'elimination'} onBack={() => { setTab('history'); setScreen('checkin-history') }} onComplete={() => { setWeeklyDue(false); setTab('history'); setScreen('checkin-history') }} />
+  if (screen === 'daily-checkin') return <DailyCheckin session={session} profile={profile} onBack={() => setScreen('dashboard')} onComplete={() => { setDailyDone(true); setScreen('dashboard') }} />
   if (screen === 'slipup') return <SlipupSurvey session={session} profile={profile} labResult={labResult} currentDay={currentDay} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'audit') return <ComplianceAudit session={session} eliminatedFoods={labResult?.foods?.map(f => f.name) || []} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'reintro-survey') return <ReintroductionSurvey session={session} food={profile?.current_reintro_food || 'Eggs'} cycleNumber={profile?.reintro_cycle || 1} baselineScores={{ bloating: profile?.baseline_bloating, energy: profile?.baseline_energy }} symptoms={profile?.symptoms || []} profile={profile} activeReintroId={activeReintroId} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
@@ -825,6 +835,16 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 profile={profile}
                 onReverted={loadData}
               />
+            )}
+
+            {/* DAILY CHECK-IN PROMPT — shown when active and today's check-in isn't done */}
+            {!dailyDone && !needsCommonDecision && !showIntakeCard && !showLabCard && !showPendingLabCard &&
+             (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction' || isTracking) && (
+              <button className="snfy-action" style={{ width: '100%', textAlign: 'left', cursor: 'pointer', border: '1px solid rgba(61,92,60,0.2)', background: '#EDF3ED' }} onClick={() => setScreen('daily-checkin')}>
+                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.7px', color: '#3D5C3C', marginBottom: '6px' }}>Daily check-in</div>
+                <div style={{ fontSize: '15px', fontWeight: 600, color: '#1C1C1C', marginBottom: '3px' }}>How's today going?</div>
+                <div style={{ fontSize: '13px', color: '#5A6A55' }}>A few quick taps to log how you slept, your stress, and more. Tap to start →</div>
+              </button>
             )}
 
             {/* MILESTONE MESSAGE */}

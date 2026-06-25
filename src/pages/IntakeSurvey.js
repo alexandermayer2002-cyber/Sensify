@@ -21,6 +21,32 @@ const FREQUENCY_OPTIONS = [
   { label: 'Never', value: 'never' },
 ]
 
+// Lifestyle baseline options — captured at intake as the personal "normal" that
+// daily check-in factors are later compared against to detect divergence.
+const SLEEP_BANDS = [
+  { label: 'Under 6 hours', value: 'under6' },
+  { label: '6–7 hours', value: '6-7' },
+  { label: '7–8 hours', value: '7-8' },
+  { label: '8+ hours', value: '8plus' },
+]
+const STRESS_BANDS = [
+  { label: 'Low', value: 'low' },
+  { label: 'Moderate', value: 'moderate' },
+  { label: 'High', value: 'high' },
+]
+const HYDRATION_BANDS = [
+  { label: 'Under 3 cups', value: 'under3' },
+  { label: '3–5 cups', value: '3-5' },
+  { label: '6–8 cups', value: '6-8' },
+  { label: '8+ cups', value: '8plus' },
+]
+const GENDER_OPTIONS = [
+  { label: 'Female', value: 'female' },
+  { label: 'Male', value: 'male' },
+  { label: 'Prefer not to say', value: 'undisclosed' },
+]
+
+
 const FREQ_NEVER = ['Never', 'Rarely or never']
 const FREQ_FREQUENT = ['Daily', 'A few times a week', 'Regularly', 'Almost daily', 'Most afternoons', 'Daily and severe', 'Poor — hard to fall or stay asleep', 'Very poor']
 
@@ -81,6 +107,9 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   const [selectedCategories, setSelectedCategories] = useState([])
   const [answers, setAnswers] = useState({})
   const [foodFrequency, setFoodFrequency] = useState({})
+  // Lifestyle baselines (sleep/stress/hydration/gender/alcohol) — the personal
+  // "normal" that daily check-in factors are compared against for divergence.
+  const [lifestyle, setLifestyle] = useState({})
   const [saving, setSaving] = useState(false)
 
   const hasDigestive = selectedCategories.includes('digestive')
@@ -194,7 +223,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   const allSymptomAnswered = requiredSymptomQuestions.every(q => answers[q.id])
   const allBaselinesAnswered = baselineScales.length === 0 || baselineScales.every(s => answers[s.id])
 
-  const progressPct = step === -1 ? 0 : step === 0 ? 10 : step === 1 ? 40 : step === 2 ? 72 : step === 3 ? 92 : 100
+  const progressPct = step === -1 ? 0 : step === 0 ? 8 : step === 1 ? 30 : step === 2 ? 55 : step === 3 ? 78 : step === 4 ? 94 : 100
 
   const handleComplete = async () => {
     setSaving(true)
@@ -218,6 +247,12 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       baseline_wellbeing: answers.baseline_wellbeing,
       intake_answers: answers,
       food_frequency: foodFrequency,
+      gender: lifestyle.gender,
+      baseline_avg_sleep: lifestyle.avg_sleep,
+      baseline_avg_stress: lifestyle.avg_stress,
+      baseline_avg_hydration: lifestyle.avg_hydration,
+      drinks_alcohol: lifestyle.drinks_alcohol === 'yes',
+      baseline_avg_drinks_week: lifestyle.drinks_alcohol === 'yes' ? lifestyle.avg_drinks_week : null,
       program_phase: 'awaiting_results',
       intake_completed_at: new Date().toISOString(),
       consent_agreed: true,
@@ -337,7 +372,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       </div>
       <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
       <div style={s.content}>
-        <div style={s.eyebrow}>Step 1 of 4</div>
+        <div style={s.eyebrow}>Step 1 of 5</div>
         <div style={s.title}>What are you hoping<br />to <em style={s.titleEm}>understand?</em></div>
         <div style={s.hint}>Select up to two. This shapes every question, baseline score, and weekly insight throughout your program.</div>
         <div style={s.categoryGrid}>
@@ -379,7 +414,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       </div>
       <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
       <div style={s.content}>
-        <div style={s.eyebrow}>Step 2 of 4</div>
+        <div style={s.eyebrow}>Step 2 of 5</div>
         <div style={s.title}>Tell us about<br /><em style={s.titleEm}>your symptoms.</em></div>
         <div style={s.hint}>Be honest — not your best day, not your worst. Your typical reality. The more accurate your answers, the more useful your weekly insights will be.</div>
 
@@ -427,7 +462,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       </div>
       <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
       <div style={s.content}>
-        <div style={s.eyebrow}>Step 3 of 4</div>
+        <div style={s.eyebrow}>Step 3 of 5</div>
         <div style={s.title}>Rate your symptoms<br /><em style={s.titleEm}>right now.</em></div>
         <div style={s.hint}>
           {baselineScales.length > 0
@@ -470,7 +505,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       </div>
       <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
       <div style={s.content}>
-        <div style={s.eyebrow}>Step 4 of 4</div>
+        <div style={s.eyebrow}>Step 4 of 5</div>
         <div style={s.title}>How often do you eat<br /><em style={s.titleEm}>these foods?</em></div>
         <div style={s.hint}>Only rate foods you actually eat. Leave anything blank and we'll assume you rarely or never eat it.</div>
         <div style={s.importantNote}>
@@ -498,12 +533,94 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         ))}
       </div>
       <div style={s.footer}>
-        <button style={s.cta} onClick={handleComplete} disabled={saving}>
-          {saving ? 'Saving your program...' : 'Complete intake →'}
+        <button style={s.cta} onClick={() => setStep(4)}>
+          Continue →
         </button>
       </div>
     </div>
   )
+
+  // STEP 4 — Lifestyle baselines (sleep, stress, hydration, gender, alcohol)
+  if (step === 4) {
+    const drinks = lifestyle.drinks_alcohol
+    const setLife = (k, v) => setLifestyle(prev => ({ ...prev, [k]: v }))
+    const lifestyleComplete = lifestyle.avg_sleep && lifestyle.avg_stress && lifestyle.avg_hydration
+      && lifestyle.gender && lifestyle.drinks_alcohol
+      && (lifestyle.drinks_alcohol === 'no' || lifestyle.avg_drinks_week)
+    const Band = ({ field, options }) => (
+      <div style={s.freqBtns}>
+        {options.map(opt => (
+          <button key={opt.value}
+            style={lifestyle[field] === opt.value ? s.freqBtnOn : s.freqBtn}
+            onClick={() => setLife(field, opt.value)}>{opt.label}</button>
+        ))}
+      </div>
+    )
+    return (
+      <div style={s.wrap}>
+        <div style={s.topBar}>
+          <button style={s.back} onClick={() => setStep(3)}>← Back</button>
+          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={{ width: 40 }} />
+        </div>
+        <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
+        <div style={s.content}>
+          <div style={s.eyebrow}>Step 5 of 5</div>
+          <div style={s.title}>A bit about<br /><em style={s.titleEm}>your normal.</em></div>
+          <div style={s.hint}>Sleep, stress, and a few habits shape how you feel as much as food does. Knowing your usual baseline lets us tell a real change from an ordinary day later on.</div>
+
+          <div style={s.questionBlock}>
+            <div style={s.questionLabel}>On a typical night, how much do you sleep?</div>
+            <Band field="avg_sleep" options={SLEEP_BANDS} />
+          </div>
+
+          <div style={s.questionBlock}>
+            <div style={s.questionLabel}>How would you describe your usual stress level?</div>
+            <Band field="avg_stress" options={STRESS_BANDS} />
+          </div>
+
+          <div style={s.questionBlock}>
+            <div style={s.questionLabel}>On a typical day, how much water do you drink?</div>
+            <Band field="avg_hydration" options={HYDRATION_BANDS} />
+          </div>
+
+          <div style={s.questionBlock}>
+            <div style={s.questionLabel}>What's your sex? <span style={{ color: '#A0A096', fontWeight: 400 }}>(so we can account for cycle-related effects if relevant)</span></div>
+            <Band field="gender" options={GENDER_OPTIONS} />
+          </div>
+
+          <div style={s.questionBlock}>
+            <div style={s.questionLabel}>Do you drink alcohol?</div>
+            <div style={s.freqBtns}>
+              {[{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }].map(opt => (
+                <button key={opt.value}
+                  style={lifestyle.drinks_alcohol === opt.value ? s.freqBtnOn : s.freqBtn}
+                  onClick={() => setLife('drinks_alcohol', opt.value)}>{opt.label}</button>
+              ))}
+            </div>
+          </div>
+
+          {drinks === 'yes' && (
+            <div style={s.questionBlock}>
+              <div style={s.questionLabel}>About how many drinks per week, on average?</div>
+              <div style={s.freqBtns}>
+                {[{ label: '1–3', value: '1-3' }, { label: '4–7', value: '4-7' }, { label: '8–14', value: '8-14' }, { label: '15+', value: '15plus' }].map(opt => (
+                  <button key={opt.value}
+                    style={lifestyle.avg_drinks_week === opt.value ? s.freqBtnOn : s.freqBtn}
+                    onClick={() => setLife('avg_drinks_week', opt.value)}>{opt.label}</button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        <div style={s.footer}>
+          <button style={lifestyleComplete ? s.cta : s.ctaDisabled} disabled={!lifestyleComplete || saving} onClick={handleComplete}>
+            {saving ? 'Saving your program...' : 'Complete intake →'}
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return null
 }
