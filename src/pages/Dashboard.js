@@ -12,6 +12,9 @@ import FoodMap from './FoodMap'
 import ReintroTab from './ReintroTab'
 import AskSensify from './AskSensify'
 import MaintainHub from './MaintainHub'
+import { getProtocolFoods } from '../utils/protocolEngine'
+import CommonTrackDecision from './CommonTrackDecision'
+import TrackingLanding from './TrackingLanding'
 import {
   generateDay1Message,
   generateDay3Message,
@@ -418,7 +421,21 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       setProfile(p)
 
       const { data: l } = await supabase.from('lab_results').select('*').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).single()
-      setLabResult(l)
+
+      // Protocol track seam: the resolver decides which foods drive the protocol.
+      // - flagged track  -> the real lab foods, untouched (zero change to today's flow)
+      // - common track   -> the chosen tier's foods, injected as labResult.foods so
+      //                     every downstream consumer (ReintroTab, compliance, checkins)
+      //                     works unchanged without reading the track directly.
+      // - declined       -> no protocol foods.
+      // Only remap once the user has actively chosen (track_decision === 'active');
+      // before that they're in the decision flow and shouldn't have a running protocol.
+      let resolvedLab = l
+      if (p?.protocol_track === 'common' && p?.track_decision === 'active') {
+        const resolved = getProtocolFoods(p, l)
+        resolvedLab = { ...(l || {}), foods: resolved.foods, status: 'approved' }
+      }
+      setLabResult(resolvedLab)
 
       const { data: c } = await supabase.from('weekly_checkins').select('*').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(8)
       if (c) setCheckins(c)
@@ -694,6 +711,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const showLabCard = profile?.intake_completed_at && !labResult
   const showPendingLabCard = labResult?.status === 'pending_review'
   const showCheckinCard = weeklyDue && !showIntakeCard && !showLabCard && !showSlipupCard && !showAuditCard
+  // Common-track user who has been assigned but hasn't chosen a tier or declined yet.
+  const needsCommonDecision = profile?.protocol_track === 'common'
+    && profile?.track_decision !== 'active'
+    && profile?.track_decision !== 'declined'
+  // User who declined the protocol and is in self-tracking mode.
+  const isTracking = profile?.track_decision === 'declined'
   const showReintroCard = calculatedPhase === 'reintroduction' && profile?.current_reintro_day >= 14
 
   const phaseLabel = calculatedPhase === 'elimination' ? 'Elimination'
@@ -784,6 +807,25 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   : "You're making real progress. Keep going."}
               </p>
             </div>
+
+            {/* COMMON TRACK DECISION — shown when assigned common but not yet decided */}
+            {needsCommonDecision && (
+              <CommonTrackDecision
+                session={session}
+                profile={profile}
+                flaggedCount={labResult?.foods?.length || 0}
+                onDecided={loadData}
+              />
+            )}
+
+            {/* TRACKING LANDING — shown when user declined and is self-tracking */}
+            {isTracking && (
+              <TrackingLanding
+                session={session}
+                profile={profile}
+                onReverted={loadData}
+              />
+            )}
 
             {/* MILESTONE MESSAGE */}
             {milestoneMessage && (

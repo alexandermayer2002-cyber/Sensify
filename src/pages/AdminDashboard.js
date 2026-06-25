@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { recommendTrack, countFlags, symptomBurden, COMMON_TRIGGERS } from '../utils/trackRecommendation'
+import { symptomsAreGI, COMMON_TRACK_ENABLED } from '../utils/protocolEngine'
 
 
 const css = `
@@ -313,14 +314,29 @@ export default function AdminDashboard({ session, onBack }) {
     const tomorrowStr = tomorrow.toISOString().split('T')[0]
 
     const { error: labError } = await supabase.from('lab_results').update({ status: 'approved' }).eq('id', labId)
-    const { error: profileError, data: updated } = await supabase.from('profiles').update({
-      program_phase: 'elimination',
-      protocol_start_date: tomorrowStr,
-      protocol_track: track,
-      track_foods: trackFoods,
-      track_assigned_at: new Date().toISOString(),
-      track_note: trackNote || null,
-    }).eq('id', userId).select()
+
+    // Flagged track starts elimination immediately (as before).
+    // Common track is assigned but the USER chooses their tier (or declines)
+    // before the protocol starts, so it goes into a pending-decision state.
+    const profileUpdate = track === 'common'
+      ? {
+          program_phase: 'awaiting_decision',
+          protocol_track: 'common',
+          track_decision: 'pending',
+          track_assigned_at: new Date().toISOString(),
+          track_note: trackNote || null,
+        }
+      : {
+          program_phase: 'elimination',
+          protocol_start_date: tomorrowStr,
+          protocol_track: track,
+          track_foods: trackFoods,
+          track_assigned_at: new Date().toISOString(),
+          track_note: trackNote || null,
+        }
+
+    const { error: profileError, data: updated } = await supabase.from('profiles')
+      .update(profileUpdate).eq('id', userId).select()
 
     setApproving(prev => ({ ...prev, [labId]: false }))
 
@@ -537,10 +553,9 @@ export default function AdminDashboard({ session, onBack }) {
               <div className="adm-ov-card">
                 <div className="adm-ov-title">Protocol tracks assigned</div>
                 {[
-                  { k: 'flagged', label: 'Flagged foods', c: '#3D5C3C' },
-                  { k: 'common', label: 'Common triggers', c: '#E8941F' },
-                  { k: 'wellness', label: 'Wellness', c: '#2C9D8A' },
-                  { k: 'declined', label: 'Declined', c: '#D64545' },
+                  { k: 'flagged', label: 'Test Flagged Foods', c: '#3D5C3C' },
+                  { k: 'common', label: 'Test Common Triggers', c: '#E8941F' },
+                  { k: 'declined', label: 'Skip → Tracking', c: '#D64545' },
                 ].map(({ k, label, c }) => (
                   <div key={k} className="adm-bar-row">
                     <div className="adm-bar-label"><span className="adm-track-dot" style={{ background: c }} />{label}</div>
@@ -646,27 +661,27 @@ export default function AdminDashboard({ session, onBack }) {
                           </div>
                         ) : (() => {
                           const rec = recommendTrack({ profile: lab.profile, labFoods: lab.foods })
-                          const chosen = trackChoice[lab.id] || rec.track
+                          // Map any legacy 'wellness' recommendation to 'declined' (wellness removed).
+                          const recTrack = rec.track === 'wellness' ? 'declined' : rec.track
+                          const chosen = trackChoice[lab.id] || recTrack
                           const burden = symptomBurden(lab.profile)
                           const flags = countFlags(lab.foods)
-                          const needsFoodPick = chosen === 'common' || chosen === 'wellness'
-                          const selectedFoods = trackFoodSel[lab.id] || []
-                          const toggleFood = (name) => setTrackFoodSel(prev => {
-                            const cur = prev[lab.id] || []
-                            return { ...prev, [lab.id]: cur.includes(name) ? cur.filter(f => f !== name) : [...cur, name] }
-                          })
+                          const giSymptoms = symptomsAreGI(lab.profile)
                           const trackOptions = [
-                            { id: 'flagged', label: 'Flagged foods' },
-                            { id: 'common', label: 'Common triggers' },
-                            { id: 'wellness', label: 'Wellness' },
-                            { id: 'declined', label: 'Decline' },
+                            { id: 'flagged', label: 'Test Flagged Foods' },
+                            { id: 'common', label: 'Test Common Triggers' },
+                            { id: 'declined', label: 'Skip Protocol → Track' },
                           ]
+                          const commonGated = !COMMON_TRACK_ENABLED
                           const confirmTrack = () => {
-                            let foods = null
-                            if (chosen === 'common' || chosen === 'wellness') {
-                              foods = selectedFoods.map(n => ({ name: n, level: 'Moderate' }))
+                            // Safety: never assign common while it's gated.
+                            if (chosen === 'common' && commonGated) {
+                              alert('The Common Triggers track is held until physician sign-off.')
+                              return
                             }
-                            approveLab(lab.id, lab.user_id, chosen, foods)
+                            // No admin food-picking anymore: flagged uses lab foods,
+                            // common lets the USER pick their tier, declined = no protocol.
+                            approveLab(lab.id, lab.user_id, chosen, null)
                           }
                           return (
                           <div style={{ width: '100%' }}>
@@ -681,45 +696,49 @@ export default function AdminDashboard({ session, onBack }) {
                               <div className="adm-track-signals">
                                 <span>Symptom burden <b>{burden.toFixed(1)}/10</b></span>
                                 <span>Lab flags <b>{flags.total}</b> ({flags.high}H/{flags.moderate}M/{flags.low}L)</span>
+                                <span>Symptoms <b>{giSymptoms ? 'GI-related' : 'non-GI'}</b></span>
                               </div>
                             </div>
 
                             {/* Track selector — confirm or override */}
                             <div className="adm-track-opts">
-                              {trackOptions.map(opt => (
-                                <button key={opt.id}
-                                  className={`adm-track-opt${chosen === opt.id ? ' on' : ''}${rec.track === opt.id ? ' rec' : ''}`}
-                                  onClick={() => setTrackChoice(prev => ({ ...prev, [lab.id]: opt.id }))}>
-                                  {opt.label}{rec.track === opt.id ? ' ★' : ''}
-                                </button>
-                              ))}
+                              {trackOptions.map(opt => {
+                                const gated = opt.id === 'common' && !COMMON_TRACK_ENABLED
+                                return (
+                                  <button key={opt.id}
+                                    disabled={gated}
+                                    title={gated ? 'Held until physician sign-off' : ''}
+                                    className={`adm-track-opt${chosen === opt.id ? ' on' : ''}${recTrack === opt.id ? ' rec' : ''}`}
+                                    style={gated ? { opacity: 0.45, cursor: 'not-allowed' } : {}}
+                                    onClick={() => { if (!gated) setTrackChoice(prev => ({ ...prev, [lab.id]: opt.id })) }}>
+                                    {opt.label}{recTrack === opt.id ? ' ★' : ''}{gated ? ' 🔒' : ''}
+                                  </button>
+                                )
+                              })}
                             </div>
 
-                            {/* Food subset picker for common/wellness */}
-                            {needsFoodPick && (
-                              <div className="adm-foodpick">
-                                <div className="adm-foodpick-label">Select foods to test ({selectedFoods.length} selected)</div>
-                                <div className="adm-foodpick-grid">
-                                  {COMMON_TRIGGERS.map(f => (
-                                    <button key={f.name}
-                                      className={`adm-foodpick-chip${selectedFoods.includes(f.name) ? ' on' : ''}`}
-                                      onClick={() => toggleFood(f.name)}>
-                                      {f.name}
-                                    </button>
-                                  ))}
-                                </div>
+                            {!COMMON_TRACK_ENABLED && (recTrack === 'common' || chosen === 'common') && (
+                              <div className="adm-decline-note">
+                                The Common Triggers track is built but held until physician sign-off (tier food lists + FODMAP logic need clinical review). Until then, assign Flagged or Skip → Track.
+                              </div>
+                            )}
+
+                            {chosen === 'common' && (
+                              <div className="adm-decline-note" style={{ background: '#EDF3ED', color: '#2D6B42' }}>
+                                The patient will choose their own depth (Test 2 or Test 8 foods) and can decline to self-tracking.
+                                {giSymptoms && ' GI symptoms present — Test 8 (incl. FODMAPs) will be recommended to them.'}
                               </div>
                             )}
 
                             {chosen === 'declined' && (
-                              <div className="adm-decline-note">No protocol will be started. The user will be marked as reviewed-declined.</div>
+                              <div className="adm-decline-note">No protocol will be started. The user gets an honest readout plus self-tracking tools, and can start the protocol later.</div>
                             )}
 
                             <div style={{ display: 'flex', gap: '8px', marginTop: '14px' }}>
                               <button className={`adm-btn ${chosen === 'declined' ? 'amber' : 'green'}`}
-                                disabled={approving[lab.id] || (needsFoodPick && selectedFoods.length === 0)}
+                                disabled={approving[lab.id] || (chosen === 'common' && commonGated)}
                                 onClick={confirmTrack}>
-                                {approving[lab.id] ? 'Saving...' : chosen === 'declined' ? 'Confirm decline' : `Approve — ${trackOptions.find(t => t.id === chosen)?.label} →`}
+                                {approving[lab.id] ? 'Saving...' : chosen === 'declined' ? 'Confirm — Skip → Track' : `Approve — ${trackOptions.find(t => t.id === chosen)?.label} →`}
                               </button>
                               <button className="adm-btn ghost" onClick={() => setShowMsgCompose(prev => ({ ...prev, [lab.id]: !prev[lab.id] }))}>
                                 Message user

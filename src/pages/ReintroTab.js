@@ -399,8 +399,22 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const completedFoods = foodMap.filter(f => f.verdict)
   const completedFoodNames = completedFoods.map(f => f.food)
 
+  // Common track: foods have no lab severity, so they don't tier into
+  // Low/Moderate/High. Treat them as a single group that all unlocks at day 57
+  // (right after the 8-week elimination), tested one at a time. We map them all
+  // into the "Low" bucket (which unlocks at day 57) and leave Moderate/High empty.
+  const isCommonTrack = profile?.protocol_track === 'common'
+
   const getAllQualifyingFoods = (level) => {
     if (!labResult?.foods) return []
+    if (isCommonTrack) {
+      // All common-track foods live in the Low bucket; other buckets are empty.
+      if (level !== 'Low') return []
+      return labResult.foods.filter(f => {
+        const freq = foodFrequency[f.name]
+        return freq && freq !== 'never' && freq !== 'rarely'
+      })
+    }
     return labResult.foods.filter(f => {
       if (f.level !== level) return false
       const freq = foodFrequency[f.name]
@@ -530,7 +544,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A7A72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
           </div>
           <div className="rt-locked-title">Reintroduction <em>unlocks soon.</em></div>
-          <div className="rt-locked-sub">Complete your 8-week elimination phase first. Low sensitivity foods unlock first.</div>
+          <div className="rt-locked-sub">Complete your 8-week elimination phase first. {isCommonTrack ? 'Then you can test your foods one at a time.' : 'Low sensitivity foods unlock first.'}</div>
           <div className="rt-countdown">
             <div className="rt-countdown-num">{daysUntilLow}</div>
             <div className="rt-countdown-label">{daysUntilLow === 1 ? 'day until unlock' : 'days until unlock'}</div>
@@ -664,7 +678,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             {lowUnlocked && (
               <>
                 <div className="rt-section-label">
-                  Low sensitivity — unlocked
+                  {isCommonTrack ? 'Your foods — unlocked' : 'Low sensitivity — unlocked'}
                   {getRemainingFoods('Low').length === 0 && ' · none to test'}
                 </div>
                 {getRemainingFoods('Low').map((food, i) => (
@@ -710,7 +724,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               </>
             )}
 
-            {!moderateUnlocked && lowUnlocked && (
+            {!isCommonTrack && !moderateUnlocked && lowUnlocked && (
               <div className="rt-tier-card" style={{ marginTop: '8px' }}>
                 <div className="rt-tier-header">
                   <div className="rt-tier-label">Moderate sensitivity foods</div>

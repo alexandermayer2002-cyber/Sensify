@@ -2,6 +2,15 @@
 // Protocol Track Engine
 // ------------------------------------------------------------
 // One engine, multiple ways of populating its food list.
+
+// ---- PHYSICIAN GATE --------------------------------------------------------
+// The common-trigger track directs a broad elimination WITHOUT lab justification,
+// which is a bigger clinical step than the flagged track. It must not go live to
+// real users until the medical advisor has signed off on the tier food lists,
+// the GI/FODMAP logic, and the timings. Flip to true only after sign-off.
+// The flagged track is unaffected by this and stays fully live.
+export const COMMON_TRACK_ENABLED = false
+
 // The rest of the app asks getProtocolFoods() for "what is this
 // user eliminating and reintroducing" instead of reading the
 // lab results directly. That single seam lets the assigned track
