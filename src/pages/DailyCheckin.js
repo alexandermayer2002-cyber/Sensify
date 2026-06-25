@@ -18,8 +18,10 @@ const SLEEP_BANDS = [
 ]
 const STRESS_BANDS = [
   { label: 'Low', value: 'low' },
+  { label: 'Mild', value: 'mild' },
   { label: 'Moderate', value: 'moderate' },
   { label: 'High', value: 'high' },
+  { label: 'Severe', value: 'severe' },
 ]
 const HYDRATION_BANDS = [
   { label: 'Under 3', value: 'under3' },

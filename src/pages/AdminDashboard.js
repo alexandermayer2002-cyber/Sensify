@@ -931,7 +931,7 @@ export default function AdminDashboard({ session, onBack }) {
                     </div>
                     <div>
                       <div className={`adm-phase-pill ${u.program_phase || 'setup'}`}>
-                        {u.program_phase === 'elimination' ? 'Elimination' : u.program_phase === 'reintroduction' ? 'Reintro' : u.program_phase === 'pending_review' ? 'Pending' : u.program_phase === 'awaiting_results' ? 'Awaiting' : 'Setup'}
+                        {u.program_phase === 'elimination' ? 'Elimination' : u.program_phase === 'reintroduction' ? 'Reintro' : u.program_phase === 'pending_review' ? 'Pending' : u.program_phase === 'awaiting_results' ? 'Awaiting' : u.program_phase === 'awaiting_decision' ? 'Choosing' : u.program_phase === 'tracking' ? 'Tracking' : u.program_phase === 'declined' ? 'Declined' : 'Setup'}
                       </div>
                     </div>
                     <div>{(() => { const d = computeDay(u); return d != null ? `Day ${d}` : '—' })()}</div>
@@ -995,6 +995,23 @@ export default function AdminDashboard({ session, onBack }) {
                         for (const e of sorted) { if (e.response === 'YES') count++; else break }
                         return count
                       })()}d</div>
+                    </div>
+                    <div className="adm-profile-card">
+                      <div className="adm-profile-label">Protocol track</div>
+                      <div className="adm-profile-val" style={{ fontSize: '13px' }}>{(() => {
+                        const t = selectedUser.protocol_track
+                        if (t === 'flagged') return 'Flagged foods'
+                        if (t === 'common') return `Common triggers${Number(selectedUser.protocol_tier) === 2 ? ' · Test 8' : Number(selectedUser.protocol_tier) === 1 ? ' · Test 2' : ''}${selectedUser.tier_escalated ? ' (escalated)' : ''}`
+                        if (t === 'declined') return 'Skip → Tracking'
+                        return 'Not assigned'
+                      })()}</div>
+                      <div className="adm-profile-sub">{(() => {
+                        const d = selectedUser.track_decision
+                        if (d === 'pending') return 'Awaiting user decision'
+                        if (d === 'active') return 'User started protocol'
+                        if (d === 'declined') return 'User chose to self-track'
+                        return selectedUser.protocol_track ? 'Assigned' : '—'
+                      })()}</div>
                     </div>
                   </div>
                   {/* Lab results */}

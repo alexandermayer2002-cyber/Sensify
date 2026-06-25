@@ -4,6 +4,49 @@ import ReintroDailyCheckin from './ReintroDailyCheckin'
 import { computeProvisionalVerdict } from '../utils/verdictEngine'
 import { generateReintroFoodBriefing, generateProgramCompleteMessage } from '../utils/aiInsights'
 
+// Offered to a common-track Test-2 user who finished without a clear trigger.
+// Lets them escalate to Test 8 (the full panel) or accept the result and finish.
+function TierEscalation({ session, profile, completedFoods, onFinish }) {
+  const [saving, setSaving] = useState(false)
+  const avoids = completedFoods.filter(f => f.verdict === 'Avoid').length
+  const name = session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there'
+
+  const escalate = async () => {
+    setSaving(true)
+    // Upgrade to Tier 2, restart the protocol so the additional foods get
+    // eliminated then reintroduced. Mark escalated so we don't offer it again.
+    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1)
+    const { error } = await supabase.from('profiles').update({
+      protocol_tier: 2,
+      tier_escalated: true,
+      program_phase: 'elimination',
+      protocol_start_date: tomorrow.toISOString().split('T')[0],
+    }).eq('id', session.user.id)
+    setSaving(false)
+    if (error) { alert('Could not upgrade: ' + error.message); return }
+    window.location.reload()
+  }
+
+  return (
+    <div className="rt-escalation">
+      <div className="rt-esc-eyebrow">You've tested your first foods</div>
+      <div className="rt-esc-title">Want to go deeper, {name}?</div>
+      <div className="rt-esc-body">
+        {avoids === 0
+          ? "You tested dairy and gluten and neither came back as a clear trigger. That's useful to know. But if you're still dealing with symptoms, the next step is to test more of the common culprits, including foods that often cause issues but rarely show up on a lab."
+          : "You've finished testing dairy and gluten. If you're still dealing with symptoms beyond what you've found, you can go deeper and test more of the common triggers."}
+      </div>
+      <div className="rt-esc-foods">The full panel adds: eggs, soy, tree nuts, corn, onion and garlic, and legumes.</div>
+      <button className="rt-esc-go" disabled={saving} onClick={escalate}>
+        {saving ? 'Setting up...' : 'Test the full panel →'}
+      </button>
+      <button className="rt-esc-finish" disabled={saving} onClick={onFinish}>
+        I'm good with my results
+      </button>
+    </div>
+  )
+}
+
 function ProgramComplete({ session, profile, labResult, completedFoods }) {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(true)
@@ -112,6 +155,13 @@ const css = `
   .rt-start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .rt-completed-card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 13px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+  .rt-escalation { background: #0E0E0C; border-radius: 18px; padding: 26px; margin-top: 20px; }
+  .rt-esc-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(139,174,138,0.8); margin-bottom: 12px; }
+  .rt-esc-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 300; color: white; margin-bottom: 14px; }
+  .rt-esc-body { font-size: 14.5px; line-height: 1.65; margin-bottom: 14px; color: rgba(255,255,255,0.72); }
+  .rt-esc-foods { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 20px; line-height: 1.5; }
+  .rt-esc-go { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #8BAE8A; color: #0E0E0C; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-bottom: 9px; }
+  .rt-esc-finish { width: 100%; padding: 12px; border-radius: 12px; border: none; background: transparent; color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
   .rt-verdict-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
   .rt-verdict-pill.Safe { background: #EAF4EE; color: #2D6B42; }
   .rt-verdict-pill.Limit { background: #FDF2EA; color: #9A5F1A; }
@@ -255,6 +305,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const [logExpanded, setLogExpanded] = useState(false)
   const [showDailyCheckin, setShowDailyCheckin] = useState(false)
   const [restartNotice, setRestartNotice] = useState(false)
+  const [showComplete, setShowComplete] = useState(false)
   const [loading, setLoading] = useState(true)
   const [starting, setStarting] = useState(null)
   const [foodBriefing, setFoodBriefing] = useState('')
@@ -785,7 +836,11 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
           getRemainingFoods('Low').length === 0 &&
           getRemainingFoods('Moderate').length === 0 &&
           getRemainingFoods('High').length === 0 && (
-          <ProgramComplete session={session} profile={profile} labResult={labResult} completedFoods={completedFoods} />
+          (isCommonTrack && Number(profile?.protocol_tier) === 1 && !profile?.tier_escalated && !showComplete) ? (
+            <TierEscalation session={session} profile={profile} completedFoods={completedFoods} onFinish={() => setShowComplete(true)} />
+          ) : (
+            <ProgramComplete session={session} profile={profile} labResult={labResult} completedFoods={completedFoods} />
+          )
         )}
       </div>
     </div>
