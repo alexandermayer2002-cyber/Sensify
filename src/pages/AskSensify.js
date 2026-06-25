@@ -5,7 +5,10 @@ import { askSensify, saveMealLog, saveMessage, loadHistory } from '../utils/askS
 export default function AskSensify({ session, foodMap: foodMapProp = null }) {
   const [foodMap, setFoodMap] = useState(foodMapProp || [])
   const [labFoods, setLabFoods] = useState([])
+  const [observationMode, setObservationMode] = useState(false)
   const [messages, setMessages] = useState([])
+  const [priorMessages, setPriorMessages] = useState([])  // past sessions, tucked away
+  const [showPrior, setShowPrior] = useState(false)
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [loaded, setLoaded] = useState(false)
@@ -25,8 +28,18 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         const { data: lab } = await supabase.from('lab_results').select('foods').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).single()
         if (lab?.foods) setLabFoods(lab.foods)
       } catch (e) {}
+      // Detect observation mode: a user who declined the protocol and is
+      // self-tracking has no Food Map and should get observation-only behavior.
+      try {
+        const { data: prof } = await supabase.from('profiles').select('track_decision').eq('id', session.user.id).single()
+        if (prof?.track_decision === 'declined') setObservationMode(true)
+      } catch (e) {}
       const history = await loadHistory(session.user.id)
-      setMessages(history)
+      // Fresh view: past conversation is preserved but tucked away, not shown on
+      // open. The session starts clean (premium feel); the user can reveal earlier
+      // messages on demand.
+      setPriorMessages(history)
+      setMessages([])
       setLoaded(true)
     }
     load()
@@ -51,6 +64,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         foodMap,
         labFoods,
         history: messages.slice(-12),
+        observationMode,
       })
 
       // Log any meal the assistant detected
@@ -91,12 +105,35 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
       </div>
 
       <div style={s.thread} ref={scrollRef}>
+        {/* Earlier conversation, tucked away for a fresh open */}
+        {loaded && priorMessages.length > 0 && (
+          showPrior ? (
+            <>
+              <div style={s.priorHeader}>
+                <span>Earlier conversation</span>
+                <button style={s.priorHide} onClick={() => setShowPrior(false)}>Hide</button>
+              </div>
+              {priorMessages.map((m, i) => (
+                m.role === 'user' ? (
+                  <div key={`p${i}`} style={s.userRow}><div style={s.userBubble}>{m.content}</div></div>
+                ) : (
+                  <div key={`p${i}`} style={s.aiRow}><div style={s.aiPanel}><div style={s.aiText}>{m.content}</div></div></div>
+                )
+              ))}
+              <div style={s.priorDivider}>Today</div>
+            </>
+          ) : (
+            <button style={s.priorReveal} onClick={() => setShowPrior(true)}>
+              View earlier conversation
+            </button>
+          )
+        )}
         {loaded && messages.length === 0 && (
           <div style={s.empty}>
-            <div style={s.emptyTitle}>What can I help you eat?</div>
-            <div style={s.emptyText}>I know your Food Map and your lab results, so I can give you guidance that's specific to you. Here's what I can do:</div>
+            <div style={s.emptyTitle}>{observationMode ? 'What can I help you track?' : 'What can I help you eat?'}</div>
+            <div style={s.emptyText}>{observationMode ? "You're tracking your meals and symptoms to spot patterns over time. Tell me what you eat and how you feel, and I'll help you notice what connects." : "I know your Food Map and your lab results, so I can give you guidance that's specific to you. Here's what I can do:"}</div>
             <div style={s.capList}>
-              {capabilities.map((c, i) => (
+              {!observationMode && capabilities.map((c, i) => (
                 <button key={i} style={s.capCard} onClick={() => setInput(c.example)}>
                   <div style={s.capTitle}>{c.title}</div>
                   <div style={s.capDesc}>{c.desc}</div>
@@ -104,7 +141,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                 </button>
               ))}
             </div>
-            <div style={s.emptyFoot}>Tap one to try it, or just type below.</div>
+            <div style={s.emptyFoot}>{observationMode ? 'Just type below to start.' : 'Tap one to try it, or just type below.'}</div>
           </div>
         )}
         {messages.map((m, i) => (
@@ -207,6 +244,10 @@ function verdictTextColor(label) {
 }
 
 const s = {
+  priorReveal: { display: 'block', margin: '4px auto 16px', padding: '7px 16px', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.1)', background: 'white', color: '#7A7A72', fontSize: '12.5px', fontWeight: 500, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
+  priorHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#A0A096', fontWeight: 600, margin: '4px 0 12px' },
+  priorHide: { background: 'none', border: 'none', color: '#8BAE8A', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textTransform: 'uppercase', letterSpacing: '0.5px' },
+  priorDivider: { textAlign: 'center', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#A0A096', fontWeight: 600, margin: '8px 0 16px', paddingTop: '12px', borderTop: '1px solid rgba(0,0,0,0.06)' },
   wrap: { display: 'flex', flexDirection: 'column', height: 'calc(100% - 24px)', maxWidth: '680px', margin: '12px auto', width: 'calc(100% - 24px)', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '16px', overflow: 'hidden' },
   header: { padding: '20px 20px 14px', borderBottom: '1px solid rgba(0,0,0,0.05)', background: '#FFFFFF' },
   headerTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300 },

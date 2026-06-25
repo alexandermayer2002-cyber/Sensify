@@ -162,6 +162,15 @@ const css = `
   .sci-answer-tag { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(139,174,138,0.8); margin-bottom: 12px; }
   .sci-answer-h { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 300; color: white; margin-bottom: 14px; }
   .sci-answer-p { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.72); max-width: 620px; }
+  .sci-paths { margin-top: 40px; }
+  .sci-paths-tag { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #8BAE8A; margin-bottom: 10px; }
+  .sci-paths-h { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; color: #1C1C1C; margin-bottom: 22px; max-width: 560px; }
+  .sci-paths-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .sci-path { background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 14px; padding: 20px; }
+  .sci-path-num { width: 28px; height: 28px; border-radius: 50%; background: #EDF3ED; color: #3D5C3C; font-family: 'DM Mono', monospace; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+  .sci-path-t { font-size: 15px; font-weight: 600; color: #1C1C1C; margin-bottom: 8px; }
+  .sci-path-d { font-size: 13px; line-height: 1.6; color: #6A6A62; }
+  @media (max-width: 760px) { .sci-paths-grid { grid-template-columns: 1fr; } }
   .sci-disc { display: flex; gap: 10px; align-items: flex-start; padding: 16px; background: #FAF8F4; border-radius: 12px; }
   .sci-disc-t { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
   .sci-disc-d { font-size: 11.5px; color: #7A7A72; line-height: 1.55; }
@@ -635,6 +644,29 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="sci-answer-tag">What you walk away with</div>
             <div className="sci-answer-h">An answer either way.</div>
             <div className="sci-answer-p">Most people who suspect food never get certainty. They cut things out, feel unsure, and second-guess forever. The protocol ends that. If a food is a trigger, you will know. And if your body turns out to tolerate everything well, you will know that too, with the same confidence. That is not a disappointing result. It means food is not the thing holding you back, which saves you years of needless restriction and tells you where to look instead. We will never invent a problem to justify the program. The honest answer is the whole point.</div>
+          </div>
+
+          {/* What happens based on your results — honest path for every outcome */}
+          <div className="sci-paths">
+            <div className="sci-paths-tag">A path for every result</div>
+            <div className="sci-paths-h">Whatever your results show, you're not left guessing.</div>
+            <div className="sci-paths-grid">
+              <div className="sci-path">
+                <div className="sci-path-num">1</div>
+                <div className="sci-path-t">Your lab flags foods</div>
+                <div className="sci-path-d">We build your protocol around the specific foods your panel flagged, testing each one through elimination and reintroduction to confirm which actually affect you.</div>
+              </div>
+              <div className="sci-path">
+                <div className="sci-path-num">2</div>
+                <div className="sci-path-t">Clean panel, real symptoms</div>
+                <div className="sci-path-d">A clean panel doesn't mean nothing's wrong. Many real triggers, especially digestive ones, never show up on a lab. So we test the most common culprits directly, and you choose how thorough to go.</div>
+              </div>
+              <div className="sci-path">
+                <div className="sci-path-num">3</div>
+                <div className="sci-path-t">Food isn't the issue</div>
+                <div className="sci-path-d">If your panel is clean and your symptoms are minimal, the honest answer may be that food isn't your problem. That's valuable to know, and we'll tell you plainly rather than run you through a protocol with nothing to find.</div>
+              </div>
+            </div>
           </div>
 
           {/* Honest disclaimers — smaller, footnote style */}
