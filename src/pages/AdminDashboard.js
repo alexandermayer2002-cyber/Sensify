@@ -282,7 +282,9 @@ export default function AdminDashboard({ session, onBack }) {
       const { data: comp } = await supabase.from('daily_compliance').select('*').eq('user_id', user.id).order('date', { ascending: false }).limit(30)
       const { data: auditHistory } = await supabase.from('compliance_audit').select('*').eq('user_id', user.id).order('triggered_at', { ascending: false })
       const { data: foodMap } = await supabase.from('food_map').select('*').eq('user_id', user.id)
-      setUserDetail({ checkins: checkins || [], labs, comp: comp || [], auditHistory: auditHistory || [], foodMap: foodMap || [] })
+      const { data: dailyFactors } = await supabase.from('daily_factors').select('*').eq('user_id', user.id).order('log_date', { ascending: false }).limit(30)
+      const { data: confoundObs } = await supabase.from('confound_observations').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20)
+      setUserDetail({ checkins: checkins || [], labs, comp: comp || [], auditHistory: auditHistory || [], foodMap: foodMap || [], dailyFactors: dailyFactors || [], confoundObs: confoundObs || [] })
     } catch (e) {}
     setLoadingUser(false)
   }
@@ -1014,6 +1016,58 @@ export default function AdminDashboard({ session, onBack }) {
                       })()}</div>
                     </div>
                   </div>
+                  {/* Lifestyle baselines & confound factors */}
+                  <div className="adm-section-label" style={{ marginTop: '16px' }}>Lifestyle baselines</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '14px' }}>
+                    {[
+                      ['Sex', selectedUser.gender || '—'],
+                      ['Avg sleep', selectedUser.baseline_avg_sleep || '—'],
+                      ['Avg stress', selectedUser.baseline_avg_stress || '—'],
+                      ['Avg hydration', selectedUser.baseline_avg_hydration || '—'],
+                      ['Drinks alcohol', selectedUser.drinks_alcohol === true ? 'Yes' : selectedUser.drinks_alcohol === false ? 'No' : '—'],
+                      ['Avg drinks/wk', selectedUser.baseline_avg_drinks_week || '—'],
+                    ].map(([label, val]) => (
+                      <div key={label} style={{ background: '#FAF8F4', borderRadius: '8px', padding: '8px 10px' }}>
+                        <div style={{ fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#7A7A72', marginBottom: '3px' }}>{label}</div>
+                        <div style={{ fontSize: '12px', color: '#1C1C1C', fontWeight: 500 }}>{val}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Recent daily check-ins */}
+                  {userDetail?.dailyFactors?.length > 0 && (
+                    <>
+                      <div className="adm-section-label">Recent daily check-ins ({userDetail.dailyFactors.length})</div>
+                      <div style={{ background: '#FAF8F4', borderRadius: '10px', padding: '10px', marginBottom: '14px', maxHeight: '160px', overflowY: 'auto' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr 1fr 1fr', gap: '4px', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', color: '#A0A096', paddingBottom: '6px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                          <div>Date</div><div>Plan</div><div>Sleep</div><div>Stress</div><div>Hyd</div>
+                        </div>
+                        {userDetail.dailyFactors.map((f, i) => (
+                          <div key={i} style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr 1fr 1fr', gap: '4px', fontSize: '11px', color: '#1C1C1C', padding: '5px 0', borderBottom: '1px solid rgba(0,0,0,0.03)' }}>
+                            <div style={{ color: '#7A7A72' }}>{(f.log_date || '').slice(5)}</div>
+                            <div>{f.followed_protocol === true ? '✓' : f.followed_protocol === false ? '✕' : '—'}</div>
+                            <div>{f.sleep || '—'}</div>
+                            <div>{f.stress || '—'}</div>
+                            <div>{f.hydration || '—'}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Confound observations the engine has logged */}
+                  {userDetail?.confoundObs?.length > 0 && (
+                    <>
+                      <div className="adm-section-label">Confound observations ({userDetail.confoundObs.length})</div>
+                      <div style={{ background: '#FAF8F4', borderRadius: '10px', padding: '12px', marginBottom: '16px' }}>
+                        {userDetail.confoundObs.map((o, i) => (
+                          <div key={i} style={{ fontSize: '11.5px', color: '#1C1C1C', padding: '5px 0', borderBottom: i < userDetail.confoundObs.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
+                            <strong style={{ textTransform: 'capitalize' }}>{o.factor}</strong> · {o.engine}{o.direction ? ` (${o.direction})` : ''}{o.repeats ? ` · ${o.repeats}×` : ''} · <span style={{ color: '#7A7A72' }}>{o.confidence}</span> · <span style={{ color: '#A0A096' }}>{(o.week_start || '').slice(5)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                   {/* Lab results */}
                   {userDetail?.labs && (
                     <>

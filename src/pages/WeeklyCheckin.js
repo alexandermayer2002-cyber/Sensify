@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { aiPrompt } from '../utils/aiClient'
+import { analyzeConfounds, confoundPromptFragment, CONFOUND_ENABLED } from '../utils/confoundAnalysis'
 
 
 const CONTEXT_OPTIONS = [
@@ -80,9 +81,47 @@ const getSymptomScales = (profile) => {
   return scales
 }
 
-const generateInsight = async ({ name, weekNumber, profile, answers, previousAnswers, currentFoods, phase }) => {
+const generateInsight = async ({ name, weekNumber, profile, answers, previousAnswers, currentFoods, phase, session }) => {
   const scales = getSymptomScales(profile)
-  
+
+  // ---- Layer 2: confound analysis (gated; surfaces at most one gentle note) ----
+  let confoundFragment = ''
+  if (CONFOUND_ENABLED && session?.user?.id) {
+    try {
+      const { data: dailyRows } = await supabase.from('daily_factors')
+        .select('log_date, sleep, stress, hydration, drinks, followed_protocol')
+        .eq('user_id', session.user.id)
+      const { data: pastCheckins } = await supabase.from('weekly_checkins')
+        .select('answers, submitted_at').eq('user_id', session.user.id)
+
+      const mondayOf = (dt) => { const d = new Date(dt); const day = (d.getDay() + 6) % 7; const m = new Date(d); m.setDate(d.getDate() - day); return m.toISOString().split('T')[0] }
+      const weeklySymptoms = (pastCheckins || []).map(c => ({
+        weekStart: mondayOf(c.submitted_at),
+        worseThanUsual: c.answers?.overall_feeling === 'Worse',
+      }))
+      weeklySymptoms.push({ weekStart: mondayOf(new Date()), worseThanUsual: answers.overall_feeling === 'Worse' })
+
+      const confoundResult = analyzeConfounds({ profile, dailyRows: dailyRows || [], weeklySymptoms })
+      confoundFragment = confoundPromptFragment(confoundResult?.observation)
+
+      if (confoundResult?.observation) {
+        const obs = confoundResult.observation
+        await supabase.from('confound_observations').insert({
+          user_id: session.user.id,
+          week_start: mondayOf(new Date()),
+          engine: obs.kind,
+          factor: obs.factor,
+          direction: obs.direction || null,
+          repeats: obs.repeats || null,
+          confidence: obs.confidence || null,
+          surfaced: true,
+          sufficiency: confoundResult.sufficiency?.state || null,
+          detail: obs,
+        })
+      }
+    } catch (e) { /* confound analysis never blocks the insight */ }
+  }
+
   const symptomScores = scales
     .filter(s => answers[s.id] !== undefined)
     .map(s => {
@@ -130,6 +169,7 @@ Write a personalized weekly insight. Rules:
 - Use ${name}'s name only if it reads naturally, at most once
 - If compliance was poor and scores are bad, connect them plainly and without judgment
 - If this is the first check-in with data, compare against baseline scores only and do not reference prior weeks
+${confoundFragment}
 
 Write only the insight. No labels, no formatting.
 
@@ -242,7 +282,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
 
     let aiInsight = ''
     try {
-      aiInsight = await generateInsight({ name, weekNumber, profile, answers, previousAnswers, currentFoods, phase })
+      aiInsight = await generateInsight({ name, weekNumber, profile, answers, previousAnswers, currentFoods, phase, session })
       if (!aiInsight || aiInsight.trim().length === 0) throw new Error('empty insight')
       setInsight(aiInsight)
     } catch (e) {
