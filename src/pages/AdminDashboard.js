@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
-import { recommendTrack, countFlags, symptomBurden, COMMON_TRIGGERS } from '../utils/trackRecommendation'
+import { recommendTrack, countFlags, symptomBurden, COMMON_TRIGGERS, toBadness } from '../utils/trackRecommendation'
 import { symptomsAreGI, COMMON_TRACK_ENABLED } from '../utils/protocolEngine'
 
 
@@ -427,6 +427,30 @@ export default function AdminDashboard({ session, onBack }) {
     const inactive = users.filter(isInactive).length
 
     // Track distribution
+    // Detailed outcome buckets (Option B): active protocols separated from
+    // tracking exits, with the two tracking sources split (admin-skip vs user-decline).
+    const outcomes = {
+      flagged: 0,
+      commonAwaiting: 0,
+      commonTest2: 0,
+      commonTest8: 0,
+      userDeclined: 0,    // was on common, chose to track
+      adminSkipped: 0,    // admin assigned skip -> track
+      completed: 0,
+    }
+    users.forEach(u => {
+      const t = u.protocol_track
+      const d = u.track_decision
+      if (u.program_phase === 'complete') { outcomes.completed++; return }
+      if (t === 'flagged') outcomes.flagged++
+      else if (t === 'common') {
+        if (d === 'declined') outcomes.userDeclined++
+        else if (d === 'active') {
+          if (Number(u.protocol_tier) === 2) outcomes.commonTest8++
+          else outcomes.commonTest2++
+        } else outcomes.commonAwaiting++  // pending / null
+      } else if (t === 'declined') outcomes.adminSkipped++
+    })
     const byTrack = { flagged: 0, common: 0, wellness: 0, declined: 0 }
     users.forEach(u => { if (u.protocol_track && byTrack[u.protocol_track] != null) byTrack[u.protocol_track]++ })
 
@@ -444,7 +468,7 @@ export default function AdminDashboard({ session, onBack }) {
     const inProtocol = active
     const completed = byPhase.complete
 
-    return { total, byPhase, active, inactive, byTrack, avgBurden, intakeRate, funnel: { signed, didIntake, inProtocol, completed } }
+    return { total, byPhase, active, inactive, byTrack, outcomes, avgBurden, intakeRate, funnel: { signed, didIntake, inProtocol, completed } }
   })()
 
   const pendingLabCount = labResults.filter(l => !approved[l.id]).length
@@ -568,17 +592,33 @@ export default function AdminDashboard({ session, onBack }) {
             {/* Track distribution + funnel */}
             <div className="adm-ov-grid">
               <div className="adm-ov-card">
-                <div className="adm-ov-title">Protocol tracks assigned</div>
-                {[
-                  { k: 'flagged', label: 'Test Flagged Foods', c: '#3D5C3C' },
-                  { k: 'common', label: 'Test Common Triggers', c: '#E8941F' },
-                  { k: 'declined', label: 'Skip → Tracking', c: '#D64545' },
-                ].map(({ k, label, c }) => (
-                  <div key={k} className="adm-bar-row">
-                    <div className="adm-bar-label"><span className="adm-track-dot" style={{ background: c }} />{label}</div>
-                    <div className="adm-bar-val">{stats.byTrack[k] || 0}</div>
-                  </div>
-                ))}
+                <div className="adm-ov-title">Protocol outcomes</div>
+                {(() => {
+                  const o = stats.outcomes
+                  const Row = ({ label, n, c, indent }) => (
+                    <div className="adm-bar-row" style={indent ? { paddingLeft: '16px' } : {}}>
+                      <div className="adm-bar-label" style={indent ? { fontSize: '12px', color: '#7A7A72' } : {}}>
+                        {c && <span className="adm-track-dot" style={{ background: c }} />}{indent && <span style={{ color: '#C3C3BB', marginRight: '4px' }}>↳</span>}{label}
+                      </div>
+                      <div className="adm-bar-val">{n}</div>
+                    </div>
+                  )
+                  return (
+                    <>
+                      <Row label="Test Flagged Foods" n={o.flagged} c="#3D5C3C" />
+                      <Row label="Test Common Triggers" n={o.commonAwaiting + o.commonTest2 + o.commonTest8} c="#E8941F" />
+                      <Row label="Awaiting choice" n={o.commonAwaiting} indent />
+                      <Row label="Test 2 Foods" n={o.commonTest2} indent />
+                      <Row label="Test 8 Foods" n={o.commonTest8} indent />
+                      <div style={{ height: '8px' }} />
+                      <Row label="Tracking (no protocol)" n={o.userDeclined + o.adminSkipped} c="#D64545" />
+                      <Row label="Declined by user" n={o.userDeclined} indent />
+                      <Row label="Skipped by admin" n={o.adminSkipped} indent />
+                      <div style={{ height: '8px' }} />
+                      <Row label="Completed (Food Map)" n={o.completed} c="#4A8C6A" />
+                    </>
+                  )
+                })()}
               </div>
 
               <div className="adm-ov-card">
@@ -721,16 +761,18 @@ export default function AdminDashboard({ session, onBack }) {
                             {(() => {
                               const p = lab.profile || {}
                               const ia = p.intake_answers || {}
+                              // Each scale tagged with its baseline key so coloring respects
+                              // the single source of truth (some scales high=good, some high=bad).
                               const severityScales = [
-                                ['Bloating', p.baseline_bloating],
-                                ['Gas / cramping', p.baseline_gas],
-                                ['Reflux / heartburn', p.baseline_reflux],
-                                ['Digestive comfort', p.baseline_digestive],
-                                ['Energy', p.baseline_energy],
-                                ['Mental clarity', p.baseline_clarity],
-                                ['Afternoon energy', p.baseline_afternoon],
-                                ['Sleep quality', p.baseline_sleep],
-                                ['Overall wellbeing', p.baseline_wellbeing],
+                                ['Bloating', p.baseline_bloating, 'bloating'],
+                                ['Gas / cramping', p.baseline_gas, 'gas'],
+                                ['Reflux / heartburn', p.baseline_reflux, 'reflux'],
+                                ['Digestive comfort', p.baseline_digestive, 'digestive'],
+                                ['Energy', p.baseline_energy, 'energy'],
+                                ['Mental clarity', p.baseline_clarity, 'clarity'],
+                                ['Afternoon energy', p.baseline_afternoon, 'afternoon'],
+                                ['Sleep quality', p.baseline_sleep, 'sleep'],
+                                ['Overall wellbeing', p.baseline_wellbeing, 'wellbeing'],
                               ].filter(([, v]) => v != null && v !== undefined && v !== '')
                               // Qualitative/frequency answers + free text from intake_answers
                               const freeText = [
@@ -760,9 +802,9 @@ export default function AdminDashboard({ session, onBack }) {
                                   <div className="adm-sb-label">What they reported at intake</div>
                                   {severityScales.length > 0 && (
                                     <div className="adm-sb-grid">
-                                      {severityScales.map(([name, val]) => {
-                                        const n = Number(val)
-                                        const sev = n >= 7 ? 'high' : n >= 4 ? 'mid' : 'low'
+                                      {severityScales.map(([name, val, key]) => {
+                                        const badness = toBadness(key, val)
+                                        const sev = badness >= 7 ? 'high' : badness >= 4 ? 'mid' : 'low'
                                         return (
                                           <div key={name} className="adm-sb-item">
                                             <span className="adm-sb-name">{name}</span>

@@ -9,13 +9,38 @@
 //  - wellness   : mild/no symptoms but motivated -> optimization / self-knowledge
 //  - decline    : nothing meaningful to work on -> honest readout, no full protocol
 
+// ============================================================
+// SCALE DIRECTION — single source of truth.
+// Some baseline scales are "higher = worse" (symptoms: more bloating is bad),
+// others are "higher = better" (wellbeing: more energy is good). Everything
+// that interprets these scores — burden, colors, insights — must respect this.
+// Keyed WITHOUT the 'baseline_' prefix so it works for both profile fields
+// (baseline_bloating) and weekly answer ids (bloating).
+// ============================================================
+export const SCALE_DIRECTION = {
+  bloating: 'higherWorse',
+  gas: 'higherWorse',
+  reflux: 'higherWorse',
+  digestive: 'higherWorse',     // high = "Very uncomfortable"
+  energy: 'higherBetter',
+  clarity: 'higherBetter',
+  afternoon: 'higherBetter',    // high = "Sustained energy" (was miscategorized as a symptom)
+  sleep: 'higherBetter',
+  wellbeing: 'higherBetter',
+}
+
+// Normalize any scale value to a 0-10 "badness" (10 = worst), respecting direction.
+export function toBadness(scaleKey, value) {
+  const key = String(scaleKey).replace(/^baseline_/, '')
+  const n = Number(value)
+  if (isNaN(n)) return null
+  return SCALE_DIRECTION[key] === 'higherBetter' ? (10 - n) : n
+}
+
+// Only the "higher = worse" symptom scales gauge symptom burden.
 const SEVERITY_KEYS = [
-  'baseline_bloating', 'baseline_gas', 'baseline_reflux',
-  'baseline_digestive', 'baseline_afternoon',
+  'baseline_bloating', 'baseline_gas', 'baseline_reflux', 'baseline_digestive',
 ]
-// Note: some scales are "higher = better" (energy, clarity, sleep, wellbeing),
-// others "higher = worse" (bloating, gas, reflux). We only use the
-// "higher = worse" symptom scales to gauge symptom burden.
 
 // Returns a 0-10 symptom burden score (higher = more symptomatic)
 export function symptomBurden(profile) {

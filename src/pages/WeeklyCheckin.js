@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { aiPrompt } from '../utils/aiClient'
 import { analyzeConfounds, confoundPromptFragment, CONFOUND_ENABLED } from '../utils/confoundAnalysis'
+import { SCALE_DIRECTION } from '../utils/trackRecommendation'
 
 
 const CONTEXT_OPTIONS = [
@@ -128,7 +129,15 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
       const baseline = s.baseline
       const current = answers[s.id]
       const change = baseline ? Math.round(((current - baseline) / baseline) * 100) : null
-      return `${s.id}: ${current}/10${baseline ? ` (baseline: ${baseline}, ${change > 0 ? '+' : ''}${change}%)` : ''}`
+      // Direction matters: for some scales higher is BETTER (energy, clarity,
+      // sleep, wellbeing), for others higher is WORSE (bloating, gas, reflux).
+      const dir = SCALE_DIRECTION[s.id] === 'higherBetter' ? 'higher is better' : 'higher is worse'
+      let trend = ''
+      if (change != null && change !== 0) {
+        const improved = SCALE_DIRECTION[s.id] === 'higherBetter' ? current > baseline : current < baseline
+        trend = improved ? ' [IMPROVED]' : ' [WORSENED]'
+      }
+      return `${s.id}: ${current}/10 (${dir})${baseline ? ` (baseline: ${baseline}, ${change > 0 ? '+' : ''}${change}%${trend})` : ''}`
     }).join('\n')
 
   const previousScores = previousAnswers
@@ -161,6 +170,7 @@ YOUR TASK:
 Write a personalized weekly insight. Rules:
 - Maximum 3 sentences. Shorter is better.
 - Lead with the single most significant change, with its specific number or percentage
+- CRITICAL: each score is tagged "higher is better" or "higher is worse", and changes are tagged [IMPROVED] or [WORSENED]. Interpret direction correctly: a rising energy or clarity score is GOOD, a rising bloating or reflux score is BAD. Never call a worsening a win or an improvement a setback.
 - Reference specific numbers and percentage changes, never be vague
 - Factor in what changed this week (travel, stress, etc.) when explaining score shifts
 - Voice: a sharp analyst who respects the reader. Direct, specific, calm. NOT a cheerleader, NOT a coach. Never use phrases like "wins you've earned", "keep crushing it", "you've got this", "momentum", or "journey"
