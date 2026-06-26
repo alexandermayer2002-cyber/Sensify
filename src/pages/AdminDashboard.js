@@ -18,6 +18,21 @@ const css = `
   .adm-track-reason { font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
   .adm-track-signals { display: flex; gap: 16px; font-size: 11px; color: rgba(255,255,255,0.5); font-family: 'DM Mono', monospace; }
   .adm-track-signals b { color: rgba(255,255,255,0.85); }
+  .adm-symptom-breakdown { background: #FAF8F4; border: 1px solid rgba(0,0,0,0.07); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .adm-sb-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-bottom: 10px; }
+  .adm-sb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px 14px; margin-bottom: 10px; }
+  .adm-sb-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .adm-sb-name { font-size: 12px; color: #3A3A35; }
+  .adm-sb-val { font-size: 12px; font-weight: 600; font-family: 'DM Mono', monospace; }
+  .adm-sb-val.high { color: #D64545; }
+  .adm-sb-val.mid { color: #E8941F; }
+  .adm-sb-val.low { color: #4A8C6A; }
+  .adm-sb-text { font-size: 12px; color: #4A4A45; line-height: 1.5; margin-top: 6px; }
+  .adm-sb-text-label { font-weight: 600; color: #3D5C3C; }
+  .adm-sb-qual { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .adm-sb-qual-item { display: flex; align-items: center; gap: 6px; background: white; border: 1px solid rgba(0,0,0,0.06); border-radius: 7px; padding: 4px 9px; }
+  .adm-sb-qual-name { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #9A9A92; }
+  .adm-sb-qual-val { font-size: 12px; color: #2A2A28; }
   .adm-track-opts { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
   .adm-track-opt { padding: 8px 13px; border-radius: 9px; border: 1.5px solid rgba(0,0,0,0.12); background: white; font-size: 12.5px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
   .adm-track-opt.on { border-color: #3D5C3C; background: #EDF3ED; color: #2D6B42; }
@@ -701,6 +716,80 @@ export default function AdminDashboard({ session, onBack }) {
                                 <span>Symptoms <b>{giSymptoms ? 'GI-related' : 'non-GI'}</b></span>
                               </div>
                             </div>
+
+                            {/* Per-symptom breakdown — what they actually reported */}
+                            {(() => {
+                              const p = lab.profile || {}
+                              const ia = p.intake_answers || {}
+                              const severityScales = [
+                                ['Bloating', p.baseline_bloating],
+                                ['Gas / cramping', p.baseline_gas],
+                                ['Reflux / heartburn', p.baseline_reflux],
+                                ['Digestive comfort', p.baseline_digestive],
+                                ['Energy', p.baseline_energy],
+                                ['Mental clarity', p.baseline_clarity],
+                                ['Afternoon energy', p.baseline_afternoon],
+                                ['Sleep quality', p.baseline_sleep],
+                                ['Overall wellbeing', p.baseline_wellbeing],
+                              ].filter(([, v]) => v != null && v !== undefined && v !== '')
+                              // Qualitative/frequency answers + free text from intake_answers
+                              const freeText = [
+                                ia.interest_reason && ['Why interested', ia.interest_reason],
+                                ia.additional_context && ['Anything else', ia.additional_context],
+                              ].filter(Boolean)
+                              if (severityScales.length === 0 && freeText.length === 0) return null
+                              // Qualitative frequency/character answers worth seeing at decision time.
+                              const qualMap = [
+                                ['bloating_freq', 'Bloating'],
+                                ['bloating_timing', 'Bloating timing'],
+                                ['gas_cramping_freq', 'Gas/cramping'],
+                                ['reflux_freq', 'Reflux'],
+                                ['digestion_regularity', 'Digestion'],
+                                ['digestive_duration', 'Digestive duration'],
+                                ['fatigue_freq', 'Fatigue'],
+                                ['brain_fog_freq', 'Brain fog'],
+                                ['crashes_freq', 'Afternoon crashes'],
+                                ['sleep_quality', 'Sleep'],
+                                ['energy_duration', 'Low-energy duration'],
+                                ['general_digestion', 'Digestive discomfort'],
+                                ['general_energy', 'Energy'],
+                              ]
+                              const qual = qualMap.map(([id, name]) => ia[id] ? [name, ia[id]] : null).filter(Boolean)
+                              return (
+                                <div className="adm-symptom-breakdown">
+                                  <div className="adm-sb-label">What they reported at intake</div>
+                                  {severityScales.length > 0 && (
+                                    <div className="adm-sb-grid">
+                                      {severityScales.map(([name, val]) => {
+                                        const n = Number(val)
+                                        const sev = n >= 7 ? 'high' : n >= 4 ? 'mid' : 'low'
+                                        return (
+                                          <div key={name} className="adm-sb-item">
+                                            <span className="adm-sb-name">{name}</span>
+                                            <span className={`adm-sb-val ${sev}`}>{val}/10</span>
+                                          </div>
+                                        )
+                                      })}
+                                    </div>
+                                  )}
+                                  {qual.length > 0 && (
+                                    <div className="adm-sb-qual">
+                                      {qual.map(([name, val]) => (
+                                        <div key={name} className="adm-sb-qual-item">
+                                          <span className="adm-sb-qual-name">{name}</span>
+                                          <span className="adm-sb-qual-val">{val}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                  {freeText.map(([label, text]) => (
+                                    <div key={label} className="adm-sb-text">
+                                      <span className="adm-sb-text-label">{label}:</span> {text}
+                                    </div>
+                                  ))}
+                                </div>
+                              )
+                            })()}
 
                             {/* Track selector — confirm or override */}
                             <div className="adm-track-opts">
