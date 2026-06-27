@@ -579,19 +579,20 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     const today = new Date()
     const day = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1
 
-    // Day 1
+    // Day 1 — message stays visible for all of day 1 (re-shown on every load),
+    // but the confetti celebration only fires the first time.
     if (day === 1) {
-      const shown = await checkMilestoneShown(supabase, session.user.id, 'day1')
-      if (!shown) {
-        try {
-          const msg = await generateDay1Message({ name, profile: p, labResult: lab })
-          setMilestoneMessage(msg)
-          setMilestoneKey('day1')
+      try {
+        const msg = await generateDay1Message({ name, profile: p, labResult: lab })
+        setMilestoneMessage(msg)
+        setMilestoneKey('day1')
+        const shown = await checkMilestoneShown(supabase, session.user.id, 'day1')
+        if (!shown) {
           setShowConfetti(true)
           setTimeout(() => setShowConfetti(false), 3500)
           await markMilestoneShown(supabase, session.user.id, 'day1')
-        } catch (e) {}
-      }
+        }
+      } catch (e) {}
     }
     // Day 3
     else if (day === 3) {
