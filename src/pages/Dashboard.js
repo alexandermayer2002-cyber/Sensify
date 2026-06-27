@@ -837,9 +837,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               />
             )}
 
-            {/* DAILY CHECK-IN PROMPT — shown when active and today's check-in isn't done */}
+            {/* DAILY CHECK-IN PROMPT — shown when active and today's check-in isn't done.
+                Only once the protocol has actually begun (currentDay >= 1), so it
+                doesn't appear the day before, while elimination "starts tomorrow". */}
             {!dailyDone && !needsCommonDecision && !showIntakeCard && !showLabCard && !showPendingLabCard &&
-             (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction' || isTracking) && (
+             ((currentDay >= 1 && (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction')) || isTracking) && (
               <button className="snfy-action" style={{ width: '100%', textAlign: 'left', cursor: 'pointer', border: '1px solid rgba(61,92,60,0.2)', background: '#EDF3ED' }} onClick={() => setScreen('daily-checkin')}>
                 <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.7px', color: '#3D5C3C', marginBottom: '6px' }}>Daily check-in</div>
                 <div style={{ fontSize: '15px', fontWeight: 600, color: '#1C1C1C', marginBottom: '3px' }}>How's today going?</div>
@@ -865,7 +867,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 {currentDay === 0 ? (
                   <>
                     <div style={{ fontFamily: 'Fraunces, serif', fontSize: '34px', fontWeight: 300, color: 'white', lineHeight: 1.15, marginBottom: '6px' }}>Starts <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>tomorrow.</em></div>
-                    <div className="snfy-phase-of">Day 1 begins at midnight — use today to prepare your kitchen.</div>
+                    <div className="snfy-phase-of">Your elimination phase begins tomorrow.</div>
                     <div className="snfy-pbar"><div className="snfy-pfill" style={{ width: '0%' }}></div></div>
                     <div className="snfy-plabel"><span>Day 1</span><span>56 days total</span></div>
                   </>
@@ -1009,17 +1011,33 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="snfy-comp" style={{ marginTop: '14px' }}>
                 {(() => {
                   const now = new Date()
-                  const dow = now.getDay()
-                  const monday = new Date(now)
-                  monday.setDate(now.getDate() - ((dow + 6) % 7))
                   const todayStr = now.toISOString().split('T')[0]
-                  const days = ['M','T','W','T','F','S','S'].map((day, i) => {
-                    const td = new Date(monday)
-                    td.setDate(monday.getDate() + i)
+                  // Anchor the week to PROTOCOL DAY 1, not calendar Monday, so a user
+                  // who starts mid-week gets a full 7-day week from their day 1.
+                  let weekStart
+                  let startDayNum = 1
+                  if (profile?.protocol_start_date) {
+                    const [yy, mm, dd] = profile.protocol_start_date.split('T')[0].split('-').map(Number)
+                    const protoStart = new Date(yy, mm - 1, dd)
+                    const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+                    const daysSince = Math.max(0, Math.round((todayLocal - protoStart) / (1000 * 60 * 60 * 24)))
+                    const weekIndex = Math.floor(daysSince / 7)
+                    weekStart = new Date(protoStart)
+                    weekStart.setDate(protoStart.getDate() + weekIndex * 7)
+                    startDayNum = weekIndex * 7 + 1
+                  } else {
+                    weekStart = new Date(now)
+                    weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7))
+                  }
+                  const dowLabels = ['Su','Mo','Tu','We','Th','Fr','Sa']
+                  const days = Array.from({ length: 7 }).map((_, i) => {
+                    const td = new Date(weekStart)
+                    td.setDate(weekStart.getDate() + i)
                     const dateStr = td.toISOString().split('T')[0]
                     const entry = complianceData.find(c => c.date === dateStr)
                     const isFuture = dateStr > todayStr
                     const isToday = dateStr === todayStr
+                    const day = dowLabels[td.getDay()]
                     let cls, mark
                     if (entry?.response === 'YES') { cls = 'yes'; mark = '\u2713' }
                     else if (entry?.response === 'NO') { cls = 'no'; mark = '\u2717' }
@@ -1027,11 +1045,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     else { cls = 'empty'; mark = '\u00b7' }
                     return { day, cls: cls + (isToday ? ' today' : ''), mark }
                   })
+                  const weekLabel = profile?.protocol_start_date ? `Days ${startDayNum}\u2013${startDayNum + 6}` : 'This week'
                   return (
                     <>
                       <div className="snfy-comp-top">
                         <div>
-                          <div className="snfy-comp-label">This week</div>
+                          <div className="snfy-comp-label">{weekLabel}</div>
                         </div>
                         <div className="snfy-comp-streak-wrap">
                           <div className="snfy-comp-streak-num">{cleanDays}</div>
@@ -1116,9 +1135,17 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="snfy-insight">
                 <div className="snfy-insight-head">
                   <span className="snfy-insight-dot"></span>
-                  <span className="snfy-insight-tag">{profile?.latest_insight ? `WEEKLY INSIGHT · WEEK ${profile?.latest_insight_week || 1}` : 'GETTING STARTED'}</span>
+                  <span className="snfy-insight-tag">{
+                    profile?.latest_insight ? `WEEKLY INSIGHT · WEEK ${profile?.latest_insight_week || 1}`
+                    : (currentDay >= 1 ? `PROTOCOL · DAY ${currentDay}` : 'GETTING STARTED')
+                  }</span>
                 </div>
-                <p>{profile?.latest_insight || 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.'}</p>
+                <p>{
+                  profile?.latest_insight
+                  || (currentDay >= 1
+                    ? `You're on day ${currentDay} of your ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'} phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.`
+                    : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
+                }</p>
                 {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
               </div>
             </div>

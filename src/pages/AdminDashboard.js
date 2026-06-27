@@ -606,12 +606,13 @@ export default function AdminDashboard({ session, onBack }) {
                   return (
                     <>
                       <Row label="Test Flagged Foods" n={o.flagged} c="#3D5C3C" />
-                      <Row label="Test Common Triggers" n={o.commonAwaiting + o.commonTest2 + o.commonTest8} c="#E8941F" />
+                      <div style={{ height: '8px' }} />
+                      <div className="adm-bar-label" style={{ fontWeight: 600, color: '#E8941F', marginBottom: '6px' }}>Test Common Triggers</div>
                       <Row label="Awaiting choice" n={o.commonAwaiting} indent />
                       <Row label="Test 2 Foods" n={o.commonTest2} indent />
                       <Row label="Test 8 Foods" n={o.commonTest8} indent />
                       <div style={{ height: '8px' }} />
-                      <Row label="Tracking (no protocol)" n={o.userDeclined + o.adminSkipped} c="#D64545" />
+                      <div className="adm-bar-label" style={{ fontWeight: 600, color: '#D64545', marginBottom: '6px' }}>Tracking (no protocol)</div>
                       <Row label="Declined by user" n={o.userDeclined} indent />
                       <Row label="Skipped by admin" n={o.adminSkipped} indent />
                       <div style={{ height: '8px' }} />
