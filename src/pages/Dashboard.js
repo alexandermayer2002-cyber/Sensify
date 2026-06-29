@@ -14,7 +14,7 @@ import AskSensify from './AskSensify'
 import MaintainHub from './MaintainHub'
 import { getProtocolFoods } from '../utils/protocolEngine'
 import { todayLocal, localDateString, localDateOffset } from '../utils/dateUtils'
-import UserMessages from './UserMessages'
+import Support from './Support'
 import CommonTrackDecision from './CommonTrackDecision'
 import TrackingLanding from './TrackingLanding'
 import DailyCheckin from './DailyCheckin'
@@ -455,7 +455,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
       // Unread admin messages count (for the nav badge)
       try {
-        const { count: umCount } = await supabase.from('messages').select('id', { count: 'exact', head: true }).eq('user_id', session.user.id).eq('sender', 'admin').eq('read', false)
+        const { count: umCount } = await supabase.from('tickets').select('id', { count: 'exact', head: true }).eq('user_id', session.user.id).eq('unread_for_user', true)
         setUnreadMsgs(umCount || 0)
       } catch (e) {}
 
@@ -775,8 +775,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         </div>
         <div className="snfy-nav-right">
           <div className="snfy-phase-pill">{phaseLabel}</div>
-          <button className="snfy-msg-btn" onClick={() => { setTab('messages'); setScreen('messages') }} title="Messages">
-            <span className="snfy-msg-icon">✉</span>
+          <button className="snfy-msg-btn" onClick={() => { setTab('messages'); setScreen('messages') }} title="Support">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             {unreadMsgs > 0 && <span className="snfy-msg-badge">{unreadMsgs}</span>}
           </button>
           {isAdmin && <button className="snfy-signout" onClick={onAdmin} style={{ color: '#3D5C3C', fontWeight: 500 }}>Admin</button>}
@@ -819,7 +819,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         </div>
       ) : screen === 'messages' ? (
         <div style={{ height: 'calc(100vh - 60px)' }}>
-          <UserMessages session={session} onRead={() => setUnreadMsgs(0)} />
+          <Support session={session} onUnreadChange={(n) => setUnreadMsgs(n)} />
         </div>
       ) : screen === 'maintain' ? (
         <div style={{ height: 'calc(100vh - 60px)', overflowY: 'auto' }}>

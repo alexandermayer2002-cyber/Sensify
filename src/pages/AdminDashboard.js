@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { recommendTrack, countFlags, symptomBurden, COMMON_TRIGGERS, toBadness } from '../utils/trackRecommendation'
 import { localDateString } from '../utils/dateUtils'
+import AdminSupport from './AdminSupport'
 import { symptomsAreGI, COMMON_TRACK_ENABLED } from '../utils/protocolEngine'
 
 
@@ -242,17 +243,20 @@ export default function AdminDashboard({ session, onBack }) {
   const [search, setSearch] = useState('')
   const [phaseFilter, setPhaseFilter] = useState('all')
   const [selectedUser, setSelectedUser] = useState(null)
-  const [detailReply, setDetailReply] = useState('')
+  const [supportUnread, setSupportUnread] = useState(0)
   const [userDetail, setUserDetail] = useState(null)
   const [loadingUser, setLoadingUser] = useState(false)
-  const [msgSubject, setMsgSubject] = useState({})
-  const [msgBody, setMsgBody] = useState({})
-  const [msgSent, setMsgSent] = useState({})
-  const [showMsgCompose, setShowMsgCompose] = useState({})
   const [trackChoice, setTrackChoice] = useState({})    // labId -> chosen track
   const [trackFoodSel, setTrackFoodSel] = useState({})  // labId -> array of selected food names
 
-  useEffect(() => { loadAll() }, [])
+  useEffect(() => { loadAll(); loadSupportUnread() }, [])
+
+  const loadSupportUnread = async () => {
+    try {
+      const { count } = await supabase.from('tickets').select('id', { count: 'exact', head: true }).eq('unread_for_admin', true)
+      setSupportUnread(count || 0)
+    } catch (e) {}
+  }
 
   const loadAll = async () => {
     setLoading(true)
@@ -301,13 +305,7 @@ export default function AdminDashboard({ session, onBack }) {
       const { data: foodMap } = await supabase.from('food_map').select('*').eq('user_id', user.id)
       const { data: dailyFactors } = await supabase.from('daily_factors').select('*').eq('user_id', user.id).order('log_date', { ascending: false }).limit(30)
       const { data: confoundObs } = await supabase.from('confound_observations').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20)
-      const { data: msgs } = await supabase.from('messages').select('*').eq('user_id', user.id).order('created_at', { ascending: true })
-      // Mark user replies as read now that the admin is viewing them
-      const unreadUser = (msgs || []).filter(m => m.sender === 'user' && !m.read)
-      if (unreadUser.length > 0) {
-        await supabase.from('messages').update({ read: true }).eq('user_id', user.id).eq('sender', 'user').eq('read', false)
-      }
-      setUserDetail({ checkins: checkins || [], labs, comp: comp || [], auditHistory: auditHistory || [], foodMap: foodMap || [], dailyFactors: dailyFactors || [], confoundObs: confoundObs || [], messages: msgs || [] })
+      setUserDetail({ checkins: checkins || [], labs, comp: comp || [], auditHistory: auditHistory || [], foodMap: foodMap || [], dailyFactors: dailyFactors || [], confoundObs: confoundObs || [] })
     } catch (e) {}
     setLoadingUser(false)
   }
@@ -541,6 +539,9 @@ export default function AdminDashboard({ session, onBack }) {
           </button>
           <button className={`adm-tab${activeTab === 'users' ? ' active' : ''}`} onClick={() => setActiveTab('users')}>
             All users <span style={{ fontSize: '11px', color: '#7A7A72', marginLeft: '2px' }}>{users.length}</span>
+          </button>
+          <button className={`adm-tab${activeTab === 'support' ? ' active' : ''}`} onClick={() => setActiveTab('support')}>
+            Support {supportUnread > 0 && <span style={{ fontSize: '10px', background: '#D64545', color: 'white', borderRadius: '8px', padding: '1px 6px', marginLeft: '4px', fontWeight: 700 }}>{supportUnread}</span>}
           </button>
         </div>
 
@@ -882,8 +883,8 @@ export default function AdminDashboard({ session, onBack }) {
                                 onClick={confirmTrack}>
                                 {approving[lab.id] ? 'Saving...' : chosen === 'declined' ? 'Confirm — Skip → Track' : `Approve — ${trackOptions.find(t => t.id === chosen)?.label} →`}
                               </button>
-                              <button className="adm-btn ghost" onClick={() => setShowMsgCompose(prev => ({ ...prev, [lab.id]: !prev[lab.id] }))}>
-                                Message user
+                              <button className="adm-btn ghost" onClick={() => setActiveTab('support')}>
+                                Go to Support
                               </button>
                             </div>
                           </div>
@@ -891,29 +892,6 @@ export default function AdminDashboard({ session, onBack }) {
                         })()}
                       </div>
 
-                      {showMsgCompose[lab.id] && !isApproved && (
-                        <div className="adm-msg-compose">
-                          <div className="adm-msg-label">Send message to user</div>
-                          <input className="adm-msg-input" placeholder="Subject (optional)" value={msgSubject[lab.id] || ''} onChange={e => setMsgSubject(prev => ({ ...prev, [lab.id]: e.target.value }))} />
-                          <textarea className="adm-msg-body" placeholder="Your message..." value={msgBody[lab.id] || ''} onChange={e => setMsgBody(prev => ({ ...prev, [lab.id]: e.target.value }))} />
-                          <button className="adm-btn green" style={{ fontSize: '12px', padding: '8px 14px' }}
-                            disabled={msgSent[lab.id] === 'sending' || !(msgBody[lab.id] || '').trim()}
-                            onClick={async () => {
-                              setMsgSent(prev => ({ ...prev, [lab.id]: 'sending' }))
-                              const { error } = await supabase.from('messages').insert({
-                                user_id: lab.user_id, sender: 'admin',
-                                subject: (msgSubject[lab.id] || '').trim() || null,
-                                body: (msgBody[lab.id] || '').trim(), read: false,
-                              })
-                              if (error) { alert('Could not send: ' + error.message); setMsgSent(prev => ({ ...prev, [lab.id]: false })); return }
-                              setMsgSent(prev => ({ ...prev, [lab.id]: 'sent' }))
-                              setMsgBody(prev => ({ ...prev, [lab.id]: '' }))
-                              setMsgSubject(prev => ({ ...prev, [lab.id]: '' }))
-                            }}>
-                            {msgSent[lab.id] === 'sent' ? '✓ Sent' : msgSent[lab.id] === 'sending' ? 'Sending...' : 'Send message'}
-                          </button>
-                        </div>
-                      )}
                     </div>
                   )
                 })}
@@ -1102,6 +1080,10 @@ export default function AdminDashboard({ session, onBack }) {
             )}
           </>
         )}
+
+        {!loading && activeTab === 'support' && (
+          <AdminSupport onUnreadChange={(n) => setSupportUnread(n)} />
+        )}
       </div>
 
       {/* USER DETAIL MODAL */}
@@ -1221,46 +1203,10 @@ export default function AdminDashboard({ session, onBack }) {
                       </div>
                     </>
                   )}
-                  {/* Message thread (two-way) */}
+                  {/* Messaging lives in the Support tab now */}
                   <div className="adm-section-label" style={{ marginTop: '16px' }}>Messages</div>
-                  <div style={{ background: '#FAF8F4', borderRadius: '10px', padding: '12px', marginBottom: '16px' }}>
-                    {(userDetail?.messages || []).length === 0 ? (
-                      <div style={{ fontSize: '12px', color: '#A0A096', marginBottom: '10px' }}>No messages yet.</div>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px', maxHeight: '220px', overflowY: 'auto' }}>
-                        {userDetail.messages.map((m, i) => (
-                          <div key={i} style={{ alignSelf: m.sender === 'admin' ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
-                            <div style={{ fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: m.sender === 'admin' ? '#3D5C3C' : '#8A8A82', marginBottom: '2px', textAlign: m.sender === 'admin' ? 'right' : 'left' }}>{m.sender === 'admin' ? 'You' : 'User'}</div>
-                            <div style={{ background: m.sender === 'admin' ? '#3D5C3C' : 'white', color: m.sender === 'admin' ? 'white' : '#1C1C1C', border: m.sender === 'admin' ? 'none' : '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '8px 12px', fontSize: '13px', lineHeight: 1.4 }}>
-                              {m.subject && m.sender === 'admin' && <div style={{ fontWeight: 600, marginBottom: '3px' }}>{m.subject}</div>}
-                              {m.body}
-                            </div>
-                            <div style={{ fontSize: '9px', color: '#B0B0A8', marginTop: '2px', textAlign: m.sender === 'admin' ? 'right' : 'left' }}>{formatDate(m.created_at)}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <input className="adm-msg-input" style={{ flex: 1, marginBottom: 0 }} placeholder="Reply to user..." value={detailReply} onChange={e => setDetailReply(e.target.value)}
-                        onKeyDown={async e => {
-                          if (e.key === 'Enter' && detailReply.trim()) {
-                            const body = detailReply.trim()
-                            setDetailReply('')
-                            const { error } = await supabase.from('messages').insert({ user_id: selectedUser.id, sender: 'admin', body, read: false })
-                            if (error) { alert('Could not send: ' + error.message); return }
-                            loadUserDetail(selectedUser)
-                          }
-                        }} />
-                      <button className="adm-btn green" style={{ fontSize: '12px', padding: '8px 14px' }}
-                        disabled={!detailReply.trim()}
-                        onClick={async () => {
-                          const body = detailReply.trim()
-                          setDetailReply('')
-                          const { error } = await supabase.from('messages').insert({ user_id: selectedUser.id, sender: 'admin', body, read: false })
-                          if (error) { alert('Could not send: ' + error.message); return }
-                          loadUserDetail(selectedUser)
-                        }}>Send</button>
-                    </div>
+                  <div style={{ background: '#FAF8F4', borderRadius: '10px', padding: '12px', marginBottom: '16px', fontSize: '12.5px', color: '#6A6A62' }}>
+                    Support requests and messages with this user are in the <strong style={{ color: '#3D5C3C', cursor: 'pointer' }} onClick={() => { setSelectedUser(null); setUserDetail(null); setActiveTab('support') }}>Support tab</strong>.
                   </div>
                   {/* Lab results */}
                   {userDetail?.labs && (
@@ -1345,15 +1291,6 @@ export default function AdminDashboard({ session, onBack }) {
                     </>
                   )}
 
-                  {/* Message user */}
-                  <div className="adm-msg-compose">
-                    <div className="adm-msg-label">Send message to {selectedUser.full_name?.split(' ')[0] || 'user'}</div>
-                    <input className="adm-msg-input" placeholder="Subject" value={msgSubject[selectedUser.id] || ''} onChange={e => setMsgSubject(prev => ({ ...prev, [selectedUser.id]: e.target.value }))} />
-                    <textarea className="adm-msg-body" placeholder="Your message..." value={msgBody[selectedUser.id] || ''} onChange={e => setMsgBody(prev => ({ ...prev, [selectedUser.id]: e.target.value }))} />
-                    <button className="adm-btn green" style={{ fontSize: '12px', padding: '8px 14px' }} onClick={() => setMsgSent(prev => ({ ...prev, [selectedUser.id]: true }))}>
-                      {msgSent[selectedUser.id] ? '✓ Sent' : 'Send message'}
-                    </button>
-                  </div>
                 </>
               )}
             </div>
