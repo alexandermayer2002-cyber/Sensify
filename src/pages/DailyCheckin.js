@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
+import { todayLocal } from '../utils/dateUtils'
 
 // ============================================================
 // DailyCheckin
@@ -83,7 +84,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   const submit = async () => {
     if (!complete || saving) return
     setSaving(true)
-    const today = new Date().toISOString().split('T')[0]
+    const today = todayLocal()
     const row = {
       user_id: session.user.id,
       log_date: today,

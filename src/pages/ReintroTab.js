@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import ReintroDailyCheckin from './ReintroDailyCheckin'
 import { computeProvisionalVerdict } from '../utils/verdictEngine'
+import { todayLocal, localDateString } from '../utils/dateUtils'
 import { generateReintroFoodBriefing, generateProgramCompleteMessage } from '../utils/aiInsights'
 
 // Offered to a common-track Test-2 user who finished without a clear trigger.
@@ -20,7 +21,7 @@ function TierEscalation({ session, profile, completedFoods, onFinish }) {
       protocol_tier: 2,
       tier_escalated: true,
       program_phase: 'elimination',
-      protocol_start_date: tomorrow.toISOString().split('T')[0],
+      protocol_start_date: localDateString(tomorrow),
     }).eq('id', session.user.id)
     setSaving(false)
     if (error) { alert('Could not upgrade: ' + error.message); return }
@@ -357,7 +358,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
   const startReintro = async (food, level) => {
     setStarting(food)
-    const today = new Date().toISOString().split('T')[0]
+    const today = todayLocal()
     const { error: insertError } = await supabase.from('reintroduction_results').insert({
       user_id: session.user.id,
       food,
@@ -405,7 +406,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
       const updates = { exposure_days_completed: newCount }
       // Hitting the 3rd exposure day starts washout
       if (newCount >= 3) {
-        updates.washout_started_at = new Date().toISOString().split('T')[0]
+        updates.washout_started_at = todayLocal()
       }
       await supabase.from('reintroduction_results').update(updates).eq('id', activeReintro.id)
     }
@@ -433,7 +434,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   // Restart cycle after exceeding the 5-day exposure cap
   const handleRestartCycle = async () => {
     if (!activeReintro) return
-    const today = new Date().toISOString().split('T')[0]
+    const today = todayLocal()
     await supabase.from('reintro_daily_logs').delete().eq('reintro_id', activeReintro.id)
     await supabase.from('reintroduction_results').update({
       started_at: today,
@@ -515,7 +516,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const needsRestart = inExposure && calDaysSinceStart > EXPOSURE_CALENDAR_CAP && exposureDaysCompleted < EXPOSURE_TARGET
 
   // Has today already been logged?
-  const todayStr = today.toISOString().split('T')[0]
+  const todayStr = localDateString(today)
   const loggedToday = dailyLogs?.some(l => l.log_date === todayStr)
 
   // Which exposure number they'd be logging next

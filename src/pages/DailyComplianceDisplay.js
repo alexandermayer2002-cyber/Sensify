@@ -1,4 +1,5 @@
 import React from 'react'
+import { localDateString } from '../utils/dateUtils'
 
 // Shows 7-dot visual for past 7 days compliance
 // Green = YES, Red = NO, Gray = no response
@@ -28,7 +29,7 @@ export default function DailyComplianceDisplay({ complianceData = [], cleanDays 
   for (let i = 6; i >= 0; i--) {
     const d = new Date()
     d.setDate(d.getDate() - i)
-    const dateStr = d.toISOString().split('T')[0]
+    const dateStr = localDateString(d)
     const dayLabel = dayLabels[d.getDay()]
     const entry = complianceData.find(c => c.date === dateStr)
     const isToday = i === 0

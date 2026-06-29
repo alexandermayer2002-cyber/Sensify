@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { recommendTrack, countFlags, symptomBurden, COMMON_TRIGGERS, toBadness } from '../utils/trackRecommendation'
+import { localDateString } from '../utils/dateUtils'
 import { symptomsAreGI, COMMON_TRACK_ENABLED } from '../utils/protocolEngine'
 
 
@@ -328,7 +329,7 @@ export default function AdminDashboard({ session, onBack }) {
     // Start date is tomorrow — gives user rest of today to prepare
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
-    const tomorrowStr = tomorrow.toISOString().split('T')[0]
+    const tomorrowStr = localDateString(tomorrow)
 
     const { error: labError } = await supabase.from('lab_results').update({ status: 'approved' }).eq('id', labId)
 
@@ -370,7 +371,7 @@ export default function AdminDashboard({ session, onBack }) {
     const note = notes[auditId] || ''
     await supabase.from('compliance_audit').update({ status: 'responded', admin_outcome: outcome, admin_note: note, responded_at: new Date().toISOString() }).eq('id', auditId)
     if (outcome === 'Reset clock') {
-      const today = new Date().toISOString().split('T')[0]
+      const today = localDateString(new Date())
       await supabase.from('profiles').update({ protocol_start_date: today, program_phase: 'elimination' }).eq('id', userId)
     }
     setResponded(prev => ({ ...prev, [auditId]: outcome }))

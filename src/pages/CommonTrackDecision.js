@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
+import { localDateString } from '../utils/dateUtils'
 import { TIER_META, symptomsAreGI } from '../utils/protocolEngine'
 
 // ============================================================
@@ -84,7 +85,7 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
       protocol_tier: tier,
       track_decision: 'active',
       program_phase: 'elimination',
-      protocol_start_date: tomorrow.toISOString().split('T')[0],
+      protocol_start_date: localDateString(tomorrow),
     }).eq('id', session.user.id)
     setSaving(false)
     if (error) { alert('Could not start protocol: ' + error.message); return }

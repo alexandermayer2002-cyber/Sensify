@@ -13,6 +13,7 @@ import ReintroTab from './ReintroTab'
 import AskSensify from './AskSensify'
 import MaintainHub from './MaintainHub'
 import { getProtocolFoods } from '../utils/protocolEngine'
+import { todayLocal, localDateString, localDateOffset } from '../utils/dateUtils'
 import CommonTrackDecision from './CommonTrackDecision'
 import TrackingLanding from './TrackingLanding'
 import DailyCheckin from './DailyCheckin'
@@ -441,7 +442,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
       // Has the user done today's daily check-in?
       try {
-        const todayStr = new Date().toISOString().split('T')[0]
+        const todayStr = todayLocal()
         const { data: df } = await supabase.from('daily_factors').select('id').eq('user_id', session.user.id).eq('log_date', todayStr).maybeSingle()
         setDailyDone(!!df)
       } catch (e) {}
@@ -457,9 +458,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         setActiveReintroId(ar?.id || null)
       }
 
-      const sevenDaysAgo = new Date()
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-      const { data: comp } = await supabase.from('daily_compliance').select('*').eq('user_id', session.user.id).gte('date', sevenDaysAgo.toISOString().split('T')[0]).order('date', { ascending: false })
+      const { data: comp } = await supabase.from('daily_compliance').select('*').eq('user_id', session.user.id).gte('date', localDateOffset(-10)).order('date', { ascending: false })
       if (comp) {
         setComplianceData(comp)
         let nos = 0
@@ -713,7 +712,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const eliminationProgressPct = profile?.protocol_start_date ? Math.min((currentDay / 56) * 100, 100) : 0
   const daysUntilReintro = profile?.protocol_start_date ? Math.max(57 - currentDay, 0) : null
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayLocal()
   const todayEntry = complianceData.find(c => c.date === today)
   const showSlipupCard = todayEntry?.response === 'NO' && !pendingAudit
   const showAuditCard = consecutiveNOs >= 3 && !pendingAudit
@@ -784,7 +783,23 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         />
       ) : screen === 'ask-sensify' ? (
         <div style={{ height: 'calc(100vh - 60px)' }}>
-          <AskSensify session={session} />
+          {(() => {
+            // Ask Sensify is locked until lab results are back, because before
+            // that it has no Food Map to reason from and could imply results
+            // that don't exist yet. Tracking (declined) users are allowed in
+            // (observation mode handles their no-Food-Map case safely).
+            const resultsBack = (labResult && labResult.status === 'approved') || profile?.track_decision === 'declined' || profile?.program_phase === 'elimination' || profile?.program_phase === 'reintroduction' || profile?.program_phase === 'complete' || profile?.program_phase === 'tracking'
+            if (!resultsBack) {
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '32px', textAlign: 'center' }}>
+                  <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, fontSize: 24 }}>🔒</div>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 24, fontWeight: 300, color: '#1C1C1C', marginBottom: 10 }}>Ask Sensify unlocks with your results</div>
+                  <div style={{ fontSize: 14.5, lineHeight: 1.6, color: '#6A6A62', maxWidth: 360 }}>Once your lab results are back and your protocol is set, Ask Sensify can give you guidance that's specific to your body. Until then, it can't answer questions about your sensitivities, because there's nothing to base them on yet.</div>
+                </div>
+              )
+            }
+            return <AskSensify session={session} />
+          })()}
         </div>
       ) : screen === 'maintain' ? (
         <div style={{ height: 'calc(100vh - 60px)', overflowY: 'auto' }}>
@@ -1012,7 +1027,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="snfy-comp" style={{ marginTop: '14px' }}>
                 {(() => {
                   const now = new Date()
-                  const todayStr = now.toISOString().split('T')[0]
+                  const todayStr = localDateString(now)
                   // Anchor the week to PROTOCOL DAY 1, not calendar Monday, so a user
                   // who starts mid-week gets a full 7-day week from their day 1.
                   let weekStart
@@ -1034,7 +1049,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   const days = Array.from({ length: 7 }).map((_, i) => {
                     const td = new Date(weekStart)
                     td.setDate(weekStart.getDate() + i)
-                    const dateStr = td.toISOString().split('T')[0]
+                    const dateStr = localDateString(td)
                     const entry = complianceData.find(c => c.date === dateStr)
                     const isFuture = dateStr > todayStr
                     const isToday = dateStr === todayStr

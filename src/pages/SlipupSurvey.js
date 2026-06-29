@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
+import { todayLocal } from '../utils/dateUtils'
 import { generateSlipupMessage } from '../utils/aiInsights'
 
 const s = {
@@ -81,7 +82,7 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
 
   const handleSubmit = async () => {
     setSubmitting(true)
-    const today = new Date().toISOString().split('T')[0]
+    const today = todayLocal()
 
     await supabase.from('daily_compliance').upsert({
       user_id: session.user.id,

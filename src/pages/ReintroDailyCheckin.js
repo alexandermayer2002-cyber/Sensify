@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
+import { todayLocal } from '../utils/dateUtils'
 
 // Daily reintro check-in. Phase-aware:
 //  - Exposure: did you eat it? -> symptoms? -> per-symptom intensity
@@ -39,7 +40,7 @@ export default function ReintroDailyCheckin({ session, profile, reintro, phase, 
 
   const save = async (stoppedEarly = false) => {
     setSaving(true)
-    const today = new Date().toISOString().split('T')[0]
+    const today = todayLocal()
     const symptoms = Object.entries(symptomIntensities).map(([name, intensity]) => ({ name, intensity }))
 
     const { error } = await supabase.from('reintro_daily_logs').upsert({
