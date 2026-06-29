@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
-import { todayLocal } from '../utils/dateUtils'
+import { todayLocal, localDateString } from '../utils/dateUtils'
 
 // ============================================================
 // DailyCheckin
@@ -72,6 +72,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   const [cyclePhase, setCyclePhase] = useState(null)
   const [drinks, setDrinks] = useState(0)
   const [saving, setSaving] = useState(false)
+  const [reward, setReward] = useState(null)  // { streak, weekDays, reflection } after completion
 
   const isWoman = profile?.gender === 'female'
   const isDrinker = profile?.drinks_alcohol === true
@@ -111,7 +112,40 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
 
     setSaving(false)
     if (error) { alert('Could not save: ' + error.message); return }
-    onComplete && onComplete()
+
+    // ---- Build the completion payoff (streak + week + a gentle, safe reflection) ----
+    try {
+      const since = new Date(); since.setDate(since.getDate() - 30)
+      const { data: recent } = await supabase.from('daily_factors')
+        .select('log_date, sleep, stress')
+        .eq('user_id', session.user.id)
+        .gte('log_date', localDateString(since))
+        .order('log_date', { ascending: false })
+      const logged = new Set((recent || []).map(r => r.log_date))
+      // Streak: consecutive days back from today that have a log
+      let streak = 0
+      for (let i = 0; i < 60; i++) {
+        const d = new Date(); d.setDate(d.getDate() - i)
+        if (logged.has(localDateString(d))) streak++
+        else break
+      }
+      // This week's 7 cells (last 7 days), filled or not
+      const dow = ['Su','Mo','Tu','We','Th','Fr','Sa']
+      const weekDays = Array.from({ length: 7 }).map((_, i) => {
+        const d = new Date(); d.setDate(d.getDate() - (6 - i))
+        return { label: dow[d.getDay()], done: logged.has(localDateString(d)), isToday: i === 6 }
+      })
+      const loggedThisWeek = weekDays.filter(w => w.done).length
+      // A gentle, SAFE reflection — info/encouragement only, never judgment.
+      let reflection
+      if (streak >= 7) reflection = `${streak} days in a row. You're building a really clear picture of your body.`
+      else if (streak >= 3) reflection = `${streak}-day streak. Consistency like this is exactly what makes your insights sharper.`
+      else if (loggedThisWeek >= 2) reflection = `That's ${loggedThisWeek} check-ins this week. Every one adds to the picture.`
+      else reflection = `Logged for today. Each check-in helps us understand what's really going on.`
+      setReward({ streak, weekDays, reflection })
+    } catch (e) {
+      onComplete && onComplete()  // if reward calc fails, just exit normally
+    }
   }
 
   const Bands = ({ options, value, onPick }) => (
@@ -121,6 +155,43 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       ))}
     </div>
   )
+
+  if (reward) {
+    return (
+      <div style={s.wrap}>
+        <div style={s.topBar}>
+          <div style={{ width: 40 }} />
+          <div style={s.logo}>sensi<em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>fy</em></div>
+          <div style={{ width: 40 }} />
+        </div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', textAlign: 'center' }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, marginBottom: 20 }}>✓</div>
+          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#1C1C1C', marginBottom: 6 }}>Checked in for today</div>
+          {reward.streak > 1 && (
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 13, color: '#3D5C3C', fontWeight: 600, marginBottom: 24, textTransform: 'uppercase', letterSpacing: '1px' }}>{reward.streak}-day streak 🔥</div>
+          )}
+          {/* Week row */}
+          <div style={{ display: 'flex', gap: 10, marginBottom: 28 }}>
+            {reward.weekDays.map((d, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                <div style={{
+                  width: 30, height: 30, borderRadius: '50%',
+                  background: d.done ? '#3D5C3C' : 'transparent',
+                  border: d.done ? 'none' : '1.5px dashed #C3CDBF',
+                  color: d.done ? 'white' : '#C3CDBF',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13,
+                  boxShadow: d.isToday ? '0 0 0 3px rgba(61,92,60,0.15)' : 'none',
+                }}>{d.done ? '✓' : ''}</div>
+                <div style={{ fontSize: 10, color: d.isToday ? '#3D5C3C' : '#A0A096', fontWeight: d.isToday ? 700 : 500 }}>{d.label}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 15, lineHeight: 1.6, color: '#4A4A45', maxWidth: 320, marginBottom: 32 }}>{reward.reflection}</div>
+          <button style={{ ...s.cta, maxWidth: 280 }} onClick={() => { onComplete && onComplete() }}>Done →</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div style={s.wrap}>

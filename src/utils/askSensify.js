@@ -40,6 +40,15 @@ CRITICAL RULES:
   }
 }
 
+// Appended whenever the user attaches a photo. The label case is the harm path:
+// a confidently-wrong "you're clear" on an ingredient list could let someone eat
+// their trigger. So labels get conservative discipline; menus are lower-stakes.
+const PHOTO_DISCIPLINE = `[PHOTO ATTACHED — read it and respond using the rules below:]
+- If it is a RESTAURANT MENU: suggest which dishes are likely safe given their food map, and which to ask the server about. Be helpful but note that prep and hidden ingredients vary, so they should confirm with the restaurant.
+- If it is a FOOD LABEL or INGREDIENT LIST: read the ingredients you can see and flag any that match their Limit/Avoid foods (including common hidden forms — e.g. whey/casein for dairy, semolina for wheat/gluten, lecithin for soy). CRITICAL: never give a confident all-clear. Always tell them to double-check the full label themselves, because lists can be incomplete in a photo, ingredients change, and cross-contamination isn't listed. Say what you SEE, never certify what's absent.
+- If you cannot read the photo clearly, say so and ask them to retake it rather than guessing.
+- Never claim to have read something you can't actually see in the image.`
+
 const SYSTEM_PROMPT = `You are Ask Sensify, a food assistant inside the Sensify wellness app. The user has completed a food sensitivity program and has a personal Food Map sorting foods into Safe, Limit, and Avoid.
 
 YOUR JOB:
@@ -129,16 +138,29 @@ LOGGING (for "I ate / I had ___"):
 [[LOG: food1, food2, food3]]
 listing the individual foods. Use this whenever they describe eating something. Never use META or GUIDE verdict tags in this mode, since there are no verdicts.`
 
-export async function askSensify({ userMessage, foodMap, labFoods = [], history = [], observationMode = false }) {
+export async function askSensify({ userMessage, foodMap, labFoods = [], history = [], observationMode = false, image = null }) {
+  // When a photo is attached, the user message becomes a content array with an
+  // image block. Anthropic reads it natively; the proxy passes it through.
+  const buildUserContent = (text) => {
+    if (!image) return text
+    const caption = text && text.trim().length > 0
+      ? text
+      : 'I uploaded a photo. If it is a menu, tell me what is likely safe for me and what to ask about. If it is a food label or ingredient list, read the ingredients against my food map.'
+    return [
+      { type: 'image', source: { type: 'base64', media_type: image.mediaType, data: image.data } },
+      { type: 'text', text: caption + '\n\n' + PHOTO_DISCIPLINE },
+    ]
+  }
+
   if (observationMode) {
     // Tracking user: no Food Map, observation-only behavior.
     const messages = [
       { role: 'user', content: OBSERVATION_PROMPT },
       { role: 'assistant', content: 'Understood. I will help them log meals and notice patterns over time, and I will never give a verdict or claim a food is safe or a trigger for them, since they have no Food Map.' },
       ...history.map(m => ({ role: m.role, content: m.content })),
-      { role: 'user', content: userMessage },
+      { role: 'user', content: buildUserContent(userMessage) },
     ]
-    const raw = await aiCall(messages, 600, 'ask')
+    const raw = await aiCall(messages, 700, 'ask')
     let reply = raw
     let foodsToLog = []
     const logMatch = raw.match(/\[\[LOG:\s*([^\]]+)\]\]/i)
@@ -155,10 +177,10 @@ export async function askSensify({ userMessage, foodMap, labFoods = [], history 
     { role: 'user', content: `${SYSTEM_PROMPT}\n\nTHE USER'S FOOD MAP:\n${mapContext.text}` },
     { role: 'assistant', content: 'Understood. I have their Food Map and will help with food decisions, flag Limit and Avoid foods, stay conservative when unsure, and log meals they describe eating.' },
     ...history.map(m => ({ role: m.role, content: m.content })),
-    { role: 'user', content: userMessage },
+    { role: 'user', content: buildUserContent(userMessage) },
   ]
 
-  const raw = await aiCall(messages, 600, 'ask')
+  const raw = await aiCall(messages, 700, 'ask')
 
   // Extract the [[LOG: ...]] line if present
   let reply = raw

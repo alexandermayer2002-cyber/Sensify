@@ -14,6 +14,7 @@ import AskSensify from './AskSensify'
 import MaintainHub from './MaintainHub'
 import { getProtocolFoods } from '../utils/protocolEngine'
 import { todayLocal, localDateString, localDateOffset } from '../utils/dateUtils'
+import UserMessages from './UserMessages'
 import CommonTrackDecision from './CommonTrackDecision'
 import TrackingLanding from './TrackingLanding'
 import DailyCheckin from './DailyCheckin'
@@ -49,6 +50,10 @@ const css = `
     z-index: 100;
   }
   .snfy-logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; color: #1C1C1C; letter-spacing: -0.3px; }
+  .snfy-msg-btn { position: relative; width: 38px; height: 38px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .snfy-msg-btn:hover { background: #F2F5EF; }
+  .snfy-msg-icon { font-size: 16px; color: #3D5C3C; }
+  .snfy-msg-badge { position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; border-radius: 9px; background: #D64545; color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 0 5px; font-family: 'DM Sans', sans-serif; }
   .snfy-logo em { color: #3D5C3C; font-style: italic; }
   .snfy-nav-tabs { display: flex; gap: 2px; }
   .snfy-tab { font-size: 13px; font-weight: 400; color: #7A7A72; padding: 6px 12px; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.15s; letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
@@ -399,6 +404,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
   const [pendingAudit, setPendingAudit] = useState(false)
   const [dailyDone, setDailyDone] = useState(false)
+  const [unreadMsgs, setUnreadMsgs] = useState(0)
   const [loading, setLoading] = useState(true)
   const [milestoneMessage, setMilestoneMessage] = useState(null)
   const [milestoneKey, setMilestoneKey] = useState(null)
@@ -445,6 +451,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         const todayStr = todayLocal()
         const { data: df } = await supabase.from('daily_factors').select('id').eq('user_id', session.user.id).eq('log_date', todayStr).maybeSingle()
         setDailyDone(!!df)
+      } catch (e) {}
+
+      // Unread admin messages count (for the nav badge)
+      try {
+        const { count: umCount } = await supabase.from('messages').select('id', { count: 'exact', head: true }).eq('user_id', session.user.id).eq('sender', 'admin').eq('read', false)
+        setUnreadMsgs(umCount || 0)
       } catch (e) {}
 
       const { data: c } = await supabase.from('weekly_checkins').select('*').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(8)
@@ -763,6 +775,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         </div>
         <div className="snfy-nav-right">
           <div className="snfy-phase-pill">{phaseLabel}</div>
+          <button className="snfy-msg-btn" onClick={() => { setTab('messages'); setScreen('messages') }} title="Messages">
+            <span className="snfy-msg-icon">✉</span>
+            {unreadMsgs > 0 && <span className="snfy-msg-badge">{unreadMsgs}</span>}
+          </button>
           {isAdmin && <button className="snfy-signout" onClick={onAdmin} style={{ color: '#3D5C3C', fontWeight: 500 }}>Admin</button>}
           <button className="snfy-signout" onClick={onLogout}>Sign out</button>
         </div>
@@ -800,6 +816,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             }
             return <AskSensify session={session} />
           })()}
+        </div>
+      ) : screen === 'messages' ? (
+        <div style={{ height: 'calc(100vh - 60px)' }}>
+          <UserMessages session={session} onRead={() => setUnreadMsgs(0)} />
         </div>
       ) : screen === 'maintain' ? (
         <div style={{ height: 'calc(100vh - 60px)', overflowY: 'auto' }}>

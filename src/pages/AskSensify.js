@@ -10,6 +10,8 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
   const [priorMessages, setPriorMessages] = useState([])  // past sessions, tucked away
   const [showPrior, setShowPrior] = useState(false)
   const [input, setInput] = useState('')
+  const [image, setImage] = useState(null)  // { data, mediaType, preview }
+  const fileRef = useRef(null)
   const [sending, setSending] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const scrollRef = useRef(null)
@@ -51,12 +53,14 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
 
   const send = async () => {
     const text = input.trim()
-    if (!text || sending) return
+    if ((!text && !image) || sending) return
     setInput('')
-    const userMsg = { role: 'user', content: text }
+    const sentImage = image
+    setImage(null)
+    const userMsg = { role: 'user', content: text || (sentImage ? '📷 Photo' : ''), image: sentImage?.preview }
     setMessages(prev => [...prev, userMsg])
     setSending(true)
-    saveMessage({ userId: session.user.id, role: 'user', content: text })
+    saveMessage({ userId: session.user.id, role: 'user', content: text || '[photo]' })
 
     try {
       const { reply, foodsToLog, verdict, guide, mapContext } = await askSensify({
@@ -65,6 +69,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         labFoods,
         history: messages.slice(-12),
         observationMode,
+        image: sentImage ? { data: sentImage.data, mediaType: sentImage.mediaType } : null,
       })
 
       // Log any meal the assistant detected
@@ -88,6 +93,21 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
 
   const onKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
+  }
+
+  const pickImage = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) { alert('Please choose an image.'); return }
+    if (file.size > 5 * 1024 * 1024) { alert('That image is a bit large — please use one under 5MB.'); return }
+    const reader = new FileReader()
+    reader.onload = () => {
+      const dataUrl = reader.result
+      const base64 = String(dataUrl).split(',')[1]
+      setImage({ data: base64, mediaType: file.type, preview: dataUrl })
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''  // allow re-picking the same file
   }
 
   const capabilities = [
@@ -147,7 +167,10 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         {messages.map((m, i) => (
           m.role === 'user' ? (
             <div key={i} style={s.userRow}>
-              <div style={s.userBubble}>{m.content}</div>
+              <div style={s.userBubble}>
+                {m.image && <img src={m.image} alt="sent" style={{ maxWidth: '180px', borderRadius: '10px', marginBottom: m.content && m.content !== '📷 Photo' ? '8px' : '0', display: 'block' }} />}
+                {m.content && m.content !== '📷 Photo' && m.content}
+              </div>
             </div>
           ) : (
             <div key={i} style={s.aiRow}>
@@ -202,16 +225,29 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         )}
       </div>
 
+      {image && (
+        <div style={s.previewBar}>
+          <div style={s.previewThumb}>
+            <img src={image.preview} alt="upload preview" style={s.previewImg} />
+            <button style={s.previewRemove} onClick={() => setImage(null)}>×</button>
+          </div>
+          <div style={s.previewLabel}>Photo attached — I'll read it. Add a note or just send.</div>
+        </div>
+      )}
       <div style={s.inputBar}>
+        <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={pickImage} style={{ display: 'none' }} />
+        <button style={s.camera} onClick={() => fileRef.current?.click()} title="Upload a menu or label photo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </button>
         <textarea
           style={s.input}
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="Ask about a food, or tell me what you ate..."
+          placeholder={image ? "Add a note, or just send the photo..." : "Ask about a food, snap a menu or label..."}
           rows={1}
         />
-        <button style={input.trim() && !sending ? s.send : s.sendOff} onClick={send} disabled={!input.trim() || sending}>
+        <button style={(input.trim() || image) && !sending ? s.send : s.sendOff} onClick={send} disabled={(!input.trim() && !image) || sending}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
@@ -294,6 +330,12 @@ const s = {
 
   dots: { letterSpacing: '2px', color: '#3D5C3C', animation: 'asPulse 1.2s infinite' },
   inputBar: { display: 'flex', gap: '8px', padding: '12px 16px', borderTop: '1px solid rgba(0,0,0,0.07)', alignItems: 'flex-end', background: '#FFFFFF' },
+  camera: { width: '42px', height: '42px', borderRadius: '12px', border: '1.5px solid rgba(61,92,60,0.25)', background: '#F2F5EF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  previewBar: { display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', background: '#F2F5EF', borderTop: '1px solid rgba(0,0,0,0.05)' },
+  previewThumb: { position: 'relative', width: '52px', height: '52px', flexShrink: 0 },
+  previewImg: { width: '52px', height: '52px', objectFit: 'cover', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.1)' },
+  previewRemove: { position: 'absolute', top: '-7px', right: '-7px', width: '20px', height: '20px', borderRadius: '50%', background: '#1C1C1C', color: 'white', border: '2px solid white', cursor: 'pointer', fontSize: '12px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 },
+  previewLabel: { fontSize: '12.5px', color: '#3D5C3C', fontWeight: 500 },
   input: { flex: 1, resize: 'none', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '14px', padding: '12px 14px', fontSize: '14.5px', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.4, maxHeight: '120px', outline: 'none', background: '#FFFFFF' },
   send: { width: '42px', height: '42px', borderRadius: '12px', border: 'none', background: '#3D5C3C', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   sendOff: { width: '42px', height: '42px', borderRadius: '12px', border: 'none', background: '#C8C6BE', cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
