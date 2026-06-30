@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-  listUserTickets, createTicket, loadThread, sendMessage, markRead, setTicketStatus,
+  listUserTickets, createTicket, loadThread, sendMessage, markRead, setTicketStatus, statusLabel,
 } from '../utils/support'
 
 // ============================================================
@@ -28,9 +28,12 @@ const css = `
   .sup-tprev { font-size:12px; color:#8A8A82; margin-top:3px; line-height:1.4; }
   .sup-tdate { font-size:10.5px; color:#B0B0A8; margin-top:6px; font-family:'DM Mono',monospace; }
   .sup-pill { font-size:9.5px; font-weight:600; padding:3px 7px; border-radius:5px; text-transform:uppercase; letter-spacing:0.4px; white-space:nowrap; flex-shrink:0; }
-  .sup-pill.awaiting { background:#FBEFD8; color:#9A6212; }
-  .sup-pill.replied { background:#EDF3ED; color:#3D5C3C; }
+  .sup-pill.action { background:#FBEFD8; color:#9A6212; }
+  .sup-pill.waiting { background:#EDF3ED; color:#3D5C3C; }
   .sup-pill.resolved { background:#EDEDEA; color:#7A7A72; }
+  .sup-tabs { display:flex; gap:6px; padding:0 max(22px, calc((100% - 620px) / 2)); background:white; border-bottom:0.5px solid rgba(0,0,0,0.07); }
+  .sup-tab { background:none; border:none; padding:11px 4px; margin-right:18px; font-size:13px; color:#8A8A82; cursor:pointer; border-bottom:2px solid transparent; font-weight:500; }
+  .sup-tab.active { color:#3D5C3C; border-bottom-color:#3D5C3C; }
   .sup-dot { width:8px; height:8px; border-radius:50%; background:#D64545; flex-shrink:0; }
   .sup-empty { text-align:center; color:#A0A096; max-width:300px; margin:48px auto; }
   .sup-empty-icon { width:52px; height:52px; border-radius:50%; background:#EDF3ED; display:flex; align-items:center; justify-content:center; font-size:22px; margin:0 auto 14px; color:#3D5C3C; }
@@ -71,6 +74,7 @@ function fmt(ts) {
 
 export default function Support({ session, onUnreadChange }) {
   const [view, setView] = useState('list')      // list | compose | thread
+  const [listTab, setListTab] = useState('received')  // received (Sensify reached out) | sent (I reached out)
   const [tickets, setTickets] = useState([])
   const [loading, setLoading] = useState(true)
   const [active, setActive] = useState(null)     // active ticket
@@ -169,7 +173,7 @@ export default function Support({ session, onUnreadChange }) {
           <div>
             <button className="sup-back" onClick={() => { setView('list'); setActive(null); refreshList() }}>← Support</button>
             <div className="sup-title" style={{ fontSize: 19, marginTop: 4 }}>{active.subject}</div>
-            <div className="sup-ts" style={{ marginTop: 3 }}>{active.status === 'awaiting' ? 'Awaiting reply' : active.status === 'replied' ? 'Replied' : 'Resolved'}</div>
+            <div className="sup-ts" style={{ marginTop: 3 }}>{statusLabel(active, 'user').text}</div>
           </div>
         </div>
         <div className="sup-body" ref={threadRef}>
@@ -213,27 +217,41 @@ export default function Support({ session, onUnreadChange }) {
         </div>
         <button className="sup-newbtn" onClick={() => { setView('compose'); setError('') }}>+ New request</button>
       </div>
+      <div className="sup-tabs">
+        <button className={`sup-tab${listTab === 'received' ? ' active' : ''}`} onClick={() => setListTab('received')}>Received</button>
+        <button className={`sup-tab${listTab === 'sent' ? ' active' : ''}`} onClick={() => setListTab('sent')}>Sent</button>
+      </div>
       <div className="sup-body">
-        {loading ? <div style={{ textAlign: 'center', color: '#A0A096', fontSize: 13, marginTop: 30 }}>Loading…</div> :
-          tickets.length === 0 ? (
+        {(() => {
+          // Received = Sensify reached out (admin-initiated). Sent = I reached out (user-initiated).
+          const filtered = tickets.filter(t => listTab === 'received' ? t.initiated_by === 'admin' : t.initiated_by === 'user')
+          if (loading) return <div style={{ textAlign: 'center', color: '#A0A096', fontSize: 13, marginTop: 30 }}>Loading…</div>
+          if (filtered.length === 0) return (
             <div className="sup-empty">
               <div className="sup-empty-icon">💬</div>
-              <div style={{ fontSize: 14, color: '#6A6A62', lineHeight: 1.5, marginBottom: 16 }}>No requests yet. Need a hand with your results, your protocol, or anything else? We're here.</div>
-              <button className="sup-newbtn" onClick={() => setView('compose')}>+ New request</button>
-            </div>
-          ) : tickets.map(t => (
-            <div className="sup-ticket" key={t.id} onClick={() => openTicket(t)}>
-              <div className="sup-trow">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                  {t.unread_for_user && <span className="sup-dot" />}
-                  <span className="sup-tsubj">{t.subject}</span>
-                </div>
-                <span className={`sup-pill ${t.status}`}>{t.status === 'awaiting' ? 'Awaiting reply' : t.status}</span>
+              <div style={{ fontSize: 14, color: '#6A6A62', lineHeight: 1.5, marginBottom: 16 }}>
+                {listTab === 'received' ? "Nothing from the Sensify team yet. If they reach out, it'll show up here." : "You haven't sent any requests yet. Need a hand with anything? We're here."}
               </div>
-              <div className="sup-tprev">{t.last_sender === 'admin' ? 'Sensify: ' : ''}{t.last_message_preview}</div>
-              <div className="sup-tdate">{fmt(t.last_message_at)}</div>
+              {listTab === 'sent' && <button className="sup-newbtn" onClick={() => setView('compose')}>+ New request</button>}
             </div>
-          ))}
+          )
+          return filtered.map(t => {
+            const sl = statusLabel(t, 'user')
+            return (
+              <div className="sup-ticket" key={t.id} onClick={() => openTicket(t)}>
+                <div className="sup-trow">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                    {t.unread_for_user && <span className="sup-dot" />}
+                    <span className="sup-tsubj">{t.subject}</span>
+                  </div>
+                  <span className={`sup-pill ${sl.tone}`}>{sl.text}</span>
+                </div>
+                <div className="sup-tprev">{t.last_sender === 'admin' ? 'Sensify: ' : 'You: '}{t.last_message_preview}</div>
+                <div className="sup-tdate">{fmt(t.last_message_at)}</div>
+              </div>
+            )
+          })
+        })()}
       </div>
     </div>
   )

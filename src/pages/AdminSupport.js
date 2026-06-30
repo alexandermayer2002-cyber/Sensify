@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-  listAllTickets, loadThread, sendMessage, markRead, setTicketStatus, adminCreateTicket,
+  listAllTickets, loadThread, sendMessage, markRead, setTicketStatus, adminCreateTicket, statusLabel,
 } from '../utils/support'
 import { supabase } from '../supabase'
 
@@ -24,6 +24,7 @@ export default function AdminSupport({ onUnreadChange }) {
   const [tickets, setTickets] = useState([])
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState('inbox')   // inbox | thread | compose
+  const [inboxTab, setInboxTab] = useState('received')  // received (user reached out) | sent (I reached out)
   const [active, setActive] = useState(null)
   const [thread, setThread] = useState([])
   const [threadLoading, setThreadLoading] = useState(false)
@@ -100,9 +101,9 @@ export default function AdminSupport({ onUnreadChange }) {
     back: { background: 'none', border: 'none', color: '#8A8A82', fontSize: 13, cursor: 'pointer', padding: 0 },
     row: { padding: '14px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.05)', display: 'flex', gap: 13, alignItems: 'center', cursor: 'pointer' },
     av: { width: 36, height: 36, borderRadius: '50%', background: '#E5E2DA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: '#6A6A62', flexShrink: 0 },
-    pill: (st) => ({ fontSize: 9.5, fontWeight: 600, padding: '3px 7px', borderRadius: 5, textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0,
-      background: st === 'awaiting' ? '#FBEFD8' : st === 'replied' ? '#EDF3ED' : '#EDEDEA',
-      color: st === 'awaiting' ? '#9A6212' : st === 'replied' ? '#3D5C3C' : '#7A7A72' }),
+    pill: (tone) => ({ fontSize: 9.5, fontWeight: 600, padding: '3px 7px', borderRadius: 5, textTransform: 'uppercase', letterSpacing: '0.4px', flexShrink: 0,
+      background: tone === 'action' ? '#FBEFD8' : tone === 'waiting' ? '#EDF3ED' : '#EDEDEA',
+      color: tone === 'action' ? '#9A6212' : tone === 'waiting' ? '#3D5C3C' : '#7A7A72' }),
     input: { width: '100%', boxSizing: 'border-box', border: '1px solid rgba(0,0,0,0.12)', borderRadius: 9, padding: '10px 12px', fontSize: 13.5, background: 'white', fontFamily: 'DM Sans,sans-serif' },
   }
 
@@ -203,9 +204,21 @@ export default function AdminSupport({ onUnreadChange }) {
         </div>
         <button style={s.btn} onClick={startCompose}>+ Message a user</button>
       </div>
-      {loading ? <div style={{ padding: 30, textAlign: 'center', color: '#A0A096', fontSize: 13 }}>Loading…</div> :
-        tickets.length === 0 ? <div style={{ padding: 40, textAlign: 'center', color: '#A0A096', fontSize: 13.5 }}>No support requests yet.</div> :
-          tickets.map(t => (
+      <div style={{ display: 'flex', gap: 18, padding: '0 20px', borderBottom: '0.5px solid rgba(0,0,0,0.07)' }}>
+        {['received', 'sent'].map(tb => (
+          <button key={tb} onClick={() => setInboxTab(tb)} style={{ background: 'none', border: 'none', padding: '11px 0', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: inboxTab === tb ? '#3D5C3C' : '#8A8A82', borderBottom: inboxTab === tb ? '2px solid #3D5C3C' : '2px solid transparent' }}>
+            {tb === 'received' ? 'Received' : 'Sent'}
+          </button>
+        ))}
+      </div>
+      {(() => {
+        // Received = user reached out (user-initiated). Sent = I (admin) reached out.
+        const filtered = tickets.filter(t => inboxTab === 'received' ? t.initiated_by === 'user' : t.initiated_by === 'admin')
+        if (loading) return <div style={{ padding: 30, textAlign: 'center', color: '#A0A096', fontSize: 13 }}>Loading…</div>
+        if (filtered.length === 0) return <div style={{ padding: 40, textAlign: 'center', color: '#A0A096', fontSize: 13.5 }}>{inboxTab === 'received' ? 'No incoming requests.' : "You haven't reached out to anyone yet."}</div>
+        return filtered.map(t => {
+          const sl = statusLabel(t, 'admin')
+          return (
             <div key={t.id} style={{ ...s.row, background: t.unread_for_admin ? '#FBFAF7' : 'white' }} onClick={() => open(t)}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: t.unread_for_admin ? '#D64545' : 'transparent', flexShrink: 0 }} />
               <div style={s.av}>{(t.user_name || 'U').slice(0, 2).toUpperCase()}</div>
@@ -217,9 +230,11 @@ export default function AdminSupport({ onUnreadChange }) {
                 <div style={{ fontSize: 12.5, color: '#3A3A35', fontWeight: 500, marginTop: 1 }}>{t.subject}</div>
                 <div style={{ fontSize: 12, color: '#8A8A82', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.last_sender === 'admin' ? 'You: ' : ''}{t.last_message_preview}</div>
               </div>
-              <span style={s.pill(t.status)}>{t.status === 'awaiting' ? 'Awaiting' : t.status}</span>
+              <span style={s.pill(sl.tone)}>{sl.text}</span>
             </div>
-          ))}
+          )
+        })
+      })()}
     </div>
   )
 }

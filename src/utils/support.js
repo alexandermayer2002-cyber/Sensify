@@ -152,3 +152,21 @@ export async function adminUnreadCount() {
     .eq('unread_for_admin', true)
   return count || 0
 }
+
+// ---- Turn-based status label, relative to who's viewing ----
+// status.tone: 'action' = it's YOUR turn to respond; 'waiting' = waiting on
+// the other side; 'resolved' = closed. This replaces the confusing literal
+// "replied"/"awaiting" labels that didn't say whose turn it was.
+export function statusLabel(ticket, viewer) {
+  // viewer: 'user' | 'admin'
+  if (ticket.status === 'resolved') return { text: 'Resolved', tone: 'resolved' }
+  const lastSender = ticket.last_sender
+  if (!lastSender) return { text: 'Open', tone: 'waiting' }
+  // If the other side sent last, it's the viewer's turn to respond.
+  const yourTurn = lastSender !== viewer
+  if (yourTurn) {
+    return { text: viewer === 'admin' ? 'Needs reply' : 'New reply', tone: 'action' }
+  }
+  // Viewer sent last → waiting on the other side.
+  return { text: viewer === 'admin' ? 'Replied' : 'Awaiting reply', tone: 'waiting' }
+}
