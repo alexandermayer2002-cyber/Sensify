@@ -116,8 +116,8 @@ export async function listAllTickets() {
   const userIds = [...new Set((data || []).map(t => t.user_id))]
   let nameMap = {}
   if (userIds.length > 0) {
-    const { data: profs } = await supabase.from('profiles').select('id, full_name, email').in('id', userIds)
-    ;(profs || []).forEach(p => { nameMap[p.id] = p.full_name || p.email || p.id.slice(0, 8) })
+    const { data: profs } = await supabase.from('profiles').select('id, full_name').in('id', userIds)
+    ;(profs || []).forEach(p => { nameMap[p.id] = p.full_name || p.id.slice(0, 8) })
   }
   const tickets = (data || []).map(t => ({ ...t, user_name: nameMap[t.user_id] || 'User' })).sort((a, b) => {
     if (a.unread_for_admin !== b.unread_for_admin) return a.unread_for_admin ? -1 : 1

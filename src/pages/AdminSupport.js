@@ -32,6 +32,7 @@ export default function AdminSupport({ onUnreadChange }) {
   // compose
   const [users, setUsers] = useState([])
   const [toUser, setToUser] = useState('')
+  const [userSearch, setUserSearch] = useState('')
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
   const [error, setError] = useState('')
@@ -69,8 +70,9 @@ export default function AdminSupport({ onUnreadChange }) {
   }
 
   const loadUsers = async () => {
-    const { data } = await supabase.from('profiles').select('id, full_name, email').order('full_name')
-    setUsers(data || [])
+    const { data, error } = await supabase.from('profiles').select('id, full_name').order('full_name')
+    if (error) { setError('Could not load users: ' + error.message); return }
+    setUsers((data || []).filter(u => u.full_name))
   }
   const startCompose = () => { setView('compose'); setError(''); setToUser(''); setSubject(''); setBody(''); loadUsers() }
   const submitCompose = async () => {
@@ -112,10 +114,30 @@ export default function AdminSupport({ onUnreadChange }) {
         <div style={{ padding: 20 }}>
           <div style={{ fontFamily: 'Fraunces,serif', fontSize: 19, color: '#1C1C1C', marginBottom: 16 }}>Message a user</div>
           <div style={{ fontSize: 11.5, color: '#6A6A62', marginBottom: 5 }}>To</div>
-          <select style={{ ...s.input, marginBottom: 14 }} value={toUser} onChange={e => setToUser(e.target.value)}>
-            <option value="">Select a user…</option>
-            {users.map(u => <option key={u.id} value={u.id}>{u.full_name || u.email || u.id.slice(0, 8)}</option>)}
-          </select>
+          {toUser ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', ...s.input, marginBottom: 14 }}>
+              <span>{users.find(u => u.id === toUser)?.full_name || 'Selected user'}</span>
+              <button style={{ background: 'none', border: 'none', color: '#8A8A82', cursor: 'pointer', fontSize: 13 }} onClick={() => setToUser('')}>change</button>
+            </div>
+          ) : (
+            <div style={{ marginBottom: 14 }}>
+              <input style={s.input} placeholder="Search by name…" value={userSearch} onChange={e => setUserSearch(e.target.value)} />
+              {users.length === 0 ? (
+                <div style={{ fontSize: 12, color: '#A0A096', padding: '8px 2px' }}>No users found.</div>
+              ) : (
+                <div style={{ maxHeight: 160, overflowY: 'auto', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 9, marginTop: 6 }}>
+                  {users.filter(u => u.full_name.toLowerCase().includes(userSearch.toLowerCase())).map(u => (
+                    <div key={u.id} onClick={() => { setToUser(u.id); setUserSearch('') }}
+                      style={{ padding: '9px 12px', fontSize: 13.5, cursor: 'pointer', borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#F2F5EF'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'white'}>
+                      {u.full_name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
           <div style={{ fontSize: 11.5, color: '#6A6A62', marginBottom: 5 }}>Subject</div>
           <input style={{ ...s.input, marginBottom: 14 }} value={subject} onChange={e => setSubject(e.target.value)} placeholder="What's this about?" maxLength={120} />
           <div style={{ fontSize: 11.5, color: '#6A6A62', marginBottom: 5 }}>Message</div>

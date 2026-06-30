@@ -12,14 +12,15 @@ import {
 
 const css = `
   .sup-wrap { display:flex; flex-direction:column; height:100%; background:#FAF8F4; }
-  .sup-head { padding:20px 22px 16px; background:white; border-bottom:0.5px solid rgba(0,0,0,0.07); display:flex; align-items:center; justify-content:space-between; }
+  .sup-head { padding:20px max(22px, calc((100% - 620px) / 2)) 16px; background:white; border-bottom:0.5px solid rgba(0,0,0,0.07); display:flex; align-items:center; justify-content:space-between; }
+  .sup-compose-bar { padding:14px max(18px, calc((100% - 620px) / 2)); background:white; border-top:0.5px solid rgba(0,0,0,0.07); display:flex; gap:9px; align-items:flex-end; }
   .sup-head-l { display:flex; align-items:center; gap:10px; }
   .sup-back { background:none; border:none; color:#8A8A82; font-size:13px; cursor:pointer; padding:0; }
   .sup-title { font-family:'Fraunces',serif; font-size:22px; font-weight:300; color:#1C1C1C; }
   .sup-title em { font-style:italic; color:#3D5C3C; }
   .sup-sub { font-size:12.5px; color:#8A8A82; margin-top:2px; }
   .sup-newbtn { background:#3D5C3C; color:white; border:none; border-radius:9px; padding:8px 14px; font-size:12.5px; font-weight:500; cursor:pointer; }
-  .sup-body { flex:1; overflow-y:auto; padding:18px 22px; }
+  .sup-body { flex:1; overflow-y:auto; padding:18px max(22px, calc((100% - 620px) / 2)); }
   .sup-ticket { background:white; border:0.5px solid rgba(0,0,0,0.08); border-radius:11px; padding:13px 15px; margin-bottom:9px; cursor:pointer; }
   .sup-ticket:hover { border-color:#3D5C3C; }
   .sup-trow { display:flex; justify-content:space-between; align-items:center; gap:10px; }
@@ -49,7 +50,6 @@ const css = `
   .sup-ts { font-size:10px; color:#B0B0A8; font-family:'DM Mono',monospace; }
   .sup-mbody { font-size:13.5px; line-height:1.6; color:#3A3A35; padding-left:39px; }
   .sup-divider { border-top:0.5px solid rgba(0,0,0,0.06); margin:18px 0; }
-  .sup-compose-bar { padding:14px 18px; background:white; border-top:0.5px solid rgba(0,0,0,0.07); display:flex; gap:9px; align-items:flex-end; }
   .sup-reply { flex:1; border:1px solid rgba(0,0,0,0.12); border-radius:10px; padding:10px 12px; font-size:13px; resize:none; max-height:120px; background:white; font-family:'DM Sans',sans-serif; }
   .sup-reply:focus { outline:none; border-color:#3D5C3C; }
   .sup-send { background:#3D5C3C; color:white; border:none; border-radius:10px; padding:10px 16px; font-size:13px; font-weight:500; cursor:pointer; flex-shrink:0; }

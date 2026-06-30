@@ -86,8 +86,8 @@ export default function Signup({ onSuccess, onLogin, prefillEmail }) {
         )}
         {!success && (
           <form onSubmit={handleSignup}>
-            <label style={s.label}>First name</label>
-            <input style={s.input} type="text" placeholder="Sarah" value={name} onChange={e => setName(e.target.value)} required />
+            <label style={s.label}>Full name</label>
+            <input style={s.input} type="text" placeholder="Sarah Chen" value={name} onChange={e => setName(e.target.value)} required />
             <label style={s.label}>Email</label>
             <input style={s.input} type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
             <label style={s.label}>Password</label>
