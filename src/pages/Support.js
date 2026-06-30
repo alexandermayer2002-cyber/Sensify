@@ -41,14 +41,16 @@ const css = `
   .sup-warn { font-size:11px; color:#9A6212; background:#FBEFD8; border-radius:8px; padding:9px 11px; margin-bottom:14px; line-height:1.45; }
   .sup-primary { width:100%; background:#3D5C3C; color:white; border:none; border-radius:10px; padding:12px; font-size:13.5px; font-weight:500; cursor:pointer; }
   .sup-primary:disabled { background:#C3CDBF; cursor:not-allowed; }
-  .sup-msg { margin-bottom:18px; }
+  .sup-msg { margin-bottom:14px; border-radius:12px; padding:14px 16px; border:0.5px solid rgba(0,0,0,0.07); }
+  .sup-msg.admin { background:#F4F7F2; border-left:3px solid #3D5C3C; border-top-left-radius:4px; border-bottom-left-radius:4px; }
+  .sup-msg.user { background:white; }
   .sup-msg-head { display:flex; align-items:center; gap:9px; margin-bottom:8px; }
-  .sup-av { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0; }
+  .sup-av { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; flex-shrink:0; }
   .sup-av.user { background:#E5E2DA; color:#6A6A62; }
   .sup-av.admin { background:#3D5C3C; color:white; }
-  .sup-sender { font-size:12.5px; font-weight:500; }
+  .sup-sender { font-size:12.5px; font-weight:600; }
   .sup-ts { font-size:10px; color:#B0B0A8; font-family:'DM Mono',monospace; }
-  .sup-mbody { font-size:13.5px; line-height:1.6; color:#3A3A35; padding-left:39px; }
+  .sup-mbody { font-size:13.5px; line-height:1.6; color:#3A3A35; }
   .sup-divider { border-top:0.5px solid rgba(0,0,0,0.06); margin:18px 0; }
   .sup-reply { flex:1; border:1px solid rgba(0,0,0,0.12); border-radius:10px; padding:10px 12px; font-size:13px; resize:none; max-height:120px; background:white; font-family:'DM Sans',sans-serif; }
   .sup-reply:focus { outline:none; border-color:#3D5C3C; }
@@ -173,7 +175,7 @@ export default function Support({ session, onUnreadChange }) {
         <div className="sup-body" ref={threadRef}>
           {threadLoading ? <div style={{ textAlign: 'center', color: '#A0A096', fontSize: 13, marginTop: 30 }}>Loading…</div> :
             thread.map((m, i) => (
-              <div className="sup-msg" key={m.id}>
+              <div className={`sup-msg ${m.sender}`} key={m.id}>
                 <div className="sup-msg-head">
                   <div className={`sup-av ${m.sender}`}>{m.sender === 'admin' ? 'S' : (session.user.user_metadata?.full_name?.[0] || 'Y')}</div>
                   <div>

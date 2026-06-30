@@ -775,10 +775,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         </div>
         <div className="snfy-nav-right">
           <div className="snfy-phase-pill">{phaseLabel}</div>
-          <button className="snfy-msg-btn" onClick={() => { if (isAdmin) { onAdmin && onAdmin() } else { setTab('messages'); setScreen('messages') } }} title={isAdmin ? 'Support inbox (admin)' : 'Support'}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            {unreadMsgs > 0 && <span className="snfy-msg-badge">{unreadMsgs}</span>}
-          </button>
+          {!isAdmin && (
+            <button className="snfy-msg-btn" onClick={() => { setTab('messages'); setScreen('messages') }} title="Support">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              {unreadMsgs > 0 && <span className="snfy-msg-badge">{unreadMsgs}</span>}
+            </button>
+          )}
           {isAdmin && <button className="snfy-signout" onClick={onAdmin} style={{ color: '#3D5C3C', fontWeight: 500 }}>Admin</button>}
           <button className="snfy-signout" onClick={onLogout}>Sign out</button>
         </div>

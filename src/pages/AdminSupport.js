@@ -70,7 +70,7 @@ export default function AdminSupport({ onUnreadChange }) {
   }
 
   const loadUsers = async () => {
-    const { data, error } = await supabase.from('profiles').select('id, full_name').order('full_name')
+    const { data, error } = await supabase.from('profiles').select('id, full_name, email').order('full_name')
     if (error) { setError('Could not load users: ' + error.message); return }
     setUsers((data || []).filter(u => u.full_name))
   }
@@ -116,22 +116,26 @@ export default function AdminSupport({ onUnreadChange }) {
           <div style={{ fontSize: 11.5, color: '#6A6A62', marginBottom: 5 }}>To</div>
           {toUser ? (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', ...s.input, marginBottom: 14 }}>
-              <span>{users.find(u => u.id === toUser)?.full_name || 'Selected user'}</span>
+              <span>{(() => { const u = users.find(u => u.id === toUser); return u ? (u.email ? `${u.full_name} · ${u.email}` : u.full_name) : 'Selected user' })()}</span>
               <button style={{ background: 'none', border: 'none', color: '#8A8A82', cursor: 'pointer', fontSize: 13 }} onClick={() => setToUser('')}>change</button>
             </div>
           ) : (
             <div style={{ marginBottom: 14 }}>
-              <input style={s.input} placeholder="Search by name…" value={userSearch} onChange={e => setUserSearch(e.target.value)} />
+              <input style={s.input} placeholder="Search by name or email…" value={userSearch} onChange={e => setUserSearch(e.target.value)} />
               {users.length === 0 ? (
                 <div style={{ fontSize: 12, color: '#A0A096', padding: '8px 2px' }}>No users found.</div>
               ) : (
                 <div style={{ maxHeight: 160, overflowY: 'auto', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 9, marginTop: 6 }}>
-                  {users.filter(u => u.full_name.toLowerCase().includes(userSearch.toLowerCase())).map(u => (
+                  {users.filter(u => {
+                    const q = userSearch.toLowerCase()
+                    return u.full_name.toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q)
+                  }).map(u => (
                     <div key={u.id} onClick={() => { setToUser(u.id); setUserSearch('') }}
-                      style={{ padding: '9px 12px', fontSize: 13.5, cursor: 'pointer', borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}
+                      style={{ padding: '9px 12px', cursor: 'pointer', borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}
                       onMouseEnter={e => e.currentTarget.style.background = '#F2F5EF'}
                       onMouseLeave={e => e.currentTarget.style.background = 'white'}>
-                      {u.full_name}
+                      <div style={{ fontSize: 13.5, color: '#1C1C1C' }}>{u.full_name}</div>
+                      {u.email && <div style={{ fontSize: 11.5, color: '#8A8A82' }}>{u.email}</div>}
                     </div>
                   ))}
                 </div>
@@ -157,7 +161,7 @@ export default function AdminSupport({ onUnreadChange }) {
           <div>
             <button style={s.back} onClick={() => { setView('inbox'); setActive(null); refresh() }}>← Inbox</button>
             <div style={{ ...s.title, fontSize: 18, marginTop: 4 }}>{active.subject}</div>
-            <div style={{ fontSize: 11, color: '#A0A096', marginTop: 2, fontFamily: 'DM Mono,monospace' }}>{active.user_name || ''}</div>
+            <div style={{ fontSize: 11, color: '#A0A096', marginTop: 2, fontFamily: 'DM Mono,monospace' }}>{active.user_name || ''}{active.user_email ? ` · ${active.user_email}` : ''}</div>
           </div>
           <button style={{ ...s.btn, background: active.status === 'resolved' ? '#8A8A82' : '#EDEDEA', color: active.status === 'resolved' ? 'white' : '#5A5A52' }} onClick={resolve}>
             {active.status === 'resolved' ? 'Reopen' : 'Mark resolved'}
@@ -166,15 +170,15 @@ export default function AdminSupport({ onUnreadChange }) {
         <div ref={threadRef} style={{ padding: 20, maxHeight: 400, overflowY: 'auto' }}>
           {threadLoading ? <div style={{ textAlign: 'center', color: '#A0A096', fontSize: 13 }}>Loading…</div> :
             thread.map(m => (
-              <div key={m.id} style={{ marginBottom: 18 }}>
+              <div key={m.id} style={{ marginBottom: 14, borderRadius: 12, padding: '14px 16px', border: '0.5px solid rgba(0,0,0,0.07)', background: m.sender === 'admin' ? '#F4F7F2' : 'white', borderLeft: m.sender === 'admin' ? '3px solid #3D5C3C' : '0.5px solid rgba(0,0,0,0.07)', borderTopLeftRadius: m.sender === 'admin' ? 4 : 12, borderBottomLeftRadius: m.sender === 'admin' ? 4 : 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 8 }}>
-                  <div style={{ ...s.av, background: m.sender === 'admin' ? '#3D5C3C' : '#E5E2DA', color: m.sender === 'admin' ? 'white' : '#6A6A62', width: 30, height: 30, fontSize: 11 }}>{m.sender === 'admin' ? 'S' : 'U'}</div>
+                  <div style={{ ...s.av, background: m.sender === 'admin' ? '#3D5C3C' : '#E5E2DA', color: m.sender === 'admin' ? 'white' : '#6A6A62', width: 28, height: 28, fontSize: 11 }}>{m.sender === 'admin' ? 'S' : 'U'}</div>
                   <div>
-                    <div style={{ fontSize: 12.5, fontWeight: 500, color: m.sender === 'admin' ? '#3D5C3C' : '#1C1C1C' }}>{m.sender === 'admin' ? 'You' : 'User'}</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 600, color: m.sender === 'admin' ? '#3D5C3C' : '#1C1C1C' }}>{m.sender === 'admin' ? 'You' : 'User'}</div>
                     <div style={{ fontSize: 10, color: '#B0B0A8', fontFamily: 'DM Mono,monospace' }}>{m._pending ? 'Sending…' : m._failed ? 'Failed' : fmt(m.created_at)}</div>
                   </div>
                 </div>
-                <div style={{ fontSize: 13.5, lineHeight: 1.6, color: m._failed ? '#D64545' : '#3A3A35', paddingLeft: 39 }}>{m.body}</div>
+                <div style={{ fontSize: 13.5, lineHeight: 1.6, color: m._failed ? '#D64545' : '#3A3A35' }}>{m.body}</div>
               </div>
             ))}
         </div>
@@ -207,9 +211,10 @@ export default function AdminSupport({ onUnreadChange }) {
               <div style={s.av}>{(t.user_name || 'U').slice(0, 2).toUpperCase()}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 500, color: '#1C1C1C', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.subject}</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 500, color: '#1C1C1C', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.user_name}{t.user_email ? <span style={{ fontWeight: 400, color: '#A0A096', fontSize: 11.5 }}> · {t.user_email}</span> : null}</div>
                   <div style={{ fontSize: 10.5, color: '#B0B0A8', fontFamily: 'DM Mono,monospace', flexShrink: 0 }}>{fmt(t.last_message_at)}</div>
                 </div>
+                <div style={{ fontSize: 12.5, color: '#3A3A35', fontWeight: 500, marginTop: 1 }}>{t.subject}</div>
                 <div style={{ fontSize: 12, color: '#8A8A82', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.last_sender === 'admin' ? 'You: ' : ''}{t.last_message_preview}</div>
               </div>
               <span style={s.pill(t.status)}>{t.status === 'awaiting' ? 'Awaiting' : t.status}</span>

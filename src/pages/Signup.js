@@ -53,6 +53,7 @@ export default function Signup({ onSuccess, onLogin, prefillEmail }) {
         await supabase.from('profiles').upsert({
           id: data.user.id,
           full_name: name,
+          email: email,
           program_phase: 'awaiting_results',
           created_at: new Date().toISOString(),
         })
