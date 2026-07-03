@@ -144,18 +144,18 @@ const css = `
   .snfy-dot.no { background: #C95B5B; }
   .snfy-dot.empty { background: #F4F2EC; border: 1px solid rgba(0,0,0,0.05); }
   .snfy-dot.future { background: #FAF8F4; border: 1px dashed rgba(0,0,0,0.1); }
-  .snfy-dot.missed { background: #FFFFFF; border: 1.5px solid #C9C6BC; }
+  .snfy-dot.missed { background: #DDDAD1; border: 1px solid #C9C6BC; }
   .snfy-dot.today { box-shadow: 0 0 0 2px #3D5C3C; }
   .snfy-dot-day { font-size: 9px; font-weight: 700; letter-spacing: 0.3px; }
   .snfy-dot.yes .snfy-dot-day, .snfy-dot.no .snfy-dot-day { color: rgba(255,255,255,0.85); }
   .snfy-dot.empty .snfy-dot-day, .snfy-dot.future .snfy-dot-day { color: #A8A69E; }
-  .snfy-dot.missed .snfy-dot-day { color: #8A8A82; }
+  .snfy-dot.missed .snfy-dot-day { color: #6A6A62; }
   .snfy-dot-mark { font-size: 14px; font-weight: 700; line-height: 1; }
   .snfy-dot.yes .snfy-dot-mark { color: white; }
   .snfy-dot.no .snfy-dot-mark { color: white; }
   .snfy-dot.empty .snfy-dot-mark { color: rgba(0,0,0,0.15); }
   .snfy-dot.future .snfy-dot-mark { color: rgba(0,0,0,0.12); }
-  .snfy-dot.missed .snfy-dot-mark { color: #8A8A82; font-weight: 700; }
+  .snfy-dot.missed .snfy-dot-mark { color: #6A6A62; font-weight: 700; }
 
   /* Pending cards */
   .snfy-pending { background: #FDF2EA; border: 1px solid rgba(212,137,74,0.18); border-radius: 13px; padding: 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
