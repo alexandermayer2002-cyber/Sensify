@@ -90,7 +90,7 @@ export default function Signup({ onSuccess, onLogin, prefillEmail }) {
             <label style={s.label}>Full name</label>
             <input style={s.input} type="text" placeholder="Sarah Chen" value={name} onChange={e => setName(e.target.value)} required />
             <label style={s.label}>Email</label>
-            <input style={s.input} type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+            <input style={{ ...s.input, ...(prefillEmail ? { background: '#F4F2EC', color: '#6A6A62', cursor: 'not-allowed' } : {}) }} type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required readOnly={!!prefillEmail} title={prefillEmail ? 'Locked to the email you paid with' : undefined} />
             <label style={s.label}>Password</label>
             <input style={s.input} type="password" placeholder="At least 8 characters" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} />
             <label style={s.label}>Confirm password</label>

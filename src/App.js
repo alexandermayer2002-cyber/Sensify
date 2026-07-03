@@ -7,6 +7,7 @@ import Onboarding from './pages/Onboarding'
 import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import { startCheckout } from './utils/checkout'
+import ResetPassword from './pages/ResetPassword'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -46,10 +47,16 @@ export default function App() {
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
-      if (session) setPage('dashboard')
-      else { setPage('marketing'); setIsAdmin(false) }
+      if (event === 'PASSWORD_RECOVERY') {
+        // User arrived from a reset-password email — show the set-new-password
+        // screen instead of dropping them straight into the dashboard.
+        setPage('reset-password')
+      } else if (session) {
+        // Don't yank them off the reset screen if they're mid-reset.
+        setPage(prev => prev === 'reset-password' ? prev : 'dashboard')
+      } else { setPage('marketing'); setIsAdmin(false) }
     })
 
     return () => subscription.unsubscribe()
@@ -110,7 +117,8 @@ export default function App() {
   }
 
   if (page === 'marketing') return <Marketing onGetStarted={() => startCheckout()} onSignIn={() => setPage('login')} />
-  if (page === 'login') return <Login onSuccess={() => setPage('dashboard')} onSignup={() => startCheckout()} />
+  if (page === 'login') return <Login onSuccess={() => setPage('dashboard')} onSignup={() => startCheckout()} onResumePaid={(email) => { setPaidEmail(email); setPage('signup') }} />
+  if (page === 'reset-password') return <ResetPassword onDone={() => setPage('dashboard')} />
   if (page === 'signup') return <Signup prefillEmail={paidEmail} onSuccess={() => setPage('onboarding')} onLogin={() => setPage('login')} />
   if (page === 'onboarding') return <Onboarding onComplete={() => setPage('dashboard')} session={session} />
   if (page === 'admin') return <AdminDashboard session={session} onBack={() => setPage('dashboard')} />

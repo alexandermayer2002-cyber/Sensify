@@ -7,6 +7,7 @@
 const { createClient } = require('@supabase/supabase-js')
 
 const ASK_DAILY_LIMIT = 25
+const TOTAL_DAILY_LIMIT = 150  // catch-all ceiling across ALL AI features — abuse protection, not a real-user limit
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -46,22 +47,30 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'messages required' }) }
   }
 
-  // Rate-limit Ask Sensify usage per user per day (protects the AI bill).
-  // Only the conversational assistant is limited; program-essential AI
-  // (insights, verdicts, briefings) is never blocked.
-  if (feature === 'ask') {
-    try {
-      const { data: count, error: rlError } = await supabase.rpc('increment_ai_usage', { p_user_id: userId })
-      if (!rlError && typeof count === 'number' && count > ASK_DAILY_LIMIT) {
+  // Rate limiting (protects the AI bill). Every AI call increments the
+  // per-user daily counter. Ask Sensify gets a strict conversational limit;
+  // everything else shares a generous total ceiling that no real user will
+  // hit but a scripted abuser will (program-essential AI stays effectively
+  // unblocked for legitimate use).
+  try {
+    const { data: count, error: rlError } = await supabase.rpc('increment_ai_usage', { p_user_id: userId })
+    if (!rlError && typeof count === 'number') {
+      if (feature === 'ask' && count > ASK_DAILY_LIMIT) {
         return {
           statusCode: 429,
           body: JSON.stringify({ error: "You've reached today's limit for Ask Sensify. It'll reset tomorrow." }),
         }
       }
-    } catch (e) {
-      // If the counter fails, fail open (don't block the user) but log it.
-      console.error('Rate limit check failed:', e.message)
+      if (count > TOTAL_DAILY_LIMIT) {
+        return {
+          statusCode: 429,
+          body: JSON.stringify({ error: 'Daily usage limit reached. Please try again tomorrow.' }),
+        }
+      }
     }
+  } catch (e) {
+    // If the counter fails, fail open (don't block the user) but log it.
+    console.error('Rate limit check failed:', e.message)
   }
 
   const cappedTokens = Math.min(Number(max_tokens) || 300, 1500)

@@ -21,11 +21,13 @@ const s = {
   link: { color: '#3D5C3C', fontWeight: 500, cursor: 'pointer', textDecoration: 'none' }
 }
 
-export default function Login({ onSuccess, onSignup }) {
+export default function Login({ onSuccess, onSignup, onResumePaid }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [mode, setMode] = useState('login')  // login | forgot | forgot-sent | resume
+  const [notice, setNotice] = useState('')
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -39,6 +41,91 @@ export default function Login({ onSuccess, onSignup }) {
 
   const handleGoogle = async () => {
     await supabase.auth.signInWithOAuth({ provider: 'google' })
+  }
+
+  const handleForgot = async (e) => {
+    e.preventDefault()
+    if (!email.trim()) { setError('Enter your email first.'); return }
+    setLoading(true)
+    setError('')
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: window.location.origin,
+    })
+    setLoading(false)
+    if (error) { setError(error.message); return }
+    setMode('forgot-sent')
+  }
+
+  const handleResume = async (e) => {
+    e.preventDefault()
+    if (!email.trim()) { setError('Enter the email you paid with.'); return }
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/.netlify/functions/resume-paid-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+      const data = await res.json()
+      setLoading(false)
+      if (data.ok) {
+        onResumePaid && onResumePaid(email.trim())
+      } else {
+        setError(data.error || "We couldn't find a payment under that email. If you think this is wrong, contact us and we'll sort it out.")
+      }
+    } catch (err) {
+      setLoading(false)
+      setError('Something went wrong. Please try again.')
+    }
+  }
+
+  if (mode === 'forgot' || mode === 'forgot-sent') {
+    return (
+      <div style={s.wrap}>
+        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.card}>
+          {mode === 'forgot-sent' ? (
+            <>
+              <div style={s.title}>Check your <em style={s.titleEm}>email.</em></div>
+              <div style={s.sub}>If an account exists for {email}, we've sent a link to reset your password. It may take a minute to arrive.</div>
+              <div style={s.footer}><span style={s.link} onClick={() => { setMode('login'); setError('') }}>← Back to sign in</span></div>
+            </>
+          ) : (
+            <>
+              <div style={s.title}>Reset your <em style={s.titleEm}>password.</em></div>
+              <div style={s.sub}>Enter your email and we'll send you a reset link.</div>
+              {error && <div style={s.error}>{error}</div>}
+              <form onSubmit={handleForgot}>
+                <label style={s.label}>Email</label>
+                <input style={s.input} type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+                <button style={s.btn} type="submit" disabled={loading}>{loading ? 'Sending…' : 'Send reset link →'}</button>
+              </form>
+              <div style={s.footer}><span style={s.link} onClick={() => { setMode('login'); setError('') }}>← Back to sign in</span></div>
+            </>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  if (mode === 'resume') {
+    return (
+      <div style={s.wrap}>
+        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.card}>
+          <div style={s.title}>Finish setting <em style={s.titleEm}>up.</em></div>
+          <div style={s.sub}>Already paid but never created your account? Enter the email you used at checkout and we'll pick up where you left off.</div>
+          {error && <div style={s.error}>{error}</div>}
+          <form onSubmit={handleResume}>
+            <label style={s.label}>Email you paid with</label>
+            <input style={s.input} type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+            <button style={s.btn} type="submit" disabled={loading}>{loading ? 'Checking…' : 'Continue →'}</button>
+          </form>
+          <div style={s.footer}><span style={s.link} onClick={() => { setMode('login'); setError('') }}>← Back to sign in</span></div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -60,7 +147,11 @@ export default function Login({ onSuccess, onSignup }) {
           <input style={s.input} type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
           <button style={s.btn} type="submit" disabled={loading}>{loading ? 'Signing in...' : 'Sign in →'}</button>
         </form>
+        <div style={{ textAlign: 'center', marginTop: '12px' }}>
+          <span style={{ ...s.link, fontSize: '13px' }} onClick={() => { setMode('forgot'); setError('') }}>Forgot password?</span>
+        </div>
         <div style={s.footer}>Don't have an account? <span style={s.link} onClick={onSignup}>Get started</span></div>
+        <div style={{ ...s.footer, marginTop: '8px', fontSize: '12px' }}>Paid but never finished setting up? <span style={s.link} onClick={() => { setMode('resume'); setError('') }}>Continue here</span></div>
       </div>
     </div>
   )

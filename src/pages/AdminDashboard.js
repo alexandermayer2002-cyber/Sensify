@@ -244,12 +244,25 @@ export default function AdminDashboard({ session, onBack }) {
   const [phaseFilter, setPhaseFilter] = useState('all')
   const [selectedUser, setSelectedUser] = useState(null)
   const [supportUnread, setSupportUnread] = useState(0)
+  const [orphanPayments, setOrphanPayments] = useState([])
   const [userDetail, setUserDetail] = useState(null)
   const [loadingUser, setLoadingUser] = useState(false)
   const [trackChoice, setTrackChoice] = useState({})    // labId -> chosen track
   const [trackFoodSel, setTrackFoodSel] = useState({})  // labId -> array of selected food names
 
-  useEffect(() => { loadAll(); loadSupportUnread() }, [])
+  useEffect(() => { loadAll(); loadSupportUnread(); loadOrphanPayments() }, [])
+
+  // "Paid, no account" — payments recorded in paid_sessions with no matching
+  // profile email. These people gave us money and got stranded; reach out.
+  const loadOrphanPayments = async () => {
+    try {
+      const { data: paid } = await supabase.from('paid_sessions').select('email, amount, created_at').order('created_at', { ascending: false })
+      if (!paid || paid.length === 0) { setOrphanPayments([]); return }
+      const { data: profs } = await supabase.from('profiles').select('email')
+      const claimed = new Set((profs || []).map(p => (p.email || '').toLowerCase()).filter(Boolean))
+      setOrphanPayments(paid.filter(p => !claimed.has((p.email || '').toLowerCase())))
+    } catch (e) { setOrphanPayments([]) }
+  }
 
   const loadSupportUnread = async () => {
     try {
@@ -550,6 +563,25 @@ export default function AdminDashboard({ session, onBack }) {
         {/* LAB RESULTS TAB */}
         {!loading && activeTab === 'overview' && (
           <div className="adm-overview">
+            {/* PAID BUT NO ACCOUNT — people who gave us money and got stranded. Highest-priority alert. */}
+            {orphanPayments.length > 0 && (
+              <div style={{ background: '#FDF3F3', border: '1px solid #E8C5C5', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: '#B54545', marginBottom: '8px' }}>
+                  ⚠ Paid, but no account ({orphanPayments.length})
+                </div>
+                <div style={{ fontSize: '12px', color: '#8A6A6A', marginBottom: '10px' }}>
+                  These people completed payment but never finished creating an account. Reach out — or tell them to use "Paid but never finished? Continue here" on the sign-in page.
+                </div>
+                {orphanPayments.map((p, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderTop: '0.5px solid rgba(0,0,0,0.06)', fontSize: '12.5px' }}>
+                    <span style={{ fontWeight: 500, color: '#1C1C1C' }}>{p.email}</span>
+                    <span style={{ color: '#8A8A82', fontFamily: 'DM Mono, monospace', fontSize: '11px' }}>
+                      {p.amount ? `$${(p.amount / 100).toFixed(0)}` : ''} · {formatDate(p.created_at)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
             {/* Top metric row */}
             <div className="adm-metrics">
               <div className="adm-metric">
