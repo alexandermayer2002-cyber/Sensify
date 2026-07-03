@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { aiPrompt } from '../utils/aiClient'
 import { analyzeConfounds, confoundPromptFragment, CONFOUND_ENABLED } from '../utils/confoundAnalysis'
 import { SCALE_DIRECTION } from '../utils/trackRecommendation'
+import { localDateString } from '../utils/dateUtils'
 
 
 const CONTEXT_OPTIONS = [
@@ -85,6 +86,28 @@ const getSymptomScales = (profile) => {
 const generateInsight = async ({ name, weekNumber, profile, answers, previousAnswers, currentFoods, phase, session }) => {
   const scales = getSymptomScales(profile)
 
+  // ---- Daily adherence (descriptive only) ----
+  // The insight may state these FACTS but never interpret daily factors —
+  // causal connections are Layer 2's job, gated behind physician sign-off.
+  let adherenceLine = ''
+  if (session?.user?.id) {
+    try {
+      const since = new Date(); since.setDate(since.getDate() - 6)
+      const sinceStr = localDateString(since)
+      const { data: week } = await supabase.from('daily_factors')
+        .select('log_date, followed_protocol')
+        .eq('user_id', session.user.id)
+        .gte('log_date', sinceStr)
+      const logged = (week || []).length
+      const followedDays = (week || []).filter(d => d.followed_protocol === true).length
+      const answeredCompliance = (week || []).filter(d => d.followed_protocol !== null).length
+      if (logged > 0) {
+        adherenceLine = `\nDAILY CHECK-IN ADHERENCE THIS WEEK: logged ${logged} of 7 days` +
+          (answeredCompliance > 0 ? `; followed the plan on ${followedDays} of ${answeredCompliance} logged days` : '') + '.'
+      }
+    } catch (e) { /* adherence never blocks the insight */ }
+  }
+
   // ---- Layer 2: confound analysis (gated; surfaces at most one gentle note) ----
   let confoundFragment = ''
   if (CONFOUND_ENABLED && session?.user?.id) {
@@ -163,7 +186,7 @@ ${previousScores ? `LAST WEEK'S SCORES:\n${previousScores}` : 'This is their fir
 
 OVERALL FEELING: ${answers.overall_feeling || 'not specified'}
 WHAT CHANGED THIS WEEK: ${contextStr}
-COMPLIANCE: ${answers.compliance || 'not specified'}
+COMPLIANCE: ${answers.compliance || 'not specified'}${adherenceLine}
 ${answers.notes ? `USER NOTES: ${answers.notes}` : ''}
 
 YOUR TASK:
@@ -178,6 +201,7 @@ Write a personalized weekly insight. Rules:
 - Never say "based on your data" or "according to your responses"
 - Use ${name}'s name only if it reads naturally, at most once
 - If compliance was poor and scores are bad, connect them plainly and without judgment
+- If DAILY CHECK-IN ADHERENCE is provided, you may include ONE short factual clause acknowledging it (e.g. "with all 7 days logged" or "on 4 of 5 logged days you followed the plan"). State it as fact only. Never scold about missed days, and never claim daily habits caused or explain symptom changes.
 - If this is the first check-in with data, compare against baseline scores only and do not reference prior weeks
 ${confoundFragment}
 

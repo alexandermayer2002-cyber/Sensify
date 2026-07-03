@@ -404,6 +404,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [activeCheckinWeek, setActiveCheckinWeek] = useState(1)
   const [activeReintroId, setActiveReintroId] = useState(null)
   const [complianceData, setComplianceData] = useState([])
+  const [weekFactors, setWeekFactors] = useState([])
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
   const [pendingAudit, setPendingAudit] = useState(false)
   const [dailyDone, setDailyDone] = useState(false)
@@ -474,6 +475,16 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       }
 
       const { data: comp } = await supabase.from('daily_compliance').select('*').eq('user_id', session.user.id).gte('date', localDateOffset(-10)).order('date', { ascending: false })
+
+      // Last-10-days factor logs for the "your week" strip (descriptive mirror only)
+      try {
+        const { data: wf } = await supabase.from('daily_factors')
+          .select('log_date, sleep, stress, hydration, drinks')
+          .eq('user_id', session.user.id)
+          .gte('log_date', localDateOffset(-10))
+        setWeekFactors(wf || [])
+      } catch (e) {}
+
       if (comp) {
         setComplianceData(comp)
         let nos = 0
@@ -1085,7 +1096,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     else if (isFuture) { cls = 'future'; mark = '' }
                     else if (isToday) { cls = 'empty'; mark = '\u00b7' }  // today, pending - not missed yet
                     else { cls = 'missed'; mark = '\u2013' }  // past day, never checked in
-                    return { day, cls: cls + (isToday ? ' today' : ''), mark }
+                    return { day, cls: cls + (isToday ? ' today' : ''), mark, dateStr, isFuture }
                   })
                   const weekLabel = profile?.protocol_start_date ? `Days ${startDayNum}\u2013${startDayNum + 6}` : 'This week'
                   return (
@@ -1107,6 +1118,47 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           </div>
                         ))}
                       </div>
+                      {/* YOUR WEEK FACTORS — a pure mirror of what they logged each day.
+                          Descriptive only: no interpretation, no causal claims (that's Layer 2, gated). */}
+                      {weekFactors.length > 0 && (() => {
+                        const byDate = {}
+                        weekFactors.forEach(f => { byDate[f.log_date] = f })
+                        // band → intensity color. "Amount" scales (sleep, water): deeper sage = more.
+                        // Stress: calm sage → deep amber as reported stress rises. Their own words, mirrored.
+                        const SLEEP_C = { under6: '#E4DFD3', '6-7': '#C9D8C4', '7-8': '#9FBE9A', '8plus': '#6E9A6B' }
+                        const HYD_C = { under3: '#E4DFD3', '3-5': '#C9D8C4', '6-8': '#9FBE9A', '8plus': '#6E9A6B' }
+                        const STRESS_C = { low: '#DCE7D8', mild: '#E8E3C9', moderate: '#EED9A8', high: '#E8B36B', severe: '#D98A4A' }
+                        const drinkColor = (n) => n == null ? null : n === 0 ? '#DCE7D8' : n <= 2 ? '#EED9A8' : n <= 4 ? '#E8B36B' : '#D98A4A'
+                        const isDrinker = profile?.drinks_alcohol === true
+                        const rows = [
+                          { label: 'Sleep', get: (f) => SLEEP_C[f?.sleep] || null },
+                          { label: 'Stress', get: (f) => STRESS_C[f?.stress] || null },
+                          { label: 'Water', get: (f) => HYD_C[f?.hydration] || null },
+                          ...(isDrinker ? [{ label: 'Drinks', get: (f) => drinkColor(f?.drinks) }] : []),
+                        ]
+                        return (
+                          <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                            {rows.map(row => (
+                              <div key={row.label} style={{ marginBottom: 8 }}>
+                                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#A8A69E', marginBottom: 3 }}>{row.label}</div>
+                                <div style={{ display: 'flex', gap: 7 }}>
+                                  {days.map((d, i) => {
+                                    const color = row.get(byDate[d.dateStr])
+                                    return (
+                                      <div key={i} style={{
+                                        flex: 1, height: 9, borderRadius: 5,
+                                        background: color || (d.isFuture ? 'transparent' : '#F4F2EC'),
+                                        border: color ? 'none' : d.isFuture ? '1px dashed rgba(0,0,0,0.06)' : '1px solid rgba(0,0,0,0.04)',
+                                      }} />
+                                    )
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                            <div style={{ fontSize: 10, color: '#B0B0A8', marginTop: 6 }}>What you logged each day. Deeper green = more sleep or water, amber = higher stress{isDrinker ? ' or more drinks' : ''}.</div>
+                          </div>
+                        )
+                      })()}
                     </>
                   )
                 })()}
