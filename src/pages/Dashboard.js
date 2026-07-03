@@ -394,6 +394,128 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
   )
 }
 
+// ============================================================
+// WeekFactorCards — expandable summary cards for daily factors.
+// Collapsed: icon + name + "norm X · this week Y". Tap → accordion
+// opens: Your norm vs This week, then a 7-day bar chart (M–S).
+// Bar height = the band they reported. Missed days show a dash.
+// Purely descriptive (their own logs mirrored back); causal
+// interpretation stays gated behind Layer 2 / physician sign-off.
+// ============================================================
+const FACTOR_DEFS = {
+  sleep: {
+    name: 'Sleep',
+    bands: ['under6', '6-7', '7-8', '8plus'],
+    labels: { under6: 'Under 6 hrs', '6-7': '6\u20137 hrs', '7-8': '7\u20138 hrs', '8plus': '8+ hrs' },
+    colors: ['#C9D8C4', '#9FBE9A', '#6E9A6B', '#3D5C3C'],
+    normField: 'baseline_avg_sleep',
+    icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>,
+  },
+  stress: {
+    name: 'Stress',
+    bands: ['low', 'mild', 'moderate', 'high', 'severe'],
+    labels: { low: 'Low', mild: 'Mild', moderate: 'Moderate', high: 'High', severe: 'Severe' },
+    colors: ['#DCE7D8', '#E4DFCB', '#EED9A8', '#E8B36B', '#D98A4A'],
+    normField: 'baseline_avg_stress',
+    icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
+  },
+  hydration: {
+    name: 'Water',
+    bands: ['under3', '3-5', '6-8', '8plus'],
+    labels: { under3: 'Under 3 glasses', '3-5': '3\u20135 glasses', '6-8': '6\u20138 glasses', '8plus': '8+ glasses' },
+    colors: ['#C9D8C4', '#9FBE9A', '#6E9A6B', '#3D5C3C'],
+    normField: 'baseline_avg_hydration',
+    icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>,
+  },
+}
+
+function WeekFactorCards({ days, factors, profile }) {
+  const [open, setOpen] = useState(null)
+  if (!factors || factors.length === 0) return null
+  const byDate = {}
+  factors.forEach(f => { byDate[f.log_date] = f })
+
+  const factorKeys = ['sleep', 'stress', 'hydration']
+
+  const weekAvgLabel = (key) => {
+    const def = FACTOR_DEFS[key]
+    const idxs = days.map(d => byDate[d.dateStr]?.[key]).filter(v => v != null).map(v => def.bands.indexOf(v)).filter(i => i >= 0)
+    if (idxs.length === 0) return null
+    const avg = Math.round(idxs.reduce((a, b) => a + b, 0) / idxs.length)
+    return def.labels[def.bands[avg]]
+  }
+
+  return (
+    <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: 7 }}>
+      {factorKeys.map(key => {
+        const def = FACTOR_DEFS[key]
+        const isOpen = open === key
+        const norm = def.labels[profile?.[def.normField]] || null
+        const weekAvg = weekAvgLabel(key)
+        if (!weekAvg) return null
+        return (
+          <div key={key} onClick={() => setOpen(isOpen ? null : key)} style={{
+            background: '#FAF8F4', borderRadius: 12, padding: '11px 13px', cursor: 'pointer',
+            border: isOpen ? '1px solid rgba(61,92,60,0.18)' : '1px solid transparent',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, minWidth: 0 }}>
+                {def.icon}
+                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#1C1C1C' }}>{def.name}</span>
+                {!isOpen && (
+                  <span style={{ fontSize: 11.5, color: '#8A8A82', marginLeft: 5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {norm ? `norm ${norm.toLowerCase()} \u00b7 ` : ''}this week {weekAvg.toLowerCase()}
+                  </span>
+                )}
+              </div>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#B0B0A8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', flexShrink: 0 }}><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            {isOpen && (
+              <>
+                <div style={{ display: 'flex', gap: 20, marginTop: 9 }}>
+                  {norm && (
+                    <div>
+                      <div style={{ fontSize: 9.5, color: '#A0A096', textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: 'DM Mono, monospace' }}>Your norm</div>
+                      <div style={{ fontSize: 13.5, fontWeight: 500, color: '#8A8A82', marginTop: 1 }}>{norm}</div>
+                    </div>
+                  )}
+                  <div>
+                    <div style={{ fontSize: 9.5, color: '#A0A096', textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: 'DM Mono, monospace' }}>This week</div>
+                    <div style={{ fontSize: 13.5, fontWeight: 500, color: '#3D5C3C', marginTop: 1 }}>{weekAvg} avg</div>
+                  </div>
+                </div>
+                <div style={{ marginTop: 11, paddingTop: 9, borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div style={{ display: 'flex', gap: 7, alignItems: 'flex-end', height: 34 }}>
+                    {days.map((d, i) => {
+                      const val = byDate[d.dateStr]?.[key]
+                      const idx = val != null ? def.bands.indexOf(val) : -1
+                      if (idx >= 0) {
+                        const pct = Math.round(((idx + 1) / def.bands.length) * 100)
+                        return <div key={i} style={{ flex: 1, height: `${pct}%`, background: def.colors[idx], borderRadius: 4 }} />
+                      }
+                      if (d.isFuture) return <div key={i} style={{ flex: 1 }} />
+                      return (
+                        <div key={i} style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                          <div style={{ width: 9, height: 2.5, borderRadius: 2, background: '#C9C6BC' }} />
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div style={{ display: 'flex', gap: 7, marginTop: 4 }}>
+                    {days.map((d, i) => (
+                      <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 9.5, color: '#A8A69E' }}>{d.day}</div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [screen, setScreen] = useState('dashboard')
   const [tab, setTab] = useState('home')
@@ -1118,47 +1240,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           </div>
                         ))}
                       </div>
-                      {/* YOUR WEEK FACTORS — a pure mirror of what they logged each day.
-                          Descriptive only: no interpretation, no causal claims (that's Layer 2, gated). */}
-                      {weekFactors.length > 0 && (() => {
-                        const byDate = {}
-                        weekFactors.forEach(f => { byDate[f.log_date] = f })
-                        // band → intensity color. "Amount" scales (sleep, water): deeper sage = more.
-                        // Stress: calm sage → deep amber as reported stress rises. Their own words, mirrored.
-                        const SLEEP_C = { under6: '#E4DFD3', '6-7': '#C9D8C4', '7-8': '#9FBE9A', '8plus': '#6E9A6B' }
-                        const HYD_C = { under3: '#E4DFD3', '3-5': '#C9D8C4', '6-8': '#9FBE9A', '8plus': '#6E9A6B' }
-                        const STRESS_C = { low: '#DCE7D8', mild: '#E8E3C9', moderate: '#EED9A8', high: '#E8B36B', severe: '#D98A4A' }
-                        const drinkColor = (n) => n == null ? null : n === 0 ? '#DCE7D8' : n <= 2 ? '#EED9A8' : n <= 4 ? '#E8B36B' : '#D98A4A'
-                        const isDrinker = profile?.drinks_alcohol === true
-                        const rows = [
-                          { label: 'Sleep', get: (f) => SLEEP_C[f?.sleep] || null },
-                          { label: 'Stress', get: (f) => STRESS_C[f?.stress] || null },
-                          { label: 'Water', get: (f) => HYD_C[f?.hydration] || null },
-                          ...(isDrinker ? [{ label: 'Drinks', get: (f) => drinkColor(f?.drinks) }] : []),
-                        ]
-                        return (
-                          <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-                            {rows.map(row => (
-                              <div key={row.label} style={{ marginBottom: 8 }}>
-                                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#A8A69E', marginBottom: 3 }}>{row.label}</div>
-                                <div style={{ display: 'flex', gap: 7 }}>
-                                  {days.map((d, i) => {
-                                    const color = row.get(byDate[d.dateStr])
-                                    return (
-                                      <div key={i} style={{
-                                        flex: 1, height: 9, borderRadius: 5,
-                                        background: color || (d.isFuture ? 'transparent' : '#F4F2EC'),
-                                        border: color ? 'none' : d.isFuture ? '1px dashed rgba(0,0,0,0.06)' : '1px solid rgba(0,0,0,0.04)',
-                                      }} />
-                                    )
-                                  })}
-                                </div>
-                              </div>
-                            ))}
-                            <div style={{ fontSize: 10, color: '#B0B0A8', marginTop: 6 }}>What you logged each day. Deeper green = more sleep or water, amber = higher stress{isDrinker ? ' or more drinks' : ''}.</div>
-                          </div>
-                        )
-                      })()}
+                      <WeekFactorCards days={days} factors={weekFactors} profile={profile} />
                     </>
                   )
                 })()}
