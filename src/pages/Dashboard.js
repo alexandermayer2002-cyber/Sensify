@@ -427,6 +427,14 @@ const FACTOR_DEFS = {
     normField: 'baseline_avg_hydration',
     icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>,
   },
+  drinks: {
+    name: 'Alcohol',
+    bands: [],
+    labels: { '1-3': '1\u20133 / week', '4-7': '4\u20137 / week', '8-14': '8\u201314 / week', '15plus': '15+ / week' },
+    colors: [],
+    normField: 'baseline_avg_drinks_week',
+    icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 22h8"/><path d="M12 11v11"/><path d="m19 3-7 8-7-8Z"/></svg>,
+  },
 }
 
 function WeekFactorCards({ days, factors, profile }) {
@@ -435,10 +443,16 @@ function WeekFactorCards({ days, factors, profile }) {
   const byDate = {}
   factors.forEach(f => { byDate[f.log_date] = f })
 
-  const factorKeys = ['sleep', 'stress', 'hydration']
+  const factorKeys = profile?.drinks_alcohol === true ? ['sleep', 'stress', 'hydration', 'drinks'] : ['sleep', 'stress', 'hydration']
 
   const weekAvgLabel = (key) => {
     const def = FACTOR_DEFS[key]
+    if (key === 'drinks') {
+      const vals = days.map(d => byDate[d.dateStr]?.drinks).filter(v => v != null)
+      if (vals.length === 0) return null
+      const total = vals.reduce((a, b) => a + b, 0)
+      return `${total} total`
+    }
     const idxs = days.map(d => byDate[d.dateStr]?.[key]).filter(v => v != null).map(v => def.bands.indexOf(v)).filter(i => i >= 0)
     if (idxs.length === 0) return null
     const avg = Math.round(idxs.reduce((a, b) => a + b, 0) / idxs.length)
@@ -481,21 +495,34 @@ function WeekFactorCards({ days, factors, profile }) {
                   )}
                   <div>
                     <div style={{ fontSize: 9.5, color: '#A0A096', textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: 'DM Mono, monospace' }}>This week</div>
-                    <div style={{ fontSize: 13.5, fontWeight: 500, color: '#3D5C3C', marginTop: 1 }}>{weekAvg} avg</div>
+                    <div style={{ fontSize: 13.5, fontWeight: 500, color: '#3D5C3C', marginTop: 1 }}>{weekAvg}{key === 'drinks' ? '' : ' avg'}</div>
                   </div>
                 </div>
-                <div style={{ marginTop: 11, paddingTop: 9, borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                <div style={{ marginTop: 11, paddingTop: 9, borderTop: '1px solid rgba(0,0,0,0.05)' }} onClick={e => e.stopPropagation()}>
                   <div style={{ display: 'flex', gap: 7, alignItems: 'flex-end', height: 34 }}>
                     {days.map((d, i) => {
                       const val = byDate[d.dateStr]?.[key]
+                      if (key === 'drinks') {
+                        if (val == null) {
+                          if (d.isFuture) return <div key={i} style={{ flex: 1 }} />
+                          return (
+                            <div key={i} style={{ flex: 1, display: 'flex', justifyContent: 'center' }} title={`${d.day} \u00b7 not logged`}>
+                              <div style={{ width: 9, height: 2.5, borderRadius: 2, background: '#C9C6BC' }} />
+                            </div>
+                          )
+                        }
+                        const pct = val === 0 ? 12 : Math.min(100, Math.round((val / 5) * 100))
+                        const color = val === 0 ? '#DCE7D8' : val <= 2 ? '#EED9A8' : val <= 4 ? '#E8B36B' : '#D98A4A'
+                        return <div key={i} title={`${d.day} \u00b7 ${val} ${val === 1 ? 'drink' : 'drinks'}`} style={{ flex: 1, height: `${pct}%`, background: color, borderRadius: 4 }} />
+                      }
                       const idx = val != null ? def.bands.indexOf(val) : -1
                       if (idx >= 0) {
                         const pct = Math.round(((idx + 1) / def.bands.length) * 100)
-                        return <div key={i} style={{ flex: 1, height: `${pct}%`, background: def.colors[idx], borderRadius: 4 }} />
+                        return <div key={i} title={`${d.day} \u00b7 ${def.labels[val]}`} style={{ flex: 1, height: `${pct}%`, background: def.colors[idx], borderRadius: 4 }} />
                       }
                       if (d.isFuture) return <div key={i} style={{ flex: 1 }} />
                       return (
-                        <div key={i} style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                        <div key={i} style={{ flex: 1, display: 'flex', justifyContent: 'center' }} title={`${d.day} \u00b7 not logged`}>
                           <div style={{ width: 9, height: 2.5, borderRadius: 2, background: '#C9C6BC' }} />
                         </div>
                       )
