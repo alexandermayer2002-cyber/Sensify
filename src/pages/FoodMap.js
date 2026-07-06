@@ -261,7 +261,45 @@ export default function FoodMap({ session, profile, labResult }) {
           </div>
         </div>
 
+        {/* ELIMINATION STATE: the queue up top, with timing — the map being drawn */}
+        {totalTested === 0 && flaggedFoods.length > 0 && (
+          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '18px 20px', marginBottom: '18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', color: '#1C1C1C' }}>In the testing <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>queue.</em></div>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', color: '#A0A096', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{flaggedFoods.length} food{flaggedFoods.length !== 1 ? 's' : ''}</div>
+            </div>
+            <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.6, marginBottom: '14px' }}>Each food below gets its own controlled reintroduction cycle. Your first verdicts land after your first cycle — around <strong style={{ color: '#3D5C3C' }}>Day 71</strong>.</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {flaggedFoods.map((f, i) => (
+                <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#3A3A35', background: '#FAF8F4', border: '0.5px solid rgba(0,0,0,0.07)', padding: '5px 11px', borderRadius: '20px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: f.level === 'High' ? '#D64545' : f.level === 'Moderate' ? '#E8941F' : '#2C9D8A', flexShrink: 0 }}></span>
+                  {f.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* SAFE */}
+        {totalTested === 0 && (
+          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '16px 20px', marginBottom: '18px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#8A8A82', marginBottom: '12px' }}>Where verdicts land</div>
+            {[
+              { name: 'Safe', desc: 'earned after a clean reintroduction', dot: '#2C9D8A' },
+              { name: 'Limit', desc: 'earned when small amounts sit fine', dot: '#E8941F' },
+              { name: 'Avoid', desc: 'earned when your body objects, twice', dot: '#D64545' },
+            ].map((s, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderTop: i > 0 ? '1px solid rgba(0,0,0,0.04)' : 'none' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: s.dot, flexShrink: 0 }}></span>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#1C1C1C', width: '48px' }}>{s.name}</span>
+                <span style={{ fontSize: '12.5px', color: '#8A8A82' }}>{s.desc}</span>
+                <span style={{ marginLeft: 'auto', fontFamily: 'DM Mono, monospace', fontSize: '10px', color: '#C9C6BC' }}>0</span>
+              </div>
+            ))}
+            <div style={{ fontSize: '11.5px', color: '#A0A096', marginTop: '12px', fontStyle: 'italic' }}>Nothing gets a label without being tested. That's the whole point.</div>
+          </div>
+        )}
+        {totalTested > 0 && (<>
         <div className={`fm-section${safeFoods.length === 0 ? ' empty' : ''}`}>
           <div className="fm-sec-head">
             <div className="fm-sec-dot safe"></div>
@@ -321,8 +359,10 @@ export default function FoodMap({ session, profile, labResult }) {
           </div>
         </div>
 
-        {/* FLAGGED NOT YET TESTED */}
-        {flaggedFoods.length > 0 && (
+        </>)}
+
+        {/* FLAGGED NOT YET TESTED (mid-reintro: some verdicts in, rest queued) */}
+        {totalTested > 0 && flaggedFoods.length > 0 && (
           <div className="fm-flagged">
             <div className="fm-sec-head">
               <div className="fm-sec-dot" style={{ background: 'rgba(0,0,0,0.2)' }}></div>

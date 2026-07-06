@@ -12,7 +12,53 @@ const TIER = {
 const SYMPTOM_OPTIONS = ['Bloating', 'Gas / cramping', 'Reflux', 'Fatigue', 'Headache', 'Skin issue', 'Brain fog', 'Other']
 const SEVERITY = ['mild', 'moderate', 'severe']
 
+// ── Locked preview for users still IN the protocol (months 1–6). ──
+// Maintain unlocks at completion; this plants the seed without giving
+// the product away or confusing mid-protocol users.
+function MaintainPreview({ profile }) {
+  const phase = profile?.program_phase
+  const phaseLine = phase === 'reintroduction'
+    ? "You're in reintroduction — every verdict you earn is a piece of the map Maintain keeps alive."
+    : "You're in elimination — the map you're building now is what Maintain keeps working after month six."
+  const features = [
+    { t: 'Ask Sensify, unlimited', d: 'Check any food, menu, label, or photo against your Food Map — anytime, forever.' },
+    { t: 'Keep logging', d: 'Meals and symptoms stay tracked, so your map stays honest as life changes.' },
+    { t: 'Catch drift early', d: 'If old symptoms start creeping back, you see it in the data before it takes over.' },
+    { t: 'Re-test foods', d: 'Bodies change. Re-run a reintroduction cycle on any food and update its verdict.' },
+  ]
+  return (
+    <div style={{ maxWidth: '560px', margin: '0 auto', padding: '32px 22px', fontFamily: 'DM Sans, sans-serif' }}>
+      <div style={{ background: '#3D5C3C', borderRadius: '18px', padding: '28px 26px', marginBottom: '16px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: '140px', height: '140px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }}></div>
+        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#8BAE8A', marginBottom: '10px' }}>After your protocol</div>
+        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, color: '#FAF8F4', lineHeight: 1.15 }}>Your Food Map,<br /><em style={{ fontStyle: 'italic' }}>kept alive.</em></div>
+        <div style={{ fontSize: '13px', color: 'rgba(250,248,244,0.8)', lineHeight: 1.65, marginTop: '12px' }}>{phaseLine}</div>
+        <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: '6px', marginTop: '16px', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '8px 14px' }}>
+          <span style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontStyle: 'italic', color: '#E8941F' }}>$12.99</span>
+          <span style={{ fontSize: '11.5px', color: 'rgba(250,248,244,0.7)' }}>/month · unlocks when your protocol completes</span>
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
+        {features.map((f, i) => (
+          <div key={i} style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '13px', padding: '14px 16px' }}>
+            <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C', marginBottom: '3px' }}>{f.t}</div>
+            <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.6 }}>{f.d}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ fontSize: '11.5px', color: '#A0A096', textAlign: 'center', marginTop: '16px', lineHeight: 1.6 }}>Your completed Food Map is yours forever, subscription or not. Maintain is for keeping it working day to day.</div>
+    </div>
+  )
+}
+
 export default function MaintainHub({ session, profile }) {
+  // Wrapper keeps hooks rules clean: the gate never sits above hooks.
+  const isComplete = profile?.program_phase === 'complete'
+  return isComplete ? <MaintainHubInner session={session} profile={profile} /> : <MaintainPreview profile={profile} />
+}
+
+function MaintainHubInner({ session, profile }) {
+
   const [view, setView] = useState('hub') // hub | ask | symptom | history
   const [foodMap, setFoodMap] = useState([])
   const [meals, setMeals] = useState([])
