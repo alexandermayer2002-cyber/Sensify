@@ -29,34 +29,8 @@ const s = {
   focusValue: { fontSize: '13px', color: '#1C1C1C' },
 }
 
-const TEXT_TIMES = ['6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM', '10:00 PM']
-
 export default function Onboarding({ onComplete, session }) {
-  const [phone, setPhone] = useState('')
-  const [textTime, setTextTime] = useState('')
-  const [saving, setSaving] = useState(false)
-
   const name = session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there'
-
-  const formatPhone = (val) => {
-    const digits = val.replace(/\D/g, '').slice(0, 10)
-    if (digits.length <= 3) return digits
-    if (digits.length <= 6) return `(${digits.slice(0,3)}) ${digits.slice(3)}`
-    return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
-  }
-
-  const phoneValid = phone.replace(/\D/g, '').length === 10
-
-  const handleComplete = async () => {
-    setSaving(true)
-    await supabase.from('profiles').update({
-      phone_number: phone.replace(/\D/g, ''),
-      text_time_preference: textTime,
-      sms_opted_in: true,
-    }).eq('id', session.user.id)
-    setSaving(false)
-    onComplete()
-  }
 
   return (
     <div style={s.wrap}>
@@ -67,40 +41,25 @@ export default function Onboarding({ onComplete, session }) {
       </div>
       <div style={s.body}>
         <div style={s.eyebrow}>One last thing</div>
-        <div style={s.title}>Set up your<br /><em style={s.titleEm}>daily check-in.</em></div>
-        <div style={s.hint}>Every evening we'll send you a quick text — just reply YES or NO to log your daily compliance. It takes one second and keeps your program on track.</div>
+        <div style={s.title}>Your daily<br /><em style={s.titleEm}>check-in ritual.</em></div>
+        <div style={s.hint}>Every evening, take 30 seconds on your dashboard: did you stay on plan, how you slept, your stress, your water. That tiny habit is what makes your results trustworthy.</div>
 
-        <div style={s.label}>Your mobile number</div>
-        <input
-          style={s.input}
-          type="tel"
-          placeholder="(555) 000-0000"
-          value={phone}
-          onChange={e => setPhone(formatPhone(e.target.value))}
-        />
-
-        <div style={s.label}>What time works best?</div>
-        <div style={s.timeGrid}>
-          {TEXT_TIMES.map(time => (
-            <button key={time} style={textTime === time ? s.timeBtnOn : s.timeBtn} onClick={() => setTextTime(time)}>{time}</button>
-          ))}
+        <div style={s.focusTag}>
+          <div style={s.focusLabel}>Why it matters</div>
+          <div style={s.focusValue}>Symptoms move with sleep, stress, and hydration — not just food. Logging both is how we tell a real trigger from an ordinary rough day.</div>
+        </div>
+        <div style={s.focusTag}>
+          <div style={s.focusLabel}>When to do it</div>
+          <div style={s.focusValue}>Each evening works best — the day is fresh in your mind. You'll see your streak and your week build on the dashboard.</div>
         </div>
 
         <div style={s.infoBox}>
-          We'll text you every evening at your chosen time. Reply YES if you stayed on plan, NO if something came up. That's all we need.
-        </div>
-
-        <div style={s.disclaimer}>
-          Standard messaging rates may apply. Reply STOP anytime to unsubscribe.
+          Miss a day? No guilt — it just shows as a gap. Consistency beats perfection.
         </div>
       </div>
       <div style={s.footer}>
-        <button
-          style={phoneValid && textTime ? s.cta : s.ctaDisabled}
-          disabled={!phoneValid || !textTime || saving}
-          onClick={handleComplete}
-        >
-          {saving ? 'Saving...' : 'Go to my dashboard →'}
+        <button style={s.cta} onClick={onComplete}>
+          Go to my dashboard →
         </button>
       </div>
     </div>

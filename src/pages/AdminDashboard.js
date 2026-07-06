@@ -245,12 +245,13 @@ export default function AdminDashboard({ session, onBack }) {
   const [selectedUser, setSelectedUser] = useState(null)
   const [supportUnread, setSupportUnread] = useState(0)
   const [orphanPayments, setOrphanPayments] = useState([])
+  const [stalledUsers, setStalledUsers] = useState([])
   const [userDetail, setUserDetail] = useState(null)
   const [loadingUser, setLoadingUser] = useState(false)
   const [trackChoice, setTrackChoice] = useState({})    // labId -> chosen track
   const [trackFoodSel, setTrackFoodSel] = useState({})  // labId -> array of selected food names
 
-  useEffect(() => { loadAll(); loadSupportUnread(); loadOrphanPayments() }, [])
+  useEffect(() => { loadAll(); loadSupportUnread(); loadStalledUsers(); loadOrphanPayments() }, [])
 
   // "Paid, no account" — payments recorded in paid_sessions with no matching
   // profile email. These people gave us money and got stranded; reach out.
@@ -269,6 +270,23 @@ export default function AdminDashboard({ session, onBack }) {
       const { count } = await supabase.from('tickets').select('id', { count: 'exact', head: true }).eq('unread_for_admin', true)
       setSupportUnread(count || 0)
     } catch (e) {}
+  }
+
+
+  // Active-protocol users who haven't logged a daily check-in in 4+ days.
+  const loadStalledUsers = async () => {
+    try {
+      const cutoff = localDateString(new Date(Date.now() - 4 * 86400000))
+      const { data: activeProfs } = await supabase.from('profiles')
+        .select('id, full_name, email, program_phase')
+        .in('program_phase', ['elimination', 'reintroduction'])
+      if (!activeProfs || activeProfs.length === 0) { setStalledUsers([]); return }
+      const { data: recent } = await supabase.from('daily_factors')
+        .select('user_id')
+        .gte('log_date', cutoff)
+      const loggedIds = new Set((recent || []).map(r => r.user_id))
+      setStalledUsers(activeProfs.filter(p => !loggedIds.has(p.id)))
+    } catch (e) { setStalledUsers([]) }
   }
 
   const loadAll = async () => {
@@ -563,25 +581,60 @@ export default function AdminDashboard({ session, onBack }) {
         {/* LAB RESULTS TAB */}
         {!loading && activeTab === 'overview' && (
           <div className="adm-overview">
-            {/* PAID BUT NO ACCOUNT — people who gave us money and got stranded. Highest-priority alert. */}
-            {orphanPayments.length > 0 && (
-              <div style={{ background: '#FDF3F3', border: '1px solid #E8C5C5', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px' }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#B54545', marginBottom: '8px' }}>
-                  ⚠ Paid, but no account ({orphanPayments.length})
-                </div>
-                <div style={{ fontSize: '12px', color: '#8A6A6A', marginBottom: '10px' }}>
-                  These people completed payment but never finished creating an account. Reach out — or tell them to use "Paid but never finished? Continue here" on the sign-in page.
-                </div>
-                {orphanPayments.map((p, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderTop: '0.5px solid rgba(0,0,0,0.06)', fontSize: '12.5px' }}>
-                    <span style={{ fontWeight: 500, color: '#1C1C1C' }}>{p.email}</span>
-                    <span style={{ color: '#8A8A82', fontFamily: 'DM Mono, monospace', fontSize: '11px' }}>
-                      {p.amount ? `$${(p.amount / 100).toFixed(0)}` : ''} · {formatDate(p.created_at)}
-                    </span>
+            {/* NEEDS ATTENTION — the cockpit. One glance answers "who needs me today". */}
+            {(() => {
+              const supportTurn = supportUnread
+              const items = []
+              if (labResults.length > 0) items.push({
+                key: 'labs', tone: 'red', count: labResults.length,
+                label: labResults.length === 1 ? 'lab result awaiting your review' : 'lab results awaiting your review',
+                action: () => setActiveTab('labs'),
+              })
+              if (pendingAuditCount > 0) items.push({
+                key: 'audits', tone: 'red', count: pendingAuditCount,
+                label: pendingAuditCount === 1 ? 'compliance audit needs a decision' : 'compliance audits need decisions',
+                action: () => setActiveTab('audits'),
+              })
+              if (supportTurn > 0) items.push({
+                key: 'support', tone: 'amber', count: supportTurn,
+                label: supportTurn === 1 ? 'support ticket waiting on your reply' : 'support tickets waiting on your reply',
+                action: () => setActiveTab('support'),
+              })
+              if (orphanPayments.length > 0) items.push({
+                key: 'orphans', tone: 'red', count: orphanPayments.length,
+                label: orphanPayments.length === 1 ? 'person paid but never created an account' : 'people paid but never created accounts',
+                detail: orphanPayments.map(p => p.email).join(' · '),
+              })
+              if (stalledUsers.length > 0) items.push({
+                key: 'stalled', tone: 'amber', count: stalledUsers.length,
+                label: stalledUsers.length === 1 ? 'active user has gone quiet (no check-in in 4+ days)' : 'active users have gone quiet (no check-in in 4+ days)',
+                detail: stalledUsers.slice(0, 4).map(u => u.full_name || u.email).join(' · ') + (stalledUsers.length > 4 ? ` +${stalledUsers.length - 4} more` : ''),
+                action: () => setActiveTab('users'),
+              })
+              return (
+                <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '16px 18px', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: items.length > 0 ? '10px' : '0' }}>
+                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17px', color: '#1C1C1C' }}>Needs attention</div>
+                    {items.length === 0
+                      ? <span style={{ fontSize: '11px', fontWeight: 600, color: '#4A8C6A', background: '#EDF3ED', padding: '3px 9px', borderRadius: '6px' }}>All clear</span>
+                      : <span style={{ fontSize: '11px', fontWeight: 700, color: 'white', background: '#D64545', padding: '2px 8px', borderRadius: '9px' }}>{items.reduce((a, b) => a + b.count, 0)}</span>}
                   </div>
-                ))}
-              </div>
-            )}
+                  {items.length === 0 ? (
+                    <div style={{ fontSize: '12.5px', color: '#8A8A82', marginTop: '6px' }}>Nothing needs you right now. Labs reviewed, support answered, everyone checking in.</div>
+                  ) : items.map(item => (
+                    <div key={item.key} onClick={item.action} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '9px 10px', borderRadius: '9px', cursor: item.action ? 'pointer' : 'default', background: '#FAF8F4', marginBottom: '6px' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.tone === 'red' ? '#D64545' : '#E8941F', marginTop: '5px', flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '13px', color: '#1C1C1C' }}><strong>{item.count}</strong> {item.label}</div>
+                        {item.detail && <div style={{ fontSize: '11.5px', color: '#8A8A82', marginTop: '2px' }}>{item.detail}</div>}
+                      </div>
+                      {item.action && <span style={{ fontSize: '12px', color: '#3D5C3C', fontWeight: 500, flexShrink: 0, marginTop: '2px' }}>Open →</span>}
+                    </div>
+                  ))}
+                </div>
+              )
+            })()}
+
             {/* Top metric row */}
             <div className="adm-metrics">
               <div className="adm-metric">
@@ -1151,9 +1204,9 @@ export default function AdminDashboard({ session, onBack }) {
                       <div className="adm-profile-val">{selectedUser.baseline_energy || '—'}<span style={{ fontSize: '12px', fontWeight: 400, color: '#7A7A72' }}>/10</span></div>
                     </div>
                     <div className="adm-profile-card">
-                      <div className="adm-profile-label">Text time</div>
-                      <div className="adm-profile-val">{selectedUser.text_time_preference || '—'}</div>
-                      <div className="adm-profile-sub">{selectedUser.phone_number ? selectedUser.phone_number : 'No phone on file'}</div>
+                      <div className="adm-profile-label">Contact</div>
+                      <div className="adm-profile-val" style={{ fontSize: '13px' }}>{selectedUser.email || '—'}</div>
+                      <div className="adm-profile-sub">{selectedUser.phone_number ? `Phone: ${selectedUser.phone_number}` : 'No phone on file'}</div>
                     </div>
                     <div className="adm-profile-card">
                       <div className="adm-profile-label">Program phase</div>

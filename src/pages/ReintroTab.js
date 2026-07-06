@@ -169,6 +169,30 @@ const css = `
   .rt-verdict-pill.Avoid { background: #FAEAEA; color: #8B2E2E; }
 
   .rt-locked-card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 14px; padding: 28px 24px; text-align: center; margin-bottom: 14px; }
+  .rt-lk-hero { background: #FFFFFF; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 26px 24px; text-align: center; margin-bottom: 20px; }
+  .rt-lk-ringwrap { position: relative; width: 110px; height: 110px; margin: 0 auto 14px; }
+  .rt-lk-ringcenter { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .rt-lk-pct { font-size: 26px; font-weight: 500; color: #3D5C3C; }
+  .rt-lk-daycount { font-size: 9.5px; color: #A0A096; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rt-lk-headline { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 300; color: #1C1C1C; }
+  .rt-lk-headline em { font-style: italic; color: #3D5C3C; }
+  .rt-lk-purpose { font-size: 12.5px; color: #7A7A72; line-height: 1.6; max-width: 300px; margin: 8px auto 0; }
+  .rt-lk-timeline { position: relative; padding-left: 22px; }
+  .rt-lk-timeline::before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 2px; background: #EFEDE6; border-radius: 1px; }
+  .rt-lk-node { position: relative; margin-bottom: 10px; }
+  .rt-lk-dot { position: absolute; left: -22px; top: 16px; width: 16px; height: 16px; border-radius: 50%; background: #EFEDE6; border: 3px solid #FAF8F4; }
+  .rt-lk-dot.next { background: #3D5C3C; border-color: #EDF3ED; }
+  .rt-lk-tiercard { background: #FCFBF8; border: 0.5px solid rgba(0,0,0,0.06); border-radius: 13px; padding: 14px 16px; opacity: 0.82; }
+  .rt-lk-tiercard.next { background: #FFFFFF; border: 1px solid rgba(61,92,60,0.25); opacity: 1; }
+  .rt-lk-tierhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+  .rt-lk-tierlabel { font-size: 13px; font-weight: 600; color: #6A6A62; }
+  .rt-lk-tiercard.next .rt-lk-tierlabel { color: #1C1C1C; }
+  .rt-lk-badge { font-size: 10px; font-weight: 600; color: #3D5C3C; background: #EDF3ED; padding: 3px 8px; border-radius: 5px; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+  .rt-lk-tierwhen { font-size: 10px; color: #A0A096; font-family: 'DM Mono', monospace; white-space: nowrap; }
+  .rt-lk-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+  .rt-lk-pill { font-size: 11.5px; color: #3A3A35; background: #FAF8F4; border: 0.5px solid rgba(0,0,0,0.06); padding: 4px 10px; border-radius: 20px; }
+  .rt-lk-tiercard:not(.next) .rt-lk-pill { color: #8A8A82; background: #FFFFFF; }
+  .rt-lk-nofoods { font-size: 11.5px; color: #A0A096; font-style: italic; }
   .rt-locked-icon { width: 48px; height: 48px; background: #FAF8F4; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
   .rt-locked-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 300; margin-bottom: 6px; }
   .rt-locked-title em { font-style: italic; color: #3D5C3C; }
@@ -591,32 +615,69 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
           <div className="rt-title">Reintro<em>duction.</em></div>
           <div className="rt-sub">Foods are reintroduced one at a time after your elimination phase is complete.</div>
         </div>
-        <div className="rt-locked-card">
-          <div className="rt-locked-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A7A72" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          </div>
-          <div className="rt-locked-title">Reintroduction <em>unlocks soon.</em></div>
-          <div className="rt-locked-sub">Complete your 8-week elimination phase first. {isCommonTrack ? 'Then you can test your foods one at a time.' : 'Low sensitivity foods unlock first.'}</div>
-          <div className="rt-countdown">
-            <div className="rt-countdown-num">{daysUntilLow}</div>
-            <div className="rt-countdown-label">{daysUntilLow === 1 ? 'day until unlock' : 'days until unlock'}</div>
-          </div>
-        </div>
+        {(() => {
+          // ── Locked state: progress ring + personalized roadmap ──
+          const elimDays = 56
+          const dayCapped = Math.min(Math.max(currentDay, 0), elimDays)
+          const pct = Math.round((dayCapped / elimDays) * 100)
+          const R = 48, CIRC = 2 * Math.PI * R
+          const offset = CIRC * (1 - dayCapped / elimDays)
+          const tierFoods = (level) => getAllQualifyingFoods(level).map(f => f.name)
+          const lowFoods = tierFoods('Low')
+          const modFoods = tierFoods('Moderate')
+          const highFoods = tierFoods('High')
+          const commonNoFoodsYet = isCommonTrack && lowFoods.length === 0
+          const tiers = isCommonTrack
+            ? [{ label: 'Your test foods', day: 57, days: daysUntilLow, foods: lowFoods, next: true }]
+            : [
+              { label: 'Low sensitivity', day: 57, days: daysUntilLow, foods: lowFoods, next: true },
+              { label: 'Moderate sensitivity', day: 113, days: daysUntilModerate, foods: modFoods, next: false },
+              { label: 'High sensitivity', day: 169, days: daysUntilHigh, foods: highFoods, next: false },
+            ]
+          return (
+            <>
+              <div className="rt-lk-hero">
+                <div className="rt-lk-ringwrap">
+                  <svg width="110" height="110" viewBox="0 0 110 110">
+                    <circle cx="55" cy="55" r={R} fill="none" stroke="#EFEDE6" strokeWidth="9" />
+                    <circle cx="55" cy="55" r={R} fill="none" stroke="#3D5C3C" strokeWidth="9" strokeLinecap="round"
+                      strokeDasharray={CIRC} strokeDashoffset={offset} transform="rotate(-90 55 55)" />
+                  </svg>
+                  <div className="rt-lk-ringcenter">
+                    <div className="rt-lk-pct">{pct}%</div>
+                    <div className="rt-lk-daycount">Day {dayCapped} of {elimDays}</div>
+                  </div>
+                </div>
+                <div className="rt-lk-headline">Your first tests unlock in <em>{daysUntilLow} {daysUntilLow === 1 ? 'day' : 'days'}.</em></div>
+                <div className="rt-lk-purpose">Every clean elimination day makes your reintroduction results sharper. You're building the baseline that makes testing work.</div>
+              </div>
 
-        {/* Preview tiers */}
-        <div className="rt-section-label">Unlock schedule</div>
-        {[
-          { label: 'Low sensitivity foods', day: 57, days: daysUntilLow },
-          { label: 'Moderate sensitivity foods', day: 113, days: daysUntilModerate },
-          { label: 'High sensitivity foods', day: 169, days: daysUntilHigh },
-        ].map((tier, i) => (
-          <div key={i} className="rt-tier-card">
-            <div className="rt-tier-header">
-              <div className="rt-tier-label">{tier.label}</div>
-              <div className="rt-tier-status">Day {tier.day} · {tier.days} days away</div>
-            </div>
-          </div>
-        ))}
+              <div className="rt-section-label">Your testing roadmap</div>
+              <div className="rt-lk-timeline">
+                {tiers.map((tier, i) => (
+                  <div key={i} className="rt-lk-node">
+                    <div className={`rt-lk-dot${tier.next ? ' next' : ''}`} />
+                    <div className={`rt-lk-tiercard${tier.next ? ' next' : ''}`}>
+                      <div className="rt-lk-tierhead">
+                        <div className="rt-lk-tierlabel">{tier.label}</div>
+                        {tier.next
+                          ? <div className="rt-lk-badge">Up next · Day {tier.day}</div>
+                          : <div className="rt-lk-tierwhen">Day {tier.day} · in {tier.days} days</div>}
+                      </div>
+                      {tier.foods.length > 0 ? (
+                        <div className="rt-lk-pills">
+                          {tier.foods.map((f, j) => <span key={j} className="rt-lk-pill">{f}</span>)}
+                        </div>
+                      ) : (
+                        <div className="rt-lk-nofoods">{commonNoFoodsYet ? "You'll choose your test foods when this unlocks." : 'No foods in this tier — one less thing to test.'}</div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )
+        })()}
       </div>
     </div>
   )
