@@ -335,6 +335,7 @@ const CheckIcon = () => (
 
 export default function Marketing({ onGetStarted, onSignIn }) {
   const [tab, setTab] = useState('home')
+  const [homeFaq, setHomeFaq] = useState(null)
 
   const tabs = ['home', 'how', 'science', 'pricing', 'faq']
 
@@ -368,6 +369,14 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
             <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
           </div>
+        </div>
+      </div>
+
+      <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.07)', padding: '18px 24px' }}>
+        <div style={{ maxWidth: '860px', margin: '0 auto', display: 'flex', justifyContent: 'center', gap: '36px', flexWrap: 'wrap' }}>
+          <div style={{ fontSize: '12.5px', color: '#5A5A52', display: 'flex', alignItems: 'center', gap: '7px' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3D5C3C', flexShrink: 0 }}></span>Physician-reviewed protocol</div>
+          <div style={{ fontSize: '12.5px', color: '#5A5A52', display: 'flex', alignItems: 'center', gap: '7px' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3D5C3C', flexShrink: 0 }}></span>Built on the clinical elimination gold standard</div>
+          <div style={{ fontSize: '12.5px', color: '#5A5A52', display: 'flex', alignItems: 'center', gap: '7px' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3D5C3C', flexShrink: 0 }}></span>One price — lab test included</div>
         </div>
       </div>
 
@@ -435,7 +444,31 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="mk-section sage">
+            <div className="mk-section alt">
+        <div className="mk-section-inner">
+          <div className="ey">How it works</div>
+          <div className="sh">Four steps to <em>certainty.</em></div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '14px', marginTop: '28px' }}>
+            {[
+              { n: '01', t: 'Test', d: 'Complete your intake and at-home lab test. Your results become the starting hypothesis — the suspects, not the verdict.' },
+              { n: '02', t: 'Eliminate', d: 'Eight weeks without your flagged foods, with 30-second daily check-ins. Your symptoms settle into a clean baseline.' },
+              { n: '03', t: 'Reintroduce', d: 'Each food returns one at a time in a controlled cycle while we track your response. Your body gives the real answer.' },
+              { n: '04', t: 'Know', d: 'Every food lands where it belongs: Safe, Limit, or Avoid. Your Food Map is permanent and yours to keep.' },
+            ].map((s, i) => (
+              <div key={i} style={{ background: '#FAF8F4', border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '20px 18px' }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: '#8BAE8A', letterSpacing: '1px', marginBottom: '10px' }}>{s.n}</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '19px', color: '#1C1C1C', marginBottom: '8px' }}>{s.t}</div>
+                <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>{s.d}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: '22px' }}>
+            <button className="btn-g" onClick={() => setTab('how')}>See the full program &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+<div className="mk-section sage">
         <div className="mk-section-inner">
           <div className="ey">The outcome</div>
           <div className="sh">A Food Map that's <em>actually earned.</em></div>
@@ -448,9 +481,36 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
+      <div className="mk-section cream">
+        <div className="mk-section-inner">
+          <div className="ey">Before you start</div>
+          <div className="sh">The questions <em>everyone asks.</em></div>
+          <div className="faq-list" style={{ maxWidth: '660px', marginTop: '26px' }}>
+            {[
+              { q: "What's included in the $399?", a: 'Everything: your lab test, the full 6-month physician-reviewed elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your permanent Food Map. There is no separate lab bill and nothing else to buy.' },
+              { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
+              { q: 'How much time does it take each week?', a: 'The daily check-in takes 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
+              { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people finish the protocol and find their body tolerates everything well — which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. A clean result is still an answer you can trust.' },
+              { q: 'Do I need to already have a lab test?', a: 'No. When you purchase the program we guide you through ordering your food sensitivity test during onboarding. We tell you exactly which test to get and how to complete it from home.' },
+            ].map((f, i) => {
+              const isOpen = homeFaq === i
+              return (
+                <div key={i} className={`faq-item${isOpen ? ' open' : ''}`} onClick={() => setHomeFaq(isOpen ? null : i)}>
+                  <div className="faq-q">{f.q}<span className="faq-plus">{isOpen ? '−' : '+'}</span></div>
+                  {isOpen && <div className="faq-a">{f.a}</div>}
+                </div>
+              )
+            })}
+          </div>
+          <div style={{ marginTop: '18px' }}>
+            <button className="btn-g" onClick={() => setTab('faq')}>Read all FAQs &rarr;</button>
+          </div>
+        </div>
+      </div>
+
       <div className="cta-section">
         <h2>Stop guessing.<br /><em>Start knowing.</em></h2>
-        <p>The complete system — test, protocol, and answers — for $399.</p>
+        <p>A lab test alone costs $150–$300 and hands you a guess. Sensify includes the lab <em style={{ fontStyle: 'normal', fontWeight: 600 }}>and</em> the six months that turn it into an answer — one price, $399, nothing else to buy.</p>
         <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
       </div>
       <Footer />
