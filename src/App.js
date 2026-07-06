@@ -19,6 +19,16 @@ export default function App() {
   // Detect return from Stripe Checkout and verify the payment was real
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
+    // Return from a Maintain setup-mode checkout (card saved, no charge)
+    if (params.get('maintain_setup') === '1' && params.get('session_id')) {
+      const sid = params.get('session_id')
+      fetch('/.netlify/functions/verify-maintain-setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sid }),
+      }).catch(() => {}).finally(() => { window.history.replaceState({}, '', '/') })
+      return
+    }
     if (params.get('paid') === 'true' && params.get('session_id')) {
       const sid = params.get('session_id')
       fetch('/.netlify/functions/verify-payment', {

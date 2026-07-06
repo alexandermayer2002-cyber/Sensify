@@ -1217,6 +1217,33 @@ export default function AdminDashboard({ session, onBack }) {
                         for (const e of sorted) { if (e.response === 'YES') count++; else break }
                         return count
                       })()}d</div>
+                      {(selectedUser.program_phase === 'reintroduction' || selectedUser.program_phase === 'elimination') && (
+                        <button
+                          style={{ marginTop: '8px', fontSize: '11px', fontWeight: 600, color: '#3D5C3C', background: '#EDF3ED', border: 'none', borderRadius: '7px', padding: '6px 10px', cursor: 'pointer' }}
+                          onClick={async () => {
+                            if (!window.confirm(`Mark ${selectedUser.full_name || 'this user'}'s protocol COMPLETE? ${selectedUser.maintain_opt_in ? 'They opted into Maintain — their $12.99/mo subscription will start now.' : 'They have not opted into Maintain.'}`)) return
+                            const { error } = await supabase.from('profiles').update({ program_phase: 'complete' }).eq('id', selectedUser.id)
+                            if (error) { alert('Could not update phase: ' + error.message); return }
+                            let maintainMsg = 'Not opted into Maintain — no subscription started.'
+                            if (selectedUser.maintain_opt_in) {
+                              try {
+                                const { data: sess } = await supabase.auth.getSession()
+                                const res = await fetch('/.netlify/functions/activate-maintain', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sess?.session?.access_token}` },
+                                  body: JSON.stringify({ userId: selectedUser.id }),
+                                })
+                                const data = await res.json()
+                                maintainMsg = data.activated ? 'Maintain subscription started ($12.99/mo).' : `Maintain NOT started: ${data.reason || data.error || 'unknown'}.`
+                              } catch (e) { maintainMsg = 'Maintain activation call failed — activate manually.' }
+                            }
+                            alert(`Protocol marked complete. ${maintainMsg}`)
+                            loadAll()
+                            setSelectedUser({ ...selectedUser, program_phase: 'complete' })
+                          }}>
+                          Mark protocol complete{selectedUser.maintain_opt_in ? ' · starts Maintain' : ''}
+                        </button>
+                      )}
                     </div>
                     <div className="adm-profile-card">
                       <div className="adm-profile-label">Protocol track</div>

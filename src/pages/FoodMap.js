@@ -123,6 +123,29 @@ export default function FoodMap({ session, profile, labResult }) {
 
   const noSensitivityFoods = labResult?.foods?.filter(f => f.level === 'No sensitivity') || []
 
+  // Testing-order helpers for the elimination manifest.
+  const foodFrequency = profile?.food_frequency || {}
+  const FREQ_RANK = { 'daily': 1, '3-5x': 2, '1-2x': 3, 'rarely': 4, 'never': 5 }
+  const FREQ_TAG = { 'daily': 'EATEN DAILY', '3-5x': '3–5X / WEEK', '1-2x': '1–2X / WEEK', 'rarely': 'RARELY', 'never': 'NEVER' }
+  const isCommonTrack = profile?.protocol_track === 'common'
+  const qualifying = (level) => {
+    if (!labResult?.foods) return []
+    const pool = isCommonTrack
+      ? (level === 'Low' ? labResult.foods : [])
+      : labResult.foods.filter(f => f.level === level)
+    return pool
+      .filter(f => { const q = foodFrequency[f.name]; return q && q !== 'never' && q !== 'rarely' })
+      .sort((a, b) => (FREQ_RANK[foodFrequency[a.name]] || 99) - (FREQ_RANK[foodFrequency[b.name]] || 99))
+  }
+  const manifestTiers = (isCommonTrack
+    ? [{ key: 'Low', day: 57, title: 'Your test foods', chip: '#EDF3ED', chipText: '#3D5C3C', accent: '#3D5C3C' }]
+    : [
+      { key: 'Low', day: 57, title: 'Low — tests first', chip: '#EDF3ED', chipText: '#3D5C3C', accent: '#3D5C3C' },
+      { key: 'Moderate', day: 113, title: 'Moderate', chip: '#FBEFD8', chipText: '#9A6212', accent: '#9A6212' },
+      { key: 'High', day: 169, title: 'High — tests last', chip: '#FBE9E9', chipText: '#A32D2D', accent: '#A32D2D' },
+    ]).map(t => ({ ...t, foods: qualifying(t.key) })).filter(t => t.foods.length > 0)
+  const manifestTotal = manifestTiers.reduce((a, t) => a + t.foods.length, 0)
+
   const name = profile?.full_name?.split(' ')[0] || 'Your'
   const programNotStarted = !profile?.program_phase || profile?.program_phase === 'awaiting_results'
   const hasNoResults = !labResult || labResult.status === 'pending_review'
@@ -209,7 +232,7 @@ export default function FoodMap({ session, profile, labResult }) {
         <div className="fm-header">
           <div className="fm-header-top">
             <div>
-              <div className="fm-eyebrow">Sensify · {isComplete ? 'Verified result' : 'Building'}</div>
+              <div className="fm-eyebrow">Sensify · {isComplete ? 'Verified result' : totalTested === 0 ? 'Calibrating' : 'Building'}</div>
               <div className="fm-name"><em>{name}'s</em> Food Map.</div>
             </div>
             <div className="fm-meta">
@@ -219,6 +242,30 @@ export default function FoodMap({ session, profile, labResult }) {
             </div>
           </div>
 
+          {totalTested === 0 ? (
+            <div className="fm-scan">
+              <div className="fm-ring-wrap">
+                <svg viewBox="0 0 104 104" width="104" height="104">
+                  <circle cx="52" cy="52" r="44" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
+                  <circle cx="52" cy="52" r="44" fill="none" stroke="#8BAE8A" strokeWidth="6" strokeLinecap="round"
+                    strokeDasharray={`${(Math.min(protocolDays, 56) / 56) * 276.5} 276.5`} transform="rotate(-90 52 52)" />
+                </svg>
+                <div className="fm-ring-label">
+                  <div className="fm-ring-num">{Math.min(Math.round((Math.min(protocolDays, 56) / 56) * 100), 100)}<span style={{ fontSize: '14px' }}>%</span></div>
+                  <div className="fm-ring-sub">Baseline</div>
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '12px', color: 'rgba(250,248,244,0.85)', lineHeight: 1.6, marginBottom: '9px' }}>Your instrument is calibrating. Eight clean weeks build the baseline every verdict gets measured against.</div>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} style={{ flex: 1, height: '3px', borderRadius: '2px', background: i < Math.min(Math.ceil(protocolDays / 7), 8) ? '#8BAE8A' : 'rgba(255,255,255,0.14)' }} />
+                  ))}
+                </div>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', color: 'rgba(250,248,244,0.45)', marginTop: '6px', letterSpacing: '0.8px' }}>WEEK {Math.min(Math.ceil(Math.max(protocolDays, 1) / 7), 8)} OF 8 · FIRST VERDICTS ~DAY 71</div>
+              </div>
+            </div>
+          ) : (
           <div className="fm-scan">
             <div className="fm-ring-wrap">
               <svg viewBox="0 0 104 104" width="104" height="104">
@@ -259,44 +306,60 @@ export default function FoodMap({ session, profile, labResult }) {
               </div>
             </div>
           </div>
+          )}
         </div>
 
-        {/* ELIMINATION STATE: the queue up top, with timing — the map being drawn */}
-        {totalTested === 0 && flaggedFoods.length > 0 && (
-          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '18px 20px', marginBottom: '18px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-              <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', color: '#1C1C1C' }}>In the testing <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>queue.</em></div>
-              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', color: '#A0A096', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{flaggedFoods.length} food{flaggedFoods.length !== 1 ? 's' : ''}</div>
+        {/* ELIMINATION STATE: the testing manifest — exact order, tier-grouped */}
+        {totalTested === 0 && manifestTotal > 0 && (
+          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '16px 18px', marginBottom: '14px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '12px' }}>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17px', color: '#1C1C1C' }}>Testing <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>manifest.</em></div>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#A0A096', letterSpacing: '0.5px' }}>EXACT TESTING ORDER</div>
             </div>
-            <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.6, marginBottom: '14px' }}>Each food below gets its own controlled reintroduction cycle. Your first verdicts land after your first cycle — around <strong style={{ color: '#3D5C3C' }}>Day 71</strong>.</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-              {flaggedFoods.map((f, i) => (
-                <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#3A3A35', background: '#FAF8F4', border: '0.5px solid rgba(0,0,0,0.07)', padding: '5px 11px', borderRadius: '20px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: f.level === 'High' ? '#D64545' : f.level === 'Moderate' ? '#E8941F' : '#2C9D8A', flexShrink: 0 }}></span>
-                  {f.name}
-                </span>
-              ))}
-            </div>
+            {(() => { let n = 0; return manifestTiers.map((tier, ti) => (
+              <div key={ti} style={{ marginBottom: ti < manifestTiers.length - 1 ? '12px' : 0, opacity: ti === 0 ? 1 : ti === 1 ? 0.7 : 0.55 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 700, color: tier.chipText, background: tier.chip, padding: '2px 7px', borderRadius: '4px', letterSpacing: '0.8px' }}>DAY {tier.day}</div>
+                  <div style={{ fontSize: '10.5px', fontWeight: 600, color: tier.accent }}>{tier.title}</div>
+                  <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.05)' }}></div>
+                </div>
+                {tier.foods.map((f, fi) => { n += 1; return (
+                  <div key={fi} style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '6px 0', borderBottom: fi < tier.foods.length - 1 ? '1px solid rgba(0,0,0,0.04)' : 'none' }}>
+                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9.5px', color: '#C9C6BC', width: '16px' }}>{String(n).padStart(2, '0')}</span>
+                    <span style={{ fontSize: '12.5px', color: '#1C1C1C', fontWeight: 500 }}>{f.name}</span>
+                    <span style={{ marginLeft: 'auto', fontFamily: 'DM Mono, monospace', fontSize: '8.5px', color: '#A0A096', letterSpacing: '0.5px' }}>{FREQ_TAG[foodFrequency[f.name]] || ''}</span>
+                  </div>
+                ) })}
+              </div>
+            )) })()}
+            <div style={{ fontSize: '11.5px', color: '#7A7A72', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>Within each phase, the foods you eat most test first — the answers that matter most, measured against your freshest baseline. First verdicts land around <strong style={{ color: '#3D5C3C' }}>Day 71</strong>.</div>
           </div>
         )}
 
         {/* SAFE */}
         {totalTested === 0 && (
-          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '16px 20px', marginBottom: '18px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#8A8A82', marginBottom: '12px' }}>Where verdicts land</div>
-            {[
-              { name: 'Safe', desc: 'earned after a clean reintroduction', dot: '#2C9D8A' },
-              { name: 'Limit', desc: 'earned when small amounts sit fine', dot: '#E8941F' },
-              { name: 'Avoid', desc: 'earned when your body objects, twice', dot: '#D64545' },
-            ].map((s, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderTop: i > 0 ? '1px solid rgba(0,0,0,0.04)' : 'none' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: s.dot, flexShrink: 0 }}></span>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#1C1C1C', width: '48px' }}>{s.name}</span>
-                <span style={{ fontSize: '12.5px', color: '#8A8A82' }}>{s.desc}</span>
-                <span style={{ marginLeft: 'auto', fontFamily: 'DM Mono, monospace', fontSize: '10px', color: '#C9C6BC' }}>0</span>
-              </div>
-            ))}
-            <div style={{ fontSize: '11.5px', color: '#A0A096', marginTop: '12px', fontStyle: 'italic' }}>Nothing gets a label without being tested. That's the whole point.</div>
+          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '16px 18px', marginBottom: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17px', color: '#1C1C1C' }}>Where verdicts <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>land.</em></div>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#A0A096', letterSpacing: '0.5px' }}>0 / {manifestTotal} EARNED</div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+              {[
+                { name: 'Safe', desc: 'earned by a clean reintro', bg: '#DEF2EE', dot: '#2C9D8A', text: '#1A6256', count: safeFoods.length },
+                { name: 'Limit', desc: 'small amounts sit fine', bg: '#FCEFD9', dot: '#E8941F', text: '#8A5410', count: limitFoods.length },
+                { name: 'Avoid', desc: 'your body objects, twice', bg: '#FBE9E9', dot: '#D64545', text: '#A32D2D', count: avoidFoods.length },
+              ].map((s, i) => (
+                <div key={i} style={{ background: s.bg, borderRadius: '11px', padding: '12px 10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: s.dot }}></div>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '12px', fontWeight: 500, color: s.text }}>{s.count}</div>
+                  </div>
+                  <div style={{ fontSize: '12.5px', fontWeight: 700, color: s.text }}>{s.name}</div>
+                  <div style={{ fontSize: '9.5px', color: s.text, opacity: 0.75, lineHeight: 1.45, marginTop: '3px' }}>{s.desc}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: '10.5px', color: '#A0A096', marginTop: '11px', fontStyle: 'italic', textAlign: 'center' }}>Nothing gets a label without being tested.</div>
           </div>
         )}
         {totalTested > 0 && (<>
