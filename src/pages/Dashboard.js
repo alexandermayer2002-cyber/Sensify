@@ -550,6 +550,18 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [tab, setTab] = useState('home')
   const [profile, setProfile] = useState(null)
   const [labResult, setLabResult] = useState(null)
+  const [reintroRows, setReintroRows] = useState([])  // live reintro cycles for the projection
+
+  useEffect(() => {
+    if (!session?.user?.id) return
+    // Reintro cycles feed the live completion projection: completed rows
+    // leave the queue, the active row's started_at carries restarts.
+    supabase.from('reintroduction_results')
+      .select('food, sensitivity_level, verdict, started_at')
+      .eq('user_id', session.user.id)
+      .then(({ data }) => setReintroRows(data || []))
+  }, [session?.user?.id])
+
   const [weeklyDue, setWeeklyDue] = useState(false)
   const [checkinLate, setCheckinLate] = useState(false)
   const [activeCheckinWeek, setActiveCheckinWeek] = useState(1)
@@ -1094,6 +1106,54 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                       <div className="snfy-streak-dot"></div>
                       <div className="snfy-streak-text"><span className="snfy-streak-num">{cleanDays} day</span> check-in streak</div>
                     </div>
+                    {(() => {
+                      // Projected Food Map completion — LIVE, synced to the person's
+                      // actual path. Engine rules: each tier begins at the LATER of its
+                      // severity floor (57/113/169) or the prior tier finishing; one
+                      // 14-day cycle per food. Live inputs: completed cycles leave the
+                      // queue; the active cycle's started_at carries restarts; the
+                      // whole thing keys off protocol_start_date so elimination clock
+                      // resets shift it too. "~" because audits can still move it.
+                      if (!labResult?.foods || !profile?.protocol_start_date) return null
+                      const startDate = new Date(profile.protocol_start_date)
+                      const dayOf = (dateStr) => Math.floor((new Date(dateStr) - startDate) / 86400000) + 1
+                      const todayDay = dayOf(new Date())
+                      const freq = profile?.food_frequency || {}
+                      const isCommon = profile?.protocol_track === 'common'
+                      const doneOrActive = new Set(reintroRows.map(r => r.food))
+                      const active = reintroRows.find(r => r.verdict == null)
+                      const remainingFor = (level) => (isCommon
+                        ? (level === 'Low' ? labResult.foods : [])
+                        : labResult.foods.filter(f => f.level === level)
+                      ).filter(f => {
+                        const q = freq[f.name]
+                        return q && q !== 'never' && q !== 'rarely' && !doneOrActive.has(f.name)
+                      }).length
+                      const tiers = [
+                        { floor: 57, count: remainingFor('Low') },
+                        { floor: 113, count: remainingFor('Moderate') },
+                        { floor: 169, count: remainingFor('High') },
+                      ]
+                      // Cursor: where the timeline currently stands.
+                      let cursor = Math.max(57, todayDay)
+                      if (active?.started_at) cursor = Math.max(cursor, dayOf(active.started_at) + 14)
+                      let any = !!active
+                      tiers.forEach(t => {
+                        if (t.count === 0) return
+                        any = true
+                        cursor = Math.max(cursor, t.floor) + 14 * t.count
+                      })
+                      if (!any) return null
+                      const finish = new Date(startDate)
+                      finish.setDate(finish.getDate() + cursor - 1)
+                      const label = finish.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                      return (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8BAE8A" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Projected map completion <span style={{ fontWeight: 500, color: '#8BAE8A' }}>~{label}</span> · Day {cursor}</div>
+                        </div>
+                      )
+                    })()}
                   </>
                 )}
               </div>
