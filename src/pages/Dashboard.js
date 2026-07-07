@@ -629,7 +629,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         const { data: wf } = await supabase.from('daily_factors')
           .select('log_date, sleep, stress, hydration, drinks')
           .eq('user_id', session.user.id)
-          .gte('log_date', localDateOffset(-10))
+          .gte('log_date', localDateOffset(-120))
         setWeekFactors(wf || [])
       } catch (e) {}
 
@@ -847,11 +847,18 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     }
   }
 
+  // Streak = consecutive calendar days with a completed daily check-in.
+  // Walks real DATES (a missed day breaks it — missing rows used to be
+  // skipped over, inflating the count), and counts doing-the-survey, not
+  // answering YES — an honest "I slipped" day still continues the streak.
   const cleanDays = (() => {
+    const logged = new Set(weekFactors.map(f => f.log_date))
     let count = 0
-    const sorted = [...complianceData].sort((a, b) => new Date(b.date) - new Date(a.date))
-    for (const entry of sorted) {
-      if (entry.response === 'YES') count++
+    const start = new Date()
+    if (!logged.has(localDateString(start))) start.setDate(start.getDate() - 1)  // today pending ≠ broken
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(start); d.setDate(start.getDate() - i)
+      if (logged.has(localDateString(d))) count++
       else break
     }
     return count
@@ -1082,7 +1089,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     </div>
                     <div className="snfy-phase-streak">
                       <div className="snfy-streak-dot"></div>
-                      <div className="snfy-streak-text"><span className="snfy-streak-num">{cleanDays} day</span> clean streak</div>
+                      <div className="snfy-streak-text"><span className="snfy-streak-num">{cleanDays} day</span> check-in streak</div>
                     </div>
                   </>
                 )}
