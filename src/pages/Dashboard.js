@@ -1282,7 +1282,6 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                         {[
                           { bg: '#3D5C3C', fg: 'white', m: '\u2713', label: 'Followed plan' },
                           { bg: '#C95B5B', fg: 'white', m: '\u2717', label: 'Slipped' },
-                          { bg: '#C9D8C4', fg: '#3D5C3C', m: '\u2713', label: 'Checked in' },
                           { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', label: 'Missed \u2014 breaks streak' },
                         ].map((l, i) => (
                           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
