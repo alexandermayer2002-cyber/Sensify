@@ -1278,11 +1278,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           </div>
                         ))}
                       </div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '10px' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '10px', justifyContent: 'center' }}>
                         {[
                           { bg: '#3D5C3C', fg: 'white', m: '\u2713', label: 'Followed plan' },
                           { bg: '#C95B5B', fg: 'white', m: '\u2717', label: 'Slipped' },
-                          { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', label: 'Missed \u2014 breaks streak' },
+                          { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', label: 'Missed \u2014 resets streak' },
                         ].map((l, i) => (
                           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                             <span style={{ width: '14px', height: '14px', borderRadius: '4px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, flexShrink: 0 }}>{l.m}</span>
