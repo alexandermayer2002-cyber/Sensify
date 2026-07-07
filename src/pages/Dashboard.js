@@ -144,6 +144,9 @@ const css = `
   .snfy-dot.empty { background: #F4F2EC; border: 1px solid rgba(0,0,0,0.05); }
   .snfy-dot.future { background: #FAF8F4; border: 1px dashed rgba(0,0,0,0.1); }
   .snfy-dot.missed { background: #DDDAD1; border: 1px solid #C9C6BC; }
+  .snfy-dot.logged { background: #C9D8C4; }
+  .snfy-dot.logged .snfy-dot-day { color: #3D5C3C; }
+  .snfy-dot.logged .snfy-dot-mark { color: #3D5C3C; }
   .snfy-dot.today { box-shadow: 0 0 0 2px #3D5C3C; }
   .snfy-dot-day { font-size: 9px; font-weight: 700; letter-spacing: 0.3px; }
   .snfy-dot.yes .snfy-dot-day, .snfy-dot.no .snfy-dot-day { color: rgba(255,255,255,0.85); }
@@ -1245,12 +1248,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     const isFuture = dateStr > todayStr
                     const isToday = dateStr === todayStr
                     const day = dowLabels[td.getDay()]
+                    const loggedDay = weekFactors.some(f => f.log_date === dateStr)
                     let cls, mark
                     if (entry?.response === 'YES') { cls = 'yes'; mark = '\u2713' }
                     else if (entry?.response === 'NO') { cls = 'no'; mark = '\u2717' }
+                    else if (loggedDay) { cls = 'logged'; mark = '\u2713' }  // checked in; plan question not asked that day
                     else if (isFuture) { cls = 'future'; mark = '' }
                     else if (isToday) { cls = 'empty'; mark = '\u00b7' }  // today, pending - not missed yet
-                    else { cls = 'missed'; mark = '\u2013' }  // past day, never checked in
+                    else { cls = 'missed'; mark = '\u2013' }  // no check-in at all — the only streak-breaker
                     return { day, cls: cls + (isToday ? ' today' : ''), mark, dateStr, isFuture }
                   })
                   const weekLabel = profile?.protocol_start_date ? `Days ${startDayNum}\u2013${startDayNum + 6}` : 'This week'
@@ -1270,6 +1275,19 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           <div key={i} className={`snfy-dot ${d.cls}`}>
                             <span className="snfy-dot-day">{d.day}</span>
                             <span className="snfy-dot-mark">{d.mark}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '10px' }}>
+                        {[
+                          { bg: '#3D5C3C', fg: 'white', m: '\u2713', label: 'Followed plan' },
+                          { bg: '#C95B5B', fg: 'white', m: '\u2717', label: 'Slipped' },
+                          { bg: '#C9D8C4', fg: '#3D5C3C', m: '\u2713', label: 'Checked in' },
+                          { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', label: 'Missed \u2014 breaks streak' },
+                        ].map((l, i) => (
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <span style={{ width: '14px', height: '14px', borderRadius: '4px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, flexShrink: 0 }}>{l.m}</span>
+                            <span style={{ fontSize: '10px', color: '#8A8A82' }}>{l.label}</span>
                           </div>
                         ))}
                       </div>
