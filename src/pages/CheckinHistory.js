@@ -415,12 +415,27 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
 
         {/* DUE STATE */}
         {weeklyDue && !programNotStarted && (
-          <div style={s.dueCard}>
-            <div style={s.dueTag}>Due now</div>
-            <div style={s.dueTitle}>Your weekly <em style={s.dueTitleEm}>check-in is ready.</em></div>
-            <div style={s.dueSub}>Takes 2 minutes. Complete it to log this week's symptoms and get your weekly insight. It will appear in your history once submitted.</div>
-            <button style={s.dueBtn} onClick={onStartCheckin}>Start check-in →</button>
-          </div>
+          <>
+            <style>{`
+              @keyframes chDueRise { from { opacity: 0; transform: translateY(16px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+              @keyframes chDueGlow { 0%, 100% { opacity: 0.06; } 50% { opacity: 0.13; } }
+              @keyframes chDueBtn { 0%, 100% { box-shadow: 0 0 0 rgba(139,174,138,0); } 50% { box-shadow: 0 0 22px rgba(139,174,138,0.45); } }
+            `}</style>
+            <div style={{ position: 'relative', background: '#22301F', borderRadius: 22, padding: '24px 24px 22px', overflow: 'hidden', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'chDueRise 0.6s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
+              <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'chDueGlow 4s ease-in-out infinite', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, position: 'relative' }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · RECORD</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.9)' }} />
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: '#8BAE8A' }}>CHECK-IN OPEN</span>
+                </div>
+              </div>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: 23, fontWeight: 300, color: '#FAF8F4', position: 'relative', lineHeight: 1.2 }}>Your weekly <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>check-in is ready.</em></div>
+              <div style={{ fontSize: 13, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65, margin: '8px 0 16px', position: 'relative', fontWeight: 300 }}>Takes 2 minutes. Complete it to log this week's symptoms and get your weekly insight. It will appear in your history once submitted.</div>
+              <button onClick={onStartCheckin} style={{ position: 'relative', width: '100%', background: '#8BAE8A', color: '#22301F', border: 'none', borderRadius: 12, padding: '14px', fontSize: 14.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', animation: 'chDueBtn 2.6s ease-in-out infinite' }}>Start check-in →</button>
+            </div>
+          </>
         )}
 
         {/* LOCKED STATE */}

@@ -71,7 +71,11 @@ const css = `
   .mk-proof-num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; }
   .mk-proof-label { font-size: 11px; color: #7A7A72; margin-top: 2px; }
   .mk-proof-div { width: 1px; height: 38px; background: rgba(0,0,0,0.08); }
-  .fmcard { background: #0E0E0C; border-radius: 20px; padding: 24px; position: relative; overflow: hidden; }
+  .fmcard { background: #22301F; border-radius: 22px; padding: 24px; position: relative; overflow: hidden; box-shadow: 0 24px 60px rgba(34,48,31,0.35); }
+  .fmcard-orb { position: absolute; top: -70px; right: -70px; width: 240px; height: 240px; border-radius: 50%; background: #8BAE8A; animation: mkGlow 5s ease-in-out infinite; pointer-events: none; }
+  .fmcard-orb2 { position: absolute; bottom: -90px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: #E8941F; opacity: 0.05; pointer-events: none; }
+  @keyframes mkGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
+  @keyframes mkChipIn { from { opacity: 0; transform: translateY(10px) scale(0.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
   .fmcard::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(139,174,138,0.14) 0%, transparent 65%); pointer-events: none; }
   .fmcard-eyebrow { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; color: rgba(139,174,138,0.7); margin-bottom: 7px; }
   .fmcard-title { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 300; color: white; margin-bottom: 18px; }
@@ -79,7 +83,7 @@ const css = `
   .fmcard-cat { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
   .fmcard-catdot { width: 5px; height: 5px; border-radius: 50%; }
   .fmcard-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 16px; }
-  .fmcard-chip { font-size: 11.5px; font-weight: 500; padding: 4px 11px; border-radius: 20px; }
+  .fmcard-chip { font-size: 11.5px; font-weight: 500; padding: 4px 12px; border-radius: 20px; border: 1px solid; animation: mkChipIn 0.5s ease both; }
   .fmcard-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
   .fmcard-verify { font-family: 'DM Mono', monospace; font-size: 8.5px; color: rgba(255,255,255,0.3); letter-spacing: 0.4px; }
 
@@ -395,28 +399,30 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               </div>
             </div>
             <div className="fmcard">
-              <div className="fmcard-eyebrow">Sensify · Verified result</div>
+              <div className="fmcard-orb" />
+              <div className="fmcard-orb2" />
+              <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Sensify · Verified result</div>
               <div className="fmcard-title">Sarah's <em>Food Map.</em></div>
               <div className="fmcard-cat" style={{ color: '#A8C5A7' }}><span className="fmcard-catdot" style={{ background: '#8BAE8A' }}></span>Safe — eat freely</div>
               <div className="fmcard-row">
-                {['Chicken', 'Rice', 'Salmon', 'Oats', 'Almonds'].map(f => (
-                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(139,174,138,0.16)', color: '#A8C5A7' }}>{f}</span>
+                {['Chicken', 'Rice', 'Salmon', 'Oats', 'Almonds'].map((f, i) => (
+                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(44,157,138,0.14)', color: '#5FD4BC', borderColor: 'rgba(44,157,138,0.4)', boxShadow: '0 0 12px rgba(44,157,138,0.18)', animationDelay: `${0.3 + i * 0.09}s` }}>{f}</span>
                 ))}
               </div>
               <div className="fmcard-cat" style={{ color: '#E0A977' }}><span className="fmcard-catdot" style={{ background: '#E8941F' }}></span>Limit — small amounts</div>
               <div className="fmcard-row">
-                {['Wheat', 'Corn', 'Tomato'].map(f => (
-                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(232,148,31,0.16)', color: '#E0A977' }}>{f}</span>
+                {['Wheat', 'Corn', 'Tomato'].map((f, i) => (
+                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(232,148,31,0.14)', color: '#F2C078', borderColor: 'rgba(232,148,31,0.4)', boxShadow: '0 0 12px rgba(232,148,31,0.16)', animationDelay: `${0.8 + i * 0.09}s` }}>{f}</span>
                 ))}
               </div>
               <div className="fmcard-cat" style={{ color: '#E89090' }}><span className="fmcard-catdot" style={{ background: '#D64545' }}></span>Avoid — clear triggers</div>
               <div className="fmcard-row">
-                {['Dairy', 'Eggs', 'Gluten'].map(f => (
-                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(214,69,69,0.15)', color: '#E89090' }}>{f}</span>
+                {['Dairy', 'Eggs', 'Gluten'].map((f, i) => (
+                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(214,69,69,0.13)', color: '#F2A0A0', borderColor: 'rgba(214,69,69,0.4)', boxShadow: '0 0 12px rgba(214,69,69,0.16)', animationDelay: `${1.15 + i * 0.09}s` }}>{f}</span>
                 ))}
               </div>
               <div className="fmcard-foot">
-                <div className="fmcard-verify">SENSIFY VERIFIED · TESTED OVER 184 DAYS</div>
+                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 5, height: 5, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.8)' }} />SENSIFY VERIFIED · TESTED OVER 184 DAYS</div>
               </div>
             </div>
           </div>

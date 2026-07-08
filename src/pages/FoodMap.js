@@ -9,7 +9,10 @@ const css = `
   .fm-loading { display: flex; align-items: center; justify-content: center; min-height: 50vh; font-size: 14px; color: #7A7A72; }
 
   /* DARK INSTRUMENT HEADER */
-  .fm-header { background: #0E0E0C; border-radius: 18px; padding: 26px 26px 24px; margin-bottom: 18px; position: relative; overflow: hidden; }
+  .fm-header { background: #22301F; border-radius: 22px; padding: 26px 26px 24px; margin-bottom: 18px; position: relative; overflow: hidden; box-shadow: 0 18px 44px rgba(34,48,31,0.28); }
+  .fm-header-orb { position: absolute; top: -70px; right: -70px; width: 240px; height: 240px; border-radius: 50%; background: #8BAE8A; animation: fmHdrGlow 5s ease-in-out infinite; pointer-events: none; }
+  .fm-header-orb2 { position: absolute; bottom: -90px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: #E8941F; opacity: 0.05; pointer-events: none; }
+  @keyframes fmHdrGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
   .fm-header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 240px; height: 240px; background: radial-gradient(circle, rgba(139,174,138,0.13) 0%, transparent 65%); pointer-events: none; }
   .fm-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; position: relative; }
   .fm-eyebrow { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.6px; color: rgba(139,174,138,0.7); margin-bottom: 8px; }
@@ -263,6 +266,8 @@ export default function FoodMap({ session, profile, labResult }) {
 
         {/* DARK INSTRUMENT HEADER */}
         <div className="fm-header">
+        <div className="fm-header-orb" />
+        <div className="fm-header-orb2" />
           <div className="fm-header-top">
             <div>
               <div className="fm-eyebrow">Sensify · {isComplete ? 'Verified result' : totalTested === 0 ? 'Calibrating' : 'Building'}</div>
