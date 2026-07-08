@@ -993,10 +993,40 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             const resultsBack = (labResult && labResult.status === 'approved') || profile?.track_decision === 'declined' || profile?.program_phase === 'elimination' || profile?.program_phase === 'reintroduction' || profile?.program_phase === 'complete' || profile?.program_phase === 'tracking'
             if (!resultsBack) {
               return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '32px', textAlign: 'center' }}>
-                  <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, fontSize: 24 }}>🔒</div>
-                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 24, fontWeight: 300, color: '#1C1C1C', marginBottom: 10 }}>Ask Sensify unlocks with your results</div>
-                  <div style={{ fontSize: 14.5, lineHeight: 1.6, color: '#6A6A62', maxWidth: 360 }}>Once your lab results are back and your protocol is set, Ask Sensify can give you guidance that's specific to your body. Until then, it can't answer questions about your sensitivities, because there's nothing to base them on yet.</div>
+                <div style={{ height: '100%', overflowY: 'auto', padding: '28px 22px' }}>
+                  <div style={{ maxWidth: 420, margin: '0 auto' }}>
+                    <div style={{ textAlign: 'center', marginBottom: 20 }}>
+                      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.5px', color: '#C9A227', marginBottom: 8 }}>LOCKED · UNLOCKS WITH YOUR RESULTS</div>
+                      <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 300, color: '#1C1C1C', lineHeight: 1.2 }}>Ask Sensify unlocks<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>with your results.</em></div>
+                      <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.6, maxWidth: 320, margin: '10px auto 0' }}>Once your lab results are back and your protocol is set, Ask Sensify can give you guidance that's specific to your body. Until then, it can't answer questions about your sensitivities, because there's nothing to base them on yet.</div>
+                    </div>
+
+                    <div style={{ border: '0.5px solid rgba(0,0,0,0.09)', borderRadius: 14, padding: 18, background: 'rgba(255,255,255,0.55)' }}>
+                      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1px', color: '#B8B6AE', marginBottom: 12, textAlign: 'center' }}>A PREVIEW OF WHAT'S COMING</div>
+                      <div style={{ opacity: 0.55 }}>
+                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 10, marginBottom: 12 }}>
+                          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 700, letterSpacing: '1px', color: '#8A8A82', marginBottom: 5 }}>YOU</div>
+                          <div style={{ fontSize: 13, lineHeight: 1.6, color: '#3A3A35' }}>Dinner at a Thai place tonight. What should I order and what should I skip?</div>
+                        </div>
+                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 10 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#3D5C3C' }} />
+                            <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 700, letterSpacing: '1px', color: '#3D5C3C' }}>SENSIFY</span>
+                          </div>
+                          <div style={{ fontSize: 13, lineHeight: 1.6, color: '#1C1C1C' }}>Good news: most curries are built on coconut milk, which is clear on your map. Watch the <span style={{ background: '#FBE9E9', padding: '1px 5px', borderRadius: 4, color: '#A32D2D', fontWeight: 500 }}>soy</span> in the stir-fries and ask about <span style={{ background: '#FCEFD9', padding: '1px 5px', borderRadius: 4, color: '#8A5410', fontWeight: 500 }}>peanut</span> garnishes\u2026</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch', gap: 18, marginTop: 16 }}>
+                      {['MENUS', 'LABELS', 'RECIPES', 'PHOTOS'].map((w, i) => (
+                        <React.Fragment key={w}>
+                          {i > 0 && <div style={{ width: 1, background: 'rgba(0,0,0,0.08)' }} />}
+                          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '0.8px', color: '#A0A096', alignSelf: 'center' }}>{w}</div>
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )
             }
