@@ -88,7 +88,10 @@ const css = `
   .snfy-greeting p { font-size: 13px; color: #7A7A72; line-height: 1.55; }
 
   /* Dark protocol card */
-  .snfy-phase { background: #1C1C1C; border-radius: 16px; padding: 22px; color: white; margin-bottom: 14px; position: relative; overflow: hidden; }
+  .snfy-phase { background: #22301F; border-radius: 22px; padding: 22px; color: white; margin-bottom: 14px; position: relative; overflow: hidden; box-shadow: 0 18px 44px rgba(34,48,31,0.28); }
+  .snfy-phase-orb { position: absolute; top: -70px; right: -70px; width: 240px; height: 240px; border-radius: 50%; background: #8BAE8A; animation: snfyGlow 5s ease-in-out infinite; pointer-events: none; }
+  .snfy-phase-orb2 { position: absolute; bottom: -90px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: #E8941F; opacity: 0.05; pointer-events: none; }
+  @keyframes snfyGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
   .snfy-phase::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(139,174,138,0.15) 0%, transparent 70%); pointer-events: none; }
   .snfy-phase-eyebrow { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.35); margin-bottom: 10px; }
   .snfy-phase-day { font-family: 'Fraunces', serif; font-size: 68px; font-weight: 300; line-height: 0.9; color: white; margin-bottom: 4px; }
@@ -1145,6 +1148,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {/* DARK PROTOCOL CARD */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && (
               <div className="snfy-phase">
+                <div className="snfy-phase-orb" />
+                <div className="snfy-phase-orb2" />
                 <div className="snfy-phase-eyebrow">{calculatedPhase === 'elimination' ? 'Elimination phase' : 'Reintroduction phase'}</div>
                 {currentDay === 0 ? (
                   <>

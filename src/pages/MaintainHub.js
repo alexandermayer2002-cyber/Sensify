@@ -50,15 +50,22 @@ function MaintainPreview({ profile, session }) {
 
   return (
     <div style={{ maxWidth: '460px', margin: '0 auto', padding: '32px 22px', fontFamily: 'DM Sans, sans-serif' }}>
-      <div style={{ marginBottom: '18px' }}>
+      <style>{`
+        @keyframes mtRowIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes mtGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
+        @keyframes mtRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+      `}</style>
+      <div style={{ marginBottom: '18px', animation: 'mtRowIn 0.5s ease both' }}>
         <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9.5px', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#8BAE8A', marginBottom: '8px' }}>After month six</div>
         <div style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, color: '#1C1C1C', lineHeight: 1.15 }}>The map is yours.<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>Keeping it alive is Maintain.</em></div>
       </div>
 
-      <div style={{ background: '#22301F', borderRadius: '18px', padding: '20px 22px' }}>
-        <div>
+      <div style={{ background: '#22301F', borderRadius: '22px', padding: '20px 22px', position: 'relative', overflow: 'hidden', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'mtRise 0.7s cubic-bezier(0.16,1,0.3,1) both' }}>
+        <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'mtGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
+        <div style={{ position: 'relative' }}>
           {features.map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '13px 0', borderBottom: i < features.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '13px 0', borderBottom: i < features.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none', animation: `mtRowIn 0.55s ease ${0.4 + i * 0.15}s both` }}>
               <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', color: '#8BAE8A', width: '20px' }}>{`0${i + 1}`}</span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAF8F4' }}>{f.t}</div>
@@ -67,7 +74,7 @@ function MaintainPreview({ profile, session }) {
             </div>
           ))}
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', position: 'relative', animation: 'mtRowIn 0.55s ease 1.1s both' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
             <span style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontStyle: 'italic', color: '#E8941F' }}>$12.99</span>
             <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', color: 'rgba(250,248,244,0.5)', letterSpacing: '0.5px' }}>/MO</span>

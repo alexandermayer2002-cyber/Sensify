@@ -636,26 +636,40 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             ]
           return (
             <>
-              <div className="rt-lk-hero">
-                <div className="rt-lk-ringwrap">
-                  <svg width="110" height="110" viewBox="0 0 110 110">
-                    <circle cx="55" cy="55" r={R} fill="none" stroke="#EFEDE6" strokeWidth="9" />
-                    <circle cx="55" cy="55" r={R} fill="none" stroke="#3D5C3C" strokeWidth="9" strokeLinecap="round"
-                      strokeDasharray={CIRC} strokeDashoffset={offset} transform="rotate(-90 55 55)" />
-                  </svg>
-                  <div className="rt-lk-ringcenter">
-                    <div className="rt-lk-pct">{pct}%</div>
-                    <div className="rt-lk-daycount">Day {dayCapped} of {elimDays}</div>
+              <style>{`
+                @keyframes rtNodeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes rtGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
+                @keyframes rtRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+              `}</style>
+              <div style={{ position: 'relative', background: '#22301F', borderRadius: 22, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'rtRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
+                <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'rtGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, position: 'relative' }}>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · REINTRODUCTION</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8941F' }} />
+                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.55)' }}>T-MINUS {daysUntilLow}D</span>
                   </div>
                 </div>
-                <div className="rt-lk-headline">Your first tests unlock in <em>{daysUntilLow} {daysUntilLow === 1 ? 'day' : 'days'}.</em></div>
-                <div className="rt-lk-purpose">Every clean elimination day makes your reintroduction results sharper. You're building the baseline that makes testing work.</div>
+                <div style={{ position: 'relative', width: 110, height: 110, margin: '0 auto 14px' }}>
+                  <svg width="110" height="110" viewBox="0 0 110 110">
+                    <circle cx="55" cy="55" r={R} fill="none" stroke="rgba(255,255,255,0.09)" strokeWidth="9" />
+                    <circle cx="55" cy="55" r={R} fill="none" stroke="#8BAE8A" strokeWidth="9" strokeLinecap="round"
+                      strokeDasharray={CIRC} strokeDashoffset={offset} transform="rotate(-90 55 55)" style={{ filter: 'drop-shadow(0 0 8px rgba(139,174,138,0.5))' }} />
+                  </svg>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: 27, fontWeight: 300, color: '#FAF8F4' }}>{pct}%</div>
+                    <div style={{ fontSize: 8, color: 'rgba(250,248,244,0.55)', fontFamily: 'DM Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Day {dayCapped} of {elimDays}</div>
+                  </div>
+                </div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 300, color: '#FAF8F4', position: 'relative' }}>Your first tests unlock in <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>{daysUntilLow} {daysUntilLow === 1 ? 'day' : 'days'}.</em></div>
+                <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65, maxWidth: 310, margin: '8px auto 0', position: 'relative', fontWeight: 300 }}>Every clean elimination day makes your reintroduction results sharper. You're building the baseline that makes testing work.</div>
               </div>
 
-              <div className="rt-section-label">Your testing roadmap</div>
+              <div className="rt-section-label" style={{ animation: 'rtNodeIn 0.5s ease 0.5s both' }}>Your testing roadmap</div>
               <div className="rt-lk-timeline">
                 {tiers.map((tier, i) => (
-                  <div key={i} className="rt-lk-node">
+                  <div key={i} className="rt-lk-node" style={{ animation: `rtNodeIn 0.55s ease ${0.7 + i * 0.2}s both` }}>
                     <div className={`rt-lk-dot${tier.next ? ' next' : ''}`} />
                     <div className={`rt-lk-tiercard${tier.next ? ' next' : ''}`}>
                       <div className="rt-lk-tierhead">
