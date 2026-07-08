@@ -24,7 +24,7 @@ export default function AdminSupport({ onUnreadChange }) {
   const [tickets, setTickets] = useState([])
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState('inbox')   // inbox | thread | compose
-  const [inboxTab, setInboxTab] = useState('received')  // received (user reached out) | sent (I reached out)
+  const [showResolved, setShowResolved] = useState(false)  // received (user reached out) | sent (I reached out)
   const [active, setActive] = useState(null)
   const [thread, setThread] = useState([])
   const [threadLoading, setThreadLoading] = useState(false)
@@ -204,27 +204,21 @@ export default function AdminSupport({ onUnreadChange }) {
         </div>
         <button style={s.btn} onClick={startCompose}>+ Message a user</button>
       </div>
-      <div style={{ display: 'flex', gap: 18, padding: '0 20px', borderBottom: '0.5px solid rgba(0,0,0,0.07)' }}>
-        {['received', 'sent'].map(tb => (
-          <button key={tb} onClick={() => setInboxTab(tb)} style={{ background: 'none', border: 'none', padding: '11px 0', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: inboxTab === tb ? '#3D5C3C' : '#8A8A82', borderBottom: inboxTab === tb ? '2px solid #3D5C3C' : '2px solid transparent' }}>
-            {tb === 'received' ? 'Received' : 'Sent'}
-          </button>
-        ))}
-      </div>
       {(() => {
-        // Received = user reached out (user-initiated). Sent = I (admin) reached out.
-        const filtered = tickets.filter(t => inboxTab === 'received' ? t.initiated_by === 'user' : t.initiated_by === 'admin')
         if (loading) return <div style={{ padding: 30, textAlign: 'center', color: '#A0A096', fontSize: 13 }}>Loading…</div>
-        if (filtered.length === 0) return <div style={{ padding: 40, textAlign: 'center', color: '#A0A096', fontSize: 13.5 }}>{inboxTab === 'received' ? 'No incoming requests.' : "You haven't reached out to anyone yet."}</div>
-        return filtered.map(t => {
+        if (tickets.length === 0) return <div style={{ padding: 40, textAlign: 'center', color: '#A0A096', fontSize: 13.5 }}>No conversations yet.</div>
+        const attention = tickets.filter(t => statusLabel(t, 'admin').tone === 'action')
+        const waiting = tickets.filter(t => statusLabel(t, 'admin').tone === 'waiting')
+        const resolved = tickets.filter(t => t.status === 'resolved')
+        const row = (t, hot) => {
           const sl = statusLabel(t, 'admin')
           return (
-            <div key={t.id} style={{ ...s.row, background: t.unread_for_admin ? '#FBFAF7' : 'white' }} onClick={() => open(t)}>
+            <div key={t.id} style={{ ...s.row, background: t.unread_for_admin ? '#FBFAF7' : 'white', borderLeft: hot ? '3px solid #3D5C3C' : '3px solid transparent', opacity: hot ? 1 : 0.9 }} onClick={() => open(t)}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: t.unread_for_admin ? '#D64545' : 'transparent', flexShrink: 0 }} />
               <div style={s.av}>{(t.user_name || 'U').slice(0, 2).toUpperCase()}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 500, color: '#1C1C1C', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.user_name}{t.user_email ? <span style={{ fontWeight: 400, color: '#A0A096', fontSize: 11.5 }}> · {t.user_email}</span> : null}</div>
+                  <div style={{ fontSize: 13.5, fontWeight: hot ? 700 : 500, color: '#1C1C1C', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.user_name}{t.user_email ? <span style={{ fontWeight: 400, color: '#A0A096', fontSize: 11.5 }}> · {t.user_email}</span> : null}</div>
                   <div style={{ fontSize: 10.5, color: '#B0B0A8', fontFamily: 'DM Mono,monospace', flexShrink: 0 }}>{fmt(t.last_message_at)}</div>
                 </div>
                 <div style={{ fontSize: 12.5, color: '#3A3A35', fontWeight: 500, marginTop: 1 }}>{t.subject}</div>
@@ -233,7 +227,32 @@ export default function AdminSupport({ onUnreadChange }) {
               <span style={s.pill(sl.tone)}>{sl.text}</span>
             </div>
           )
-        })
+        }
+        const groupHead = (label, color, dot) => (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '12px 20px 6px' }}>
+            {dot && <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#E8941F' }} />}
+            <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color }}>{label}</span>
+          </div>
+        )
+        return (
+          <>
+            {attention.length > 0 && (<>{groupHead(`NEEDS YOUR REPLY · ${attention.length}`, '#9A6212', true)}{attention.map(t => row(t, true))}</>)}
+            {waiting.length > 0 && (<>{groupHead(`WAITING ON USER · ${waiting.length}`, '#A0A096', false)}{waiting.map(t => row(t, false))}</>)}
+            {resolved.length > 0 && (
+              <>
+                <div onClick={() => setShowResolved(!showResolved)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px', cursor: 'pointer', borderTop: '0.5px solid rgba(0,0,0,0.05)', marginTop: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#1A6256', background: '#DEF2EE', padding: '3px 9px', borderRadius: 5 }}>✓</span>
+                    <span style={{ fontSize: 12.5, color: '#6A6A62', fontWeight: 500 }}>Resolved</span>
+                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, color: '#A0A096' }}>· {resolved.length}</span>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B0B0A8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showResolved ? 'rotate(180deg)' : 'none' }}><polyline points="6 9 12 15 18 9" /></svg>
+                </div>
+                {showResolved && resolved.map(t => row(t, false))}
+              </>
+            )}
+          </>
+        )
       })()}
     </div>
   )

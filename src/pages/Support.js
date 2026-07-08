@@ -74,7 +74,7 @@ function fmt(ts) {
 
 export default function Support({ session, onUnreadChange }) {
   const [view, setView] = useState('list')      // list | compose | thread
-  const [listTab, setListTab] = useState('received')  // received (Sensify reached out) | sent (I reached out)
+  const [showResolved, setShowResolved] = useState(false)  // received (Sensify reached out) | sent (I reached out)
   const [tickets, setTickets] = useState([])
   const [loading, setLoading] = useState(true)
   const [active, setActive] = useState(null)     // active ticket
@@ -217,40 +217,70 @@ export default function Support({ session, onUnreadChange }) {
         </div>
         <button className="sup-newbtn" onClick={() => { setView('compose'); setError('') }}>+ New request</button>
       </div>
-      <div className="sup-tabs">
-        <button className={`sup-tab${listTab === 'received' ? ' active' : ''}`} onClick={() => setListTab('received')}>Received</button>
-        <button className={`sup-tab${listTab === 'sent' ? ' active' : ''}`} onClick={() => setListTab('sent')}>Sent</button>
-      </div>
       <div className="sup-body">
         {(() => {
-          // Received = Sensify reached out (admin-initiated). Sent = I reached out (user-initiated).
-          const filtered = tickets.filter(t => listTab === 'received' ? t.initiated_by === 'admin' : t.initiated_by === 'user')
           if (loading) return <div style={{ textAlign: 'center', color: '#A0A096', fontSize: 13, marginTop: 30 }}>Loading…</div>
-          if (filtered.length === 0) return (
+          if (tickets.length === 0) return (
             <div className="sup-empty">
               <div className="sup-empty-icon">💬</div>
               <div style={{ fontSize: 14, color: '#6A6A62', lineHeight: 1.5, marginBottom: 16 }}>
-                {listTab === 'received' ? "Nothing from the Sensify team yet. If they reach out, it'll show up here." : "You haven't sent any requests yet. Need a hand with anything? We're here."}
+                No conversations yet. Need a hand with anything? We're here.
               </div>
-              {listTab === 'sent' && <button className="sup-newbtn" onClick={() => setView('compose')}>+ New request</button>}
+              <button className="sup-newbtn" onClick={() => setView('compose')}>+ New request</button>
             </div>
           )
-          return filtered.map(t => {
+          const attention = tickets.filter(t => statusLabel(t, 'user').tone === 'action')
+          const waiting = tickets.filter(t => statusLabel(t, 'user').tone === 'waiting')
+          const resolved = tickets.filter(t => t.status === 'resolved')
+          const card = (t, hot) => {
             const sl = statusLabel(t, 'user')
             return (
-              <div className="sup-ticket" key={t.id} onClick={() => openTicket(t)}>
+              <div className="sup-ticket" key={t.id} onClick={() => openTicket(t)}
+                style={hot ? { borderLeft: '3px solid #3D5C3C' } : { opacity: 0.88 }}>
                 <div className="sup-trow">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                     {t.unread_for_user && <span className="sup-dot" />}
-                    <span className="sup-tsubj">{t.subject}</span>
+                    <span className="sup-tsubj" style={hot ? { fontWeight: 700 } : {}}>{t.subject}</span>
                   </div>
                   <span className={`sup-pill ${sl.tone}`}>{sl.text}</span>
                 </div>
-                <div className="sup-tprev">{t.last_sender === 'admin' ? 'Sensify: ' : 'You: '}{t.last_message_preview}</div>
-                <div className="sup-tdate">{fmt(t.last_message_at)}</div>
+                <div className="sup-tprev" style={hot ? { color: '#3A3A35', fontWeight: 500 } : {}}>{t.last_sender === 'admin' ? 'Sensify: ' : 'You: '}{t.last_message_preview}</div>
+                <div className="sup-tdate">{fmt(t.last_message_at)}{hot ? ' · Tap to read & reply' : sl.tone === 'waiting' ? ' · Nothing needed from you' : ''}</div>
               </div>
             )
-          })
+          }
+          return (
+            <>
+              {attention.length > 0 && (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, margin: '4px 0 8px' }}>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#E8941F' }} />
+                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: '#9A6212' }}>NEEDS YOUR ATTENTION · {attention.length}</span>
+                  </div>
+                  {attention.map(t => card(t, true))}
+                </>
+              )}
+              {waiting.length > 0 && (
+                <>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: '#A0A096', margin: '14px 0 8px' }}>WAITING ON SENSIFY · {waiting.length}</div>
+                  {waiting.map(t => card(t, false))}
+                </>
+              )}
+              {resolved.length > 0 && (
+                <>
+                  <div onClick={() => setShowResolved(!showResolved)} style={{ background: '#FCFBF8', border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: 13, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginTop: 14 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#1A6256', background: '#DEF2EE', padding: '3px 9px', borderRadius: 5 }}>✓</span>
+                      <span style={{ fontSize: 12.5, color: '#6A6A62', fontWeight: 500 }}>Resolved</span>
+                      <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, color: '#A0A096' }}>· {resolved.length}</span>
+                    </div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B0B0A8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showResolved ? 'rotate(180deg)' : 'none' }}><polyline points="6 9 12 15 18 9" /></svg>
+                  </div>
+                  {showResolved && <div style={{ marginTop: 8 }}>{resolved.map(t => card(t, false))}</div>}
+                </>
+              )}
+            </>
+          )
         })()}
       </div>
     </div>

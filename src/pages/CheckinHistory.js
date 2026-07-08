@@ -424,28 +424,48 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
         )}
 
         {/* LOCKED STATE */}
-        {!weeklyDue && !programNotStarted && checkins.length > 0 && (
-          <div style={s.lockedCard}>
-            <div style={s.lockedIcon}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            </div>
-            <div style={s.lockedTitle}>Next check-in <em style={s.lockedTitleEm}>coming soon.</em></div>
-            <div style={s.lockedSub}>Weekly check-ins unlock every 7 days to keep your symptom data consistent and your insights accurate.</div>
-            <div style={s.countdown}>
-              <div style={s.countdownNum}>{daysUntilNext()}</div>
-              <div style={s.countdownLabel}>{daysUntilNext() === 1 ? 'day until next check-in' : 'days until next check-in'}</div>
-            </div>
-          </div>
-        )}
+        {!weeklyDue && !programNotStarted && checkins.length > 0 && (() => {
+            const remaining = daysUntilNext()
+            const dayOfCycle = Math.min(Math.max(7 - remaining, 0), 7)
+            const CIRC = 276.5
+            return (
+              <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '20px 22px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                <div style={{ position: 'relative', width: '88px', height: '88px', flexShrink: 0 }}>
+                  <svg width="88" height="88" viewBox="0 0 104 104">
+                    <circle cx="52" cy="52" r="44" fill="none" stroke="#EFEDE6" strokeWidth="7" />
+                    <circle cx="52" cy="52" r="44" fill="none" stroke="#3D5C3C" strokeWidth="7" strokeLinecap="round"
+                      strokeDasharray={`${(dayOfCycle / 7) * CIRC} ${CIRC}`} transform="rotate(-90 52 52)" />
+                  </svg>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, color: '#3D5C3C', lineHeight: 1 }}>{remaining}</div>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '6.5px', color: '#A0A096', letterSpacing: '0.6px', textAlign: 'center', marginTop: '2px' }}>{remaining === 1 ? 'DAY UNTIL' : 'DAYS UNTIL'}<br />NEXT CHECK-IN</div>
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: '5px' }}>Weekly cycle · Day {dayOfCycle} of 7</div>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, color: '#1C1C1C', marginBottom: '6px' }}>Next check-in <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>coming soon.</em></div>
+                  <div style={{ fontSize: '11.5px', color: '#7A7A72', lineHeight: 1.6 }}>Weekly check-ins unlock every 7 days to keep your symptom data consistent and your insights accurate.</div>
+                </div>
+              </div>
+            )
+          })()}
 
         {/* PROGRAM NOT STARTED */}
         {programNotStarted && (
-          <div style={s.lockedCard}>
-            <div style={s.lockedIcon}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '20px 22px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div style={{ position: 'relative', width: '88px', height: '88px', flexShrink: 0 }}>
+              <svg width="88" height="88" viewBox="0 0 104 104">
+                <circle cx="52" cy="52" r="44" fill="none" stroke="#EFEDE6" strokeWidth="7" />
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8BAE8A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
             </div>
-            <div style={s.lockedTitle}>History starts when your <em style={s.lockedTitleEm}>program begins.</em></div>
-            <div style={s.lockedSub}>Complete your intake survey and upload your lab results to activate your elimination protocol. Your weekly check-in history will appear here.</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: '5px' }}>Weekly cycle · Not started</div>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, color: '#1C1C1C', marginBottom: '6px' }}>History starts when your <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>program begins.</em></div>
+              <div style={{ fontSize: '11.5px', color: '#7A7A72', lineHeight: 1.6 }}>Complete your intake survey and upload your lab results to activate your elimination protocol. Your weekly check-in history will appear here.</div>
+            </div>
           </div>
         )}
 

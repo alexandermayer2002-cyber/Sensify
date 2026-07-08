@@ -165,8 +165,8 @@ export function statusLabel(ticket, viewer) {
   // If the other side sent last, it's the viewer's turn to respond.
   const yourTurn = lastSender !== viewer
   if (yourTurn) {
-    return { text: viewer === 'admin' ? 'Needs reply' : 'New reply', tone: 'action' }
+    return { text: viewer === 'admin' ? 'Needs your reply' : 'Sensify replied', tone: 'action' }
   }
   // Viewer sent last → waiting on the other side.
-  return { text: viewer === 'admin' ? 'Replied' : 'Awaiting reply', tone: 'waiting' }
+  return { text: viewer === 'admin' ? 'Waiting on user' : 'Waiting on Sensify', tone: 'waiting' }
 }
