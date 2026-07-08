@@ -442,24 +442,40 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
         {!weeklyDue && !programNotStarted && checkins.length > 0 && (() => {
             const remaining = daysUntilNext()
             const dayOfCycle = Math.min(Math.max(7 - remaining, 0), 7)
-            const CIRC = 276.5
+            const CIRC = 301.6
             return (
-              <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '26px 24px', textAlign: 'center', marginBottom: '20px' }}>
-                <div style={{ position: 'relative', width: '110px', height: '110px', margin: '0 auto 14px' }}>
-                  <svg width="110" height="110" viewBox="0 0 110 110">
-                    <circle cx="55" cy="55" r="48" fill="none" stroke="#EFEDE6" strokeWidth="9" />
-                    <circle cx="55" cy="55" r="48" fill="none" stroke="#3D5C3C" strokeWidth="9" strokeLinecap="round"
-                      strokeDasharray={`${(dayOfCycle / 7) * 301.6} 301.6`} transform="rotate(-90 55 55)" />
-                  </svg>
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, color: '#3D5C3C', lineHeight: 1 }}>{remaining}</div>
-                    <div style={{ fontSize: '8px', color: '#A0A096', fontFamily: 'DM Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.6px', marginTop: '3px' }}>{remaining === 1 ? 'day to go' : 'days to go'}</div>
+              <>
+                <style>{`
+                  @keyframes chLkRise { from { opacity: 0; transform: translateY(16px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+                  @keyframes chLkGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
+                  @keyframes chLkIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                `}</style>
+                <div style={{ position: 'relative', background: '#22301F', borderRadius: 22, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'chLkRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
+                  <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'chLkGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
+                  <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, position: 'relative' }}>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · RECORD</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8941F' }} />
+                      <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.55)' }}>T-MINUS {remaining}D</span>
+                    </div>
                   </div>
+                  <div style={{ position: 'relative', width: 110, height: 110, margin: '0 auto 14px', animation: 'chLkIn 0.6s ease 0.3s both' }}>
+                    <svg width="110" height="110" viewBox="0 0 110 110">
+                      <circle cx="55" cy="55" r="48" fill="none" stroke="rgba(255,255,255,0.09)" strokeWidth="9" />
+                      <circle cx="55" cy="55" r="48" fill="none" stroke="#8BAE8A" strokeWidth="9" strokeLinecap="round"
+                        strokeDasharray={`${(dayOfCycle / 7) * CIRC} ${CIRC}`} transform="rotate(-90 55 55)" style={{ filter: 'drop-shadow(0 0 8px rgba(139,174,138,0.5))' }} />
+                    </svg>
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ fontFamily: 'Fraunces, serif', fontSize: 30, fontWeight: 300, color: '#FAF8F4', lineHeight: 1 }}>{remaining}</div>
+                      <div style={{ fontSize: 8, color: 'rgba(250,248,244,0.55)', fontFamily: 'DM Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.6px', marginTop: 3 }}>{remaining === 1 ? 'day to go' : 'days to go'}</div>
+                    </div>
+                  </div>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: 8, position: 'relative', animation: 'chLkIn 0.6s ease 0.5s both' }}>Weekly cycle · Day {dayOfCycle} of 7</div>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 300, color: '#FAF8F4', position: 'relative', animation: 'chLkIn 0.6s ease 0.6s both' }}>Next check-in <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>coming soon.</em></div>
+                  <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65, maxWidth: 300, margin: '8px auto 0', position: 'relative', fontWeight: 300, animation: 'chLkIn 0.6s ease 0.75s both' }}>Weekly check-ins unlock every 7 days to keep your symptom data consistent and your insights accurate.</div>
                 </div>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: '8px' }}>Weekly cycle · Day {dayOfCycle} of 7</div>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 300, color: '#1C1C1C' }}>Next check-in <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>coming soon.</em></div>
-                <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.6, maxWidth: '290px', margin: '8px auto 0' }}>Weekly check-ins unlock every 7 days to keep your symptom data consistent and your insights accurate.</div>
-              </div>
+              </>
             )
           })()}
 
