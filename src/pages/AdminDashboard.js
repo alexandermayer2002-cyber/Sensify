@@ -267,7 +267,11 @@ export default function AdminDashboard({ session, onBack }) {
 
   const loadSupportUnread = async () => {
     try {
-      const { count } = await supabase.from('tickets').select('id', { count: 'exact', head: true }).eq('unread_for_admin', true)
+      // Count tickets where it's the admin's TURN (user sent last, not resolved) —
+      // same definition as the inbox's NEEDS YOUR ATTENTION group, so the
+      // cockpit and the inbox can never disagree. Merely opening a ticket
+      // (unread -> read) doesn't clear it; replying or resolving does.
+      const { count } = await supabase.from('tickets').select('id', { count: 'exact', head: true }).eq('last_sender', 'user').neq('status', 'resolved')
       setSupportUnread(count || 0)
     } catch (e) {}
   }
