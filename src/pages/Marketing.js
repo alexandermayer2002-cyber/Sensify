@@ -83,7 +83,8 @@ const css = `
   .fmcard-cat { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
   .fmcard-catdot { width: 5px; height: 5px; border-radius: 50%; }
   .fmcard-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 16px; }
-  .fmcard-chip { font-size: 11.5px; font-weight: 500; padding: 4px 12px; border-radius: 20px; border: 1px solid; animation: mkChipIn 0.5s ease both; }
+  .fmcard-chip { font-size: 11.5px; font-weight: 500; padding: 4px 12px; border-radius: 20px; border: 1px solid; opacity: 0; }
+  .fmcard.inview .fmcard-chip { animation: mkChipIn 0.55s ease both; }
   .fmcard-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
   .fmcard-verify { font-family: 'DM Mono', monospace; font-size: 8.5px; color: rgba(255,255,255,0.3); letter-spacing: 0.4px; }
 
@@ -340,6 +341,17 @@ const CheckIcon = () => (
 export default function Marketing({ onGetStarted, onSignIn }) {
   const [tab, setTab] = useState('home')
   const [homeFaq, setHomeFaq] = useState(null)
+  const [mapInView, setMapInView] = useState(false)
+  const fmcardRef = React.useRef(null)
+  React.useEffect(() => {
+    const el = fmcardRef.current
+    if (!el || mapInView) return
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setMapInView(true); obs.disconnect() }
+    }, { threshold: 0.35 })
+    obs.observe(el)
+    return () => obs.disconnect()
+  })
 
   const tabs = ['home', 'how', 'science', 'pricing', 'faq']
 
@@ -398,7 +410,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#D64545' }}></div><div><strong>Avoid</strong> — a confirmed trigger.</div></div>
               </div>
             </div>
-            <div className="fmcard">
+            <div className={`fmcard${mapInView ? ' inview' : ''}`} ref={fmcardRef}>
               <div className="fmcard-orb" />
               <div className="fmcard-orb2" />
               <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Sensify · Verified result</div>
