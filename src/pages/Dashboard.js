@@ -993,54 +993,69 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             const resultsBack = (labResult && labResult.status === 'approved') || profile?.track_decision === 'declined' || profile?.program_phase === 'elimination' || profile?.program_phase === 'reintroduction' || profile?.program_phase === 'complete' || profile?.program_phase === 'tracking'
             if (!resultsBack) {
               return (
-                <div style={{ height: '100%', overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px 22px' }}>
+                <div style={{ height: '100%', overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px 20px' }}>
                   <style>{`
                     @keyframes askDotPulse { 0%, 60%, 100% { opacity: 0.25; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
-                    @keyframes askCardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                    @keyframes askMsgIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+                    @keyframes askGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
+                    @keyframes askRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
                   `}</style>
-                  <div style={{ maxWidth: 460, width: '100%' }}>
-                    <div style={{ textAlign: 'center', marginBottom: 26 }}>
-                      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, letterSpacing: '2px', color: '#C9A227', marginBottom: 12 }}>LOCKED · UNLOCKS WITH YOUR RESULTS</div>
-                      <div style={{ fontFamily: 'Fraunces, serif', fontSize: 34, fontWeight: 300, color: '#1C1C1C', lineHeight: 1.12 }}>A guide that knows<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>your body.</em></div>
-                      <div style={{ fontSize: 14, color: '#7A7A72', lineHeight: 1.65, maxWidth: 360, margin: '12px auto 0' }}>Once your lab results are back, Ask Sensify answers from <strong style={{ color: '#3D5C3C' }}>your</strong> map, not generic advice. Here's what that will feel like:</div>
+                  <div style={{ maxWidth: 470, width: '100%' }}>
+
+                    <div style={{ textAlign: 'center', marginBottom: 24, animation: 'askMsgIn 0.5s ease both' }}>
+                      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, letterSpacing: '2.5px', color: '#C9A227', marginBottom: 12 }}>LOCKED · UNLOCKS WITH YOUR RESULTS</div>
+                      <div style={{ fontFamily: 'Fraunces, serif', fontSize: 36, fontWeight: 300, color: '#1C1C1C', lineHeight: 1.1 }}>A guide that knows<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>your body.</em></div>
                     </div>
 
-                    <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: 18, padding: '22px 24px', boxShadow: '0 12px 32px rgba(34,48,31,0.08)', animation: 'askCardIn 0.5s ease both' }}>
-                      <div style={{ marginBottom: 16 }}>
-                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: '#8A8A82', marginBottom: 6 }}>YOU</div>
-                        <div style={{ fontSize: 15, lineHeight: 1.6, color: '#3A3A35' }}>Dinner at a Thai place tonight. What should I order and what should I skip?</div>
-                      </div>
-                      <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 14, marginBottom: 16 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#3D5C3C' }} />
-                          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: '#3D5C3C' }}>SENSIFY</span>
+                    <div style={{ position: 'relative', background: '#22301F', borderRadius: 22, padding: '26px 26px 22px', overflow: 'hidden', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'askRise 0.7s cubic-bezier(0.16,1,0.3,1) both' }}>
+                      <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'askGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
+                      <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative' }}>
+                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · ASSISTANT</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8941F' }} />
+                          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.55)' }}>PREVIEW</span>
                         </div>
-                        <div style={{ fontSize: 15, lineHeight: 1.65, color: '#1C1C1C' }}>Good news: most curries are built on coconut milk, which is clear on your map. Watch the <span style={{ background: '#FBE9E9', padding: '2px 7px', borderRadius: 5, color: '#A32D2D', fontWeight: 600 }}>soy</span> in the stir-fries and ask about <span style={{ background: '#FCEFD9', padding: '2px 7px', borderRadius: 5, color: '#8A5410', fontWeight: 600 }}>peanut</span> garnishes. Pad see ew is the one to skip.</div>
                       </div>
-                      <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 14, marginBottom: 14 }}>
-                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: '#8A8A82', marginBottom: 6 }}>YOU</div>
-                        <div style={{ fontSize: 15, lineHeight: 1.6, color: '#3A3A35' }}>What about the mango sticky rice?</div>
+
+                      <div style={{ position: 'relative', animation: 'askMsgIn 0.6s ease 0.5s both' }}>
+                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: 'rgba(250,248,244,0.45)', marginBottom: 6 }}>YOU</div>
+                        <div style={{ fontSize: 15.5, lineHeight: 1.6, color: 'rgba(250,248,244,0.92)', fontWeight: 300 }}>Dinner at a Thai place tonight. What should I order and what should I skip?</div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#3D5C3C' }} />
-                        <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: '#3D5C3C' }}>SENSIFY</span>
-                        <span style={{ display: 'inline-flex', gap: 4, marginLeft: 2 }}>
+
+                      <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 16, paddingTop: 16, animation: 'askMsgIn 0.6s ease 1.1s both' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 7 }}>
+                          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 10px rgba(139,174,138,0.8)' }} />
+                          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: '#8BAE8A' }}>SENSIFY</span>
+                        </div>
+                        <div style={{ fontSize: 15.5, lineHeight: 1.7, color: '#FAF8F4', fontWeight: 300 }}>Good news: most curries are built on coconut milk, which is clear on your map. Watch the <span style={{ background: 'rgba(214,69,69,0.22)', border: '1px solid rgba(214,69,69,0.45)', padding: '2px 9px', borderRadius: 20, color: '#F2A0A0', fontWeight: 500, boxShadow: '0 0 14px rgba(214,69,69,0.25)' }}>soy</span> in the stir-fries and ask about <span style={{ background: 'rgba(232,148,31,0.18)', border: '1px solid rgba(232,148,31,0.45)', padding: '2px 9px', borderRadius: 20, color: '#F2C078', fontWeight: 500, boxShadow: '0 0 14px rgba(232,148,31,0.22)' }}>peanut</span> garnishes. Pad see ew is the one to skip.</div>
+                      </div>
+
+                      <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 16, paddingTop: 16, animation: 'askMsgIn 0.6s ease 1.9s both' }}>
+                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: 'rgba(250,248,244,0.45)', marginBottom: 6 }}>YOU</div>
+                        <div style={{ fontSize: 15.5, lineHeight: 1.6, color: 'rgba(250,248,244,0.92)', fontWeight: 300 }}>What about the mango sticky rice?</div>
+                      </div>
+
+                      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, animation: 'askMsgIn 0.6s ease 2.5s both' }}>
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 10px rgba(139,174,138,0.8)' }} />
+                        <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: '#8BAE8A' }}>SENSIFY</span>
+                        <span style={{ display: 'inline-flex', gap: 4, marginLeft: 3 }}>
                           {[0, 1, 2].map(i => (
-                            <span key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: '#3D5C3C', animation: `askDotPulse 1.2s ease-in-out ${i * 0.18}s infinite` }} />
+                            <span key={i} style={{ width: 5.5, height: 5.5, borderRadius: '50%', background: '#8BAE8A', animation: `askDotPulse 1.2s ease-in-out ${i * 0.18}s infinite` }} />
                           ))}
                         </span>
                       </div>
+
+                      <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                        {['MENUS', 'LABELS', 'RECIPES', 'PHOTOS'].map(w => (
+                          <div key={w} style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.5px', color: 'rgba(250,248,244,0.45)' }}>{w}</div>
+                        ))}
+                      </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 20, marginTop: 20 }}>
-                      {['MENUS', 'LABELS', 'RECIPES', 'PHOTOS'].map((w, i) => (
-                        <React.Fragment key={w}>
-                          {i > 0 && <div style={{ width: 1, height: 12, background: 'rgba(0,0,0,0.1)' }} />}
-                          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.2px', color: '#8A8A82' }}>{w}</div>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                    <div style={{ fontSize: 12, color: '#A0A096', lineHeight: 1.6, textAlign: 'center', maxWidth: 340, margin: '16px auto 0' }}>Until your results are in, there's nothing to base answers on yet. The wait is what makes them yours.</div>
+                    <div style={{ fontSize: 13, color: '#7A7A72', lineHeight: 1.65, textAlign: 'center', maxWidth: 360, margin: '18px auto 0', animation: 'askMsgIn 0.6s ease 0.3s both' }}>Answers come from <strong style={{ color: '#3D5C3C' }}>your</strong> lab results and <strong style={{ color: '#3D5C3C' }}>your</strong> map, never generic advice. Until your results are in, there's nothing to base them on. The wait is what makes them yours.</div>
+
                   </div>
                 </div>
               )
