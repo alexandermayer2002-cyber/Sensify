@@ -172,22 +172,22 @@ export default function Support({ session, onUnreadChange }) {
         <div className="sup-head">
           <div>
             <button className="sup-back" onClick={() => { setView('list'); setActive(null); refreshList() }}>← Support</button>
-            <div className="sup-title" style={{ fontSize: 19, marginTop: 4 }}>{active.subject}</div>
-            <div className="sup-ts" style={{ marginTop: 3 }}>{statusLabel(active, 'user').text}</div>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: '#A0A096', marginTop: 8 }}>TICKET · {statusLabel(active, 'user').text.toUpperCase()}</div>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 300, color: '#1C1C1C', marginTop: 3 }}>{active.subject}</div>
           </div>
         </div>
         <div className="sup-body" ref={threadRef}>
           {threadLoading ? <div style={{ textAlign: 'center', color: '#A0A096', fontSize: 13, marginTop: 30 }}>Loading…</div> :
             thread.map((m, i) => (
-              <div className={`sup-msg ${m.sender}`} key={m.id}>
-                <div className="sup-msg-head">
-                  <div className={`sup-av ${m.sender}`}>{m.sender === 'admin' ? 'S' : (session.user.user_metadata?.full_name?.[0] || 'Y')}</div>
-                  <div>
-                    <div className="sup-sender" style={{ color: m.sender === 'admin' ? '#3D5C3C' : '#1C1C1C' }}>{m.sender === 'admin' ? 'Sensify team' : 'You'}</div>
-                    <div className="sup-ts">{m._pending ? 'Sending…' : m._failed ? 'Failed to send' : fmt(m.created_at)}</div>
-                  </div>
+              <div key={m.id} style={{ borderTop: '1px solid rgba(0,0,0,0.07)', marginTop: i === 0 ? 0 : 16, paddingTop: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 7 }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    {m.sender === 'admin' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#3D5C3C' }} />}
+                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: m.sender === 'admin' ? '#3D5C3C' : '#8A8A82' }}>{m.sender === 'admin' ? 'SENSIFY TEAM' : 'YOU'}</span>
+                  </span>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, color: '#B8B6AE' }}>{m._pending ? 'SENDING…' : m._failed ? 'FAILED' : fmt(m.created_at).toUpperCase()}</span>
                 </div>
-                <div className="sup-mbody" style={m._failed ? { color: '#D64545' } : {}}>{m.body}</div>
+                <div style={{ fontSize: 13.5, lineHeight: 1.7, color: m._failed ? '#D64545' : m.sender === 'admin' ? '#1C1C1C' : '#3A3A35' }}>{m.body}</div>
               </div>
             ))}
         </div>
@@ -234,18 +234,20 @@ export default function Support({ session, onUnreadChange }) {
           const resolved = tickets.filter(t => t.status === 'resolved')
           const card = (t, hot) => {
             const sl = statusLabel(t, 'user')
+            const statusLine = hot ? `${sl.text.toUpperCase()} \u2014 TAP TO READ & REPLY`
+              : sl.tone === 'waiting' ? `${sl.text.toUpperCase()} \u2014 NOTHING NEEDED FROM YOU`
+              : sl.text.toUpperCase()
             return (
-              <div className="sup-ticket" key={t.id} onClick={() => openTicket(t)}
-                style={hot ? { borderLeft: '3px solid #3D5C3C' } : { opacity: 0.88 }}>
-                <div className="sup-trow">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                    {t.unread_for_user && <span className="sup-dot" />}
-                    <span className="sup-tsubj" style={hot ? { fontWeight: 700 } : {}}>{t.subject}</span>
+              <div key={t.id} onClick={() => openTicket(t)} style={{ borderTop: '1px solid rgba(0,0,0,0.07)', padding: '13px 0', cursor: 'pointer' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, minWidth: 0, paddingLeft: hot || t.unread_for_user ? 0 : 14 }}>
+                    {(hot || t.unread_for_user) && <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#3D5C3C', flexShrink: 0 }} />}
+                    <span style={{ fontSize: 14, fontWeight: hot ? 700 : 500, color: hot ? '#1C1C1C' : '#5A5A52', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.subject}</span>
                   </div>
-                  <span className={`sup-pill ${sl.tone}`}>{sl.text}</span>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, color: '#B8B6AE', flexShrink: 0 }}>{fmt(t.last_message_at).toUpperCase()}</span>
                 </div>
-                <div className="sup-tprev" style={hot ? { color: '#3A3A35', fontWeight: 500 } : {}}>{t.last_sender === 'admin' ? 'Sensify: ' : 'You: '}{t.last_message_preview}</div>
-                <div className="sup-tdate">{fmt(t.last_message_at)}{hot ? ' · Tap to read & reply' : sl.tone === 'waiting' ? ' · Nothing needed from you' : ''}</div>
+                <div style={{ fontSize: 12.5, color: hot ? '#3A3A35' : '#8A8A82', lineHeight: 1.55, marginBottom: 5, paddingLeft: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.last_sender === 'admin' ? 'Sensify: ' : 'You: '}{t.last_message_preview}</div>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: hot ? 700 : 400, letterSpacing: '0.8px', color: hot ? '#3D5C3C' : '#A0A096', paddingLeft: 14 }}>{statusLine}</div>
               </div>
             )
           }
@@ -268,13 +270,9 @@ export default function Support({ session, onUnreadChange }) {
               )}
               {resolved.length > 0 && (
                 <>
-                  <div onClick={() => setShowResolved(!showResolved)} style={{ background: '#FCFBF8', border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: 13, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginTop: 14 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#1A6256', background: '#DEF2EE', padding: '3px 9px', borderRadius: 5 }}>✓</span>
-                      <span style={{ fontSize: 12.5, color: '#6A6A62', fontWeight: 500 }}>Resolved</span>
-                      <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, color: '#A0A096' }}>· {resolved.length}</span>
-                    </div>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B0B0A8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showResolved ? 'rotate(180deg)' : 'none' }}><polyline points="6 9 12 15 18 9" /></svg>
+                  <div onClick={() => setShowResolved(!showResolved)} style={{ borderTop: '1px solid rgba(0,0,0,0.07)', marginTop: 16, paddingTop: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: '#1A6256' }}>RESOLVED · {resolved.length}</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#B0B0A8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showResolved ? 'rotate(180deg)' : 'none' }}><polyline points="6 9 12 15 18 9" /></svg>
                   </div>
                   {showResolved && <div style={{ marginTop: 8 }}>{resolved.map(t => card(t, false))}</div>}
                 </>

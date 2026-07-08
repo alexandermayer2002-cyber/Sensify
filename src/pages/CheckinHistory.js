@@ -429,43 +429,39 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
             const dayOfCycle = Math.min(Math.max(7 - remaining, 0), 7)
             const CIRC = 276.5
             return (
-              <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '20px 22px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <div style={{ position: 'relative', width: '88px', height: '88px', flexShrink: 0 }}>
-                  <svg width="88" height="88" viewBox="0 0 104 104">
-                    <circle cx="52" cy="52" r="44" fill="none" stroke="#EFEDE6" strokeWidth="7" />
-                    <circle cx="52" cy="52" r="44" fill="none" stroke="#3D5C3C" strokeWidth="7" strokeLinecap="round"
-                      strokeDasharray={`${(dayOfCycle / 7) * CIRC} ${CIRC}`} transform="rotate(-90 52 52)" />
+              <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '26px 24px', textAlign: 'center', marginBottom: '20px' }}>
+                <div style={{ position: 'relative', width: '110px', height: '110px', margin: '0 auto 14px' }}>
+                  <svg width="110" height="110" viewBox="0 0 110 110">
+                    <circle cx="55" cy="55" r="48" fill="none" stroke="#EFEDE6" strokeWidth="9" />
+                    <circle cx="55" cy="55" r="48" fill="none" stroke="#3D5C3C" strokeWidth="9" strokeLinecap="round"
+                      strokeDasharray={`${(dayOfCycle / 7) * 301.6} 301.6`} transform="rotate(-90 55 55)" />
                   </svg>
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, color: '#3D5C3C', lineHeight: 1 }}>{remaining}</div>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '6.5px', color: '#A0A096', letterSpacing: '0.6px', textAlign: 'center', marginTop: '2px' }}>{remaining === 1 ? 'DAY UNTIL' : 'DAYS UNTIL'}<br />NEXT CHECK-IN</div>
+                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, color: '#3D5C3C', lineHeight: 1 }}>{remaining}</div>
+                    <div style={{ fontSize: '8px', color: '#A0A096', fontFamily: 'DM Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.6px', marginTop: '3px' }}>{remaining === 1 ? 'day to go' : 'days to go'}</div>
                   </div>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: '5px' }}>Weekly cycle · Day {dayOfCycle} of 7</div>
-                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, color: '#1C1C1C', marginBottom: '6px' }}>Next check-in <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>coming soon.</em></div>
-                  <div style={{ fontSize: '11.5px', color: '#7A7A72', lineHeight: 1.6 }}>Weekly check-ins unlock every 7 days to keep your symptom data consistent and your insights accurate.</div>
-                </div>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: '8px' }}>Weekly cycle · Day {dayOfCycle} of 7</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 300, color: '#1C1C1C' }}>Next check-in <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>coming soon.</em></div>
+                <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.6, maxWidth: '290px', margin: '8px auto 0' }}>Weekly check-ins unlock every 7 days to keep your symptom data consistent and your insights accurate.</div>
               </div>
             )
           })()}
 
         {/* PROGRAM NOT STARTED */}
         {programNotStarted && (
-          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '20px 22px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <div style={{ position: 'relative', width: '88px', height: '88px', flexShrink: 0 }}>
-              <svg width="88" height="88" viewBox="0 0 104 104">
-                <circle cx="52" cy="52" r="44" fill="none" stroke="#EFEDE6" strokeWidth="7" />
+          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '26px 24px', textAlign: 'center', marginBottom: '20px' }}>
+            <div style={{ position: 'relative', width: '110px', height: '110px', margin: '0 auto 14px' }}>
+              <svg width="110" height="110" viewBox="0 0 110 110">
+                <circle cx="55" cy="55" r="48" fill="none" stroke="#EFEDE6" strokeWidth="9" />
               </svg>
               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8BAE8A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#8BAE8A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: '5px' }}>Weekly cycle · Not started</div>
-              <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, color: '#1C1C1C', marginBottom: '6px' }}>History starts when your <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>program begins.</em></div>
-              <div style={{ fontSize: '11.5px', color: '#7A7A72', lineHeight: 1.6 }}>Complete your intake survey and upload your lab results to activate your elimination protocol. Your weekly check-in history will appear here.</div>
-            </div>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: '8px' }}>Weekly cycle · Not started</div>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 300, color: '#1C1C1C' }}>History starts when your <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>program begins.</em></div>
+            <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.6, maxWidth: '290px', margin: '8px auto 0' }}>Complete your intake survey and upload your lab results to activate your elimination protocol. Your weekly check-in history will appear here.</div>
           </div>
         )}
 

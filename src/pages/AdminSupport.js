@@ -170,16 +170,16 @@ export default function AdminSupport({ onUnreadChange }) {
         </div>
         <div ref={threadRef} style={{ padding: 20, maxHeight: 400, overflowY: 'auto' }}>
           {threadLoading ? <div style={{ textAlign: 'center', color: '#A0A096', fontSize: 13 }}>Loading…</div> :
-            thread.map(m => (
-              <div key={m.id} style={{ marginBottom: 14, borderRadius: 12, padding: '14px 16px', border: '0.5px solid rgba(0,0,0,0.07)', background: m.sender === 'admin' ? '#F4F7F2' : 'white', borderLeft: m.sender === 'admin' ? '3px solid #3D5C3C' : '0.5px solid rgba(0,0,0,0.07)', borderTopLeftRadius: m.sender === 'admin' ? 4 : 12, borderBottomLeftRadius: m.sender === 'admin' ? 4 : 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 8 }}>
-                  <div style={{ ...s.av, background: m.sender === 'admin' ? '#3D5C3C' : '#E5E2DA', color: m.sender === 'admin' ? 'white' : '#6A6A62', width: 28, height: 28, fontSize: 11 }}>{m.sender === 'admin' ? 'S' : 'U'}</div>
-                  <div>
-                    <div style={{ fontSize: 12.5, fontWeight: 600, color: m.sender === 'admin' ? '#3D5C3C' : '#1C1C1C' }}>{m.sender === 'admin' ? 'You' : 'User'}</div>
-                    <div style={{ fontSize: 10, color: '#B0B0A8', fontFamily: 'DM Mono,monospace' }}>{m._pending ? 'Sending…' : m._failed ? 'Failed' : fmt(m.created_at)}</div>
-                  </div>
+            thread.map((m, i) => (
+              <div key={m.id} style={{ borderTop: '1px solid rgba(0,0,0,0.07)', marginTop: i === 0 ? 0 : 16, paddingTop: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 7 }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    {m.sender === 'admin' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#3D5C3C' }} />}
+                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: m.sender === 'admin' ? '#3D5C3C' : '#8A8A82' }}>{m.sender === 'admin' ? 'YOU · SENSIFY' : (active?.user_name || 'USER').toUpperCase()}</span>
+                  </span>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, color: '#B8B6AE' }}>{m._pending ? 'SENDING…' : m._failed ? 'FAILED' : fmt(m.created_at).toUpperCase()}</span>
                 </div>
-                <div style={{ fontSize: 13.5, lineHeight: 1.6, color: m._failed ? '#D64545' : '#3A3A35' }}>{m.body}</div>
+                <div style={{ fontSize: 13.5, lineHeight: 1.7, color: m._failed ? '#D64545' : m.sender === 'admin' ? '#3A3A35' : '#1C1C1C' }}>{m.body}</div>
               </div>
             ))}
         </div>
@@ -213,9 +213,8 @@ export default function AdminSupport({ onUnreadChange }) {
         const row = (t, hot) => {
           const sl = statusLabel(t, 'admin')
           return (
-            <div key={t.id} style={{ ...s.row, background: t.unread_for_admin ? '#FBFAF7' : 'white', borderLeft: hot ? '3px solid #3D5C3C' : '3px solid transparent', opacity: hot ? 1 : 0.9 }} onClick={() => open(t)}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: t.unread_for_admin ? '#D64545' : 'transparent', flexShrink: 0 }} />
-              <div style={s.av}>{(t.user_name || 'U').slice(0, 2).toUpperCase()}</div>
+            <div key={t.id} style={{ ...s.row, background: 'transparent', border: 'none', borderTop: '1px solid rgba(0,0,0,0.07)', borderRadius: 0, opacity: 1 }} onClick={() => open(t)}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: hot ? '#3D5C3C' : 'transparent', flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
                   <div style={{ fontSize: 13.5, fontWeight: hot ? 700 : 500, color: '#1C1C1C', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.user_name}{t.user_email ? <span style={{ fontWeight: 400, color: '#A0A096', fontSize: 11.5 }}> · {t.user_email}</span> : null}</div>
@@ -224,7 +223,7 @@ export default function AdminSupport({ onUnreadChange }) {
                 <div style={{ fontSize: 12.5, color: '#3A3A35', fontWeight: 500, marginTop: 1 }}>{t.subject}</div>
                 <div style={{ fontSize: 12, color: '#8A8A82', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.last_sender === 'admin' ? 'You: ' : ''}{t.last_message_preview}</div>
               </div>
-              <span style={s.pill(sl.tone)}>{sl.text}</span>
+              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: hot ? 700 : 400, letterSpacing: '0.8px', color: hot ? '#3D5C3C' : sl.tone === 'resolved' ? '#1A6256' : '#A0A096', flexShrink: 0 }}>{sl.text.toUpperCase()}</span>
             </div>
           )
         }
