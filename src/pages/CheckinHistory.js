@@ -450,19 +450,57 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
 
         {/* PROGRAM NOT STARTED */}
         {programNotStarted && (
-          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '26px 24px', textAlign: 'center', marginBottom: '20px' }}>
-            <div style={{ position: 'relative', width: '110px', height: '110px', margin: '0 auto 14px' }}>
-              <svg width="110" height="110" viewBox="0 0 110 110">
-                <circle cx="55" cy="55" r="48" fill="none" stroke="#EFEDE6" strokeWidth="9" />
-              </svg>
-              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#8BAE8A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              </div>
+          <>
+            <style>{`
+              @keyframes chRowIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+              @keyframes chGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
+              @keyframes chRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+              @keyframes chDotPulse { 0%, 60%, 100% { opacity: 0.25; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+            `}</style>
+            <div style={{ textAlign: 'center', marginBottom: 24, animation: 'chRowIn 0.5s ease both' }}>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, letterSpacing: '2.5px', color: '#C9A227', marginBottom: 12 }}>DAY ZERO · THE RECORD AWAITS</div>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: 36, fontWeight: 300, color: '#1C1C1C', lineHeight: 1.1 }}>History starts when<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>your program begins.</em></div>
             </div>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: '8px' }}>Weekly cycle · Not started</div>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 300, color: '#1C1C1C' }}>History starts when your <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>program begins.</em></div>
-            <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.6, maxWidth: '290px', margin: '8px auto 0' }}>Complete your intake survey and upload your lab results to activate your elimination protocol. Your weekly check-in history will appear here.</div>
-          </div>
+
+            <div style={{ position: 'relative', background: '#22301F', borderRadius: 22, padding: '26px 26px 22px', overflow: 'hidden', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'chRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 18 }}>
+              <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'chGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative' }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · RECORD</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8941F' }} />
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.55)' }}>AWAITING DAY ONE</span>
+                </div>
+              </div>
+
+              <div style={{ position: 'relative', animation: 'chRowIn 0.6s ease 0.5s both' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: '#8BAE8A' }}>WEEK 01</span>
+                  <span style={{ display: 'inline-flex', gap: 4 }}>
+                    {[0, 1, 2].map(i => (
+                      <span key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: '#8BAE8A', animation: `chDotPulse 1.2s ease-in-out ${i * 0.18}s infinite` }} />
+                    ))}
+                  </span>
+                </div>
+                <div style={{ fontSize: 14.5, lineHeight: 1.6, color: 'rgba(250,248,244,0.9)', fontWeight: 300 }}>Your first weekly check-in. Symptoms scored, baseline set, first insight written. This entry is waiting for you.</div>
+              </div>
+
+              <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 16, paddingTop: 14, opacity: 0.45, animation: 'chRowIn 0.6s ease 1.0s both' }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: 'rgba(250,248,244,0.5)', marginBottom: 6 }}>WEEK 02</div>
+                <div style={{ fontSize: 14.5, lineHeight: 1.6, color: 'rgba(250,248,244,0.55)', fontWeight: 300 }}>Symptoms vs your baseline. The first trend line appears.</div>
+              </div>
+
+              <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 14, paddingTop: 14, opacity: 0.22, animation: 'chRowIn 0.6s ease 1.5s both' }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: 'rgba(250,248,244,0.5)', marginBottom: 6 }}>WEEK 03</div>
+                <div style={{ fontSize: 14.5, lineHeight: 1.6, color: 'rgba(250,248,244,0.55)', fontWeight: 300 }}>Patterns your memory would miss, kept honest in writing.</div>
+              </div>
+
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.2px', color: 'rgba(250,248,244,0.4)', textAlign: 'center', marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)', position: 'relative' }}>26 WEEKS · ONE HONEST RECORD</div>
+            </div>
+
+            <div style={{ fontSize: 13, color: '#7A7A72', lineHeight: 1.65, textAlign: 'center', maxWidth: 360, margin: '0 auto 20px', animation: 'chRowIn 0.6s ease 0.3s both' }}>Complete your intake survey and upload your lab results to activate your elimination protocol. Week one starts the clock.</div>
+          </>
         )}
 
         {/* SYMPTOM PROGRESS — all tracked symptoms vs baseline */}
