@@ -608,8 +608,7 @@ export default function AdminDashboard({ session, onBack }) {
               if (stalledUsers.length > 0) items.push({
                 key: 'stalled', tone: 'amber', count: stalledUsers.length,
                 label: stalledUsers.length === 1 ? 'active user has gone quiet (no check-in in 4+ days)' : 'active users have gone quiet (no check-in in 4+ days)',
-                detail: stalledUsers.slice(0, 4).map(u => u.full_name || u.email).join(' · ') + (stalledUsers.length > 4 ? ` +${stalledUsers.length - 4} more` : ''),
-                action: () => setActiveTab('users'),
+                names: stalledUsers.slice(0, 6),
               })
               return (
                 <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '16px 18px', marginBottom: '16px' }}>
@@ -627,6 +626,18 @@ export default function AdminDashboard({ session, onBack }) {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: '13px', color: '#1C1C1C' }}><strong>{item.count}</strong> {item.label}</div>
                         {item.detail && <div style={{ fontSize: '11.5px', color: '#8A8A82', marginTop: '2px' }}>{item.detail}</div>}
+                        {item.names && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '5px' }}>
+                            {item.names.map(u => (
+                              <span key={u.id}
+                                onClick={(e) => { e.stopPropagation(); const full = users.find(x => x.id === u.id) || u; loadUserDetail(full) }}
+                                style={{ fontSize: '11px', fontWeight: 500, color: '#3D5C3C', background: '#EDF3ED', padding: '3px 9px', borderRadius: '12px', cursor: 'pointer' }}>
+                                {u.full_name || u.email}
+                              </span>
+                            ))}
+                            {stalledUsers.length > 6 && <span style={{ fontSize: '11px', color: '#A0A096', padding: '3px 4px' }}>+{stalledUsers.length - 6} more</span>}
+                          </div>
+                        )}
                       </div>
                       {item.action && <span style={{ fontSize: '12px', color: '#3D5C3C', fontWeight: 500, flexShrink: 0, marginTop: '2px' }}>Open →</span>}
                     </div>

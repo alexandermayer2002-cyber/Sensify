@@ -173,7 +173,15 @@ export default function Support({ session, onUnreadChange }) {
           <div>
             <button className="sup-back" onClick={() => { setView('list'); setActive(null); refreshList() }}>← Support</button>
             <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: '#A0A096', marginTop: 8 }}>TICKET · {statusLabel(active, 'user').text.toUpperCase()}</div>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 300, color: '#1C1C1C', marginTop: 3 }}>{active.subject}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 300, color: '#1C1C1C', marginTop: 3 }}>{active.subject}</div>
+              {!isResolved && (
+                <button onClick={async () => { await setTicketStatus({ ticketId: active.id, status: 'resolved' }); setActive({ ...active, status: 'resolved' }) }}
+                  style={{ background: 'none', border: 'none', fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 700, letterSpacing: '0.8px', color: '#1A6256', cursor: 'pointer', flexShrink: 0, padding: 0 }}>
+                  \u2713 MARK RESOLVED
+                </button>
+              )}
+            </div>
           </div>
         </div>
         <div className="sup-body" ref={threadRef}>

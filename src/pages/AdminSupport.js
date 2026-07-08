@@ -235,7 +235,7 @@ export default function AdminSupport({ onUnreadChange }) {
         )
         return (
           <>
-            {attention.length > 0 && (<>{groupHead(`NEEDS YOUR REPLY · ${attention.length}`, '#9A6212', true)}{attention.map(t => row(t, true))}</>)}
+            {attention.length > 0 && (<>{groupHead(`NEEDS YOUR ATTENTION · ${attention.length}`, '#9A6212', true)}{attention.map(t => row(t, true))}</>)}
             {waiting.length > 0 && (<>{groupHead(`WAITING ON USER · ${waiting.length}`, '#A0A096', false)}{waiting.map(t => row(t, false))}</>)}
             {resolved.length > 0 && (
               <>
