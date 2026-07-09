@@ -275,6 +275,7 @@ function ConfettiOverlay() {
 
 // Interactive symptom graph
 function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
+  const [trendLens, setTrendLens] = React.useState('average')
   const metrics = []
   if (profile?.baseline_bloating) metrics.push({ id: 'bloating', label: 'Bloating', baseline: profile.baseline_bloating, color: '#C95B5B', lowerIsBetter: true })
   if (profile?.baseline_energy) metrics.push({ id: 'energy', label: 'Energy', baseline: profile.baseline_energy, color: '#3D5C3C', lowerIsBetter: false })
@@ -305,11 +306,16 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
   })
 
   const latest = points[points.length - 1]
-  const change = latest && metric.baseline
-    ? Math.round(((latest.val - metric.baseline) / metric.baseline) * 100)
+  // Values from actual check-ins (exclude the baseline point at index 0)
+  const checkinVals = points.slice(1).map(p => p.val)
+  const avgVal = checkinVals.length ? checkinVals.reduce((a, b) => a + b, 0) / checkinVals.length : (latest?.val ?? metric.baseline)
+  const usedVal = trendLens === 'average' ? avgVal : (latest?.val ?? metric.baseline)
+  const change = metric.baseline
+    ? Math.round(((usedVal - metric.baseline) / metric.baseline) * 100)
     : 0
   const improved = metric.lowerIsBetter ? change < 0 : change > 0
-  const changeLabel = change === 0 ? 'No change' : `${change > 0 ? '+' : ''}${change}% from baseline`
+  const changeLabel = change === 0 ? 'No change'
+    : `${change > 0 ? '+' : ''}${change}% ${trendLens === 'average' ? 'avg' : 'latest'}`
 
   // SVG graph
   const W = 240, H = 90
@@ -328,10 +334,16 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
 
   return (
     <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '18px', marginTop: '14px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
         <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72' }}>Symptom trends</div>
-        <div style={{ fontSize: '11px', fontWeight: 500, color: improved ? '#4A8C6A' : change === 0 ? '#7A7A72' : '#C95B5B' }}>{changeLabel}</div>
+        <div style={{ fontSize: '11px', fontWeight: 500, color: improved ? '#4A8C6A' : change === 0 ? '#7A7A72' : '#C95B5B' }}>{changeLabel} vs baseline</div>
       </div>
+      {checkinVals.length >= 2 && (
+        <div style={{ display: 'flex', gap: '4px', background: '#F0EEE7', borderRadius: '8px', padding: '3px', marginBottom: '14px' }}>
+          <button onClick={() => setTrendLens('week')} style={{ flex: 1, textAlign: 'center', fontSize: '11.5px', fontWeight: trendLens === 'week' ? 600 : 400, color: trendLens === 'week' ? '#1C1C1C' : '#8A8A82', background: trendLens === 'week' ? '#fff' : 'transparent', padding: '5px 0', borderRadius: '6px', border: 'none', cursor: 'pointer', boxShadow: trendLens === 'week' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none' }}>Latest week</button>
+          <button onClick={() => setTrendLens('average')} style={{ flex: 1, textAlign: 'center', fontSize: '11.5px', fontWeight: trendLens === 'average' ? 600 : 400, color: trendLens === 'average' ? '#1C1C1C' : '#8A8A82', background: trendLens === 'average' ? '#fff' : 'transparent', padding: '5px 0', borderRadius: '6px', border: 'none', cursor: 'pointer', boxShadow: trendLens === 'average' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none' }}>Overall average</button>
+        </div>
+      )}
 
       {/* Metric selector pills */}
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
@@ -1373,14 +1385,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     const isFuture = dateStr > todayStr
                     const isToday = dateStr === todayStr
                     const day = dowLabels[td.getDay()]
-                    const loggedDay = weekFactors.some(f => f.log_date === dateStr)
                     let cls, mark
-                    if (entry?.response === 'YES') { cls = 'yes'; mark = '\u2713' }
-                    else if (entry?.response === 'NO') { cls = 'no'; mark = '\u2717' }
-                    else if (loggedDay) { cls = 'logged'; mark = '\u2713' }  // checked in; plan question not asked that day
+                    if (entry?.response === 'YES') { cls = 'yes'; mark = '\u2713' }        // did check-in + complied
+                    else if (entry?.response === 'NO') { cls = 'no'; mark = '\u2717' }     // did check-in + slipped
                     else if (isFuture) { cls = 'future'; mark = '' }
-                    else if (isToday) { cls = 'empty'; mark = '\u00b7' }  // today, pending - not missed yet
-                    else { cls = 'missed'; mark = '\u2013' }  // no check-in at all — the only streak-breaker
+                    else if (isToday) { cls = 'empty'; mark = '\u00b7' }                   // today, pending - not missed yet
+                    else { cls = 'missed'; mark = '\u2013' }  // forgot — the only streak-breaker
                     return { day, cls: cls + (isToday ? ' today' : ''), mark, dateStr, isFuture }
                   })
                   const weekLabel = profile?.protocol_start_date ? `Days ${startDayNum}\u2013${startDayNum + 6}` : 'This week'
