@@ -14,31 +14,39 @@ const BASELINE_LABELS = {
 }
 
 function SymptomProgress({ profile, checkins }) {
+  const [lens, setLens] = React.useState('average') // 'average' | 'week'
   const sorted = [...checkins].sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at))
   const latest = sorted[sorted.length - 1]
   if (!latest) return null
 
+  // For each symptom, compute BOTH the latest value and the average across all weeks.
   const rows = Object.entries(BASELINE_LABELS)
     .filter(([key]) => profile?.[key] != null)
     .map(([key, meta]) => {
       const answerKey = key.replace('baseline_', '')
       const baseline = profile[key]
-      const now = latest.answers?.[answerKey]
-      if (now == null) return null
+      const weekVal = latest.answers?.[answerKey]
+      if (weekVal == null) return null
+      // average across every check-in that has this answer
+      const vals = sorted.map(ci => ci.answers?.[answerKey]).filter(v => v != null)
+      const avgVal = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : weekVal
+      const now = lens === 'average' ? Math.round(avgVal * 10) / 10 : weekVal
+
       const rawPct = baseline ? Math.round(((now - baseline) / baseline) * 100) : 0
       const improved = meta.lowerIsBetter ? now < baseline : now > baseline
-      const worsened = meta.lowerIsBetter ? now > baseline : now < baseline
       const magnitude = Math.abs(rawPct)
       let deltaText, deltaCls, barColor
       if (now === baseline) {
-        deltaText = `${baseline} → ${now} · no change`; deltaCls = 'flat'; barColor = '#C8C6BE'
+        deltaText = lens === 'average' ? `avg ${now} · no change` : `${baseline} \u2192 ${now} · no change`
+        deltaCls = 'flat'; barColor = '#C8C6BE'
       } else if (improved) {
         const dir = meta.lowerIsBetter ? 'down' : 'up'
-        deltaText = `${baseline} → ${now} · ${dir} ${magnitude}%`; deltaCls = 'good'
-        barColor = meta.lowerIsBetter ? '#2C9D8A' : '#5DBF8A'
+        deltaText = lens === 'average' ? `avg ${now} · ${dir} ${magnitude}%` : `${baseline} \u2192 ${now} · ${dir} ${magnitude}%`
+        deltaCls = 'good'; barColor = meta.lowerIsBetter ? '#2C9D8A' : '#5DBF8A'
       } else {
         const dir = meta.lowerIsBetter ? 'up' : 'down'
-        deltaText = `${baseline} → ${now} · ${dir} ${magnitude}%`; deltaCls = 'bad'; barColor = '#D4894A'
+        deltaText = lens === 'average' ? `avg ${now} · ${dir} ${magnitude}%` : `${baseline} \u2192 ${now} · ${dir} ${magnitude}%`
+        deltaCls = 'bad'; barColor = '#D4894A'
       }
       return { label: meta.label, baseline, now, deltaText, deltaCls, barColor }
     })
@@ -46,22 +54,26 @@ function SymptomProgress({ profile, checkins }) {
 
   if (rows.length === 0) return null
 
-  // Headline: average improvement across all tracked symptoms
   const improvements = rows.map(r => {
     const meta = Object.values(BASELINE_LABELS).find(m => m.label === r.label)
     const lowerBetter = meta?.lowerIsBetter
     const pct = r.baseline ? ((r.now - r.baseline) / r.baseline) * 100 : 0
-    return lowerBetter ? -pct : pct // normalize so positive = better
+    return lowerBetter ? -pct : pct
   })
   const avgImprovement = Math.round(improvements.reduce((a, b) => a + b, 0) / improvements.length)
+  const weekCount = sorted.length
 
   const pg = {
     card: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '16px', padding: '22px', marginBottom: '16px' },
-    title: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72' },
-    bigwrap: { display: 'flex', alignItems: 'baseline', gap: '9px', margin: '10px 0 6px' },
+    title: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '12px' },
+    toggle: { display: 'flex', gap: '4px', background: '#F0EEE7', borderRadius: '9px', padding: '3px', marginBottom: '18px' },
+    tOn: { flex: 1, textAlign: 'center', fontSize: '12.5px', fontWeight: 600, color: '#1C1C1C', background: '#fff', padding: '7px 0', borderRadius: '7px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', cursor: 'pointer', border: 'none' },
+    tOff: { flex: 1, textAlign: 'center', fontSize: '12.5px', fontWeight: 400, color: '#8A8A82', background: 'transparent', padding: '7px 0', borderRadius: '7px', cursor: 'pointer', border: 'none' },
+    bigwrap: { display: 'flex', alignItems: 'baseline', gap: '9px', margin: '2px 0 3px' },
     big: { fontFamily: 'Fraunces, serif', fontSize: '36px', fontWeight: 300, color: avgImprovement > 0 ? '#2C9D8A' : avgImprovement < 0 ? '#D4894A' : '#7A7A72', lineHeight: 1 },
     bigsub: { fontSize: '13px', color: '#7A7A72' },
-    weeks: { fontSize: '11px', color: '#A8A69E', marginBottom: '20px' },
+    weeks: { fontSize: '11px', color: '#A8A69E', marginBottom: '10px' },
+    reassure: { fontSize: '11.5px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: '8px', padding: '8px 11px', lineHeight: 1.5, marginBottom: '18px' },
     legend: { display: 'flex', gap: '16px', marginBottom: '18px', paddingBottom: '16px', borderBottom: '1px solid rgba(0,0,0,0.06)' },
     lgi: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#7A7A72' },
     lgtick: { width: '2px', height: '13px', background: '#999', borderRadius: '1px' },
@@ -78,18 +90,32 @@ function SymptomProgress({ profile, checkins }) {
   }
   const deltaColor = { good: '#2C9D8A', bad: '#D4894A', flat: '#A8A69E' }
 
+  const showReassurance = lens === 'average' && avgImprovement > 0 && weekCount >= 2
+
   return (
     <div style={pg.card}>
-      <div style={pg.title}>Your progress so far</div>
+      <div style={pg.title}>Your progress</div>
+
+      {weekCount >= 2 && (
+        <div style={pg.toggle}>
+          <button style={lens === 'week' ? pg.tOn : pg.tOff} onClick={() => setLens('week')}>This week</button>
+          <button style={lens === 'average' ? pg.tOn : pg.tOff} onClick={() => setLens('average')}>Overall average</button>
+        </div>
+      )}
+
       <div style={pg.bigwrap}>
-        <span style={pg.big}>{avgImprovement > 0 ? avgImprovement : Math.abs(avgImprovement)}%</span>
-        <span style={pg.bigsub}>{avgImprovement > 0 ? 'average symptom improvement' : avgImprovement < 0 ? 'average change to watch' : 'holding at baseline'}</span>
+        <span style={pg.big}>{avgImprovement > 0 ? '+' : ''}{avgImprovement}%</span>
+        <span style={pg.bigsub}>{avgImprovement > 0 ? 'better than baseline' : avgImprovement < 0 ? 'change to watch' : 'holding at baseline'}</span>
       </div>
-      <div style={pg.weeks}>Across {checkins.length} weekly check-in{checkins.length !== 1 ? 's' : ''}</div>
+      <div style={pg.weeks}>{lens === 'average' ? `averaged across all ${weekCount} week${weekCount !== 1 ? 's' : ''}` : 'this week vs. baseline'}</div>
+
+      {showReassurance && (
+        <div style={pg.reassure}>One rough week doesn't erase your trend. You're still ahead of where you started.</div>
+      )}
 
       <div style={pg.legend}>
         <div style={pg.lgi}><span style={pg.lgtick}></span>Where you started</div>
-        <div style={pg.lgi}><span style={pg.lgbar}></span>Where you are now</div>
+        <div style={pg.lgi}><span style={pg.lgbar}></span>{lens === 'average' ? 'Your average' : 'Where you are now'}</div>
       </div>
 
       {rows.map((r, i) => (

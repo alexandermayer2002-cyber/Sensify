@@ -32,12 +32,12 @@ const s = {
   sectionDivider: { display: 'flex', alignItems: 'center', gap: '12px', margin: '28px 0 20px' },
   sectionLine: { flex: 1, height: '1px', background: 'rgba(0,0,0,0.07)' },
   sectionLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', whiteSpace: 'nowrap' },
-  questionBlock: { marginBottom: '26px' },
-  questionLabel: { fontSize: '15px', fontWeight: 500, marginBottom: '10px', lineHeight: 1.5, color: '#1C1C1C' },
+  questionBlock: { marginBottom: '14px', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px' },
+  questionLabel: { fontFamily: 'Fraunces, serif', fontSize: '17px', fontWeight: 300, marginBottom: '12px', lineHeight: 1.3, color: '#1C1C1C' },
   scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#7A7A72', marginBottom: '7px' },
-  scaleRow: { display: 'flex', gap: '5px' },
-  sbt: { flex: 1, height: '42px', borderRadius: '8px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s' },
-  sbtOn: { flex: 1, height: '42px', borderRadius: '8px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: 'white', fontFamily: 'DM Sans, sans-serif' },
+  scaleRow: { display: 'flex', gap: '4px' },
+  sbt: { flex: 1, height: '44px', borderRadius: '9px', border: 'none', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', fontWeight: 400, color: '#5A5A52', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s' },
+  sbtOn: { flex: 1, height: '44px', borderRadius: '9px', border: 'none', background: '#3D5C3C', fontSize: '18px', cursor: 'pointer', fontWeight: 400, color: 'white', fontFamily: 'Fraunces, serif', boxShadow: '0 2px 8px rgba(61,92,60,0.3)' },
   chipRow: { display: 'flex', gap: '7px', flexWrap: 'wrap' },
   chip: { padding: '10px 14px', borderRadius: '22px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '13px', cursor: 'pointer', color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s', lineHeight: 1.3 },
   chipOn: { padding: '10px 14px', borderRadius: '22px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', color: 'white', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.3 },
@@ -388,53 +388,55 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
             </div>
           )}
 
-          <div style={s.successCard}>
-            <div style={s.successIcon}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div style={s.successTitle}>Week {weekNumber} check-in <em style={s.successTitleEm}>complete.</em></div>
-            <div style={s.successSub}>Your scores are saved. Your weekly insight is below.</div>
-          </div>
+          {(() => {
+            // Tone-aware: did symptoms improve or dip this week? Drives the copy.
+            const improvedCount = [firstScale, secondScale].filter(scale => {
+              const cur = answers[scale?.id]; const bl = scale?.baseline
+              if (bl == null || cur == null) return false
+              const good = ['energy','clarity','afternoon','sleep','digestive','wellbeing'].includes(scale.id)
+              return good ? cur > bl : cur < bl
+            }).length
+            const roughWeek = improvedCount === 0
+            return (
+              <div style={{ position: 'relative', background: '#22301F', borderRadius: '20px', padding: '24px 22px', overflow: 'hidden', boxShadow: '0 20px 48px rgba(34,48,31,0.3)', marginBottom: '14px' }}>
+                <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: '#8BAE8A', opacity: 0.09, pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · RECORD</span>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.5)' }}>WEEK {weekNumber} LOGGED</span>
+                </div>
+                <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 26, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.2, marginBottom: 4 }}>This week is <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>on the record.</em></div>
+                <div style={{ position: 'relative', fontSize: 13, color: 'rgba(250,248,244,0.6)', marginBottom: 20 }}>Every honest week makes your map sharper.</div>
 
-          {firstScale && secondScale && (
-            <div style={s.statsRow}>
-              {[firstScale, secondScale].map(scale => {
-                const current = answers[scale.id]
-                const baseline = scale.baseline
-                const change = baseline && current !== undefined ? Math.round(((current - baseline) / baseline) * 100) : null
-                const isGoodMetric = ['energy', 'clarity', 'afternoon', 'sleep', 'wellbeing', 'digestive'].includes(scale.id)
-                const improved = isGoodMetric ? change > 0 : change < 0
-                return (
-                  <div key={scale.id} style={s.statCard}>
-                    <div style={s.statVal}>{current ?? '—'}</div>
-                    <div style={s.statLabel}>{scale.id.charAt(0).toUpperCase() + scale.id.slice(1)}</div>
-                    {change !== null && (
-                      <div style={{ ...s.statChange, color: improved ? '#4A8C6A' : '#C95B5B' }}>
-                        {change > 0 ? '+' : ''}{change}% from baseline
-                      </div>
-                    )}
+                {firstScale && secondScale && (
+                  <div style={{ position: 'relative', display: 'flex', gap: 8, marginBottom: (insight || generatingInsight) ? 20 : 4 }}>
+                    {[firstScale, secondScale].map(scale => {
+                      const cur = answers[scale.id]; const bl = scale.baseline
+                      const good = ['energy','clarity','afternoon','sleep','digestive','wellbeing'].includes(scale.id)
+                      const improved = bl != null && cur != null ? (good ? cur > bl : cur < bl) : null
+                      const color = improved == null ? '#FAF8F4' : improved ? '#8BAE8A' : (good ? '#F2A0A0' : '#F2C078')
+                      return (
+                        <div key={scale.id} style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 12 }}>
+                          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, color }}>{cur ?? '—'}</div>
+                          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '0.5px', color: 'rgba(250,248,244,0.5)', marginTop: 2 }}>{scale.id.toUpperCase()}{bl != null ? ` · WAS ${bl}` : ''}</div>
+                        </div>
+                      )
+                    })}
                   </div>
-                )
-              })}
-            </div>
-          )}
+                )}
 
-          {generatingInsight ? (
-            <div style={s.loadingCard}>
-              <div style={s.spinner} />
-              <div style={s.loadingText}>Generating your insight...</div>
-            </div>
-          ) : insight ? (
-            <div style={s.insightCard}>
-              <div style={s.insightTag}>Your week {weekNumber} insight</div>
-              <div style={s.insightText}>{insight}</div>
-            </div>
-          ) : insightError ? (
-            <div style={s.insightCard}>
-              <div style={s.insightTag}>Your week {weekNumber} insight</div>
-              <div style={s.insightText}>Your scores have been saved. Your insight will appear on your dashboard shortly.</div>
-            </div>
-          ) : null}
+                {generatingInsight ? (
+                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 13, color: 'rgba(250,248,244,0.6)' }}>Writing your insight…</div>
+                ) : insight ? (
+                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16 }}>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1px', color: '#8BAE8A', marginBottom: 8 }}>YOUR WEEK {weekNumber} INSIGHT</div>
+                    <div style={{ fontSize: 13.5, color: '#FAF8F4', lineHeight: 1.7, fontWeight: 300 }}>{insight}</div>
+                  </div>
+                ) : insightError ? (
+                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontSize: 13.5, color: 'rgba(250,248,244,0.85)', lineHeight: 1.7, fontWeight: 300 }}>Your scores are saved. Your insight will appear on your dashboard shortly.</div>
+                ) : null}
+              </div>
+            )
+          })()}
 
           <button style={{ ...s.cta, marginTop: '8px' }} onClick={onComplete}>Back to dashboard →</button>
         </div>
@@ -466,15 +468,17 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         {symptomScales.map(scale => (
           <div key={scale.id} style={s.questionBlock}>
             <div style={s.questionLabel}>{scale.label}</div>
-            {scale.baseline && (
-              <div style={{ fontSize: '11px', color: '#7A7A72', marginBottom: '8px' }}>Your baseline: {scale.baseline}/10</div>
-            )}
             <div style={s.scaleLabels}><span>{scale.low}</span><span>{scale.high}</span></div>
             <div style={s.scaleRow}>
               {[1,2,3,4,5,6,7,8,9,10].map(n => (
                 <button key={n} style={answers[scale.id] === n ? s.sbtOn : s.sbt} onClick={() => setAnswer(scale.id, n)}>{n}</button>
               ))}
             </div>
+            {scale.baseline && (
+              <div style={{ position: 'relative', height: '14px', marginTop: '4px' }}>
+                <div style={{ position: 'absolute', left: `${((scale.baseline - 0.5) / 10) * 100}%`, transform: 'translateX(-50%)', fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#A8A69E', whiteSpace: 'nowrap' }}>↑ your baseline</div>
+              </div>
+            )}
           </div>
         ))}
 
