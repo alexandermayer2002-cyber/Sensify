@@ -38,8 +38,8 @@ const css = `
   .mk-cta { background: #3D5C3C; color: white; border: none; border-radius: 9px; padding: 9px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; letter-spacing: -0.1px; }
   .mk-cta:hover { opacity: 0.87; }
 
-  .mk-hero { position: relative; padding: 88px 64px 80px; background: #FFFFFF; border-bottom: 1px solid rgba(0,0,0,0.07); overflow: hidden; }
-  .mk-hero.dark { padding: 48px 40px; background: #FAF8F4; border-bottom: 1px solid rgba(0,0,0,0.07); }
+  .mk-hero { position: relative; padding: 56px 64px 8px; background: #FAF8F4; overflow: hidden; }
+  .mk-hero.dark { padding: 48px 40px; background: #FAF8F4; }
   .mk-hero.dark .mk-hero-centered { position: relative; background: #22301F; border-radius: 24px; padding: 68px 48px; box-shadow: 0 24px 60px rgba(34,48,31,0.3); overflow: hidden; max-width: 1000px; }
   .mk-hero.dark .mk-hero-orb1 { position: absolute; top: -70px; left: -40px; width: 260px; height: 260px; border-radius: 50%; background: #8BAE8A; opacity: 0.12; pointer-events: none; animation: mkHeroGlow 6s ease-in-out infinite; }
   .mk-hero.dark .mk-hero-orb2 { position: absolute; bottom: -80px; right: -40px; width: 220px; height: 220px; border-radius: 50%; background: #E8941F; opacity: 0.06; pointer-events: none; }
@@ -59,9 +59,9 @@ const css = `
   .fmshow-point { display: flex; align-items: center; gap: 11px; font-size: 14px; color: #4A4A45; }
   .fmshow-point strong { font-weight: 600; color: #1C1C1C; }
   .fmshow-pdot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .mk-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: #3D5C3C; background: #EDF3ED; padding: 5px 13px; border-radius: 20px; margin-bottom: 24px; }
+  .mk-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: #3D5C3C; background: #EDF3ED; padding: 5px 13px; border-radius: 20px; margin-bottom: 16px; }
   .mk-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: #C9A227; flex-shrink: 0; }
-  .mk-h1 { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 300; line-height: 1.06; margin-bottom: 20px; letter-spacing: -1px; max-width: 680px; color: #1C1C1C; }
+  .mk-h1 { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 300; line-height: 1.06; margin-bottom: 16px; letter-spacing: -1px; max-width: 680px; color: #1C1C1C; }
   .mk-hero.dark .mk-h1 { color: #FAF8F4; }
   .mk-h1 em { font-style: italic; color: #3D5C3C; }
   .mk-hero.dark .mk-h1 em { color: #8BAE8A; }
@@ -101,7 +101,7 @@ const css = `
   .fmcard-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
   .fmcard-verify { font-family: 'DM Mono', monospace; font-size: 8.5px; color: rgba(255,255,255,0.3); letter-spacing: 0.4px; }
 
-  .mk-section { padding: 72px 64px; border-bottom: 1px solid rgba(0,0,0,0.07); max-width: 100%; }
+  .mk-section { padding: 64px 64px; max-width: 100%; }
   .mk-section-inner { max-width: 960px; margin: 0 auto; }
   .mk-section.alt { background: #FFFFFF; }
   .mk-section.sage { background: #F2F5EF; }
@@ -503,7 +503,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-<div className="mk-section sage">
+<div className="mk-section alt">
         <div className="mk-section-inner">
           <div className="ey">The outcome</div>
           <div className="sh">A Food Map that's <em>actually earned.</em></div>
@@ -556,7 +556,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     <div>
       <style>{css}</style>
       <Nav />
-      <div className="mk-hero" style={{ padding: '72px 64px 48px' }}>
+      <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>The complete program</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>How Sensify <em>works.</em></div>
@@ -682,7 +682,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     <div>
       <style>{css}</style>
       <Nav />
-      <div className="mk-hero" style={{ padding: '72px 64px 48px' }}>
+      <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>The science</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>Your lab test is a <em>hypothesis.</em><br />Your body gives the <em>verdict.</em></div>
@@ -794,7 +794,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     <div>
       <style>{css}</style>
       <Nav />
-      <div className="mk-hero" style={{ padding: '72px 64px 64px' }}>
+      <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>Simple pricing</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>One program, <em>one price.</em></div>
@@ -840,7 +840,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     <div>
       <style>{css}</style>
       <Nav />
-      <div className="mk-hero" style={{ padding: '72px 64px 64px' }}>
+      <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>Questions</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>Things people <em>ask us.</em></div>
@@ -863,7 +863,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     <div>
       <style>{css}</style>
       <Nav />
-      <div className="mk-hero" style={{ padding: '72px 64px 48px' }}>
+      <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>Our story</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>Why we built <em>Sensify.</em></div>
