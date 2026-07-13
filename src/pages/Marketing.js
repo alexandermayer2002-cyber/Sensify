@@ -38,12 +38,14 @@ const css = `
   .mk-cta { background: #3D5C3C; color: white; border: none; border-radius: 9px; padding: 9px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; letter-spacing: -0.1px; }
   .mk-cta:hover { opacity: 0.87; }
 
-  .mk-hero { position: relative; padding: 96px 64px 88px; background: #22301F; border-bottom: 1px solid rgba(0,0,0,0.07); overflow: hidden; }
-  .mk-hero.dark .mk-hero-orb1 { position: absolute; top: -110px; left: 8%; width: 340px; height: 340px; border-radius: 50%; background: #8BAE8A; opacity: 0.11; pointer-events: none; animation: mkHeroGlow 6s ease-in-out infinite; }
-  .mk-hero.dark .mk-hero-orb2 { position: absolute; bottom: -130px; right: 6%; width: 300px; height: 300px; border-radius: 50%; background: #E8941F; opacity: 0.06; pointer-events: none; }
+  .mk-hero { position: relative; padding: 88px 64px 80px; background: #FFFFFF; border-bottom: 1px solid rgba(0,0,0,0.07); overflow: hidden; }
+  .mk-hero.dark { padding: 48px 40px; background: #FAF8F4; border-bottom: 1px solid rgba(0,0,0,0.07); }
+  .mk-hero.dark .mk-hero-centered { position: relative; background: #22301F; border-radius: 24px; padding: 68px 48px; box-shadow: 0 24px 60px rgba(34,48,31,0.3); overflow: hidden; max-width: 1000px; }
+  .mk-hero.dark .mk-hero-orb1 { position: absolute; top: -70px; left: -40px; width: 260px; height: 260px; border-radius: 50%; background: #8BAE8A; opacity: 0.12; pointer-events: none; animation: mkHeroGlow 6s ease-in-out infinite; }
+  .mk-hero.dark .mk-hero-orb2 { position: absolute; bottom: -80px; right: -40px; width: 220px; height: 220px; border-radius: 50%; background: #E8941F; opacity: 0.06; pointer-events: none; }
   @keyframes mkHeroGlow { 0%, 100% { opacity: 0.07; } 50% { opacity: 0.14; } }
   .mk-hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2.5px; color: #C9A227; text-transform: uppercase; margin-bottom: 22px; }
-  .mk-price-line { font-size: 12.5px; color: rgba(250,248,244,0.5); margin-top: 14px; }")
+  .mk-price-line { font-size: 12.5px; color: rgba(250,248,244,0.5); margin-top: 14px; }
   .mk-hero-inner { max-width: 960px; margin: 0 auto; }
   .mk-hero-split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; max-width: 1080px; margin: 0 auto; }
   @media (max-width: 860px) { .mk-hero-split { grid-template-columns: 1fr; gap: 36px; } .mk-hero-fmcard { order: -1; } }
