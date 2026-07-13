@@ -60,7 +60,8 @@ const css = `
   .mk-tag { display: inline-flex; align-items: center; gap: 7px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; color: #C9A227; background: transparent; padding: 0; border-radius: 0; margin-bottom: 20px; }
   .mk-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: #C9A227; flex-shrink: 0; }
   .mk-h1 { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 300; line-height: 1.06; margin-bottom: 20px; letter-spacing: -1px; max-width: 680px; color: #FAF8F4; }
-  .mk-h1 em { font-style: italic; color: #8BAE8A; }
+  .mk-h1 em { font-style: italic; color: #3D5C3C; }
+  .mk-hero.dark .mk-h1 em { color: #8BAE8A; }
   .mk-sub { font-size: 17px; color: rgba(250,248,244,0.68); line-height: 1.65; margin-bottom: 30px; max-width: 520px; font-weight: 300; }
   .mk-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 36px; max-width: 580px; }
   .mk-3c { background: #FAF8F4; border-radius: 13px; padding: 16px; }
@@ -386,11 +387,11 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <style>{css}</style>
       <Nav />
       <div className="mk-hero dark">
-        <div className="mk-hero-orb1"></div>
-        <div className="mk-hero-orb2"></div>
         <div className="mk-hero-centered" style={{ position: 'relative' }}>
-          <div className="mk-hero-eyebrow">Physician-reviewed · 6-month program</div>
-          <div className="mk-h1 centered" style={{ color: '#FAF8F4' }}>Stop guessing what your body <em style={{ color: '#8BAE8A' }}>can't handle.</em></div>
+          <div className="mk-hero-orb1"></div>
+          <div className="mk-hero-orb2"></div>
+          <div className="mk-hero-eyebrow" style={{ position: 'relative' }}>Physician-reviewed · 6-month program</div>
+          <div className="mk-h1 centered" style={{ color: '#FAF8F4' }}>Stop guessing what your body <em>can't handle.</em></div>
           <div className="mk-sub centered" style={{ color: 'rgba(250,248,244,0.68)', fontWeight: 300 }}>Lab testing, a structured elimination and reintroduction protocol, and daily guidance that gives you a definitive answer about how food affects your body. You end with a personal Food Map of exactly where you stand.</div>
           <div className="mk-actions centered">
             <button className="btn-p" onClick={onGetStarted} style={{ background: '#8BAE8A', color: '#22301F', fontWeight: 600 }}>Start your program</button>
