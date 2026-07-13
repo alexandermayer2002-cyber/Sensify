@@ -405,16 +405,8 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.07)', padding: '18px 24px' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto', display: 'flex', justifyContent: 'center', gap: '36px', flexWrap: 'wrap' }}>
-          <div style={{ fontSize: '12.5px', color: '#5A5A52', display: 'flex', alignItems: 'center', gap: '7px' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3D5C3C', flexShrink: 0 }}></span>Physician-reviewed protocol</div>
-          <div style={{ fontSize: '12.5px', color: '#5A5A52', display: 'flex', alignItems: 'center', gap: '7px' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3D5C3C', flexShrink: 0 }}></span>Built on the clinical elimination gold standard</div>
-          <div style={{ fontSize: '12.5px', color: '#5A5A52', display: 'flex', alignItems: 'center', gap: '7px' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3D5C3C', flexShrink: 0 }}></span>One price — lab test included</div>
-        </div>
-      </div>
-
       {/* The Food Map — its own showcase section */}
-      <div className="mk-section cream">
+      <div className="mk-section alt">
         <div className="mk-section-inner">
           <div className="fmshow">
             <div className="fmshow-copy">
@@ -458,7 +450,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="mk-section alt">
+      <div className="mk-section cream">
         <div className="mk-section-inner">
           <div className="ey">The problem</div>
           <div className="sh">Most people suspect food.<br />Almost none ever <em>confirm it.</em></div>
@@ -479,7 +471,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="mk-section cream">
+      <div className="mk-section alt">
         <div className="mk-section-inner">
           <div className="ey">How it works</div>
           <div className="sh">Four steps to <em>certainty.</em></div>
@@ -503,7 +495,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-<div className="mk-section alt">
+<div className="mk-section cream">
         <div className="mk-section-inner">
           <div className="ey">The outcome</div>
           <div className="sh">A Food Map that's <em>actually earned.</em></div>
@@ -516,7 +508,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="mk-section cream">
+      <div className="mk-section alt">
         <div className="mk-section-inner">
           <div className="ey">Before you start</div>
           <div className="sh">The questions <em>everyone asks.</em></div>
