@@ -59,12 +59,14 @@ const css = `
   .fmshow-point { display: flex; align-items: center; gap: 11px; font-size: 14px; color: #4A4A45; }
   .fmshow-point strong { font-weight: 600; color: #1C1C1C; }
   .fmshow-pdot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .mk-tag { display: inline-flex; align-items: center; gap: 7px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; color: #C9A227; background: transparent; padding: 0; border-radius: 0; margin-bottom: 20px; }
+  .mk-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: #3D5C3C; background: #EDF3ED; padding: 5px 13px; border-radius: 20px; margin-bottom: 24px; }
   .mk-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: #C9A227; flex-shrink: 0; }
-  .mk-h1 { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 300; line-height: 1.06; margin-bottom: 20px; letter-spacing: -1px; max-width: 680px; color: #FAF8F4; }
+  .mk-h1 { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 300; line-height: 1.06; margin-bottom: 20px; letter-spacing: -1px; max-width: 680px; color: #1C1C1C; }
+  .mk-hero.dark .mk-h1 { color: #FAF8F4; }
   .mk-h1 em { font-style: italic; color: #3D5C3C; }
   .mk-hero.dark .mk-h1 em { color: #8BAE8A; }
-  .mk-sub { font-size: 17px; color: rgba(250,248,244,0.68); line-height: 1.65; margin-bottom: 30px; max-width: 520px; font-weight: 300; }
+  .mk-sub { font-size: 17px; color: #7A7A72; line-height: 1.7; margin-bottom: 30px; max-width: 520px; }
+  .mk-hero.dark .mk-sub { color: rgba(250,248,244,0.68); font-weight: 300; }
   .mk-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 36px; max-width: 580px; }
   .mk-3c { background: #FAF8F4; border-radius: 13px; padding: 16px; }
   .mk-3n { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; color: #3D5C3C; margin-bottom: 6px; }
@@ -393,8 +395,8 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="mk-hero-orb1"></div>
           <div className="mk-hero-orb2"></div>
           <div className="mk-hero-eyebrow" style={{ position: 'relative' }}>Physician-reviewed · 6-month program</div>
-          <div className="mk-h1 centered" style={{ color: '#FAF8F4' }}>Stop guessing what your body <em>can't handle.</em></div>
-          <div className="mk-sub centered" style={{ color: 'rgba(250,248,244,0.68)', fontWeight: 300 }}>Lab testing, a structured elimination and reintroduction protocol, and daily guidance that gives you a definitive answer about how food affects your body. You end with a personal Food Map of exactly where you stand.</div>
+          <div className="mk-h1 centered">Stop guessing what your body <em>can't handle.</em></div>
+          <div className="mk-sub centered">Lab testing, a structured elimination and reintroduction protocol, and daily guidance that gives you a definitive answer about how food affects your body. You end with a personal Food Map of exactly where you stand.</div>
           <div className="mk-actions centered">
             <button className="btn-p" onClick={onGetStarted} style={{ background: '#8BAE8A', color: '#22301F', fontWeight: 600 }}>Start your program</button>
             <button className="btn-g" onClick={() => setTab('how')} style={{ borderColor: 'rgba(250,248,244,0.25)', color: '#FAF8F4' }}>See how it works</button>
@@ -477,7 +479,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-            <div className="mk-section alt">
+      <div className="mk-section cream">
         <div className="mk-section-inner">
           <div className="ey">How it works</div>
           <div className="sh">Four steps to <em>certainty.</em></div>
