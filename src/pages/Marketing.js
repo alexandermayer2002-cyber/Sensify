@@ -38,7 +38,12 @@ const css = `
   .mk-cta { background: #3D5C3C; color: white; border: none; border-radius: 9px; padding: 9px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; letter-spacing: -0.1px; }
   .mk-cta:hover { opacity: 0.87; }
 
-  .mk-hero { padding: 88px 64px 80px; background: #FFFFFF; border-bottom: 1px solid rgba(0,0,0,0.07); }
+  .mk-hero { position: relative; padding: 96px 64px 88px; background: #22301F; border-bottom: 1px solid rgba(0,0,0,0.07); overflow: hidden; }
+  .mk-hero.dark .mk-hero-orb1 { position: absolute; top: -110px; left: 8%; width: 340px; height: 340px; border-radius: 50%; background: #8BAE8A; opacity: 0.11; pointer-events: none; animation: mkHeroGlow 6s ease-in-out infinite; }
+  .mk-hero.dark .mk-hero-orb2 { position: absolute; bottom: -130px; right: 6%; width: 300px; height: 300px; border-radius: 50%; background: #E8941F; opacity: 0.06; pointer-events: none; }
+  @keyframes mkHeroGlow { 0%, 100% { opacity: 0.07; } 50% { opacity: 0.14; } }
+  .mk-hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2.5px; color: #C9A227; text-transform: uppercase; margin-bottom: 22px; }
+  .mk-price-line { font-size: 12.5px; color: rgba(250,248,244,0.5); margin-top: 14px; }")
   .mk-hero-inner { max-width: 960px; margin: 0 auto; }
   .mk-hero-split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; max-width: 1080px; margin: 0 auto; }
   @media (max-width: 860px) { .mk-hero-split { grid-template-columns: 1fr; gap: 36px; } .mk-hero-fmcard { order: -1; } }
@@ -52,18 +57,21 @@ const css = `
   .fmshow-point { display: flex; align-items: center; gap: 11px; font-size: 14px; color: #4A4A45; }
   .fmshow-point strong { font-weight: 600; color: #1C1C1C; }
   .fmshow-pdot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .mk-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: #3D5C3C; background: #EDF3ED; padding: 5px 13px; border-radius: 20px; margin-bottom: 28px; }
-  .mk-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: #3D5C3C; flex-shrink: 0; }
-  .mk-h1 { font-family: 'Fraunces', serif; font-size: 58px; font-weight: 300; line-height: 1.06; margin-bottom: 22px; letter-spacing: -1px; max-width: 680px; }
-  .mk-h1 em { font-style: italic; color: #3D5C3C; }
-  .mk-sub { font-size: 18px; color: #7A7A72; line-height: 1.72; margin-bottom: 40px; max-width: 520px; }
+  .mk-tag { display: inline-flex; align-items: center; gap: 7px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; color: #C9A227; background: transparent; padding: 0; border-radius: 0; margin-bottom: 20px; }
+  .mk-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: #C9A227; flex-shrink: 0; }
+  .mk-h1 { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 300; line-height: 1.06; margin-bottom: 20px; letter-spacing: -1px; max-width: 680px; color: #FAF8F4; }
+  .mk-h1 em { font-style: italic; color: #8BAE8A; }
+  .mk-sub { font-size: 17px; color: rgba(250,248,244,0.68); line-height: 1.65; margin-bottom: 30px; max-width: 520px; font-weight: 300; }
   .mk-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 36px; max-width: 580px; }
   .mk-3c { background: #FAF8F4; border-radius: 13px; padding: 16px; }
   .mk-3n { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; color: #3D5C3C; margin-bottom: 6px; }
   .mk-3t { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
   .mk-3d { font-size: 12px; color: #7A7A72; line-height: 1.6; }
   .mk-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
-  .btn-p { background: #3D5C3C; color: white; border: none; border-radius: 10px; padding: 14px 26px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+  .btn-p { background: #8BAE8A; color: #22301F; border: none; border-radius: 11px; padding: 14px 26px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+  .mk-priceline { font-size: 12.5px; color: rgba(250,248,244,0.55); margin-top: 12px; }
+  .mk-hero.dark .btn-g { border: 1px solid rgba(250,248,244,0.25); color: #FAF8F4; background: transparent; }
+  .mk-hero.dark .mk-trust { color: rgba(250,248,244,0.5) !important; }
   .btn-p:hover { opacity: 0.87; }
   .btn-g { background: none; color: #1C1C1C; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 10px; padding: 13px 22px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
   .btn-g:hover { border-color: #3D5C3C; color: #3D5C3C; }
@@ -236,7 +244,8 @@ const css = `
     .mk-signin { display: none; }
     .mk-cta { padding: 8px 14px; font-size: 12px; flex-shrink: 0; }
     .mk-nav-right { gap: 4px; }
-    .mk-hero { padding: 48px 22px 40px !important; }
+    .mk-hero { padding: 48px 22px 44px !important; }
+    .mk-hero .mk-h1 { font-size: 36px !important; }
     .mk-h1 { font-size: 36px !important; letter-spacing: -0.5px; }
     .mk-sub { font-size: 15px; }
     .mk-section { padding: 44px 22px !important; }
@@ -353,7 +362,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     return () => obs.disconnect()
   })
 
-  const tabs = ['home', 'how', 'science', 'pricing', 'faq']
+  const tabs = ['home', 'how', 'science', 'pricing', 'faq', 'about']
 
   const Nav = () => (
     <nav className="mk-nav">
@@ -376,15 +385,18 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     <div>
       <style>{css}</style>
       <Nav />
-      <div className="mk-hero">
-        <div className="mk-hero-centered">
-          <div className="mk-tag" style={{ justifyContent: 'center' }}><div className="mk-tag-dot"></div>Physician-reviewed · 6-month program</div>
-          <div className="mk-h1 centered">Stop guessing what your body <em>can't handle.</em></div>
-          <div className="mk-sub centered">Lab testing, a structured 6-month elimination and reintroduction protocol, and daily guidance that gives you a definitive answer about how food affects your body. You end with a personal Food Map, and the certainty of knowing exactly where you stand.</div>
+      <div className="mk-hero dark">
+        <div className="mk-hero-orb1"></div>
+        <div className="mk-hero-orb2"></div>
+        <div className="mk-hero-centered" style={{ position: 'relative' }}>
+          <div className="mk-hero-eyebrow">Physician-reviewed · 6-month program</div>
+          <div className="mk-h1 centered" style={{ color: '#FAF8F4' }}>Stop guessing what your body <em style={{ color: '#8BAE8A' }}>can't handle.</em></div>
+          <div className="mk-sub centered" style={{ color: 'rgba(250,248,244,0.68)', fontWeight: 300 }}>Lab testing, a structured elimination and reintroduction protocol, and daily guidance that gives you a definitive answer about how food affects your body. You end with a personal Food Map of exactly where you stand.</div>
           <div className="mk-actions centered">
-            <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
-            <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
+            <button className="btn-p" onClick={onGetStarted} style={{ background: '#8BAE8A', color: '#22301F', fontWeight: 600 }}>Start your program</button>
+            <button className="btn-g" onClick={() => setTab('how')} style={{ borderColor: 'rgba(250,248,244,0.25)', color: '#FAF8F4' }}>See how it works</button>
           </div>
+          <div className="mk-price-line">$399 · lab test included · one payment</div>
         </div>
       </div>
 
@@ -837,6 +849,64 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <h2>Stop guessing.<br /><em>Start knowing.</em></h2>
         <p>The complete system — test, protocol, and answers — for $399.</p>
         <button className="btn-p" onClick={onGetStarted}>Start your program — $399</button>
+      </div>
+      <Footer />
+    </div>
+  )
+
+  if (tab === 'about') return (
+    <div>
+      <style>{css}</style>
+      <Nav />
+      <div className="mk-hero" style={{ padding: '72px 64px 48px' }}>
+        <div className="mk-hero-inner">
+          <div className="mk-tag"><div className="mk-tag-dot"></div>Our story</div>
+          <div className="mk-h1" style={{ fontSize: '46px' }}>Why we built <em>Sensify.</em></div>
+          <div className="mk-sub" style={{ marginBottom: 0 }}>The short version of a longer story about guessing, testing, and finally knowing.</div>
+        </div>
+      </div>
+
+      <div className="mk-section alt">
+        <div className="mk-section-inner" style={{ maxWidth: '720px' }}>
+          {/* ===== FOUNDER STORY — PLACEHOLDER: replace with Alex's real story ===== */}
+          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', letterSpacing: '1.5px', textTransform: 'uppercase', color: '#8BAE8A', marginBottom: '18px' }}>The beginning</div>
+          <div style={{ fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, lineHeight: 1.4, color: '#1C1C1C', marginBottom: '24px' }}>
+            [Your founder story goes here. The moment you realized food was the problem, the years of guessing, what you wish had existed.]
+          </div>
+          <div style={{ fontSize: '16px', color: '#4A4A45', lineHeight: 1.8, marginBottom: '20px' }}>
+            [A paragraph on the frustration that started it — the tests that flagged everything and explained nothing, the elimination diets with no structure, the not-knowing.]
+          </div>
+          <div style={{ fontSize: '16px', color: '#4A4A45', lineHeight: 1.8, marginBottom: '20px' }}>
+            [A paragraph on the insight — that a lab result is only a hypothesis, and the body is what gives the verdict. Why you built the protocol, not just another test.]
+          </div>
+          <div style={{ fontSize: '16px', color: '#4A4A45', lineHeight: 1.8 }}>
+            [A closing paragraph on who Sensify is for and the promise: nothing labeled without being earned.]
+          </div>
+        </div>
+      </div>
+
+      <div className="mk-section">
+        <div className="mk-section-inner" style={{ maxWidth: '720px' }}>
+          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', letterSpacing: '1.5px', textTransform: 'uppercase', color: '#3D5C3C', marginBottom: '18px' }}>What we believe</div>
+          <div style={{ display: 'grid', gap: '16px' }}>
+            {[
+              ['The lab finds suspects. Your body gives the verdict.', 'A flagged food is a question, not a conviction. Nothing gets labeled without being tested.'],
+              ['Honesty over hype.', 'We show you what the data says, including when it is inconclusive. No miracle claims, no guesswork dressed up as certainty.'],
+              ['The answer should be permanent.', 'You do the work once and keep the map for life. Your Food Map is yours to keep.'],
+            ].map(([h, d], i) => (
+              <div key={i} style={{ borderTop: '1px solid rgba(0,0,0,0.08)', paddingTop: '16px' }}>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 300, color: '#1C1C1C', marginBottom: '6px' }}>{h}</div>
+                <div style={{ fontSize: '14.5px', color: '#7A7A72', lineHeight: 1.65 }}>{d}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="cta-section">
+        <h2>Stop guessing.<br /><em>Start knowing.</em></h2>
+        <p>The complete system — test, protocol, and answers — for $399.</p>
+        <button className="btn-p" onClick={onGetStarted}>Start your program</button>
       </div>
       <Footer />
     </div>
