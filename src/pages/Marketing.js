@@ -59,8 +59,8 @@ const css = `
   .fmshow-point { display: flex; align-items: center; gap: 11px; font-size: 14px; color: #4A4A45; }
   .fmshow-point strong { font-weight: 600; color: #1C1C1C; }
   .fmshow-pdot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .mk-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: #3D5C3C; background: #EDF3ED; padding: 5px 13px; border-radius: 20px; margin-bottom: 16px; }
-  .mk-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: #C9A227; flex-shrink: 0; }
+  .mk-tag { display: inline-flex; align-items: center; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 500; color: #3D5C3C; margin-bottom: 16px; }
+  .mk-tag-dot { display: none; }
   .mk-h1 { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 300; line-height: 1.06; margin-bottom: 16px; letter-spacing: -1px; max-width: 680px; color: #1C1C1C; }
   .mk-hero.dark .mk-h1 { color: #FAF8F4; }
   .mk-h1 em { font-style: italic; color: #3D5C3C; }
@@ -552,7 +552,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>The complete program</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>How Sensify <em>works.</em></div>
-          <div className="mk-sub" style={{ marginBottom: 0 }}>A structured 6-month system that takes you from suspecting a food trigger to having a permanent, evidence-based Food Map.</div>
+          <div className="mk-sub" style={{ marginBottom: 0 }}>A structured system that takes you from suspecting a food trigger to having a permanent, evidence-based Food Map.</div>
         </div>
       </div>
 
