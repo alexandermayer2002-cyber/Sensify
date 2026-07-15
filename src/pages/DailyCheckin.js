@@ -97,7 +97,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
     const { error } = await supabase.from('daily_factors').upsert(row, { onConflict: 'user_id,log_date' })
 
     // Feed the existing compliance system (streaks, audits, 3-NOs trigger) from
-    // the in-app check-in, in the same shape the SMS webhook uses. This lets the
+    // the in-app check-in. This lets the
     // daily check-in serve as a compliance source without changing that logic.
     if (onProtocol && followed !== null) {
       try {

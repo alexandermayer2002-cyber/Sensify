@@ -807,7 +807,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 'Guided lab test ordering — we tell you exactly what to get',
                 'Your results read and extracted automatically',
                 'Full 6-month structured elimination protocol',
-                'Daily SMS compliance check-ins at your chosen time',
+                'Quick daily check-ins right in the app',
                 '14-day reintroduction cycles with clear verdicts',
                 'Weekly symptom insights from your check-ins',
                 'Compliance audit system with human review',

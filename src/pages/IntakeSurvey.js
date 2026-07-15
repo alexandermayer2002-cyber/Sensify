@@ -310,8 +310,8 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
               },
               {
                 icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
-                title: 'You agree to receive daily SMS check-ins',
-                desc: 'As part of your program you will receive recurring automated text messages from Sensify, including daily check-in reminders and reintroduction updates. Message and data rates may apply. Consent is not a condition of purchase. Reply STOP at any time to opt out, or HELP for assistance.'
+                title: 'Daily check-ins are part of the program',
+                desc: 'Your program includes a quick daily check-in inside the app, plus weekly reviews. Staying consistent with check-ins is what makes your results trustworthy. We may send you email reminders to help you stay on track.'
               },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', gap: '13px', alignItems: 'flex-start', paddingBottom: i < 5 ? '16px' : 0, borderBottom: i < 5 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
@@ -334,7 +334,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             {agreed && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
           </div>
           <div style={{ fontSize: '13px', color: '#1C1C1C', lineHeight: 1.65, paddingTop: '1px' }}>
-            I understand that Sensify is a wellness program and not a medical service, that insights are for informational purposes only, and that my program data may be accessed by the Sensify team to support my program. I consent to receive recurring automated SMS check-in messages from Sensify and understand I can reply STOP to opt out at any time.
+            I understand that Sensify is a wellness program and not a medical service, that insights are for informational purposes only, and that my program data may be accessed by the Sensify team to support my program. I agree to receive program-related emails from Sensify, including check-in reminders and account notifications.
           </div>
         </div>
 
