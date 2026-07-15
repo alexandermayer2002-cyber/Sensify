@@ -168,7 +168,7 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
     : null
 
   const contextItems = answers.context_changes?.filter(c => c !== 'Nothing unusual — normal week') || []
-  const contextStr = contextItems.length > 0 ? contextItems.join(', ') : 'Normal week — nothing unusual'
+  const contextStr = contextItems.length > 0 ? contextItems.join(', ') : 'None flagged by user (this does not mean nothing happened)'
 
   const prompt = `You are the AI health coach inside Sensify, a food sensitivity wellness program. Generate a personalized weekly insight.
 
@@ -200,8 +200,9 @@ Write a personalized weekly insight. Rules:
 - Never use em dashes or hyphens as punctuation. Use commas or periods instead
 - Never say "based on your data" or "according to your responses"
 - Use ${name}'s name only if it reads naturally, at most once
-- If compliance was poor and scores are bad, connect them plainly and without judgment
+- If compliance was poor and scores are bad, you may note both facts side by side, but NEVER assert that adherence is 'the explanation' or 'the most plausible cause' of symptom changes. You cannot see everything that happened this week (alcohol, illness, sleep debt, life events), so never claim a definitive cause. Frame possible connections as possibilities, not conclusions.
 - If DAILY CHECK-IN ADHERENCE is provided, you may include ONE short factual clause acknowledging it (e.g. "with all 7 days logged" or "on 4 of 5 logged days you followed the plan"). State it as fact only. Never scold about missed days, and never claim daily habits caused or explain symptom changes.
+- NEVER say 'nothing unusual was reported' or imply the week was unremarkable. The context question captures only what the user chose to flag, not everything that happened. If context is empty, simply do not mention it.
 - If this is the first check-in with data, compare against baseline scores only and do not reference prior weeks
 ${confoundFragment}
 
