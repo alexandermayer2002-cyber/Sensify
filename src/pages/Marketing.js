@@ -26,7 +26,7 @@ const css = `
     z-index: 100;
   }
   .mk-logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; color: #1C1C1C; letter-spacing: -0.3px; }
-  .mk-logo em { color: #3D5C3C; font-style: italic; }
+  .mk-logo-dot { color: #3D5C3C; }
   .mk-tabs { display: flex; gap: 2px; }
   .mk-tab { font-size: 13px; font-weight: 400; color: #7A7A72; padding: 6px 12px; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.15s; letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
   .mk-tab.active { color: #1C1C1C; font-weight: 500; border-bottom: 2px solid #3D5C3C; }
@@ -44,6 +44,11 @@ const css = `
   .mk-hero.dark .mk-hero-orb1 { position: absolute; top: -70px; left: -40px; width: 260px; height: 260px; border-radius: 50%; background: #8BAE8A; opacity: 0.12; pointer-events: none; animation: mkHeroGlow 6s ease-in-out infinite; }
   .mk-hero.dark .mk-hero-orb2 { position: absolute; bottom: -80px; right: -40px; width: 220px; height: 220px; border-radius: 50%; background: #E8941F; opacity: 0.06; pointer-events: none; }
   @keyframes mkHeroGlow { 0%, 100% { opacity: 0.07; } 50% { opacity: 0.14; } }
+  .mk-wordmark { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 500; color: #FAF8F4; letter-spacing: -0.5px; margin-bottom: 26px; }
+  .mk-wordmark .wl { display: inline-block; opacity: 0; animation: mkLetterRise 0.38s cubic-bezier(0.16,1,0.3,1) forwards; }
+  .mk-wordmark .wdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #8BAE8A; margin-left: 4px; opacity: 0; animation: mkDotStamp 0.42s cubic-bezier(0.34,1.56,0.64,1) forwards; animation-delay: 0.72s; }
+  @keyframes mkLetterRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes mkDotStamp { 0% { opacity: 0; transform: scale(0); } 60% { opacity: 1; transform: scale(1.55); } 100% { opacity: 1; transform: scale(1); } }
   .mk-hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2.5px; color: #C9A227; text-transform: uppercase; margin-bottom: 22px; }
   .mk-price-line { font-size: 12.5px; color: rgba(250,248,244,0.5); margin-top: 14px; }
   .mk-hero-inner { max-width: 960px; margin: 0 auto; }
@@ -228,7 +233,6 @@ const css = `
 
   .mk-footer { padding: 36px 64px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(0,0,0,0.07); background: #FFFFFF; }
   .mk-footer-logo { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; color: #1C1C1C; }
-  .mk-footer-logo em { color: #3D5C3C; font-style: italic; }
   .mk-footer-note { font-size: 12px; color: #7A7A72; }
   .mk-footer-links { display: flex; gap: 20px; }
   .mk-footer-link { font-size: 12px; color: #7A7A72; cursor: pointer; }
@@ -338,7 +342,7 @@ function Faq() {
 
 const Footer = () => (
   <div className="mk-footer">
-    <div className="mk-footer-logo">sensi<em>fy</em></div>
+    <div className="mk-footer-logo">Sensify<span className="mk-logo-dot">.</span></div>
     <div className="mk-footer-note">Wellness program only. Not medical advice.</div>
     <div className="mk-footer-links">
       <a className="mk-footer-link" href="/privacy.html" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>Privacy</a>
@@ -371,7 +375,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
 
   const Nav = () => (
     <nav className="mk-nav">
-      <div className="mk-logo">sensi<em>fy</em></div>
+      <div className="mk-logo">Sensify<span className="mk-logo-dot">.</span></div>
       <div className="mk-tabs">
         {tabs.map(t => (
           <button key={t} className={`mk-tab${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>
@@ -394,6 +398,12 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-hero-centered" style={{ position: 'relative' }}>
           <div className="mk-hero-orb1"></div>
           <div className="mk-hero-orb2"></div>
+          <div className="mk-wordmark" style={{ position: 'relative' }}>
+            {'Sensify'.split('').map((ch, i) => (
+              <span key={i} className="wl" style={{ animationDelay: `${0.05 + i * 0.09}s` }}>{ch}</span>
+            ))}
+            <span className="wdot"></span>
+          </div>
           <div className="mk-hero-eyebrow" style={{ position: 'relative' }}>Test. Eliminate. Reintroduce. Know.</div>
           <div className="mk-h1 centered">Stop guessing what your body <em>can't handle.</em></div>
           <div className="mk-sub centered">Lab testing, a structured elimination and reintroduction protocol, and daily guidance that gives you a definitive answer about how food affects your body. You end with a personal Food Map of exactly where you stand.</div>
