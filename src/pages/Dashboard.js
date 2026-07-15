@@ -777,6 +777,31 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   }
   const checkMilestones = async (p, lab, c) => {
     if (!p?.protocol_start_date) return
+    // Tone-awareness: if the latest weekly check-in shows symptoms broadly worsening
+    // vs baseline, suppress celebration confetti (milestone messages still show —
+    // reaching day 14 on a rough week deserves acknowledgment, not a party).
+    const roughWeek = (() => {
+      try {
+        const latest = (c || []).slice().sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at))[0]
+        if (!latest?.answers) return false
+        const lowerBetter = ['bloating', 'gas', 'reflux']
+        const higherBetter = ['digestive', 'energy', 'clarity', 'afternoon', 'sleep', 'wellbeing']
+        let worse = 0, better = 0
+        for (const k of [...lowerBetter, ...higherBetter]) {
+          const bl = p['baseline_' + k]; const cur = latest.answers[k]
+          if (bl == null || cur == null) continue
+          const improved = lowerBetter.includes(k) ? cur < bl : cur > bl
+          const worsened = lowerBetter.includes(k) ? cur > bl : cur < bl
+          if (improved) better++; else if (worsened) worse++
+        }
+        return worse > better && worse >= 2
+      } catch { return false }
+    })()
+    const celebrate = () => {
+      if (roughWeek) return
+      setShowConfetti(true)
+      setTimeout(() => setShowConfetti(false), 3500)
+    }
     const name = session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there'
     const startDate = new Date(p.protocol_start_date)
     const today = new Date()
@@ -791,8 +816,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         setMilestoneKey('day1')
         const shown = await checkMilestoneShown(supabase, session.user.id, 'day1')
         if (!shown) {
-          setShowConfetti(true)
-          setTimeout(() => setShowConfetti(false), 3500)
+          celebrate()
           await markMilestoneShown(supabase, session.user.id, 'day1')
         }
       } catch (e) {}
@@ -818,8 +842,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           const msg = await generateDay14Message({ name, profile: p, checkins: c })
           setMilestoneMessage(msg)
           setMilestoneKey('day14')
-          setShowConfetti(true)
-          setTimeout(() => setShowConfetti(false), 3500)
+          celebrate()
           await markMilestoneShown(supabase, session.user.id, 'day14')
         } catch (e) {}
       }
@@ -832,8 +855,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           const msg = await generateDay28Message({ name, profile: p, checkins: c })
           setMilestoneMessage(msg)
           setMilestoneKey('day28')
-          setShowConfetti(true)
-          setTimeout(() => setShowConfetti(false), 3500)
+          celebrate()
           await markMilestoneShown(supabase, session.user.id, 'day28')
         } catch (e) {}
       }
@@ -845,8 +867,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           const msg = await generateDay57Message({ name, profile: p, labResult: lab })
           setMilestoneMessage(msg)
           setMilestoneKey('day57')
-          setShowConfetti(true)
-          setTimeout(() => setShowConfetti(false), 3500)
+          celebrate()
           await markMilestoneShown(supabase, session.user.id, 'day57')
         } catch (e) {}
       }
