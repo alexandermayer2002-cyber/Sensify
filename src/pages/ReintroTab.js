@@ -616,6 +616,32 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
           <div className="rt-sub">Foods are reintroduced one at a time after your elimination phase is complete.</div>
         </div>
         {(() => {
+          // ── Pre-results state: no protocol_start_date yet, the clock hasn't started.
+          // The countdown below would show fiction ("57 days") — show the honest explainer instead.
+          if (!profile?.protocol_start_date) return (
+            <>
+              <div style={{ position: 'relative', background: '#22301F', borderRadius: 18, padding: '26px 22px', overflow: 'hidden', boxShadow: '0 16px 40px rgba(34,48,31,0.25)', marginBottom: 14 }}>
+                <div style={{ position: 'absolute', top: -50, right: -50, width: 180, height: 180, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.5px', color: '#C9A227', textTransform: 'uppercase', marginBottom: 12 }}>Phase 2 · Locked</div>
+                <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.25, marginBottom: 9 }}>Where your answers get earned.</div>
+                <div style={{ position: 'relative', fontSize: 13, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65 }}>Reintroduction is the testing phase. One food at a time comes back into your diet while you track how your body responds. Every food ends with a verdict: Safe, Limit, or Avoid.</div>
+              </div>
+              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 14, padding: '18px 16px' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#1C1C1C', marginBottom: 12 }}>How it unlocks</div>
+                {[
+                  ['1', '#3D5C3C', 'Your lab results come in and your elimination list is built'],
+                  ['2', '#8BAE8A', 'You complete 8 weeks of clean elimination. This is the baseline that makes every test trustworthy'],
+                  ['3', '#E0DED6', 'Testing opens. Your least reactive foods go first, one at a time'],
+                ].map(([n, bg, text], i) => (
+                  <div key={n} style={{ display: 'flex', gap: 12, marginBottom: i < 2 ? 12 : 0 }}>
+                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: bg, color: bg === '#E0DED6' ? '#7A7A72' : '#fff', fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{n}</div>
+                    <div style={{ fontSize: 13, color: '#4A4A45', lineHeight: 1.5 }}>{text}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ textAlign: 'center', fontSize: 12, color: '#A8A69E', marginTop: 12 }}>Your timeline starts the day your results arrive</div>
+            </>
+          )
           // ── Locked state: progress ring + personalized roadmap ──
           const elimDays = 56
           const dayCapped = Math.min(Math.max(currentDay, 0), elimDays)
