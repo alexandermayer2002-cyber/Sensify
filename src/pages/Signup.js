@@ -69,7 +69,7 @@ export default function Signup({ onSuccess, onLogin, prefillEmail }) {
 
   return (
     <div style={s.wrap}>
-      <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+      <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
       <div style={s.card}>
         <div style={s.title}>Create your <em style={s.titleEm}>account.</em></div>
         <div style={s.sub}>Just the basics. No medical history needed.</div>
@@ -81,8 +81,11 @@ export default function Signup({ onSuccess, onLogin, prefillEmail }) {
         {error && <div style={s.error}>{error}</div>}
         {success && <div style={s.success}>{success}</div>}
         {prefillEmail && !success && (
-          <div style={{ background: '#EDF3ED', border: '1px solid rgba(61,92,60,0.2)', borderRadius: '10px', padding: '12px 14px', marginBottom: '16px', fontSize: '13px', color: '#2D6B42', lineHeight: 1.55 }}>
-            ✓ Payment confirmed. Create your account to begin your program.
+          <div style={{ position: 'relative', background: '#22301F', borderRadius: '16px', padding: '22px 20px', marginBottom: '18px', overflow: 'hidden', boxShadow: '0 14px 36px rgba(34,48,31,0.25)', textAlign: 'center' }}>
+            <div style={{ position: 'absolute', top: -50, left: -50, width: 160, height: 160, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
+            <div style={{ position: 'relative', width: 40, height: 40, borderRadius: '50%', background: 'rgba(139,174,138,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#8BAE8A', fontSize: 18 }}>✓</div>
+            <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.25, marginBottom: 6 }}>Payment received.</div>
+            <div style={{ position: 'relative', fontSize: 12.5, color: 'rgba(250,248,244,0.7)', lineHeight: 1.6 }}>Your program is paid for. Now let's create the account it lives in.</div>
           </div>
         )}
         {!success && (
