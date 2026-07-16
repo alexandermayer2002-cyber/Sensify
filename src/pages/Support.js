@@ -173,9 +173,8 @@ export default function Support({ session, onUnreadChange }) {
         <div className="sup-head">
           <div>
             <button className="sup-back" onClick={() => { setView('list'); setActive(null); refreshList() }}>← Support</button>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: '#A0A096', marginTop: 8 }}>TICKET · {statusLabel(active, 'user').text.toUpperCase()}</div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
-              <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 300, color: '#1C1C1C', marginTop: 3 }}>{active.subject}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10, marginTop: 8 }}>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 400, color: '#1C1C1C' }}>{active.subject}</div>
               {!isResolved && (
                 <button onClick={async () => { await setTicketStatus({ ticketId: active.id, status: 'resolved' }); setActive({ ...active, status: 'resolved' }) }}
                   style={{ background: 'none', border: 'none', fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 700, letterSpacing: '0.8px', color: '#1A6256', cursor: 'pointer', flexShrink: 0, padding: 0 }}>
@@ -187,24 +186,27 @@ export default function Support({ session, onUnreadChange }) {
         </div>
         <div className="sup-body" ref={threadRef}>
           {threadLoading ? <div style={{ textAlign: 'center', color: '#A0A096', fontSize: 13, marginTop: 30 }}>Loading…</div> :
-            thread.map((m, i) => (
-              <div key={m.id} style={{ borderTop: '1px solid rgba(0,0,0,0.07)', marginTop: i === 0 ? 0 : 16, paddingTop: 14 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 7 }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    {m.sender === 'admin' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#3D5C3C' }} />}
-                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: m.sender === 'admin' ? '#3D5C3C' : '#8A8A82' }}>{m.sender === 'admin' ? 'SENSIFY TEAM' : 'YOU'}</span>
-                  </span>
-                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, color: '#B8B6AE' }}>{m._pending ? 'SENDING…' : m._failed ? 'FAILED' : fmt(m.created_at).toUpperCase()}</span>
+            thread.map((m, i) => {
+              const admin = m.sender === 'admin'
+              return (
+                <div key={m.id} style={{ display: 'flex', flexDirection: 'column', alignItems: admin ? 'flex-start' : 'flex-end', marginTop: i === 0 ? 0 : 12 }}>
+                  {admin && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 5 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: 9, color: '#3D5C3C', fontFamily: 'Fraunces, serif' }}>S</span></div>
+                      <span style={{ fontSize: 11, color: '#3D5C3C', fontWeight: 600 }}>Sensify team</span>
+                    </div>
+                  )}
+                  <div style={{ maxWidth: '82%', background: admin ? '#FFFFFF' : '#3D5C3C', border: admin ? '1px solid rgba(0,0,0,0.06)' : 'none', color: admin ? '#1C1C1C' : '#fff', borderRadius: admin ? '16px 16px 16px 4px' : '16px 16px 4px 16px', padding: '12px 15px', fontSize: 13.5, lineHeight: 1.6 }}>{m._failed ? <span style={{ color: '#F2A0A0' }}>{m.body}</span> : m.body}</div>
+                  <div style={{ fontSize: 10, color: '#B8B6AE', marginTop: 4 }}>{m._pending ? 'Sending…' : m._failed ? 'Failed to send' : (admin ? '' : 'You · ') + fmt(m.created_at)}</div>
                 </div>
-                <div style={{ fontSize: 13.5, lineHeight: 1.7, color: m._failed ? '#D64545' : m.sender === 'admin' ? '#1C1C1C' : '#3A3A35' }}>{m.body}</div>
-              </div>
-            ))}
+              )
+            })}
         </div>
         {isResolved ? (
           <div className="sup-resolved-banner">This request is resolved. <button className="sup-reopen" onClick={async () => { await setTicketStatus({ ticketId: active.id, status: 'awaiting' }); setActive({ ...active, status: 'awaiting' }) }}>Reopen</button></div>
         ) : (
           <div className="sup-compose-bar">
-            <textarea className="sup-reply" rows={1} placeholder="Write a reply..." value={reply}
+            <textarea className="sup-reply" rows={1} placeholder="Write a reply" value={reply}
               onChange={e => setReply(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitReply() } }} />
             <button className="sup-send" disabled={!reply.trim() || sending} onClick={submitReply}>Reply</button>
