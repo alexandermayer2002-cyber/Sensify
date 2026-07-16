@@ -64,11 +64,11 @@ const s = {
   progress: { height: '3px', background: 'rgba(0,0,0,0.06)' },
   progressFill: { height: '100%', background: '#3D5C3C', transition: 'width 0.4s ease' },
   content: { flex: 1, padding: '32px 24px 100px', maxWidth: '560px', margin: '0 auto', width: '100%' },
-  eyebrow: { fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#3D5C3C', marginBottom: '12px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, lineHeight: 1.25, marginBottom: '8px', letterSpacing: '-0.3px' },
-  titleEm: { fontStyle: 'italic', color: '#3D5C3C' },
+  eyebrow: { fontSize: '12px', fontWeight: 500, color: '#7A7A72', marginBottom: '10px' },
+  title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 400, lineHeight: 1.22, marginBottom: '8px', letterSpacing: '-0.4px' },
+  titleEm: { fontStyle: 'normal', color: 'inherit' },
   hint: { fontSize: '13px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.7 },
-  importantNote: { background: '#EDF3ED', borderRadius: '10px', padding: '13px 16px', marginBottom: '28px', fontSize: '13px', color: '#3D5C3C', lineHeight: 1.65, borderLeft: '3px solid #3D5C3C' },
+  importantNote: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.6, marginBottom: '20px' },
   categoryGrid: { display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' },
   categoryCard: { background: '#FFFFFF', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '18px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'flex-start', gap: '14px' },
   categoryCardOn: { background: '#EDF3ED', border: '1.5px solid #3D5C3C', borderRadius: '14px', padding: '18px', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: '14px' },
@@ -80,7 +80,7 @@ const s = {
   categoryDesc: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.5 },
   maxNote: { fontSize: '12px', color: '#7A7A72', textAlign: 'center', marginTop: '-8px', marginBottom: '20px' },
   questionBlock: { marginBottom: '14px', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px' },
-  questionLabel: { fontFamily: 'Fraunces, serif', fontSize: '17px', fontWeight: 300, marginBottom: '12px', lineHeight: 1.3, color: '#1C1C1C' },
+  questionLabel: { fontFamily: 'Fraunces, serif', fontSize: '17.5px', fontWeight: 400, marginBottom: '12px', lineHeight: 1.3, color: '#1C1C1C' },
   optionGrid: { display: 'flex', flexDirection: 'column', gap: '8px' },
   option: { padding: '13px 16px', borderRadius: '11px', border: 'none', background: '#F4F2EC', fontSize: '14px', cursor: 'pointer', color: '#3A3A35', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', transition: 'all 0.12s', lineHeight: 1.4 },
   optionOn: { padding: '13px 16px', borderRadius: '11px', border: 'none', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', fontWeight: 500, lineHeight: 1.4, boxShadow: '0 2px 8px rgba(61,92,60,0.28)' },
@@ -92,11 +92,11 @@ const s = {
   scaleRow: { display: 'flex', gap: '5px' },
   sbt: { flex: 1, height: '44px', borderRadius: '9px', border: 'none', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', fontWeight: 400, color: '#5A5A52', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s' },
   sbtOn: { flex: 1, height: '44px', borderRadius: '9px', border: 'none', background: '#3D5C3C', fontSize: '18px', cursor: 'pointer', fontWeight: 400, color: 'white', fontFamily: 'Fraunces, serif', boxShadow: '0 2px 8px rgba(61,92,60,0.3)' },
-  textarea: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '11px', padding: '13px 16px', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FFFFFF', resize: 'none', height: '90px', outline: 'none' },
-  categoryTitle2: { fontSize: '13px', fontWeight: 600, color: '#1C1C1C', marginBottom: '6px', marginTop: '20px', paddingBottom: '6px', borderBottom: '1px solid rgba(0,0,0,0.06)' },
+  textarea: { width: '100%', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '14px 15px', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FAF8F4', resize: 'none', height: '96px', outline: 'none', lineHeight: 1.5 },
+  categoryTitle2: { fontFamily: 'Fraunces, serif', fontSize: '15px', fontWeight: 400, color: '#3D5C3C', margin: '22px 0 12px', letterSpacing: '-0.2px' },
   freqBtns: { display: 'flex', gap: '4px' },
-  freqBtn: { padding: '5px 9px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.08)', background: '#FAF8F4', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#7A7A72', whiteSpace: 'nowrap', transition: 'all 0.1s' },
-  freqBtnOn: { padding: '5px 9px', borderRadius: '6px', border: '1px solid #3D5C3C', background: '#3D5C3C', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: 'white', whiteSpace: 'nowrap' },
+  freqBtn: { padding: '7px 11px', borderRadius: '8px', border: 'none', background: '#EDF3ED', fontSize: '12px', cursor: 'pointer', color: '#5A5A52', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s', whiteSpace: 'nowrap' },
+  freqBtnOn: { padding: '7px 11px', borderRadius: '8px', border: 'none', background: '#3D5C3C', fontSize: '12px', cursor: 'pointer', color: '#FFFFFF', fontWeight: 500, fontFamily: 'DM Sans, sans-serif', boxShadow: '0 2px 6px rgba(61,92,60,0.25)', whiteSpace: 'nowrap' },
   footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#FAF8F4', borderTop: '1px solid rgba(0,0,0,0.06)' },
   cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
   ctaDisabled: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif', opacity: 0.35 },
@@ -343,7 +343,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           Type your full name as your signature
         </div>
         <input
-          style={{ ...s.textarea, height: 'auto', padding: '13px 16px', fontSize: '15px', marginBottom: '6px', fontFamily: 'DM Sans, sans-serif', letterSpacing: '0.02em', resize: 'none' }}
+          style={{ width: '100%', height: 'auto', padding: '14px 16px', fontSize: '16px', marginBottom: '6px', fontFamily: 'Fraunces, serif', color: '#1C1C1C', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', outline: 'none', boxSizing: 'border-box' }}
           placeholder="Your full name"
           value={signatureName}
           onChange={e => setSignatureName(e.target.value)}
@@ -401,7 +401,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         {selectedCategories.length === 2 && <div style={s.maxNote}>Maximum 2 selected</div>}
       </div>
       <div style={s.footer}>
-        <button style={selectedCategories.length > 0 ? s.cta : s.ctaDisabled} disabled={selectedCategories.length === 0} onClick={() => setStep(1)}>Continue →</button>
+        <button style={selectedCategories.length > 0 ? s.cta : s.ctaDisabled} disabled={selectedCategories.length === 0} onClick={() => setStep(1)}>Continue</button>
       </div>
     </div>
   )
@@ -430,8 +430,8 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
               </div>
             )}
             {(!q.type || q.type !== 'text') ? (
-              <div style={s.questionBlock}>
-                <div style={s.questionLabel}>{q.label}</div>
+              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px', marginBottom: '12px' }}>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17.5px', fontWeight: 400, color: '#1C1C1C', lineHeight: 1.3, marginBottom: '12px' }}>{q.label}</div>
                 <div style={s.optionGrid}>
                   {q.options.map(opt => (
                     <button key={opt} style={answers[q.id] === opt ? s.optionOn : s.option} onClick={() => setAnswer(q.id, opt)}>{opt}</button>
@@ -439,9 +439,8 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
                 </div>
               </div>
             ) : (
-              <div style={s.questionBlock}>
-                {i > 0 && !q.section && <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)', margin: '0 0 24px' }} />}
-                <div style={s.questionLabel}>{q.label} {q.optional && <span style={{ fontSize: '12px', color: '#7A7A72', fontWeight: 400 }}>(optional)</span>}</div>
+              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px', marginBottom: '12px' }}>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17.5px', fontWeight: 400, color: '#1C1C1C', lineHeight: 1.3, marginBottom: '12px' }}>{q.label} {q.optional && <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: '#A8A69E', fontWeight: 400 }}>(optional)</span>}</div>
                 <textarea style={s.textarea} placeholder={q.placeholder} value={answers[q.id] || ''} onChange={e => setAnswer(q.id, e.target.value)} />
               </div>
             )}
@@ -449,7 +448,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         ))}
       </div>
       <div style={s.footer}>
-        <button style={allSymptomAnswered ? s.cta : s.ctaDisabled} disabled={!allSymptomAnswered} onClick={() => setStep(2)}>Continue →</button>
+        <button style={allSymptomAnswered ? s.cta : s.ctaDisabled} disabled={!allSymptomAnswered} onClick={() => setStep(2)}>Continue</button>
       </div>
     </div>
   )
@@ -500,7 +499,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         )}
       </div>
       <div style={s.footer}>
-        <button style={allBaselinesAnswered ? s.cta : s.ctaDisabled} disabled={!allBaselinesAnswered} onClick={() => setStep(3)}>Continue →</button>
+        <button style={allBaselinesAnswered ? s.cta : s.ctaDisabled} disabled={!allBaselinesAnswered} onClick={() => setStep(3)}>Continue</button>
       </div>
     </div>
   )
@@ -527,11 +526,9 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             {cat.foods.map((food, foodIndex) => (
               <div
                 key={food}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: '8px', marginBottom: '2px', background: foodIndex % 2 === 0 ? '#FFFFFF' : '#FAF8F4', transition: 'background 0.1s' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#EDF3ED'}
-                onMouseLeave={e => e.currentTarget.style.background = foodIndex % 2 === 0 ? '#FFFFFF' : '#FAF8F4'}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '13px 15px', borderRadius: '12px', marginBottom: '7px', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)' }}
               >
-                <div style={{ fontSize: '14px', color: '#1C1C1C' }}>{food}</div>
+                <div style={{ fontSize: '14.5px', color: '#1C1C1C', fontWeight: 500 }}>{food}</div>
                 <div style={s.freqBtns}>
                   {FREQUENCY_OPTIONS.map(opt => (
                     <button key={opt.value} style={foodFrequency[food] === opt.value ? s.freqBtnOn : s.freqBtn} onClick={() => setFrequency(food, opt.value)}>{opt.label}</button>
@@ -544,7 +541,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       </div>
       <div style={s.footer}>
         <button style={s.cta} onClick={() => setStep(4)}>
-          Continue →
+          Continue
         </button>
       </div>
     </div>
