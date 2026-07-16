@@ -10,7 +10,7 @@ const s = {
   back: { fontSize: '13px', color: '#7A7A72', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'DM Sans, sans-serif' },
   content: { flex: 1, padding: '28px 24px' },
   title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, marginBottom: '6px' },
-  titleEm: { fontStyle: 'italic', color: '#3D5C3C' },
+  titleEm: { fontStyle: 'normal', color: 'inherit' },
   sub: { fontSize: '14px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.6 },
   methodRow: { display: 'flex', gap: '10px', marginBottom: '24px' },
   methodBtn: { flex: 1, padding: '14px 10px', borderRadius: '12px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', cursor: 'pointer', textAlign: 'center', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s' },
@@ -28,7 +28,7 @@ const s = {
   fileSize: { fontSize: '11px', color: '#7A7A72' },
   fileRemove: { marginLeft: 'auto', fontSize: '12px', color: '#C95B5B', cursor: 'pointer' },
   manualSection: { marginBottom: '16px' },
-  manualSearch: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '12px 14px', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', marginBottom: '12px', outline: 'none', background: '#FFFFFF' },
+  manualSearch: { width: '100%', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '13px 15px', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px', outline: 'none', background: '#FAF8F4', boxSizing: 'border-box' },
   foodItem: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 0', borderBottom: '1px solid rgba(0,0,0,0.06)' },
   foodName: { fontSize: '14px', fontWeight: 400 },
   levelBtns: { display: 'flex', gap: '5px' },
@@ -243,13 +243,14 @@ Rules:
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
         <div style={{ width: 40 }}></div>
       </div>
 
       <div style={s.content}>
-        <div style={s.title}>Upload your <em style={s.titleEm}>lab results.</em></div>
-        <div style={s.sub}>Choose how you'd like to enter your food sensitivity results. Only enter foods that showed a reaction — anything left blank is assumed clear.</div>
+        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', letterSpacing: '1.5px', color: '#8BAE8A', textTransform: 'uppercase', marginBottom: '8px' }}>Your lab results</div>
+        <div style={s.title}>Add your test results.</div>
+        <div style={s.sub}>Enter only the foods that showed a reaction. Anything you leave out is treated as clear.</div>
 
         <div style={s.methodRow}>
           <div style={method === 'pdf' ? s.methodBtnActive : s.methodBtn} onClick={() => { setMethod('pdf'); setExtractedFoods(null); setError('') }}>
@@ -273,6 +274,13 @@ Rules:
         </div>
 
         {error && <div style={s.errorCard}>{error}</div>}
+
+        {(method === 'pdf' || method === 'photo') && !extractedFoods && !processing && (
+          <div style={{ background: '#22301F', borderRadius: 12, padding: '13px 15px', display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 16 }}>
+            <span style={{ color: '#8BAE8A', fontSize: 14, flexShrink: 0, marginTop: 1 }}>\u2726</span>
+            <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.75)', lineHeight: 1.55 }}>We read the reacted foods automatically. You review and confirm before anything is saved.</div>
+          </div>
+        )}
 
         {(method === 'pdf' || method === 'photo') && !extractedFoods && !processing && (
           <>
@@ -309,7 +317,7 @@ Rules:
             )}
 
             <button style={file ? s.cta : s.ctaDisabled} onClick={analyzeFile} disabled={!file}>
-              Analyze my results →
+              Read my results
             </button>
             <button style={s.secBtn} onClick={() => setMethod('manual')}>Enter manually instead</button>
           </>
@@ -366,7 +374,7 @@ Rules:
             })}
 
             <button style={s.cta} onClick={handleSave} disabled={saving}>
-              {saving ? 'Submitting...' : 'Looks right — submit for review →'}
+              {saving ? 'Submitting...' : 'Looks right, submit for review →'}
             </button>
             <button style={s.secBtn} onClick={() => setExtractedFoods(null)}>Re-analyze</button>
           </>
@@ -376,48 +384,44 @@ Rules:
           <>
             <input
               style={s.manualSearch}
-              placeholder="Search foods..."
+              placeholder="Search foods"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
-            <div style={{ fontSize: '12px', color: '#7A7A72', marginBottom: '12px' }}>
-              Tap a sensitivity level next to any food that showed a reaction. Leave others blank.
+            <div style={{ fontSize: '12.5px', color: '#7A7A72', marginBottom: '12px', lineHeight: 1.55 }}>
+              Find a food, then tap its level. Leave everything else blank.
             </div>
-            <div style={s.manualSection}>
-              {filteredFoods.map((food, foodIndex) => (
-                <div
-                  key={food}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '10px 12px',
-                    borderRadius: '8px',
-                    marginBottom: '2px',
-                    background: manualFoods[food] ? '#EDF3ED' : foodIndex % 2 === 0 ? '#FFFFFF' : '#FAF8F4',
-                    transition: 'background 0.1s',
-                  }}
-                  onMouseEnter={e => { if (!manualFoods[food]) e.currentTarget.style.background = '#EDF3ED' }}
-                  onMouseLeave={e => { if (!manualFoods[food]) e.currentTarget.style.background = foodIndex % 2 === 0 ? '#FFFFFF' : '#FAF8F4' }}
-                >
-                  <div style={{ fontSize: '14px', fontWeight: 400 }}>{food}</div>
-                  <div style={s.levelBtns}>
-                    <button style={manualFoods[food] === 'High' ? s.levelBtnHigh : s.levelBtn} onClick={() => toggleManualFood(food, 'High')}>High</button>
-                    <button style={manualFoods[food] === 'Moderate' ? s.levelBtnMod : s.levelBtn} onClick={() => toggleManualFood(food, 'Moderate')}>Mod</button>
-                    <button style={manualFoods[food] === 'Low' ? s.levelBtnLow : s.levelBtn} onClick={() => toggleManualFood(food, 'Low')}>Low</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
             {Object.keys(manualFoods).length > 0 && (
-              <div style={s.confirmBar}>
-                <div style={s.checkIcon}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                {Object.keys(manualFoods).length} food{Object.keys(manualFoods).length !== 1 ? 's' : ''} flagged
+              <div style={{ background: '#22301F', borderRadius: 12, padding: '11px 14px', display: 'flex', alignItems: 'center', gap: 9, marginBottom: 14 }}>
+                <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#8BAE8A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#22301F" strokeWidth="4"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <span style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.85)' }}>{Object.keys(manualFoods).length} food{Object.keys(manualFoods).length !== 1 ? 's' : ''} flagged so far</span>
               </div>
             )}
+            <div style={s.manualSection}>
+              {filteredFoods.map((food) => {
+                const lvl = manualFoods[food]
+                const pill = (label, val, onBg, onShadow) => (
+                  <button
+                    onClick={() => toggleManualFood(food, val)}
+                    style={{ flex: 1, textAlign: 'center', padding: '9px 0', borderRadius: 9, border: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 12.5,
+                      fontWeight: lvl === val ? 600 : 400,
+                      background: lvl === val ? onBg : '#F4F2EC',
+                      color: lvl === val ? '#fff' : '#8A8A82',
+                      boxShadow: lvl === val ? onShadow : 'none', transition: 'all 0.12s' }}>{label}</button>
+                )
+                return (
+                  <div key={food} style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 13, padding: '14px 15px', marginBottom: 9 }}>
+                    <div style={{ fontSize: 14.5, fontWeight: 500, color: '#1C1C1C', marginBottom: 11 }}>{food}</div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      {pill('High', 'High', '#D64545', '0 2px 8px rgba(214,69,69,0.3)')}
+                      {pill('Moderate', 'Moderate', '#E8941F', '0 2px 8px rgba(232,148,31,0.3)')}
+                      {pill('Low', 'Low', '#C9A227', '0 2px 8px rgba(201,162,39,0.3)')}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
 
             <button
               style={Object.keys(manualFoods).length > 0 ? s.cta : s.ctaDisabled}
