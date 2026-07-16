@@ -161,7 +161,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       <div style={s.wrap}>
         <div style={s.topBar}>
           <div style={{ width: 40 }} />
-          <div style={s.logo}>sensi<em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
           <div style={{ width: 40 }} />
         </div>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', textAlign: 'center' }}>
@@ -197,12 +197,12 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
     <div style={s.wrap}>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
-        <div style={s.logo}>sensi<em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
       <div style={s.content}>
         <div style={s.eyebrow}>Daily check-in</div>
-        <div style={s.title}>How's <em style={s.titleEm}>today?</em></div>
+        <div style={s.title}>How's today?</div>
         <div style={s.hint}>A few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.</div>
 
         {onProtocol && (

@@ -201,7 +201,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       <div style={s.topBar}>
         <div style={{ width: 40 }}></div>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
         <div style={{ width: 40 }}></div>
       </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
@@ -217,7 +217,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
       <div style={s.wrap}>
         <div style={s.topBar}>
           <div style={{ width: 40 }}></div>
-          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
           <div style={{ width: 40 }}></div>
         </div>
         <div style={s.verdictWrap}>
@@ -251,7 +251,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
     <div style={s.wrap}>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
         <div style={s.day14Badge}>Day 14</div>
       </div>
 
@@ -273,8 +273,8 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
           <div style={s.stackBtns}>
             {[
               { id: 'accurate', label: "Yes, that's accurate" },
-              { id: 'worse', label: 'Not quite — it felt worse than that' },
-              { id: 'milder', label: 'Not quite — it felt milder than that' },
+              { id: 'worse', label: 'Not quite, it felt worse than that' },
+              { id: 'milder', label: 'Not quite, it felt milder than that' },
             ].map(opt => (
               <button key={opt.id} style={accuracy === opt.id ? s.stackBtnOn : s.stackBtn} onClick={() => setAccuracy(opt.id)}>{opt.label}</button>
             ))}

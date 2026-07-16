@@ -14,7 +14,7 @@ const CONTEXT_OPTIONS = [
   'I tried a new safe food',
   'I had a social event with limited food options',
   'My sleep was off',
-  'Nothing unusual — normal week',
+  'Nothing unusual, a normal week',
 ]
 
 const s = {
@@ -167,7 +167,7 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
     ? scales.filter(s => previousAnswers[s.id] !== undefined).map(s => `${s.id}: ${previousAnswers[s.id]}/10`).join(', ')
     : null
 
-  const contextItems = answers.context_changes?.filter(c => c !== 'Nothing unusual — normal week') || []
+  const contextItems = answers.context_changes?.filter(c => c !== 'Nothing unusual, a normal week') || []
   const contextStr = contextItems.length > 0 ? contextItems.join(', ') : 'None flagged by user (this does not mean nothing happened)'
 
   const prompt = `You are the AI health coach inside Sensify, a food sensitivity wellness program. Generate a personalized weekly insight.
@@ -289,11 +289,11 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
 
   const toggleContext = (item) => {
     const current = answers.context_changes || []
-    if (item === 'Nothing unusual — normal week') {
+    if (item === 'Nothing unusual, a normal week') {
       setAnswer('context_changes', [item])
       return
     }
-    const withoutNormal = current.filter(c => c !== 'Nothing unusual — normal week')
+    const withoutNormal = current.filter(c => c !== 'Nothing unusual, a normal week')
     if (withoutNormal.includes(item)) {
       setAnswer('context_changes', withoutNormal.filter(c => c !== item))
     } else {
@@ -348,16 +348,16 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         setShowConfetti(false)
         // Generate streak congratulations message
         const STREAK_MSGS = {
-          1: `Week one done. That's the hardest stretch — your body is already adjusting. Keep the same energy next week.`,
+          1: `Week one done. That's the hardest stretch, and your body is already adjusting. Keep the same energy next week.`,
           2: `Two weeks of elimination. Most people don't make it this far. You're building real data now.`,
-          3: `Three weeks in. This is where the signal starts getting clearer. Whatever you're noticing this week — that's real.`,
+          3: `Three weeks in. This is where the signal starts getting clearer. Whatever you're noticing this week, that's real.`,
           4: `One month of compliance. That's rare. The data you're building over the next four weeks will tell you everything.`,
-          5: `Five weeks. You're deep into elimination now. The patterns are forming — your AI insights are getting more accurate every check-in.`,
+          5: `Five weeks. You're deep into elimination now. The patterns are forming, and your AI insights are getting more accurate every check-in.`,
           6: `Six weeks. Two more and reintroduction begins. You're closer to your Food Map than you've ever been.`,
-          7: `Seven weeks clean. Almost there. The last stretch of elimination is the most important — stay sharp.`,
+          7: `Seven weeks clean. Almost there. The last stretch of elimination is the most important. Stay sharp.`,
           8: `Eight weeks done. Elimination complete. Everything you've built over the last two months is about to pay off.`,
         }
-        const msg = STREAK_MSGS[weekNumber] || `Week ${weekNumber} done. Keep going — every check-in makes your Food Map more accurate.`
+        const msg = STREAK_MSGS[weekNumber] || `Week ${weekNumber} done. Keep going. Every check-in makes your Food Map more accurate.`
         setStreakMessage(msg)
         setShowStreakCard(true)
       }, 3500)
@@ -457,7 +457,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       <div style={s.content}>
         <div style={s.eyebrow}>Week {weekNumber} check-in</div>
         <div style={s.title}>How was your<br /><em style={s.titleEm}>week?</em></div>
-        <div style={s.hint}>Honest answers only — good or bad. This is how we track what's actually working.</div>
+        <div style={s.hint}>Honest answers only, good or bad. This is how we track what's actually working.</div>
 
         {/* ADAPTIVE SYMPTOM SCALES */}
         <div style={s.sectionDivider}>
