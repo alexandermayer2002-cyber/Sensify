@@ -224,7 +224,7 @@ export default function Support({ session, onUnreadChange }) {
             <div className="sup-sub">We usually reply within 1 day.</div>
           </div>
         </div>
-        <button className="sup-newbtn" onClick={() => { setView('compose'); setError('') }}>+ New request</button>
+        {tickets.length > 0 && <button className="sup-newbtn" onClick={() => { setView('compose'); setError('') }}>+ New request</button>}
       </div>
       <div className="sup-body">
         {(() => {
