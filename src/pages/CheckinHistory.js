@@ -514,31 +514,36 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               @keyframes chRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
               @keyframes chDotPulse { 0%, 60%, 100% { opacity: 0.25; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
             `}</style>
-            <div style={{ position: 'relative', background: '#22301F', borderRadius: 20, padding: '26px 22px', overflow: 'hidden', boxShadow: '0 20px 48px rgba(34,48,31,0.3)', animation: 'chRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 18 }}>
-              <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: '#8BAE8A', opacity: 0.09, pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', bottom: -80, left: -50, width: 180, height: 180, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
+            <div style={{ position: 'relative', background: '#22301F', borderRadius: 20, padding: '28px 22px 22px', overflow: 'hidden', boxShadow: '0 20px 48px rgba(34,48,31,0.3)', animation: 'chRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 18 }}>
+              <div style={{ position: 'absolute', top: -70, right: -50, width: 210, height: 210, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
 
-              <div style={{ position: 'relative', fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.5px', color: '#C9A227', textTransform: 'uppercase', marginBottom: 14 }}>The record</div>
-              <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 23, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.22, marginBottom: 8 }}>Six months from now, this is your proof.</div>
-              <div style={{ position: 'relative', fontSize: 12.5, color: 'rgba(250,248,244,0.65)', lineHeight: 1.6, marginBottom: 20 }}>Every weekly check-in lands here. Week over week, it becomes the honest record of how your body changed.</div>
+              <div style={{ position: 'relative', fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.8px', color: '#C9A227', textTransform: 'uppercase', marginBottom: 16 }}>Your record</div>
+              <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 26, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.15, marginBottom: 10 }}>The story of how<br />you got better.</div>
+              <div style={{ position: 'relative', fontSize: 13, color: 'rgba(250,248,244,0.6)', lineHeight: 1.6, marginBottom: 24 }}>Written one week at a time. Every check-in adds a line. In six months, you will see exactly what changed and when.</div>
 
-              <div style={{ position: 'relative', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '14px 15px', marginBottom: 8, animation: 'chRowIn 0.6s ease 0.4s both' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#FAF8F4' }}>Week 1</span>
-                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1px', color: '#8BAE8A' }}>YOUR FIRST ENTRY</span>
+              <div style={{ position: 'relative' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 2, animation: 'chRowIn 0.6s ease 0.4s both' }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 10, background: '#8BAE8A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><span style={{ fontFamily: 'Fraunces, serif', fontSize: 15, color: '#22301F' }}>1</span></div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 600, color: '#FAF8F4' }}>Week 1 opens your record</div>
+                    <div style={{ fontSize: 11.5, color: 'rgba(250,248,244,0.5)' }}>7 days after your program begins</div>
+                  </div>
                 </div>
-                <div style={{ fontSize: 11.5, color: 'rgba(250,248,244,0.5)', marginTop: 4 }}>Opens 7 days after your program begins</div>
-              </div>
-              <div style={{ position: 'relative', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: '14px 15px', marginBottom: 8, animation: 'chRowIn 0.6s ease 0.7s both' }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(250,248,244,0.35)' }}>Week 2</span>
-              </div>
-              <div style={{ position: 'relative', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 12, padding: '14px 15px', animation: 'chRowIn 0.6s ease 1.0s both' }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(250,248,244,0.2)' }}>Week 3</span>
+                <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.12)', marginLeft: 16 }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 2, animation: 'chRowIn 0.6s ease 0.7s both' }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><span style={{ fontFamily: 'Fraunces, serif', fontSize: 15, color: 'rgba(250,248,244,0.4)' }}>2</span></div>
+                  <div style={{ flex: 1 }}><div style={{ fontSize: 13.5, fontWeight: 500, color: 'rgba(250,248,244,0.55)' }}>Your first trend line appears</div></div>
+                </div>
+                <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.08)', marginLeft: 16 }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 13, animation: 'chRowIn 0.6s ease 1.0s both' }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><span style={{ fontFamily: 'Fraunces, serif', fontSize: 15, color: 'rgba(250,248,244,0.25)' }}>3</span></div>
+                  <div style={{ flex: 1 }}><div style={{ fontSize: 13.5, fontWeight: 500, color: 'rgba(250,248,244,0.35)' }}>Patterns your memory would miss</div></div>
+                </div>
               </div>
 
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 7, marginTop: 18, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 7, marginTop: 22, paddingTop: 15, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8BAE8A' }} />
-                <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1px', color: 'rgba(250,248,244,0.4)' }}>RECORDING BEGINS WITH YOUR PROGRAM</span>
+                <span style={{ fontSize: 11.5, color: 'rgba(250,248,244,0.5)' }}>Your first entry unlocks once your program starts</span>
               </div>
             </div>
           </>
