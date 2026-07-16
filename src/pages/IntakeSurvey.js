@@ -50,7 +50,7 @@ const GENDER_OPTIONS = [
 
 
 const FREQ_NEVER = ['Never', 'Rarely or never']
-const FREQ_FREQUENT = ['Daily', 'A few times a week', 'Regularly', 'Almost daily', 'Most afternoons', 'Daily and severe', 'Poor — hard to fall or stay asleep', 'Very poor']
+const FREQ_FREQUENT = ['Daily', 'A few times a week', 'Regularly', 'Almost daily', 'Most afternoons', 'Daily and severe', 'Poor. Hard to fall or stay asleep', 'Very poor']
 
 const isFrequent = (val) => val && FREQ_FREQUENT.some(f => val.includes(f.split(' ')[0]) || val === f)
 const isNever = (val) => !val || FREQ_NEVER.includes(val)
@@ -59,7 +59,7 @@ const s = {
   wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column', fontFamily: 'DM Sans, sans-serif' },
   topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 10 },
   logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
-  logoEm: { color: '#3D5C3C', fontStyle: 'italic' },
+  logoEm: { color: '#3D5C3C' },
   back: { fontSize: '13px', color: '#7A7A72', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'DM Sans, sans-serif' },
   progress: { height: '3px', background: 'rgba(0,0,0,0.06)' },
   progressFill: { height: '100%', background: '#3D5C3C', transition: 'width 0.4s ease' },
@@ -152,22 +152,22 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       questions.push({ section: hasDigestive ? 'Energy symptoms' : 'Energy symptoms', id: 'fatigue_freq', label: 'How would you describe your overall fatigue levels?', options: ['Rarely tired', 'Occasionally tired', 'Often tired', 'Chronically exhausted'] })
       questions.push({ section: null, id: 'brain_fog_freq', label: 'Do you experience brain fog or difficulty concentrating?', options: ['Never', 'Occasionally', 'A few times a week', 'Daily'] })
       questions.push({ section: null, id: 'crashes_freq', label: 'Do you experience afternoon energy crashes?', options: ['Never', 'Occasionally', 'Most afternoons', 'Daily and severe'] })
-      questions.push({ section: null, id: 'sleep_quality', label: 'How would you describe your sleep quality?', options: ['Restful and consistent', 'Okay but not great', 'Poor — hard to fall or stay asleep', 'Very poor'] })
+      questions.push({ section: null, id: 'sleep_quality', label: 'How would you describe your sleep quality?', options: ['Restful and consistent', 'Okay but not great', 'Poor. Hard to fall or stay asleep', 'Very poor'] })
       questions.push({ section: null, id: 'energy_duration', label: 'How long have you been dealing with low energy or brain fog?', options: ['Less than 6 months', '6–12 months', '1–3 years', 'More than 3 years'] })
     }
 
     if (hasGeneral) {
-      questions.push({ section: hasDigestive || hasEnergy ? 'General wellness' : 'Your wellness', id: 'general_digestion', label: 'How often do you experience digestive discomfort — bloating, gas, or cramping?', options: ['Rarely or never', 'Occasionally', 'Regularly', 'Almost daily'] })
+      questions.push({ section: hasDigestive || hasEnergy ? 'General wellness' : 'Your wellness', id: 'general_digestion', label: 'How often do you experience digestive discomfort like bloating, gas, or cramping?', options: ['Rarely or never', 'Occasionally', 'Regularly', 'Almost daily'] })
       if (!hasEnergy) {
-        questions.push({ section: null, id: 'general_energy', label: 'How would you describe your typical energy levels?', options: ['Consistently good', 'Variable — good and bad days', 'Often low', 'Chronically poor'] })
+        questions.push({ section: null, id: 'general_energy', label: 'How would you describe your typical energy levels?', options: ['Consistently good', 'Variable. Good and bad days', 'Often low', 'Chronically poor'] })
         questions.push({ section: null, id: 'general_crashes', label: 'Do you experience afternoon energy crashes?', options: ['Never', 'Occasionally', 'Most afternoons', 'Daily'] })
-        questions.push({ section: null, id: 'sleep_quality', label: 'How would you describe your sleep quality?', options: ['Restful and consistent', 'Okay but not great', 'Poor — hard to fall or stay asleep', 'Very poor'] })
+        questions.push({ section: null, id: 'sleep_quality', label: 'How would you describe your sleep quality?', options: ['Restful and consistent', 'Okay but not great', 'Poor. Hard to fall or stay asleep', 'Very poor'] })
       }
       questions.push({ section: null, id: 'interest_reason', label: 'What made you interested in food sensitivity testing?', options: null, type: 'text', placeholder: 'Tell us in your own words...', optional: true })
     }
 
     // Always at end
-    questions.push({ section: null, id: 'additional_context', label: 'Anything else you want us to know before we start?', options: null, type: 'text', placeholder: 'Medications, recent diet changes, specific suspicions, anything at all...', optional: true })
+    questions.push({ section: null, id: 'additional_context', label: 'Anything else you want us to know before we start?', options: null, type: 'text', placeholder: 'Recent diet changes, foods you already suspect, anything at all', optional: true })
 
     return questions
   }
@@ -180,39 +180,39 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     // Digestive scales — only if they said they have these symptoms
     if (hasDigestive || hasGeneral) {
       if (!isNever(a.bloating_freq) || !isNever(a.general_digestion)) {
-        scales.push({ id: 'baseline_bloating', label: 'Rate your bloating right now', low: 'None at all', high: 'Severe' })
+        scales.push({ id: 'baseline_bloating', label: 'In a typical week, how would you rate your bloating?', low: 'None at all', high: 'Severe' })
       }
       if (!isNever(a.gas_cramping_freq)) {
-        scales.push({ id: 'baseline_gas', label: 'Rate your gas or cramping right now', low: 'None at all', high: 'Severe' })
+        scales.push({ id: 'baseline_gas', label: 'In a typical week, how would you rate your gas or cramping?', low: 'None at all', high: 'Severe' })
       }
       if (!isNever(a.reflux_freq)) {
-        scales.push({ id: 'baseline_reflux', label: 'Rate your reflux or heartburn right now', low: 'None at all', high: 'Severe' })
+        scales.push({ id: 'baseline_reflux', label: 'In a typical week, how would you rate your reflux or heartburn?', low: 'None at all', high: 'Severe' })
       }
       if (a.digestion_regularity && a.digestion_regularity !== 'Very regular') {
-        scales.push({ id: 'baseline_digestive', label: 'Rate your overall digestive comfort today', low: 'Very comfortable', high: 'Very uncomfortable' })
+        scales.push({ id: 'baseline_digestive', label: 'In a typical week, how would you rate your overall digestive comfort?', low: 'Very comfortable', high: 'Very uncomfortable' })
       }
     }
 
     // Energy scales — only if they said they have these symptoms
     if (hasEnergy || hasGeneral) {
       if (a.fatigue_freq && a.fatigue_freq !== 'Rarely tired') {
-        scales.push({ id: 'baseline_energy', label: 'Rate your energy levels right now', low: 'Exhausted', high: 'Full energy' })
+        scales.push({ id: 'baseline_energy', label: 'In a typical week, how would you rate your energy?', low: 'Exhausted', high: 'Full energy' })
       }
       if (!isNever(a.brain_fog_freq)) {
-        scales.push({ id: 'baseline_clarity', label: 'Rate your mental clarity right now', low: 'Very foggy', high: 'Crystal clear' })
+        scales.push({ id: 'baseline_clarity', label: 'In a typical week, how would you rate your mental clarity?', low: 'Very foggy', high: 'Crystal clear' })
       }
       if (isFrequent(a.crashes_freq) || isFrequent(a.general_crashes)) {
-        scales.push({ id: 'baseline_afternoon', label: 'Rate your typical afternoon energy', low: 'Severe crash', high: 'Sustained energy' })
+        scales.push({ id: 'baseline_afternoon', label: 'In a typical week, how would you rate your afternoon energy?', low: 'Severe crash', high: 'Sustained energy' })
       }
       if (a.sleep_quality && a.sleep_quality !== 'Restful and consistent') {
-        scales.push({ id: 'baseline_sleep', label: 'Rate your sleep quality last night', low: 'Very poor', high: 'Excellent' })
+        scales.push({ id: 'baseline_sleep', label: 'In a typical week, how would you rate your sleep quality?', low: 'Very poor', high: 'Excellent' })
       }
     }
 
     // General fallback — if no specific symptoms flagged but they selected general
     if (hasGeneral && scales.length === 0) {
-      scales.push({ id: 'baseline_wellbeing', label: 'Rate your overall sense of wellbeing today', low: 'Very poor', high: 'Excellent' })
-      scales.push({ id: 'baseline_energy', label: 'Rate your energy levels today', low: 'Exhausted', high: 'Full energy' })
+      scales.push({ id: 'baseline_wellbeing', label: 'In a typical week, how would you rate your overall wellbeing?', low: 'Very poor', high: 'Excellent' })
+      scales.push({ id: 'baseline_energy', label: 'In a typical week, how would you rate your energy?', low: 'Exhausted', high: 'Full energy' })
     }
 
     return scales
@@ -272,7 +272,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     <div style={s.wrap}>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
       <div style={{ ...s.content, paddingTop: '40px' }}>
@@ -296,7 +296,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
               {
                 icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
                 title: 'Your data is shared with the Sensify team',
-                desc: 'Your program data — including symptom responses, lab results, and compliance history — is accessible to the Sensify team for account verification, protocol support, and quality review.'
+                desc: 'Your program data, including symptom responses, lab results, and compliance history, is accessible to the Sensify team for account verification, protocol support, and quality review.'
               },
               {
                 icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
@@ -358,7 +358,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           disabled={!canProceedFromAgreement}
           onClick={() => setStep(0)}
         >
-          I agree — start my intake →
+          I agree, start my intake
         </button>
       </div>
     </div>
@@ -369,7 +369,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     <div style={s.wrap}>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
       <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
@@ -381,7 +381,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           {[
             { id: 'digestive', title: 'Digestive health', desc: 'Bloating, gas, cramping, reflux, irregular digestion, discomfort after eating' },
             { id: 'energy', title: 'Energy & clarity', desc: 'Fatigue, brain fog, afternoon crashes, poor sleep, mental sluggishness' },
-            { id: 'general', title: 'General wellness', desc: 'No specific complaint — I want to understand how food affects how I feel overall' },
+            { id: 'general', title: 'General wellness', desc: 'No specific complaint. I want to understand how food affects how I feel overall' },
           ].map(cat => {
             const isOn = selectedCategories.includes(cat.id)
             const isDisabled = !isOn && selectedCategories.length >= 2
@@ -411,14 +411,14 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     <div style={s.wrap}>
       <div style={s.topBar}>
         <button style={s.back} onClick={() => setStep(0)}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
       <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
       <div style={s.content}>
         <div style={s.eyebrow}>Step 2 of 5</div>
         <div style={s.title}>Tell us about<br /><em style={s.titleEm}>your symptoms.</em></div>
-        <div style={s.hint}>Be honest — not your best day, not your worst. Your typical reality. The more accurate your answers, the more useful your weekly insights will be.</div>
+        <div style={s.hint}>Be honest. Not your best day, not your worst. Your typical reality. The more accurate your answers, the more useful your weekly insights will be.</div>
 
         {symptomQuestions.map((q, i) => (
           <div key={q.id}>
@@ -459,7 +459,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     <div style={s.wrap}>
       <div style={s.topBar}>
         <button style={s.back} onClick={() => setStep(1)}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
       <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
@@ -468,26 +468,34 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         <div style={s.title}>Rate your symptoms<br /><em style={s.titleEm}>right now.</em></div>
         <div style={s.hint}>
           {baselineScales.length > 0
-            ? `Based on what you told us, we're asking about ${baselineScales.length} symptom${baselineScales.length !== 1 ? 's' : ''}. These scores become your starting point — every improvement will be measured against today.`
+            ? `Based on what you told us, we're asking about ${baselineScales.length} symptom${baselineScales.length !== 1 ? 's' : ''}. These scores become your starting point. Every improvement will be measured against them.`
             : 'Rate how you\'re feeling overall today. This becomes your baseline.'}
         </div>
         <div style={s.importantNote}>
-          These scores become your starting point. Every improvement we track will be measured against what you enter today — so be honest, not hopeful.
+          These scores become your starting point. Every improvement we track will be measured against what you enter here, so be honest, not hopeful.
         </div>
 
+        {baselineScales.length > 0 && (
+          <div style={{ position: 'relative', background: '#22301F', borderRadius: '18px', padding: '22px 20px', marginBottom: '18px', overflow: 'hidden', boxShadow: '0 16px 40px rgba(34,48,31,0.25)' }}>
+            <div style={{ position: 'absolute', top: -50, right: -50, width: 170, height: 170, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
+            <div style={{ position: 'relative', fontFamily: 'DM Mono, monospace', fontSize: '9px', letterSpacing: '1.5px', color: '#C9A227', textTransform: 'uppercase', marginBottom: '10px' }}>This part matters most</div>
+            <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: '21px', fontWeight: 300, color: '#FAF8F4', lineHeight: 1.25, marginBottom: '8px' }}>Think about what's <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>normal for you.</em></div>
+            <div style={{ position: 'relative', fontSize: '12.5px', color: 'rgba(250,248,244,0.65)', lineHeight: 1.6 }}>A typical week over the past couple of months, not just how you feel today. This becomes your baseline, and everything you improve gets measured against it.</div>
+          </div>
+        )}
         {baselineScales.length > 0 ? baselineScales.map(scale => (
-          <div key={scale.id} style={s.scaleWrap}>
-            <div style={{ fontSize: '15px', fontWeight: 500, marginBottom: '10px', color: '#1C1C1C' }}>{scale.label}</div>
-            <div style={s.scaleLabels}><span>{scale.low}</span><span>{scale.high}</span></div>
+          <div key={scale.id} style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px', marginBottom: '12px' }}>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17.5px', fontWeight: 400, color: '#1C1C1C', lineHeight: 1.3 }}>{scale.label}</div>
+            <div style={{ ...s.scaleLabels, margin: '13px 0 8px' }}><span>{scale.low}</span><span>{scale.high}</span></div>
             <div style={s.scaleRow}>
               {[1,2,3,4,5,6,7,8,9,10].map(n => (
-                <button key={n} style={answers[scale.id] === n ? s.sbtOn : s.sbt} onClick={() => setAnswer(scale.id, n)}>{n}</button>
+                <button key={n} style={answers[scale.id] === n ? { ...s.sbtOn, fontFamily: 'DM Sans, sans-serif', fontSize: '16px', fontWeight: 600 } : s.sbt} onClick={() => setAnswer(scale.id, n)}>{n}</button>
               ))}
             </div>
           </div>
         )) : (
           <div style={{ color: '#7A7A72', fontSize: '14px', textAlign: 'center', padding: '20px 0' }}>
-            Based on your answers, you have minimal active symptoms right now. That's great — we'll track any changes from this point.
+            Based on your answers, your symptoms are minimal in a typical week. That's a good starting point. We'll track any changes from here.
           </div>
         )}
       </div>
@@ -502,7 +510,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     <div style={s.wrap}>
       <div style={s.topBar}>
         <button style={s.back} onClick={() => setStep(2)}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
       <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
@@ -511,7 +519,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         <div style={s.title}>How often do you eat<br /><em style={s.titleEm}>these foods?</em></div>
         <div style={s.hint}>Only rate foods you actually eat. Leave anything blank and we'll assume you rarely or never eat it.</div>
         <div style={s.importantNote}>
-          This helps us build your elimination list the moment your lab results arrive — no extra steps needed.
+          This helps us build your elimination list the moment your lab results arrive. No extra steps needed.
         </div>
         {FOOD_CATEGORIES.map(cat => (
           <div key={cat.category}>
@@ -562,7 +570,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       <div style={s.wrap}>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => setStep(3)}>← Back</button>
-          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
           <div style={{ width: 40 }} />
         </div>
         <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
