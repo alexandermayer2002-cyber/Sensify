@@ -987,9 +987,17 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       <style>{css}</style>
 
       <nav className="snfy-nav">
-        <div className="snfy-logo">sensi<em>fy</em></div>
+        <div className="snfy-logo">Sensify<span style={{ color: '#8BAE8A', fontStyle: 'normal' }}>.</span></div>
         <div className="snfy-nav-tabs">
-          {['Home', 'Reintro', 'History', 'Food Map', 'Ask Sensify', 'Maintain'].map(t => (
+          {['Home', 'Reintro', 'History', 'Food Map', 'Ask Sensify', 'Maintain'].filter(t => {
+            if (t !== 'Maintain') return true
+            if (isAdmin) return true  // admins always see Maintain (dev eyes)
+            if (!profile?.protocol_start_date) return false  // pre-results: hidden
+            const sd = new Date(profile.protocol_start_date + 'T00:00:00')
+            const now = new Date(); const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+            const pDay = Math.round((todayLocal - sd) / (1000 * 60 * 60 * 24)) + 1
+            return pDay >= 57  // appears the day reintroduction unlocks
+          }).map(t => (
             <button key={t} className={`snfy-tab${tab === t.toLowerCase().replace(' ', '-') ? ' active' : ''}`} onClick={() => { setTab(t.toLowerCase().replace(' ', '-')); if (t === 'History') setScreen('checkin-history'); else if (t === 'Food Map') setScreen('food-map'); else if (t === 'Reintro') setScreen('reintro-tab'); else if (t === 'Ask Sensify') setScreen('ask-sensify'); else if (t === 'Maintain') setScreen('maintain'); else setScreen('dashboard') }}>{t}</button>
           ))}
         </div>
@@ -1105,7 +1113,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         </div>
       ) : screen === 'maintain' ? (
         <div style={{ height: 'calc(100vh - 60px)', overflowY: 'auto' }}>
-          <MaintainHub session={session} profile={profile} />
+          <MaintainHub session={session} profile={profile} isAdmin={isAdmin} />
         </div>
       ) : screen === 'reintro-tab' ? (
         <ReintroTab

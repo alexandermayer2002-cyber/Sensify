@@ -107,10 +107,28 @@ function MaintainPreview({ profile, session }) {
   )
 }
 
-export default function MaintainHub({ session, profile }) {
+export default function MaintainHub({ session, profile, isAdmin }) {
   // Wrapper keeps hooks rules clean: the gate never sits above hooks.
+  // Admin preview: lets Alex flip between the locked preview and the full (bought) hub
+  // without SQL time-travel. Real users never see the switcher.
+  const [adminView, setAdminView] = useState(null) // null = follow real state | 'locked' | 'full'
   const isComplete = profile?.program_phase === 'complete'
-  return isComplete ? <MaintainHubInner session={session} profile={profile} /> : <MaintainPreview profile={profile} session={session} />
+  const showFull = adminView ? adminView === 'full' : isComplete
+  return (
+    <>
+      {isAdmin && (
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'center', margin: '10px auto 4px', maxWidth: 400 }}>
+          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1px', color: '#A8A69E', textTransform: 'uppercase' }}>Admin preview</span>
+          {[['Real state', null], ['Locked', 'locked'], ['Unlocked', 'full']].map(([label, val]) => (
+            <button key={label} onClick={() => setAdminView(val)}
+              style={{ border: 'none', borderRadius: 8, padding: '5px 10px', fontSize: 11, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+                background: adminView === val ? '#22301F' : '#EDEBE4', color: adminView === val ? '#FAF8F4' : '#7A7A72', fontWeight: adminView === val ? 600 : 400 }}>{label}</button>
+          ))}
+        </div>
+      )}
+      {showFull ? <MaintainHubInner session={session} profile={profile} /> : <MaintainPreview profile={profile} session={session} />}
+    </>
+  )
 }
 
 function MaintainHubInner({ session, profile }) {
