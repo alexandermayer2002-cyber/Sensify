@@ -875,19 +875,54 @@ export default function Marketing({ onGetStarted, onSignIn }) {
 
       <div className="mk-section alt">
         <div className="mk-section-inner" style={{ maxWidth: '720px' }}>
-          {/* ===== FOUNDER STORY — PLACEHOLDER: replace with Alex's real story ===== */}
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', letterSpacing: '1.5px', textTransform: 'uppercase', color: '#8BAE8A', marginBottom: '18px' }}>The beginning</div>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, lineHeight: 1.4, color: '#1C1C1C', marginBottom: '24px' }}>
-            [Your founder story goes here. The moment you realized food was the problem, the years of guessing, what you wish had existed.]
+          {/* ===== FOUNDER STORY (Alex's real story, shaped) ===== */}
+          <div style={{ fontSize: '12px', color: '#7A7A72', marginBottom: '14px' }}>The beginning</div>
+          <div style={{ fontFamily: 'Fraunces, serif', fontSize: '25px', fontWeight: 400, lineHeight: 1.35, color: '#1C1C1C', marginBottom: '24px' }}>
+            Sensify started with a stomach that wouldn't cooperate and a stack of tests that couldn't explain why.
           </div>
-          <div style={{ fontSize: '16px', color: '#4A4A45', lineHeight: 1.8, marginBottom: '20px' }}>
-            [A paragraph on the frustration that started it: the tests that flagged everything and explained nothing, the elimination diets with no structure, the not-knowing.]
+
+          {/* The journey line (option A) */}
+          <div style={{ marginBottom: '26px' }}>
+            {[
+              ['#C8C6BE', '#7A7A72', 400, 'Years of bloating and pain nobody could explain'],
+              ['#C8C6BE', '#7A7A72', 400, "Doctors and classic treatments that didn't work"],
+              ['#8BAE8A', '#4A4A45', 400, 'A sensitivity test, an elimination, and real relief'],
+              ['#3D5C3C', '#1C1C1C', 600, 'And no good way to do any of it. So I built one.'],
+            ].map(([dot, color, weight, text], i, arr) => (
+              <React.Fragment key={i}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: dot, flexShrink: 0 }} />
+                  <div style={{ fontSize: '14px', color, fontWeight: weight }}>{text}</div>
+                </div>
+                {i < arr.length - 1 && <div style={{ width: '1.5px', height: '14px', background: '#E0DED6', marginLeft: '4px' }} />}
+              </React.Fragment>
+            ))}
           </div>
-          <div style={{ fontSize: '16px', color: '#4A4A45', lineHeight: 1.8, marginBottom: '20px' }}>
-            [A paragraph on the insight: that a lab result is only a hypothesis, and the body is what gives the verdict. Why you built the protocol, not just another test.]
+
+          <div style={{ fontSize: '15.5px', color: '#4A4A45', lineHeight: 1.8, marginBottom: '18px' }}>
+            The test came back with a long list of foods my body supposedly couldn't handle. So I cut them all out. And for the first time in years, the bloating and the pain actually subsided.
           </div>
-          <div style={{ fontSize: '16px', color: '#4A4A45', lineHeight: 1.8 }}>
-            [A closing paragraph on who Sensify is for and the promise: nothing labeled without being earned.]
+
+          {/* The turning point (option B anchor) */}
+          <div style={{ position: 'relative', background: '#22301F', borderRadius: '16px', padding: '24px 22px', margin: '24px 0', overflow: 'hidden', boxShadow: '0 14px 36px rgba(34,48,31,0.22)' }}>
+            <div style={{ position: 'absolute', top: -50, right: -50, width: 160, height: 160, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
+            <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 400, color: '#FAF8F4', lineHeight: 1.45 }}>
+              The relief was real. But I was left holding a list of forbidden foods with no idea which ones actually mattered.
+            </div>
+          </div>
+
+          <div style={{ fontSize: '15.5px', color: '#4A4A45', lineHeight: 1.8, marginBottom: '18px' }}>
+            Running the elimination on my own meant tracking symptoms in my head, guessing when to test a food back in, and never knowing if I was doing any of it right. The method worked. The experience of following it was broken.
+          </div>
+          <div style={{ fontSize: '15.5px', color: '#4A4A45', lineHeight: 1.8, marginBottom: '22px' }}>
+            That gap is Sensify. The test tells you where to look. Only your body can tell you what's true, one food at a time, tracked carefully enough to trust the answer. I built the platform I needed and couldn't find.
+          </div>
+
+          {/* The closing rule (option B anchor) */}
+          <div style={{ borderLeft: '3px solid #3D5C3C', padding: '2px 0 2px 16px' }}>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '16.5px', color: '#1C1C1C', lineHeight: 1.5 }}>
+              Nothing gets labeled safe or unsafe until your body has earned the answer. That rule comes from experience.
+            </div>
           </div>
         </div>
       </div>
