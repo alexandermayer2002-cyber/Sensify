@@ -290,7 +290,7 @@ const FAQ_GROUPS = [
     group: 'Getting started',
     items: [
       { q: 'Do I need to already have a lab test?', a: 'No. When you purchase the program we guide you through ordering your food sensitivity test during onboarding. We tell you exactly which test to get and how to complete it from home.' },
-      { q: "What's included in the $399?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your permanent Food Map. There is no separate lab bill and nothing else to buy.' },
+      { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your permanent Food Map. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
       { q: 'How much time does it take each week?', a: 'The daily check-in takes a second. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
     ],
   },
@@ -301,7 +301,7 @@ const FAQ_GROUPS = [
       { q: 'How do the daily check-ins work?', a: 'Each day you confirm whether you stayed on plan. Staying on plan builds your streak. A slip-up opens a quick log where you note what happened, and that data feeds your weekly insights. It takes a second a day.' },
       { q: "What if I don't see improvement during elimination?", a: 'Your symptom trends are monitored every week and flagged when improvement is not occurring. We look at compliance, hidden ingredients, and stress, and our team reviews the situation personally before any plan changes are suggested.' },
       { q: 'Do I have to do all 6 months?', a: 'The full value comes from completing the protocol, since the reintroduction phase is where your verdicts are earned. You can stop anytime, but your Food Map is only complete once each food has been tested. We designed the program to keep each step light so finishing feels doable.' },
-      { q: 'What happens after 6 months?', a: 'You receive your completed Food Map, permanent and yours to keep. You can also continue with Maintain, our $12.99/month plan that keeps your Food Map working for you every day, with Ask Sensify on hand to check any food, menu, or meal against your results whenever you need it.' },
+      { q: 'What happens after 6 months?', a: 'You receive your completed Food Map, yours to keep. You can also continue with Maintain, an optional monthly plan that keeps your Food Map working for you every day, with Ask Sensify on hand to check any food, menu, or meal against your results whenever you need it. Maintain pricing is on the Pricing page.' },
     ],
   },
   {
@@ -524,7 +524,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="sh">The questions <em>everyone asks.</em></div>
           <div className="faq-list" style={{ maxWidth: '660px', marginTop: '26px' }}>
             {[
-              { q: "What's included in the $399?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your permanent Food Map. There is no separate lab bill and nothing else to buy.' },
+              { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your permanent Food Map. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
               { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
               { q: 'How much time does it take each week?', a: 'The daily check-in takes 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
               { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people finish the protocol and find their body tolerates everything well, which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. A clean result is still an answer you can trust.' },
