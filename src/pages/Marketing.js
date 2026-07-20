@@ -290,7 +290,7 @@ const FAQ_GROUPS = [
     group: 'Getting started',
     items: [
       { q: 'Do I need to already have a lab test?', a: 'No. When you purchase the program we guide you through ordering your food sensitivity test during onboarding. We tell you exactly which test to get and how to complete it from home.' },
-      { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your completed Food Map. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
+      { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your permanent Food Map. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
       { q: 'How much time does it take each week?', a: 'The daily check-in takes a second. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
     ],
   },
@@ -300,8 +300,8 @@ const FAQ_GROUPS = [
       { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
       { q: 'How do the daily check-ins work?', a: 'Each day you confirm whether you stayed on plan. Staying on plan builds your streak. A slip-up opens a quick log where you note what happened, and that data feeds your weekly insights. It takes a second a day.' },
       { q: "What if I don't see improvement during elimination?", a: 'Your symptom trends are monitored every week and flagged when improvement is not occurring. We look at compliance, hidden ingredients, and stress, and our team reviews the situation personally before any plan changes are suggested.' },
-      { q: 'Do I have to finish the whole protocol?', a: 'The full value comes from completing the protocol, since the reintroduction phase is where your verdicts are earned. You can stop anytime, but your Food Map is only complete once each food has been tested. We designed the program to keep each step light so finishing feels doable.' },
-      { q: 'What happens when I finish?', a: 'You receive your completed Food Map, yours to keep. You can also continue with Maintain, an optional monthly plan that keeps your Food Map working for you every day, with Ask Sensify on hand to check any food, menu, or meal against your results whenever you need it. Maintain pricing is on the Pricing page.' },
+      { q: 'Do I have to do all 6 months?', a: 'The full value comes from completing the protocol, since the reintroduction phase is where your verdicts are earned. You can stop anytime, but your Food Map is only complete once each food has been tested. We designed the program to keep each step light so finishing feels doable.' },
+      { q: 'What happens after 6 months?', a: 'You receive your completed Food Map, yours to keep. You can also continue with Maintain, an optional monthly plan that keeps your Food Map working for you every day, with Ask Sensify on hand to check any food, menu, or meal against your results whenever you need it. Maintain pricing is on the Pricing page.' },
     ],
   },
   {
@@ -422,7 +422,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="fmshow-copy">
               <div className="ey">The outcome</div>
               <div className="sh" style={{ fontSize: '32px', marginBottom: '18px' }}>Your personal <em>Food Map.</em></div>
-              <div className="ss" style={{ marginBottom: '22px' }}>Everything you eat, sorted into three honest categories, earned through months of real testing, not a lab's best guess. It's the answer you've been missing, and it's yours to keep.</div>
+              <div className="ss" style={{ marginBottom: '22px' }}>Everything you eat, sorted into three honest categories, earned through six months of real testing, not a lab's best guess. It's the answer you've been missing, and it's yours to keep forever.</div>
               <div className="fmshow-points">
                 <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#2C9D8A' }}></div><div><strong>Safe</strong>: tested, tolerated, eat freely.</div></div>
                 <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#E8941F' }}></div><div><strong>Limit</strong>: fine in small amounts.</div></div>
@@ -474,7 +474,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="ds-label">The Sensify system</div>
             <div className="ds-grid">
               <div className="ds-step"><div className="ds-sl">Step 1</div><div className="ds-st">Test</div><div className="ds-sd">Order your certified food sensitivity test. Upload results. They are read in seconds.</div></div>
-              <div className="ds-step"><div className="ds-sl">Step 2</div><div className="ds-st">Protocol</div><div className="ds-sd">Structured elimination with daily compliance tracking. Your symptoms are tracked every week.</div></div>
+              <div className="ds-step"><div className="ds-sl">Step 2</div><div className="ds-st">Protocol</div><div className="ds-sd">6 months of structured elimination and daily compliance tracking. Your symptoms are tracked every week.</div></div>
               <div className="ds-step"><div className="ds-sl">Step 3</div><div className="ds-st">Answers</div><div className="ds-sd">Your personal Food Map. Safe, Limit, Avoid. Earned through real-world testing, not lab guesswork.</div></div>
             </div>
           </div>
@@ -490,7 +490,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               { n: '01', t: 'Test', d: 'Complete your intake and at-home lab test. Your results become the starting hypothesis: the suspects, not the verdict.' },
               { n: '02', t: 'Eliminate', d: 'Eight weeks without your flagged foods, with 30-second daily check-ins. Your symptoms settle into a clean baseline.' },
               { n: '03', t: 'Reintroduce', d: 'Each food returns one at a time in a controlled cycle while we track your response. Your body gives the real answer.' },
-              { n: '04', t: 'Know', d: 'Every food lands where it belongs: Safe, Limit, or Avoid. Your Food Map is earned and yours to keep.' },
+              { n: '04', t: 'Know', d: 'Every food lands where it belongs: Safe, Limit, or Avoid. Your Food Map is permanent and yours to keep.' },
             ].map((s, i) => (
               <div key={i} style={{ background: '#FAF8F4', border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '20px 18px' }}>
                 <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: '#8BAE8A', letterSpacing: '1px', marginBottom: '10px' }}>{s.n}</div>
@@ -509,7 +509,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-section-inner">
           <div className="ey">The outcome</div>
           <div className="sh">A Food Map that's <em>actually earned.</em></div>
-          <div className="ss">No food gets labeled Safe without being tested. No food gets labeled Avoid without structured evidence. Every category is earned through months of real experimentation.</div>
+          <div className="ss">No food gets labeled Safe without being tested. No food gets labeled Avoid without structured evidence. Every category is earned through 6 months of real experimentation.</div>
           <div className="outcome-list">
             <div className="outcome-row" style={{ background: '#DEF2EE' }}><div className="outcome-dot" style={{ background: '#2C9D8A' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#1A6256', marginBottom: '3px' }}>Safe. Tested and confirmed</div><div style={{ fontSize: '12px', color: '#1A6256', opacity: 0.85 }}>Reintroduced, monitored, tolerated. Eat freely.</div></div></div>
             <div className="outcome-row" style={{ background: '#FCEFD9' }}><div className="outcome-dot" style={{ background: '#E8941F' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#8A5410', marginBottom: '3px' }}>Limit. Dose-sensitive</div><div style={{ fontSize: '12px', color: '#8A5410', opacity: 0.85 }}>Fine in small amounts. Worth being mindful of.</div></div></div>
@@ -524,7 +524,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="sh">The questions <em>everyone asks.</em></div>
           <div className="faq-list" style={{ maxWidth: '660px', marginTop: '26px' }}>
             {[
-              { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your completed Food Map. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
+              { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your permanent Food Map. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
               { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
               { q: 'How much time does it take each week?', a: 'The daily check-in takes 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
               { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people finish the protocol and find their body tolerates everything well, which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. A clean result is still an answer you can trust.' },
@@ -547,7 +547,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
 
       <div className="cta-section">
         <h2>Stop guessing.<br /><em>Start knowing.</em></h2>
-        <p>A lab test alone costs $150 to $300 and hands you a guess. Sensify includes the lab <em style={{ fontStyle: 'normal', fontWeight: 600 }}>and</em> the months of structure that turn it into an answer. One price, nothing else to buy.</p>
+        <p>A lab test alone costs $150 to $300 and hands you a guess. Sensify includes the lab <em style={{ fontStyle: 'normal', fontWeight: 600 }}>and</em> the six months that turn it into an answer. One price, $399, nothing else to buy.</p>
         <button className="btn-p" onClick={onGetStarted}>Start your program</button>
       </div>
       <Footer />
@@ -562,7 +562,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>The complete program</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>How Sensify <em>works.</em></div>
-          <div className="mk-sub" style={{ marginBottom: 0 }}>A structured system that takes you from suspecting a food trigger to having a personal, evidence-based Food Map.</div>
+          <div className="mk-sub" style={{ marginBottom: 0 }}>A structured system that takes you from suspecting a food trigger to having a permanent, evidence-based Food Map.</div>
         </div>
       </div>
 
@@ -659,13 +659,13 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="spine-dot"></div>
               <div className="spine-tag">Day 14</div>
               <div className="spine-title">Get your verdict</div>
-              <div className="spine-desc">Your daily logs across the cycle produce a verdict: Safe, Limit, or Avoid. Each verdict updates your Food Map. No food gets labeled without real evidence from your own body.</div>
+              <div className="spine-desc">Your daily logs across the cycle produce a verdict: Safe, Limit, or Avoid. Each verdict updates your Food Map permanently. No food gets labeled without real evidence from your own body.</div>
             </div>
             <div className="spine-step">
               <div className="spine-dot"></div>
               <div className="spine-tag">End of program</div>
               <div className="spine-title">Receive your personal Food Map</div>
-              <div className="spine-desc">By the end, every tested food is categorized by real symptom evidence. Safe, Limit, Avoid, all earned. Your Food Map is personal and yours to keep. You can continue with Maintain, which keeps your Food Map working for you every day with Ask Sensify always on hand.</div>
+              <div className="spine-desc">After 6 months every tested food is categorized by real symptom evidence. Safe, Limit, Avoid, all earned. Your Food Map is permanent, personal, and yours to keep. You can continue with Maintain, which keeps your Food Map working for you every day with Ask Sensify always on hand.</div>
             </div>
           </div>
         </div>
@@ -800,14 +800,14 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>Simple pricing</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>One program, <em>one price.</em></div>
-          <div className="mk-sub" style={{ marginBottom: 0 }}>No hidden fees. One flat price for the complete system.</div>
+          <div className="mk-sub" style={{ marginBottom: 0 }}>No subscriptions. No hidden fees. One flat price for the complete 6-month system.</div>
         </div>
       </div>
       <div className="mk-section alt">
         <div className="mk-section-inner">
           <div className="pricing-wrap">
             <div className="pricing-card">
-              <div className="price-tag">The complete system</div>
+              <div className="price-tag">Complete 6-month system</div>
               <div className="price-num">$399</div>
               <div className="price-sub">One-time payment · Lab test included</div>
               <button className="btn-p" style={{ width: '100%' }} onClick={onGetStarted}>Get started today</button>
@@ -816,7 +816,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 'Intake survey: symptoms, baseline, and food frequency',
                 'Guided lab test ordering: we tell you exactly what to get',
                 'Your results read and extracted automatically',
-                'Full structured elimination and reintroduction protocol',
+                'Full 6-month structured elimination protocol',
                 'Quick daily check-ins right in the app',
                 '14-day reintroduction cycles with clear verdicts',
                 'Weekly symptom insights from your check-ins',
@@ -829,7 +829,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                   {item}
                 </div>
               ))}
-              <div className="price-note">Everything included: your lab test, the full protocol, AI guidance, and your completed Food Map. No hidden costs, no separate lab bill.</div>
+              <div className="price-note">Everything included: your lab test, the full protocol, AI guidance, and your permanent Food Map. No hidden costs, no separate lab bill.</div>
             </div>
           </div>
         </div>
@@ -934,7 +934,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             {[
               ['The lab finds suspects. Your body gives the verdict.', 'A flagged food is a question, not a conviction. Nothing gets labeled without being tested.'],
               ['Honesty over hype.', 'We show you what the data says, including when it is inconclusive. No miracle claims, no guesswork dressed up as certainty.'],
-              ["The answer is earned, and it's yours.", "Every verdict on your Food Map comes from your own body's evidence, so you can shop, order, and eat without second-guessing what you already proved."],
+              ['The answer should be permanent.', 'You do the work once and keep the map for life. Your Food Map is yours to keep.'],
             ].map(([h, d], i) => (
               <div key={i} style={{ borderTop: '1px solid rgba(0,0,0,0.08)', paddingTop: '16px' }}>
                 <div style={{ fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 300, color: '#1C1C1C', marginBottom: '6px' }}>{h}</div>
