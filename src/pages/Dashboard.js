@@ -997,7 +997,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             const pDay = Math.round((todayLocal - sd) / (1000 * 60 * 60 * 24)) + 1
             return pDay >= 57  // appears the day reintroduction unlocks
           }).map(t => (
-            <button key={t} className={`snfy-tab${tab === t.toLowerCase().replace(' ', '-') ? ' active' : ''}`} onClick={() => { setTab(t.toLowerCase().replace(' ', '-')); if (t === 'History') setScreen('checkin-history'); else if (t === 'Food Map') setScreen('food-map'); else if (t === 'Reintro') setScreen('reintro-tab'); else if (t === 'Ask Sensify') setScreen('ask-sensify'); else if (t === 'Maintain') setScreen('maintain'); else setScreen('dashboard') }}>{t}</button>
+            <button key={t} className={`snfy-tab${tab === t.toLowerCase().replace(' ', '-') ? ' active' : ''}`} onClick={() => { window.scrollTo(0, 0); setTab(t.toLowerCase().replace(' ', '-')); if (t === 'History') setScreen('checkin-history'); else if (t === 'Food Map') setScreen('food-map'); else if (t === 'Reintro') setScreen('reintro-tab'); else if (t === 'Ask Sensify') setScreen('ask-sensify'); else if (t === 'Maintain') setScreen('maintain'); else setScreen('dashboard') }}>{t}</button>
           ))}
         </div>
         <div className="snfy-nav-right">

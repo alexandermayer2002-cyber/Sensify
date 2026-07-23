@@ -250,7 +250,7 @@ const css = `
     .mk-tabs { gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; flex: 1; scrollbar-width: none; }
     .mk-tabs::-webkit-scrollbar { display: none; }
     .mk-tab { font-size: 12px; padding: 6px 8px; white-space: nowrap; flex-shrink: 0; }
-    .mk-signin { display: none; }
+    .mk-signin { padding: 6px 8px; font-size: 12px; flex-shrink: 0; }
     .mk-cta { padding: 8px 14px; font-size: 12px; flex-shrink: 0; }
     .mk-nav-right { gap: 4px; }
     .mk-hero { padding: 48px 22px 44px !important; }
@@ -389,6 +389,8 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       </div>
     </nav>
   )
+
+  React.useEffect(() => { window.scrollTo(0, 0) }, [tab])
 
   if (tab === 'home') return (
     <div>
