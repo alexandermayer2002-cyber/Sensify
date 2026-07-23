@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
+import { protocolDay } from '../utils/protocolDay'
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=DM+Mono:wght@400;500&display=swap');
@@ -156,9 +157,7 @@ export default function FoodMap({ session, profile, labResult }) {
   const completedDate = foodMap.length > 0 ? new Date(Math.max(...foodMap.map(f => new Date(f.updated_at)))).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : null
 
   // Protocol day count for the metadata readout
-  const protocolDays = profile?.protocol_start_date
-    ? Math.max(Math.floor((new Date() - new Date(profile.protocol_start_date)) / (1000 * 60 * 60 * 24)) + 1, 1)
-    : 0
+  const protocolDays = protocolDay(profile?.protocol_start_date)
   const isComplete = profile?.program_phase === 'complete'
   const memberId = session?.user?.id ? `SF-${session.user.id.slice(0, 4).toUpperCase()}-${session.user.id.slice(4, 8).toUpperCase()}` : 'SF-0000'
 

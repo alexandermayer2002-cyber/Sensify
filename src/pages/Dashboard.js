@@ -11,6 +11,7 @@ import FoodMap from './FoodMap'
 import ReintroTab from './ReintroTab'
 import AskSensify from './AskSensify'
 import MaintainHub from './MaintainHub'
+import { protocolDay } from '../utils/protocolDay'
 import { getProtocolFoods } from '../utils/protocolEngine'
 import { todayLocal, localDateString, localDateOffset } from '../utils/dateUtils'
 import Support from './Support'
@@ -720,11 +721,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         }
 
         // No improvement detection — after week 4 with high compliance
-        const protocolDay = p?.protocol_start_date
-          ? Math.floor((new Date() - new Date(p.protocol_start_date)) / (1000 * 60 * 60 * 24)) + 1
+        const protocolDayNum = p?.protocol_start_date
+          ? protocolDay(p.protocol_start_date)
           : 0
 
-        if (protocolDay >= 28 && c && c.length >= 4) {
+        if (protocolDayNum >= 28 && c && c.length >= 4) {
           const baselineBloating = p?.baseline_bloating
           const baselineEnergy = p?.baseline_energy
           const latestBloating = c[0]?.answers?.bloating
@@ -803,9 +804,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       setTimeout(() => setShowConfetti(false), 3500)
     }
     const name = session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there'
-    const startDate = new Date(p.protocol_start_date)
-    const today = new Date()
-    const day = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1
+    const day = protocolDay(p.protocol_start_date)
 
     // Day 1 — message stays visible for all of day 1 (re-shown on every load),
     // but the confetti celebration only fires the first time.
