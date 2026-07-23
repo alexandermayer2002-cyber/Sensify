@@ -11,6 +11,7 @@ const css = `
   }
   body { font-family: 'DM Sans', sans-serif; color: #1C1C1C; background: #FAF8F4; }
 
+  @keyframes mkFade { from { opacity: 0; } to { opacity: 1; } }
   .mk-nav {
     background: rgba(255,255,255,0.92);
     backdrop-filter: blur(12px);
@@ -356,6 +357,203 @@ const CheckIcon = () => (
   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
 )
 
+const SHOWCASE_CAPTIONS = {
+  'Dashboard': 'The day, the phase, the streak, your symptoms against baseline, and this week\u2019s insight. One glance and you\u2019re oriented.',
+  'History': 'Every week on the record, measured against your own baseline.',
+  'Reintro': 'Three days eating it, eleven days watching clean. Then the verdict.',
+  'Food Map': 'Safe, Limit, Avoid. Every placement earned by your own tested evidence.',
+  'Ask Sensify': 'Knows your map, your lab results, and where you are in testing. Ask anything.',
+}
+
+function ShowcaseScreen({ tab }) {
+  const mono = "'DM Mono', monospace"
+  const serif = "'Fraunces', serif"
+  if (tab === 'Dashboard') return (
+    <>
+      <div style={{ textAlign: 'center', fontFamily: serif, fontSize: 12, color: '#1C1C1C', marginBottom: 10 }}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
+      <div style={{ position: 'relative', background: '#22301F', borderRadius: 14, padding: '15px 14px', overflow: 'hidden', boxShadow: '0 12px 28px rgba(34,48,31,0.28)', marginBottom: 9 }}>
+        <div style={{ position: 'absolute', top: -45, right: -45, width: 140, height: 140, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1 }} />
+        <div style={{ position: 'relative', fontFamily: mono, fontSize: 7.5, letterSpacing: '1.3px', color: '#C9A227', textTransform: 'uppercase', marginBottom: 7 }}>Elimination phase</div>
+        <div style={{ position: 'relative', fontFamily: serif, fontSize: 32, fontWeight: 300, color: '#FAF8F4', lineHeight: 1 }}>42</div>
+        <div style={{ position: 'relative', fontSize: 9.5, color: 'rgba(250,248,244,0.55)', marginBottom: 8 }}>of 56 days</div>
+        <div style={{ position: 'relative', height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 3, marginBottom: 5 }}><div style={{ width: '75%', height: 4, background: '#8BAE8A', borderRadius: 3 }} /></div>
+        <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', fontSize: 7.5, color: 'rgba(250,248,244,0.45)' }}><span>Day 1</span><span>14 days to reintroduction</span></div>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 6, marginTop: 9, paddingTop: 9, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#8BAE8A' }} />
+          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)' }}><span style={{ color: '#8BAE8A', fontWeight: 500 }}>42 day</span> check-in streak</span>
+        </div>
+      </div>
+      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 11, padding: 11, marginBottom: 9 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6 }}>
+          <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2C9D8A' }} />
+          <span style={{ fontFamily: mono, fontSize: 7, letterSpacing: '0.8px', color: '#3D5C3C', textTransform: 'uppercase' }}>Week 6 insight</span>
+        </div>
+        <div style={{ fontSize: 9.5, lineHeight: 1.6, color: '#1C1C1C' }}>Your bloating score has dropped for the third straight week, and your energy is holding above baseline. Six clean weeks is exactly the signal we need before testing begins.</div>
+      </div>
+      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 11, padding: 11, marginBottom: 9 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
+          <span style={{ fontSize: 9, fontWeight: 600, color: '#1C1C1C' }}>Symptom trends</span>
+          <div style={{ display: 'flex', gap: 3 }}>
+            <span style={{ background: '#22301F', color: '#fff', borderRadius: 10, padding: '2px 7px', fontSize: 6.5 }}>Bloating</span>
+            <span style={{ background: '#F4F2EC', color: '#8A8A82', borderRadius: 10, padding: '2px 7px', fontSize: 6.5 }}>Energy</span>
+          </div>
+        </div>
+        <svg width="100%" height="44" viewBox="0 0 240 44">
+          <line x1="0" y1="12" x2="240" y2="12" stroke="rgba(0,0,0,0.05)" strokeWidth="1" />
+          <line x1="0" y1="26" x2="240" y2="26" stroke="rgba(0,0,0,0.05)" strokeWidth="1" />
+          <line x1="0" y1="9" x2="240" y2="9" stroke="#D4894A" strokeWidth="1" strokeDasharray="3,3" opacity="0.5" />
+          <path d="M 8 10 L 46 14 L 84 13 L 122 20 L 160 26 L 198 31 L 232 35" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="232" cy="35" r="2.5" fill="#3D5C3C" />
+        </svg>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 6.5, color: '#A8A69E' }}><span>Week 1</span><span style={{ color: '#D4894A' }}>- - baseline</span><span>Week 6</span></div>
+        <div style={{ fontFamily: mono, fontSize: 7, color: '#3D5C3C', marginTop: 5 }}>-38% avg vs baseline</div>
+      </div>
+      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 11, padding: 11 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 9, fontWeight: 600, color: '#1C1C1C', marginBottom: 6 }}>This week</div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {[1,1,1,1,0,0,0].map((d, i) => d
+                ? <div key={i} style={{ width: 19, height: 19, borderRadius: '50%', background: '#3D5C3C', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, boxShadow: i === 3 ? '0 0 0 3px rgba(61,92,60,0.15)' : 'none' }}>✓</div>
+                : <div key={i} style={{ width: 19, height: 19, borderRadius: '50%', border: '1.5px dashed #C3CDBF' }} />)}
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontFamily: serif, fontSize: 21, fontWeight: 300, color: '#3D5C3C', lineHeight: 1 }}>42</div>
+            <div style={{ fontSize: 6.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#7A7A72', marginTop: 2 }}>Day streak</div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+  if (tab === 'History') return (
+    <>
+      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 13, padding: '14px 13px', marginBottom: 10 }}>
+        <div style={{ fontFamily: mono, fontSize: 7.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: 8 }}>Symptom progress</div>
+        <div style={{ display: 'flex', gap: 3, background: '#F0EEE7', borderRadius: 8, padding: 3, marginBottom: 11 }}>
+          <div style={{ flex: 1, textAlign: 'center', fontSize: 9.5, fontWeight: 600, color: '#1C1C1C', background: '#fff', padding: '5px 0', borderRadius: 6, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>Overall average</div>
+          <div style={{ flex: 1, textAlign: 'center', fontSize: 9.5, color: '#8A8A82', padding: '5px 0' }}>Latest week</div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+          <div style={{ fontFamily: serif, fontSize: 27, fontWeight: 300, color: '#2C9D8A', lineHeight: 1 }}>-41%</div>
+          <div style={{ fontSize: 9.5, color: '#7A7A72' }}>avg vs baseline</div>
+        </div>
+        <div style={{ fontSize: 8, color: '#A8A69E', marginBottom: 9 }}>across 9 weekly check-ins</div>
+        {[['Bloating', 'avg 3.4 · down 51%', 34, 70, '#2C9D8A'], ['Reflux', 'avg 2.8 · down 44%', 28, 50, '#2C9D8A'], ['Energy', 'avg 6.9 · up 38%', 69, 50, '#5DBF8A']].map(([label, delta, w, tick, color]) => (
+        <div key={label} style={{ marginBottom: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 8.5, marginBottom: 3 }}><span style={{ color: '#4A4A45', fontWeight: 500 }}>{label}</span><span style={{ color }}>{delta}</span></div>
+          <div style={{ position: 'relative', height: 6, background: '#F0EEE7', borderRadius: 4 }}><div style={{ width: `${w}%`, height: 6, background: color, borderRadius: 4 }} /><div style={{ position: 'absolute', left: `${tick}%`, top: -3, width: 2, height: 12, background: '#999', borderRadius: 1 }} /></div>
+        </div>
+        ))}
+      </div>
+      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 13, padding: '13px 13px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 9 }}>
+          <span style={{ fontFamily: serif, fontSize: 14, color: '#1C1C1C' }}>Week 9</span>
+          <span style={{ fontSize: 8, color: '#A8A69E' }}>Logged</span>
+        </div>
+        <div style={{ display: 'flex', gap: 5, marginBottom: 10 }}>
+          <div style={{ flex: 1, background: '#FAF8F4', borderRadius: 8, padding: '8px 6px', textAlign: 'center' }}><div style={{ fontFamily: serif, fontSize: 15, color: '#1C1C1C' }}>3</div><div style={{ fontSize: 6, color: '#8A8A82', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Bloating · was 7</div></div>
+          <div style={{ flex: 1, background: '#FAF8F4', borderRadius: 8, padding: '8px 6px', textAlign: 'center' }}><div style={{ fontFamily: serif, fontSize: 15, color: '#1C1C1C' }}>7</div><div style={{ fontSize: 6, color: '#8A8A82', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Energy · was 5</div></div>
+        </div>
+        <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 8 }}>
+          <div style={{ fontSize: 7, fontWeight: 600, letterSpacing: '0.6px', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: 4 }}>Your week 9 insight</div>
+          <div style={{ fontSize: 8.5, color: '#4A4A45', lineHeight: 1.6 }}>Nine weeks in and both of your main symptoms are holding well below baseline, even with eggs mid-test. That is a strong signal.</div>
+        </div>
+      </div>
+    </>
+  )
+  if (tab === 'Reintro') return (
+    <>
+      <div style={{ position: 'relative', background: '#22301F', borderRadius: 14, padding: '15px 14px', overflow: 'hidden', boxShadow: '0 12px 30px rgba(34,48,31,0.28)', marginBottom: 10 }}>
+        <div style={{ position: 'absolute', top: -40, right: -40, width: 130, height: 130, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1 }} />
+        <div style={{ position: 'relative', fontFamily: mono, fontSize: 7, letterSpacing: '1.2px', color: '#C9A227', textTransform: 'uppercase', marginBottom: 8 }}>Now testing</div>
+        <div style={{ position: 'relative', fontFamily: serif, fontSize: 21, fontWeight: 300, color: '#FAF8F4', marginBottom: 2 }}>Eggs</div>
+        <div style={{ position: 'relative', fontSize: 9.5, color: 'rgba(250,248,244,0.55)', marginBottom: 11 }}>Cycle day 5 of 14</div>
+        <div style={{ position: 'relative', display: 'flex', gap: 2.5, marginBottom: 5 }}>
+          {Array.from({ length: 14 }).map((_, i) => (
+            <div key={i} style={{ flex: 1, height: 13, borderRadius: 3,
+              background: i < 3 ? '#8BAE8A' : i === 13 ? 'rgba(201,162,39,0.35)' : i === 4 ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.08)',
+              border: i === 13 ? '1px solid #C9A227' : i === 4 ? '1px solid rgba(139,174,138,0.4)' : 'none' }} />
+          ))}
+        </div>
+        <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+          <span style={{ fontFamily: mono, fontSize: 6, letterSpacing: '0.5px', color: '#8BAE8A' }}>EAT IT · DAYS 1–3</span>
+          <span style={{ fontFamily: mono, fontSize: 6, letterSpacing: '0.5px', color: 'rgba(250,248,244,0.45)' }}>WATCH · DAYS 4–13</span>
+          <span style={{ fontFamily: mono, fontSize: 6, letterSpacing: '0.5px', color: '#C9A227' }}>VERDICT</span>
+        </div>
+        <div style={{ position: 'relative', background: 'rgba(255,255,255,0.06)', borderRadius: 9, padding: '8px 10px' }}>
+          <div style={{ fontSize: 8.5, color: 'rgba(250,248,244,0.8)', lineHeight: 1.6 }}>You ate eggs for 3 days. Now 11 clean days while your daily check-ins watch for a reaction. Day 14, eggs get their verdict.</div>
+        </div>
+      </div>
+      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 13, padding: 13 }}>
+        <div style={{ fontSize: 9, fontWeight: 600, color: '#1C1C1C', marginBottom: 9 }}>Up next</div>
+        {[['04', 'Almond'], ['05', 'Soy'], ['06', 'Tomato']].map(([n, f], i, arr) => (
+          <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '5px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(0,0,0,0.04)' : 'none' }}>
+            <span style={{ fontFamily: mono, fontSize: 8, color: '#C9C6BC', width: 13 }}>{n}</span>
+            <span style={{ fontSize: 10.5, color: '#1C1C1C', fontWeight: 500 }}>{f}</span>
+            <span style={{ marginLeft: 'auto', fontSize: 8, color: '#A0A096' }}>14-day cycle</span>
+          </div>
+        ))}
+        <div style={{ fontSize: 8.5, color: '#7A7A72', marginTop: 8, paddingTop: 7, borderTop: '1px solid rgba(0,0,0,0.05)' }}>3 verdicts earned so far · Gluten, Wheat, Oats</div>
+      </div>
+    </>
+  )
+  if (tab === 'Food Map') return (
+    <>
+      <div style={{ textAlign: 'center', marginBottom: 10 }}>
+        <div style={{ fontFamily: serif, fontSize: 16, color: '#1C1C1C' }}>Your Food Map</div>
+        <div style={{ fontSize: 8.5, color: '#A8A69E', marginTop: 2 }}>Built from 64 days of testing · 3 verdicts so far</div>
+      </div>
+      {[
+        ['Safe', 'Eat freely', '#3D5C3C', '#EDF3ED', ['Wheat', 'Oats'], "You tested these and had no reaction. They're back on your plate."],
+        ['Limit', 'Small amounts, occasionally', '#D4894A', '#FDF2EA', ['Coffee'], 'Mild reaction. Fine sometimes, not every day.'],
+        ['Avoid', 'Causes your symptoms', '#C95B5B', '#FAEAEA', ['Gluten'], 'Clear symptoms on 2 of 3 days you tested it. Your body was consistent.'],
+      ].map(([name, sub, color, chipBg, foods, note]) => (
+        <div key={name} style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 13, padding: 13, marginBottom: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color }}>{name}</span>
+            <span style={{ fontSize: 8, color: '#A8A69E' }}>{sub}</span>
+          </div>
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 5 }}>
+            {foods.map(f => <span key={f} style={{ background: chipBg, color, borderRadius: 14, padding: '4px 11px', fontSize: 10.5, fontWeight: 600 }}>{f}</span>)}
+          </div>
+          <div style={{ fontSize: 8, color: '#A8A69E', lineHeight: 1.5 }}>{note}</div>
+        </div>
+      ))}
+      <div style={{ background: '#FAF8F4', border: '1px dashed rgba(0,0,0,0.12)', borderRadius: 11, padding: '10px 12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 9.5, fontWeight: 600, color: '#7A7A72' }}>Still testing</span>
+          <span style={{ fontSize: 8, color: '#A8A69E' }}>Eggs now · 4 more waiting</span>
+        </div>
+      </div>
+    </>
+  )
+  // Ask Sensify
+  return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 9 }}>
+        <div style={{ background: '#3D5C3C', color: '#fff', borderRadius: '14px 14px 4px 14px', padding: '9px 12px', fontSize: 10.5, lineHeight: 1.5, maxWidth: '85%' }}>Going to an Italian restaurant tonight. What can I actually order?</div>
+      </div>
+      <div style={{ marginBottom: 9 }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px 14px 14px 4px', padding: '11px 12px', maxWidth: '94%' }}>
+          <div style={{ fontFamily: mono, fontSize: 7, letterSpacing: '0.8px', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: 5 }}>Based on your map</div>
+          <div style={{ fontSize: 10, color: '#1C1C1C', lineHeight: 1.6, marginBottom: 8 }}>Italian takes some navigating for you: gluten is an earned Avoid, and you're mid-test on chicken, so stay clean on it until day 14. Here's the play:</div>
+          {[['SAFE TO ORDER', '#3D5C3C', 'Grilled branzino, steak, caprese salad, risotto, polenta dishes'], ['SKIP', '#C95B5B', 'Pasta, the bread basket, anything breaded, and chicken dishes until your test wraps'], ['ASK THE KITCHEN', '#C9A227', 'If they have gluten-free pasta, and whether sauces are thickened with flour']].map(([label, color, text], i) => (
+            <div key={label} style={{ background: '#FAF8F4', borderRadius: 9, padding: '8px 10px', marginBottom: i < 2 ? 5 : 0 }}>
+              <div style={{ fontSize: 8, fontWeight: 700, color, marginBottom: 3 }}>{label}</div>
+              <div style={{ fontSize: 9.5, color: '#4A4A45', lineHeight: 1.55 }}>{text}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 11, padding: '6px 6px 6px 12px' }}>
+        <div style={{ flex: 1, fontSize: 10, color: '#A8A69E' }}>Ask about any food or menu</div>
+        <div style={{ background: '#3D5C3C', color: '#fff', width: 28, height: 28, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>↑</div>
+      </div>
+    </>
+  )
+}
+
 export default function Marketing({ onGetStarted, onSignIn }) {
   const [tab, setTab] = useState('home')
   const [homeFaq, setHomeFaq] = useState(null)
@@ -390,6 +588,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     </nav>
   )
 
+  const [showcaseTab, setShowcaseTab] = useState('Dashboard')
   React.useEffect(() => { window.scrollTo(0, 0) }, [tab])
 
   if (tab === 'home') return (
@@ -495,6 +694,34 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           </div>
           <div style={{ marginTop: '22px' }}>
             <button className="btn-g" onClick={() => setTab('how')}>See the full program &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== INSIDE THE PROGRAM — tabbed product showcase (Format B) ===== */}
+      <div className="mk-section cream">
+        <div className="mk-section-inner" style={{ textAlign: 'center' }}>
+          <div className="ey">Inside the program</div>
+          <div className="sh">A look at what you're getting.</div>
+          <div style={{ fontSize: '15px', color: '#7A7A72', lineHeight: 1.65, maxWidth: 520, margin: '10px auto 26px' }}>Ten seconds a day. One real check-in a week. And every so often, a verdict you earned.</div>
+
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 26, flexWrap: 'wrap' }}>
+            {['Dashboard', 'History', 'Reintro', 'Food Map', 'Ask Sensify'].map(t => (
+              <button key={t} onClick={() => setShowcaseTab(t)} style={{ background: showcaseTab === t ? '#22301F' : '#F4F2EC', color: showcaseTab === t ? '#FAF8F4' : '#7A7A72', border: 'none', borderRadius: 20, padding: '9px 17px', fontSize: 13, fontWeight: showcaseTab === t ? 600 : 400, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.15s' }}>{t}</button>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ width: 310 }}>
+              <div style={{ background: '#1C1C1C', borderRadius: 26, padding: 8, boxShadow: '0 22px 48px rgba(0,0,0,0.2)' }}>
+                <div key={showcaseTab} style={{ background: '#F7F5EF', borderRadius: 20, padding: '15px 13px', height: 560, overflow: 'hidden', textAlign: 'left', animation: 'mkFade 0.25s ease' }}>
+                  <ShowcaseScreen tab={showcaseTab} />
+                </div>
+              </div>
+              <div style={{ marginTop: 14, minHeight: 40 }}>
+                <div style={{ fontSize: 13, color: '#7A7A72', lineHeight: 1.6, maxWidth: 290, margin: '0 auto' }}>{SHOWCASE_CAPTIONS[showcaseTab]}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
