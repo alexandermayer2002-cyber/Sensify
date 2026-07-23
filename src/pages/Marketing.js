@@ -472,14 +472,6 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="prob-card"><div className="prob-t">Guessing doesn't work</div><div className="prob-d">Randomly cutting foods with no structure gives you no signal. You don't know what's helping.</div></div>
             <div className="prob-card"><div className="prob-t">No accountability</div><div className="prob-d">No daily check-ins, no AI tracking your symptoms, no verdicts at the end. Just a list and good luck.</div></div>
           </div>
-          <div className="dark-strip">
-            <div className="ds-label">The Sensify system</div>
-            <div className="ds-grid">
-              <div className="ds-step"><div className="ds-sl">Step 1</div><div className="ds-st">Test</div><div className="ds-sd">Order your certified food sensitivity test. Upload results. They are read in seconds.</div></div>
-              <div className="ds-step"><div className="ds-sl">Step 2</div><div className="ds-st">Protocol</div><div className="ds-sd">Structured elimination with daily compliance tracking. Your symptoms are tracked every week.</div></div>
-              <div className="ds-step"><div className="ds-sl">Step 3</div><div className="ds-st">Answers</div><div className="ds-sd">Your personal Food Map. Safe, Limit, Avoid. Earned through real-world testing, not lab guesswork.</div></div>
-            </div>
-          </div>
         </div>
       </div>
 
