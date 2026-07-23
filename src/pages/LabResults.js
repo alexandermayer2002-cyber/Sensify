@@ -234,9 +234,11 @@ Rules:
     onComplete()
   }
 
-  const filteredFoods = COMMON_FOODS.filter(f =>
-    f.toLowerCase().includes(search.toLowerCase())
-  )
+  // Search-first (#14): with an empty search, show only foods already flagged
+  // (kept visible so entries remain reviewable/editable). Typing reveals matches.
+  const filteredFoods = search.trim()
+    ? COMMON_FOODS.filter(f => f.toLowerCase().includes(search.toLowerCase()))
+    : COMMON_FOODS.filter(f => manualFoods[f])
 
   return (
     <div style={s.wrap}>
@@ -389,7 +391,7 @@ Rules:
               onChange={e => setSearch(e.target.value)}
             />
             <div style={{ fontSize: '12.5px', color: '#7A7A72', marginBottom: '12px', lineHeight: 1.55 }}>
-              Find a food, then tap its level. Leave everything else blank.
+              Search for each food on your results, then tap its level. Only what you flag gets saved.
             </div>
             {Object.keys(manualFoods).length > 0 && (
               <div style={{ background: '#22301F', borderRadius: 12, padding: '11px 14px', display: 'flex', alignItems: 'center', gap: 9, marginBottom: 14 }}>
