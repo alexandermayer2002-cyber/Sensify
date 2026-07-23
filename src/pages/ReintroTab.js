@@ -488,13 +488,13 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
       if (level !== 'Low') return []
       return labResult.foods.filter(f => {
         const freq = foodFrequency[f.name]
-        return freq && freq !== 'never' && freq !== 'rarely'
+        return freq !== 'never'
       })
     }
     return labResult.foods.filter(f => {
       if (f.level !== level) return false
       const freq = foodFrequency[f.name]
-      return freq && freq !== 'never' && freq !== 'rarely'
+      return freq !== 'never'
     })
   }
 
@@ -693,6 +693,12 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               </div>
 
               <div className="rt-section-label" style={{ animation: 'rtNodeIn 0.5s ease 0.5s both' }}>Your testing roadmap</div>
+              {(() => {
+                const nsCount = (labResult?.foods || []).filter(f => foodFrequency[f.name] === 'never' && f.level !== 'No sensitivity').length
+                return nsCount > 0 ? (
+                  <div style={{ fontSize: '11px', color: '#8A8A82', margin: '2px 0 8px', lineHeight: 1.55, animation: 'rtNodeIn 0.5s ease 0.55s both' }}>{nsCount} flagged food{nsCount !== 1 ? 's aren\'t' : ' isn\'t'} scheduled because you never eat {nsCount !== 1 ? 'them' : 'it'}. You can add {nsCount !== 1 ? 'them' : 'it'} from your Food Map.</div>
+                ) : null
+              })()}
               <div className="rt-lk-timeline">
                 {tiers.map((tier, i) => (
                   <div key={i} className="rt-lk-node" style={{ animation: `rtNodeIn 0.55s ease ${0.7 + i * 0.2}s both` }}>

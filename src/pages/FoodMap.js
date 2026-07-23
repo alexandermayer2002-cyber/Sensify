@@ -128,7 +128,9 @@ export default function FoodMap({ session, profile, labResult }) {
   const noSensitivityFoods = labResult?.foods?.filter(f => f.level === 'No sensitivity') || []
 
   // Testing-order helpers for the elimination manifest.
-  const foodFrequency = profile?.food_frequency || {}
+  const [freqOverrides, setFreqOverrides] = useState({})
+  const [confirmAdd, setConfirmAdd] = useState(null) // food object pending confirm
+  const foodFrequency = { ...(profile?.food_frequency || {}), ...freqOverrides }
   const FREQ_RANK = { 'daily': 1, '3-5x': 2, '1-2x': 3, 'rarely': 4, 'never': 5 }
   const FREQ_TAG = { 'daily': 'EATEN DAILY', '3-5x': '3–5X / WEEK', '1-2x': '1–2X / WEEK', 'rarely': 'RARELY', 'never': 'NEVER' }
   const isCommonTrack = profile?.protocol_track === 'common'
@@ -138,8 +140,15 @@ export default function FoodMap({ session, profile, labResult }) {
       ? (level === 'Low' ? labResult.foods : [])
       : labResult.foods.filter(f => f.level === level)
     return pool
-      .filter(f => { const q = foodFrequency[f.name]; return q && q !== 'never' && q !== 'rarely' })
+      .filter(f => foodFrequency[f.name] !== 'never')
       .sort((a, b) => (FREQ_RANK[foodFrequency[a.name]] || 99) - (FREQ_RANK[foodFrequency[b.name]] || 99))
+  }
+  const notScheduled = (labResult?.foods || []).filter(f => foodFrequency[f.name] === 'never' && f.level !== 'No sensitivity')
+  const addToPlan = async (food) => {
+    const updated = { ...foodFrequency, [food.name]: 'rarely' }
+    setFreqOverrides(prev => ({ ...prev, [food.name]: 'rarely' }))
+    setConfirmAdd(null)
+    try { await supabase.from('profiles').update({ food_frequency: updated }).eq('id', session.user.id) } catch (e) {}
   }
   const manifestTiers = (isCommonTrack
     ? [{ key: 'Low', day: 57, title: 'Your test foods', chip: '#EDF3ED', chipText: '#3D5C3C', accent: '#3D5C3C' }]
@@ -370,6 +379,28 @@ export default function FoodMap({ session, profile, labResult }) {
               </div>
             )) })()}
             <div style={{ fontSize: '11.5px', color: '#7A7A72', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>Within each phase, the foods you eat most test first — the answers that matter most, measured against your freshest baseline. First verdicts land around <strong style={{ color: '#3D5C3C' }}>Day 71</strong>.</div>
+
+            {notScheduled.length > 0 && (
+              <div style={{ background: '#FAF8F4', border: '1px dashed rgba(0,0,0,0.12)', borderRadius: '14px', padding: '15px 16px', marginTop: '14px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: '#7A7A72', marginBottom: '7px' }}>Not scheduled</div>
+                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: '9px' }}>
+                  {notScheduled.map(f => (
+                    <button key={f.name} onClick={() => setConfirmAdd(f)} style={{ background: '#EFEDE6', color: '#8A8A82', borderRadius: '20px', padding: '5px 11px', fontSize: '12px', border: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{f.name}</button>
+                  ))}
+                </div>
+                {confirmAdd ? (
+                  <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '10px', padding: '11px 13px' }}>
+                    <div style={{ fontSize: '12px', color: '#1C1C1C', lineHeight: 1.5, marginBottom: '9px' }}>Add <strong>{confirmAdd.name}</strong> to your testing plan? It will be scheduled with your {confirmAdd.level.toLowerCase()}-sensitivity foods.</div>
+                    <div style={{ display: 'flex', gap: '7px' }}>
+                      <button onClick={() => addToPlan(confirmAdd)} style={{ background: '#3D5C3C', color: '#fff', border: 'none', borderRadius: '8px', padding: '7px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Add to plan</button>
+                      <button onClick={() => setConfirmAdd(null)} style={{ background: '#F4F2EC', color: '#7A7A72', border: 'none', borderRadius: '8px', padding: '7px 14px', fontSize: '12px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '11.5px', color: '#8A8A82', lineHeight: 1.6 }}>Your test flagged these, but you told us you never eat them, so they aren't in your testing plan. Tap any food to add it.</div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
