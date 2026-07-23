@@ -1264,6 +1264,72 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
+            {/* FIRST WEEK GUIDE + KNOW YOUR TABS (#19) — days 1-7, retires after first weekly check-in */}
+            {calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 7 && checkins.length === 0 && (() => {
+              const flagged = (labResult?.foods || []).filter(f => f.level !== 'No sensitivity')
+              const chips = flagged.slice(0, dailyDone ? 3 : 8)
+              const extra = flagged.length - chips.length
+              const goto = (t, s) => { window.scrollTo(0, 0); setTab(t); setScreen(s) }
+              return (
+                <>
+                  <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '20px 18px', boxShadow: '0 8px 26px rgba(0,0,0,0.06)', marginBottom: 14 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                      <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 400, color: '#1C1C1C' }}>Your first week</div>
+                      <span style={{ background: '#EDF3ED', color: '#3D5C3C', borderRadius: 12, padding: '3px 10px', fontSize: 10, fontWeight: 600, letterSpacing: '0.3px' }}>DAY {currentDay} OF 7</span>
+                    </div>
+                    <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.65, marginBottom: 16 }}>{currentDay === 1 ? 'Elimination starts today.' : 'Elimination is underway.'} Eight clean weeks gives your body a quiet baseline, and every answer you earn later is measured against it.</div>
+
+                    <div style={{ display: 'flex', gap: 12, marginBottom: 15 }}>
+                      <div style={{ width: 25, height: 25, borderRadius: '50%', background: '#3D5C3C', color: '#fff', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 6 }}>Stop eating your flagged foods</div>
+                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
+                          {chips.map(f => <span key={f.name} style={{ background: '#F4F2EC', color: '#5A5A52', borderRadius: 14, padding: '3px 9px', fontSize: 11 }}>{f.name}</span>)}
+                          {extra > 0 && <span style={{ background: '#F4F2EC', color: '#5A5A52', borderRadius: 14, padding: '3px 9px', fontSize: 11 }}>+ {extra} more</span>}
+                        </div>
+                        <button onClick={() => goto('food-map', 'food-map')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#3D5C3C', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>See sensitivity levels →</button>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 12, marginBottom: 15 }}>
+                      <div style={{ width: 25, height: 25, borderRadius: '50%', background: dailyDone ? '#3D5C3C' : '#8BAE8A', color: '#fff', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {dailyDone ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg> : '2'}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 2 }}>{dailyDone ? (currentDay === 1 ? 'First check-in logged' : "Today's check-in logged") : 'Check in every day'}</div>
+                        <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>{dailyDone ? `${currentDay === 1 ? 'Day one is on the record.' : `Day ${currentDay} is on the record.`} ${7 - currentDay} more night${7 - currentDay !== 1 ? 's' : ''} this week, ten seconds each.` : `Ten seconds each night: did you stick to it, how you slept, how you feel. ${currentDay === 1 ? 'Tonight is your first.' : 'Tonight counts.'}`}</div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <div style={{ width: 25, height: 25, borderRadius: '50%', background: '#E0DED6', color: '#7A7A72', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>3</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 2 }}>Every week, a bigger check-in</div>
+                        <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>A real review of your week against your baseline. Your first lands {currentDay >= 7 ? 'today' : currentDay === 6 ? 'tomorrow' : `in ${7 - currentDay} days`}.</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '20px 18px', boxShadow: '0 8px 26px rgba(0,0,0,0.06)', marginBottom: 14 }}>
+                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: 17, fontWeight: 400, color: '#1C1C1C', marginBottom: 3 }}>Know your tabs</div>
+                    <div style={{ fontSize: 11.5, color: '#A8A69E', marginBottom: 13 }}>Tap any of them to look around. Nothing breaks.</div>
+                    {[
+                      ['Ask Sensify', 'Can I eat this? What can I eat at an Italian restaurant? Ask anything, starting now.', 'ask-sensify', 'ask-sensify'],
+                      ['History', 'Every check-in logged, and your symptoms graphed against your baseline so you can see yourself getting better.', 'history', 'checkin-history'],
+                      ['Reintro', 'From day 57, you eat your flagged foods again one at a time to find out which ones actually cause problems.', 'reintro', 'reintro-tab'],
+                      ['Food Map', "Where it all ends up. Your flagged foods today, turning into answers you've earned along the way.", 'food-map', 'food-map'],
+                    ].map(([name, desc, t, scr], i, arr) => (
+                      <button key={name} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '10px 11px', borderRadius: 11, background: '#FAF8F4', marginBottom: i < arr.length - 1 ? 7 : 0, border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif' }}>
+                        <span style={{ background: '#EDF3ED', borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 600, color: '#3D5C3C', flexShrink: 0 }}>{name}</span>
+                        <span style={{ fontSize: 11.5, color: '#7A7A72', lineHeight: 1.5, flex: 1 }}>{desc}</span>
+                        <span style={{ color: '#C8C6BE', fontSize: 13 }}>›</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )
+            })()}
+
             {/* AWAITING APPROVAL state */}
             {profile?.program_phase === 'pending_review' && !showIntakeCard && !showLabCard && (
               <div className="snfy-phase" style={{ background: '#3D5C3C' }}>
