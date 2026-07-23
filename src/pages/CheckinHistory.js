@@ -575,8 +575,8 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
             <div style={s.emptyIcon}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A7A72" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             </div>
-            <div style={s.emptyTitle}>Nothing <em style={s.emptyTitleEm}>yet.</em></div>
-            <div style={s.emptySub}>Your symptom scores, compliance data, and weekly insights will appear here after your first weekly check-in.</div>
+            <div style={s.emptyTitle}>Your first entry opens on day 7.</div>
+            <div style={s.emptySub}>Your intake is on the record above. Weekly check-ins begin at the end of week one, and your scores, compliance, and insights build here from that first entry.</div>
           </div>
         )}
       </div>
