@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
+import { protocolDay } from '../utils/protocolDay'
 import { todayLocal, localDateString } from '../utils/dateUtils'
 
 // ============================================================
@@ -129,12 +130,28 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         if (logged.has(localDateString(d))) streak++
         else break
       }
-      // This week's 7 cells (last 7 days), filled or not
+      // This week's 7 cells — the PROTOCOL week (day 1 → 7, left to right, today
+      // wherever it falls), matching the dashboard's framing. Trailing-7-day
+      // window (today pinned right) only as fallback when not on a protocol.
       const dow = ['Su','Mo','Tu','We','Th','Fr','Sa']
-      const weekDays = Array.from({ length: 7 }).map((_, i) => {
-        const d = new Date(); d.setDate(d.getDate() - (6 - i))
-        return { label: dow[d.getDay()], done: logged.has(localDateString(d)), isToday: i === 6 }
-      })
+      const todayStr = localDateString(new Date())
+      let weekDays
+      const pDay = protocolDay(profile?.protocol_start_date)
+      if (profile?.protocol_start_date && pDay >= 1) {
+        const [sy, sm, sd] = profile.protocol_start_date.split('T')[0].split('-').map(Number)
+        const weekStart = new Date(sy, sm - 1, sd)
+        weekStart.setDate(weekStart.getDate() + (Math.ceil(pDay / 7) - 1) * 7)
+        weekDays = Array.from({ length: 7 }).map((_, i) => {
+          const d = new Date(weekStart); d.setDate(weekStart.getDate() + i)
+          const ds = localDateString(d)
+          return { label: dow[d.getDay()], done: logged.has(ds), isToday: ds === todayStr }
+        })
+      } else {
+        weekDays = Array.from({ length: 7 }).map((_, i) => {
+          const d = new Date(); d.setDate(d.getDate() - (6 - i))
+          return { label: dow[d.getDay()], done: logged.has(localDateString(d)), isToday: i === 6 }
+        })
+      }
       const loggedThisWeek = weekDays.filter(w => w.done).length
       // A gentle, SAFE reflection — info/encouragement only, never judgment.
       let reflection
