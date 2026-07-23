@@ -729,7 +729,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       </div>
 
       {/* ===== INSIDE THE PROGRAM — tabbed product showcase (Format B) ===== */}
-      <div className="mk-section alt">
+      <div className="mk-section cream">
         <div className="mk-section-inner" style={{ textAlign: 'center' }}>
           <div className="ey">Inside the program</div>
           <div className="sh">A look at what you're getting.</div>
@@ -756,7 +756,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-<div className="mk-section cream">
+<div className="mk-section alt">
         <div className="mk-section-inner">
           <div className="ey">The outcome</div>
           <div className="sh">A Food Map that's actually earned.</div>
@@ -769,7 +769,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="mk-section alt">
+      <div className="mk-section cream">
         <div className="mk-section-inner">
           <div className="ey">Before you start</div>
           <div className="sh">The questions everyone asks.</div>
