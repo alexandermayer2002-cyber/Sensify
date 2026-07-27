@@ -647,50 +647,6 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       </div>
 
       {/* The Food Map — its own showcase section */}
-      <div className="mk-section alt">
-        <div className="mk-section-inner">
-          <div className="fmshow">
-            <div className="fmshow-copy">
-              <div className="ey">The outcome</div>
-              <div className="sh" style={{ fontSize: '32px', marginBottom: '18px' }}>Your personal Food Map.</div>
-              <div className="ss" style={{ marginBottom: '22px' }}>Everything you eat, sorted into three honest categories, earned through months of real testing, not a lab's best guess. It's the answer you've been missing, and it's yours to keep.</div>
-              <div className="fmshow-points">
-                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#2C9D8A' }}></div><div><strong>Safe</strong>: tested, tolerated, eat freely.</div></div>
-                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#E8941F' }}></div><div><strong>Limit</strong>: fine in small amounts.</div></div>
-                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#D64545' }}></div><div><strong>Avoid</strong>: a confirmed trigger.</div></div>
-              </div>
-            </div>
-            <div className={`fmcard${mapInView ? ' inview' : ''}`} ref={fmcardRef}>
-              <div className="fmcard-orb" />
-              <div className="fmcard-orb2" />
-              <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Sensify · Verified result</div>
-              <div className="fmcard-title">Sarah's <em>Food Map.</em></div>
-              <div className="fmcard-cat" style={{ color: '#A8C5A7' }}><span className="fmcard-catdot" style={{ background: '#8BAE8A' }}></span>Safe. Eat freely</div>
-              <div className="fmcard-row">
-                {['Chicken', 'Rice', 'Salmon', 'Oats', 'Almonds'].map((f, i) => (
-                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(44,157,138,0.14)', color: '#5FD4BC', borderColor: 'rgba(44,157,138,0.4)', boxShadow: '0 0 12px rgba(44,157,138,0.18)', animationDelay: `${0.3 + i * 0.09}s` }}>{f}</span>
-                ))}
-              </div>
-              <div className="fmcard-cat" style={{ color: '#E0A977' }}><span className="fmcard-catdot" style={{ background: '#E8941F' }}></span>Limit. Small amounts</div>
-              <div className="fmcard-row">
-                {['Wheat', 'Corn', 'Tomato'].map((f, i) => (
-                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(232,148,31,0.14)', color: '#F2C078', borderColor: 'rgba(232,148,31,0.4)', boxShadow: '0 0 12px rgba(232,148,31,0.16)', animationDelay: `${0.8 + i * 0.09}s` }}>{f}</span>
-                ))}
-              </div>
-              <div className="fmcard-cat" style={{ color: '#E89090' }}><span className="fmcard-catdot" style={{ background: '#D64545' }}></span>Avoid. Clear triggers</div>
-              <div className="fmcard-row">
-                {['Dairy', 'Eggs', 'Gluten'].map((f, i) => (
-                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(214,69,69,0.13)', color: '#F2A0A0', borderColor: 'rgba(214,69,69,0.4)', boxShadow: '0 0 12px rgba(214,69,69,0.16)', animationDelay: `${1.15 + i * 0.09}s` }}>{f}</span>
-                ))}
-              </div>
-              <div className="fmcard-foot">
-                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 5, height: 5, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.8)' }} />SENSIFY VERIFIED · TESTED OVER 184 DAYS</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="mk-section cream">
         <div className="mk-section-inner">
           <div className="ey">The problem</div>
@@ -756,19 +712,49 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-<div className="mk-section alt">
+      <div className="mk-section alt">
         <div className="mk-section-inner">
-          <div className="ey">The outcome</div>
-          <div className="sh">A Food Map that's actually earned.</div>
-          <div className="ss">No food gets labeled Safe without being tested. No food gets labeled Avoid without structured evidence. Every category is earned through months of real experimentation.</div>
-          <div className="outcome-list">
-            <div className="outcome-row" style={{ background: '#DEF2EE' }}><div className="outcome-dot" style={{ background: '#2C9D8A' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#1A6256', marginBottom: '3px' }}>Safe. Tested and confirmed</div><div style={{ fontSize: '12px', color: '#1A6256', opacity: 0.85 }}>Reintroduced, monitored, tolerated. Eat freely.</div></div></div>
-            <div className="outcome-row" style={{ background: '#FCEFD9' }}><div className="outcome-dot" style={{ background: '#E8941F' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#8A5410', marginBottom: '3px' }}>Limit. Dose-sensitive</div><div style={{ fontSize: '12px', color: '#8A5410', opacity: 0.85 }}>Fine in small amounts. Worth being mindful of.</div></div></div>
-            <div className="outcome-row" style={{ background: '#FBE9E9' }}><div className="outcome-dot" style={{ background: '#D64545' }}></div><div><div style={{ fontSize: '13px', fontWeight: 500, color: '#A32D2D', marginBottom: '3px' }}>Avoid. Clear trigger confirmed</div><div style={{ fontSize: '12px', color: '#A32D2D', opacity: 0.85 }}>Repeatable symptom pattern. Confirmed by your own body.</div></div></div>
+          <div className="fmshow">
+            <div className="fmshow-copy">
+              <div className="ey">The outcome</div>
+              <div className="sh" style={{ fontSize: '32px', marginBottom: '18px' }}>A Food Map that's actually earned.</div>
+              <div className="ss" style={{ marginBottom: '22px' }}>No food gets labeled Safe without being tested. No food gets labeled Avoid without structured evidence. Everything you eat, sorted into three honest categories by your own body, and yours to keep.</div>
+              <div className="fmshow-points">
+                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#2C9D8A' }}></div><div><strong>Safe</strong>: tested, tolerated, eat freely.</div></div>
+                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#E8941F' }}></div><div><strong>Limit</strong>: fine in small amounts.</div></div>
+                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#D64545' }}></div><div><strong>Avoid</strong>: a confirmed trigger.</div></div>
+              </div>
+            </div>
+            <div className={`fmcard${mapInView ? ' inview' : ''}`} ref={fmcardRef}>
+              <div className="fmcard-orb" />
+              <div className="fmcard-orb2" />
+              <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Sensify · Verified result</div>
+              <div className="fmcard-title">Sarah's <em>Food Map.</em></div>
+              <div className="fmcard-cat" style={{ color: '#A8C5A7' }}><span className="fmcard-catdot" style={{ background: '#8BAE8A' }}></span>Safe. Eat freely</div>
+              <div className="fmcard-row">
+                {['Chicken', 'Rice', 'Salmon', 'Oats', 'Almonds'].map((f, i) => (
+                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(44,157,138,0.14)', color: '#5FD4BC', borderColor: 'rgba(44,157,138,0.4)', boxShadow: '0 0 12px rgba(44,157,138,0.18)', animationDelay: `${0.3 + i * 0.09}s` }}>{f}</span>
+                ))}
+              </div>
+              <div className="fmcard-cat" style={{ color: '#E0A977' }}><span className="fmcard-catdot" style={{ background: '#E8941F' }}></span>Limit. Small amounts</div>
+              <div className="fmcard-row">
+                {['Wheat', 'Corn', 'Tomato'].map((f, i) => (
+                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(232,148,31,0.14)', color: '#F2C078', borderColor: 'rgba(232,148,31,0.4)', boxShadow: '0 0 12px rgba(232,148,31,0.16)', animationDelay: `${0.8 + i * 0.09}s` }}>{f}</span>
+                ))}
+              </div>
+              <div className="fmcard-cat" style={{ color: '#E89090' }}><span className="fmcard-catdot" style={{ background: '#D64545' }}></span>Avoid. Clear triggers</div>
+              <div className="fmcard-row">
+                {['Dairy', 'Eggs', 'Gluten'].map((f, i) => (
+                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(214,69,69,0.13)', color: '#F2A0A0', borderColor: 'rgba(214,69,69,0.4)', boxShadow: '0 0 12px rgba(214,69,69,0.16)', animationDelay: `${1.15 + i * 0.09}s` }}>{f}</span>
+                ))}
+              </div>
+              <div className="fmcard-foot">
+                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 5, height: 5, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.8)' }} />SENSIFY VERIFIED · TESTED OVER 184 DAYS</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
       <div className="mk-section cream">
         <div className="mk-section-inner">
           <div className="ey">Before you start</div>
