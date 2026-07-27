@@ -77,9 +77,11 @@ const css = `
   .snfy-signout { font-size: 12px; color: #7A7A72; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
   .snfy-signout:hover { color: #1C1C1C; }
 
-  .snfy-layout { padding: 24px 20px 40px; max-width: 960px; margin: 0 auto; }
+  .snfy-layout { padding: 24px 20px 40px; max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  .snfy-layout > div:last-child { order: -1; }
   @media (min-width: 680px) {
-    .snfy-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px 28px 48px; align-items: start; }
+    .snfy-layout { display: grid; grid-template-columns: 1.45fr 1fr; gap: 18px; padding: 24px 28px 48px; align-items: start; }
+    .snfy-layout > div:last-child { order: 0; }
   }
 
   /* Greeting */
@@ -278,20 +280,31 @@ function ConfettiOverlay() {
 
 function YourNumbers({ profile, weekFactors }) {
   const [cat, setCat] = useState('sleep')
+  const STRESS_SCALE = { low: 1, mild: 2, moderate: 3, high: 4, severe: 5 }
+  const STRESS_NAMES = ['', 'Low', 'Mild', 'Moderate', 'High', 'Severe']
   const CATS = {
     sleep: { label: 'Sleep', unit: 'hours', field: 'sleep', baseline: parseFloat(profile?.baseline_avg_sleep), higherIsBetter: true, decimals: 1 },
     hydration: { label: 'Water', unit: 'cups', field: 'hydration', baseline: parseFloat(profile?.baseline_avg_hydration), higherIsBetter: true, decimals: 1 },
+    stress: { label: 'Stress', unit: '', field: 'stress', baseline: STRESS_SCALE[profile?.baseline_avg_stress], higherIsBetter: false, decimals: 1, ordinal: true },
+    drinks: { label: 'Alcohol', unit: 'drinks / week', field: 'drinks', baseline: parseFloat(profile?.baseline_avg_drinks_week), higherIsBetter: false, decimals: 1, weeklyTotal: true },
   }
   const cfg = CATS[cat]
-  const nums = (rows) => rows.map(r => parseFloat(r[cfg.field])).filter(n => !isNaN(n))
+  const nums = (rows) => rows.map(r => cfg.ordinal ? STRESS_SCALE[r[cfg.field]] : parseFloat(r[cfg.field])).filter(n => n != null && !isNaN(n))
   const avg = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null
   const today = new Date(); today.setHours(0,0,0,0)
   const wk = (weekFactors || []).filter(r => {
     const [y, m, d] = r.log_date.split('-').map(Number)
     return (today - new Date(y, m - 1, d)) / 86400000 <= 6
   })
-  const weekAvg = avg(nums(wk))
-  const protoAvg = avg(nums(weekFactors || []))
+  let weekAvg = avg(nums(wk))
+  let protoAvg = avg(nums(weekFactors || []))
+  if (cfg.weeklyTotal) {
+    const wkVals = nums(wk)
+    weekAvg = wkVals.length ? wkVals.reduce((a, b) => a + b, 0) : null
+    const allVals = nums(weekFactors || [])
+    const weeks = Math.max(1, Math.ceil((weekFactors || []).length / 7))
+    protoAvg = allVals.length ? allVals.reduce((a, b) => a + b, 0) / weeks : null
+  }
   const baseline = isNaN(cfg.baseline) ? null : cfg.baseline
   const bars = [
     { label: 'Baseline', sub: 'from intake', v: baseline, color: '#E0DED6', tcolor: '#7A7A72' },
@@ -304,7 +317,11 @@ function YourNumbers({ profile, weekFactors }) {
   const ref = weekAvg != null ? weekAvg : protoAvg
   const delta = baseline != null && ref != null ? ref - baseline : null
   const improving = delta != null && (cfg.higherIsBetter ? delta >= 0 : delta <= 0)
-  const fmt = (v) => v == null ? '—' : (Math.round(v * 10) / 10).toFixed(cfg.decimals).replace(/\.0$/, '')
+  const fmt = (v) => {
+    if (v == null) return '—'
+    if (cfg.ordinal) return STRESS_NAMES[Math.min(5, Math.max(1, Math.round(v)))]
+    return (Math.round(v * 10) / 10).toFixed(cfg.decimals).replace(/\.0$/, '')
+  }
   return (
     <div className="snfy-card" style={{ marginTop: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
@@ -330,7 +347,7 @@ function YourNumbers({ profile, weekFactors }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: improving ? '#EDF3ED' : '#FDF2EA', borderRadius: 10, padding: '9px 12px' }}>
           <span style={{ fontSize: 13, color: improving ? '#3D5C3C' : '#8A5410' }}>{delta >= 0 ? '↑' : '↓'}</span>
           <span style={{ fontSize: 11.5, color: improving ? '#3D5C3C' : '#8A5410', lineHeight: 1.5 }}>
-            <strong>{delta >= 0 ? '+' : '−'}{fmt(Math.abs(delta))} {cfg.unit} vs baseline.</strong> {improving ? (cfg.higherIsBetter ? `More ${cfg.label.toLowerCase()} is exactly the right direction.` : 'Moving the right way.') : 'Worth keeping an eye on.'}
+            <strong>{cfg.ordinal ? `${fmt(ref)} this week vs ${fmt(baseline)} baseline.` : `${delta >= 0 ? '+' : '−'}${fmt(Math.abs(delta))} ${cfg.unit} vs baseline.`}</strong> {improving ? (cfg.higherIsBetter ? `More ${cfg.label.toLowerCase()} is exactly the right direction.` : cfg.ordinal ? 'Calmer than your baseline. Good.' : 'Lower is the right direction here.') : 'Worth keeping an eye on.'}
           </span>
         </div>
       )}
@@ -486,6 +503,7 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
 const FACTOR_DEFS = {
   sleep: {
     name: 'Sleep',
+    numeric: true, unit: 'hrs', scaleMax: 10,
     bands: ['under6', '6-7', '7-8', '8plus'],
     labels: { under6: 'Under 6 hrs', '6-7': '6\u20137 hrs', '7-8': '7\u20138 hrs', '8plus': '8+ hrs' },
     colors: ['#C9D8C4', '#9FBE9A', '#6E9A6B', '#3D5C3C'],
@@ -502,6 +520,7 @@ const FACTOR_DEFS = {
   },
   hydration: {
     name: 'Water',
+    numeric: true, unit: 'cups', scaleMax: 12,
     bands: ['under3', '3-5', '6-8', '8plus'],
     labels: { under3: 'Under 3 glasses', '3-5': '3\u20135 glasses', '6-8': '6\u20138 glasses', '8plus': '8+ glasses' },
     colors: ['#C9D8C4', '#9FBE9A', '#6E9A6B', '#3D5C3C'],
@@ -510,6 +529,7 @@ const FACTOR_DEFS = {
   },
   drinks: {
     name: 'Alcohol',
+    numeric: true, unit: '/ week',
     bands: [],
     labels: { '1-3': '1\u20133 / week', '4-7': '4\u20137 / week', '8-14': '8\u201314 / week', '15plus': '15+ / week' },
     colors: [],
@@ -526,6 +546,29 @@ function WeekFactorCards({ days, factors, profile }) {
 
   const factorKeys = profile?.drinks_alcohol === true ? ['sleep', 'stress', 'hydration', 'drinks'] : ['sleep', 'stress', 'hydration']
 
+  const numAvg = (vals) => vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null
+  const threeVals = (key) => {
+    const def = FACTOR_DEFS[key]
+    const intake = parseFloat(profile?.[def.normField])
+    const weekVals = days.map(d => parseFloat(byDate[d.dateStr]?.[key])).filter(v => !isNaN(v))
+    const protoVals = (factors || []).map(f => parseFloat(f[key])).filter(v => !isNaN(v))
+    if (key === 'drinks') {
+      const weeks = Math.max(1, Math.ceil((factors || []).length / 7))
+      return {
+        intake: isNaN(intake) ? null : intake,
+        week: weekVals.length ? weekVals.reduce((a, b) => a + b, 0) : null,
+        proto: protoVals.length ? protoVals.reduce((a, b) => a + b, 0) / weeks : null,
+        weekN: weekVals.length, protoN: (factors || []).length,
+      }
+    }
+    return {
+      intake: isNaN(intake) ? null : intake,
+      week: numAvg(weekVals), proto: numAvg(protoVals),
+      weekN: weekVals.length, protoN: protoVals.length,
+    }
+  }
+  const fmt1 = (v) => v == null ? '\u2014' : String(Math.round(v * 10) / 10)
+
   const weekAvgLabel = (key) => {
     const def = FACTOR_DEFS[key]
     if (key === 'drinks') {
@@ -534,7 +577,13 @@ function WeekFactorCards({ days, factors, profile }) {
       const total = vals.reduce((a, b) => a + b, 0)
       return `${total} total`
     }
-    const idxs = days.map(d => byDate[d.dateStr]?.[key]).filter(v => v != null).map(v => def.bands.indexOf(v)).filter(i => i >= 0)
+    if (def.numeric) {
+      const vals = days.map(d => parseFloat(byDate[d.dateStr]?.[key])).filter(v => !isNaN(v))
+      if (vals.length === 0) return null
+      const avg = Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10
+      return `${String(avg)} ${def.unit}`
+    }
+    const idxs = days.map(d => byDate[d.dateStr]?.[key]).filter(v => v != null).map(v => (def.bands || []).indexOf(v)).filter(i => i >= 0)
     if (idxs.length === 0) return null
     const avg = Math.round(idxs.reduce((a, b) => a + b, 0) / idxs.length)
     return def.labels[def.bands[avg]]
@@ -545,7 +594,10 @@ function WeekFactorCards({ days, factors, profile }) {
       {factorKeys.map(key => {
         const def = FACTOR_DEFS[key]
         const isOpen = open === key
-        const norm = def.labels[profile?.[def.normField]] || null
+        const rawNorm = profile?.[def.normField]
+        const norm = def.numeric
+          ? (rawNorm != null && !isNaN(parseFloat(rawNorm)) ? `${parseFloat(rawNorm)} ${def.unit}` : null)
+          : ((def.labels || {})[rawNorm] || null)
         const weekAvg = weekAvgLabel(key)
         if (!weekAvg) return null
         return (
@@ -567,6 +619,33 @@ function WeekFactorCards({ days, factors, profile }) {
             </div>
             {isOpen && (
               <>
+                {def.numeric ? (() => {
+                  const tv = threeVals(key)
+                  const present = [tv.intake, tv.week, tv.proto].filter(v => v != null)
+                  const max = Math.max(...present, 1)
+                  const bars = [
+                    { label: 'Intake', sub: 'your norm', v: tv.intake, color: '#E0DED6', tcolor: '#7A7A72' },
+                    { label: 'This week', sub: `${tv.weekN} check-in${tv.weekN !== 1 ? 's' : ''}`, v: tv.week, color: '#8BAE8A', tcolor: '#3D5C3C' },
+                    { label: 'Protocol', sub: `${tv.protoN} day${tv.protoN !== 1 ? 's' : ''}`, v: tv.proto, color: '#3D5C3C', tcolor: '#3D5C3C' },
+                  ]
+                  return (
+                    <div style={{ marginTop: 11 }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, height: 84, padding: '0 6px' }}>
+                        {bars.map(b => (
+                          <div key={b.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, height: '100%', justifyContent: 'flex-end' }}>
+                            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 14, color: b.v == null ? '#C8C6BE' : b.tcolor }}>{fmt1(b.v)}</div>
+                            <div style={{ width: '100%', maxWidth: 46, height: b.v == null ? 3 : `${Math.max((b.v / max) * 72, 6)}%`, background: b.v == null ? '#EFEDE6' : b.color, borderRadius: '7px 7px 3px 3px' }} />
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', gap: 14, padding: '0 6px', marginTop: 4 }}>
+                        {bars.map(b => (
+                          <div key={b.label} style={{ flex: 1, textAlign: 'center', fontSize: 8.5, color: '#8A8A82', lineHeight: 1.4 }}>{b.label}<br /><span style={{ color: '#B8B6AE' }}>{b.sub}</span></div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })() : (
                 <div style={{ display: 'flex', gap: 20, marginTop: 9 }}>
                   {norm && (
                     <div>
@@ -579,7 +658,9 @@ function WeekFactorCards({ days, factors, profile }) {
                     <div style={{ fontSize: 13.5, fontWeight: 500, color: '#3D5C3C', marginTop: 1 }}>{weekAvg}{key === 'drinks' ? '' : ' avg'}</div>
                   </div>
                 </div>
+                )}
                 <div style={{ marginTop: 11, paddingTop: 9, borderTop: '1px solid rgba(0,0,0,0.05)' }} onClick={e => e.stopPropagation()}>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '0.8px', color: '#A0A096', textTransform: 'uppercase', marginBottom: 7 }}>This week, day by day</div>
                   <div style={{ display: 'flex', gap: 7, alignItems: 'flex-end', height: 34 }}>
                     {days.map((d, i) => {
                       const val = byDate[d.dateStr]?.[key]
@@ -596,7 +677,20 @@ function WeekFactorCards({ days, factors, profile }) {
                         const color = val === 0 ? '#DCE7D8' : val <= 2 ? '#EED9A8' : val <= 4 ? '#E8B36B' : '#D98A4A'
                         return <div key={i} title={`${d.day} \u00b7 ${val} ${val === 1 ? 'drink' : 'drinks'}`} style={{ flex: 1, height: `${pct}%`, background: color, borderRadius: 4 }} />
                       }
-                      const idx = val != null ? def.bands.indexOf(val) : -1
+                      if (def.numeric) {
+                        const n = parseFloat(val)
+                        if (!isNaN(n)) {
+                          const pct = Math.max(10, Math.min(100, Math.round((n / (def.scaleMax || 10)) * 100)))
+                          return <div key={i} title={`${d.day} · ${n} ${def.unit}`} style={{ flex: 1, height: `${pct}%`, background: '#6E9A6B', borderRadius: 4 }} />
+                        }
+                        if (d.isFuture) return <div key={i} style={{ flex: 1 }} />
+                        return (
+                          <div key={i} style={{ flex: 1, display: 'flex', justifyContent: 'center' }} title={`${d.day} · not logged`}>
+                            <div style={{ width: 9, height: 2.5, borderRadius: 2, background: '#C9C6BC' }} />
+                          </div>
+                        )
+                      }
+                      const idx = val != null && def.bands ? def.bands.indexOf(val) : -1
                       if (idx >= 0) {
                         const pct = Math.round(((idx + 1) / def.bands.length) * 100)
                         return <div key={i} title={`${d.day} \u00b7 ${def.labels[val]}`} style={{ flex: 1, height: `${pct}%`, background: def.colors[idx], borderRadius: 4 }} />
@@ -1015,6 +1109,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const showLabCard = profile?.intake_completed_at && !labResult
   const showPendingLabCard = labResult?.status === 'pending_review'
   const showCheckinCard = weeklyDue && !showIntakeCard && !showLabCard && !showSlipupCard && !showAuditCard
+  const cockpitActive = (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && currentDay >= 1 && !needsCommonDecision && !isTracking && !showIntakeCard && !showLabCard && !showPendingLabCard
   // Common-track user who has been assigned but hasn't chosen a tier or declined yet.
   const needsCommonDecision = profile?.protocol_track === 'common'
     && profile?.track_decision !== 'active'
@@ -1190,11 +1285,42 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         />
       ) : loading ? (
         <div className="snfy-loading">Loading your program...</div>
-      ) : (
+      ) : (<>
+        {cockpitActive && (
+          <div style={{ maxWidth: 960, margin: '0 auto', padding: '20px 20px 0' }}>
+            <div style={{ position: 'relative', background: '#22301F', borderRadius: 20, padding: '24px 26px 20px', overflow: 'hidden', boxShadow: '0 18px 44px rgba(34,48,31,0.3)' }}>
+              <div className="snfy-phase-orb" />
+              <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14, marginBottom: 16 }}>
+                <div>
+                  <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.5)', marginBottom: 3 }}>{getGreeting()}, {name}</div>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.1 }}>Day {calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of {calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.</div>
+                </div>
+                {!dailyDone ? (
+                  <button onClick={() => setScreen('daily-checkin')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Tonight's check-in</span>
+                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
+                  </button>
+                ) : (
+                  <div style={{ background: 'rgba(139,174,138,0.13)', border: '1px solid rgba(139,174,138,0.28)', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 13, color: '#8BAE8A', fontWeight: 600 }}>{'\u2713'} Today logged</span>
+                  </div>
+                )}
+              </div>
+              <div style={{ position: 'relative', height: 5, background: 'rgba(255,255,255,0.09)', borderRadius: 3, marginBottom: 7 }}>
+                <div style={{ width: `${Math.min(100, Math.max(2, Math.round((calculatedPhase === 'reintroduction' ? ((currentDay - 56) / 112) : (currentDay / 56)) * 100)))}%`, height: 5, background: '#8BAE8A', borderRadius: 3, boxShadow: '0 0 10px rgba(139,174,138,0.5)' }} />
+              </div>
+              <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'rgba(250,248,244,0.45)' }}>
+                <span>{cleanDays} day streak{cleanDays > 0 ? ', unbroken' : ''}</span>
+                <span>{calculatedPhase === 'elimination' ? `${Math.max(0, 57 - currentDay)} days to reintroduction` : 'Testing foods, one at a time'}</span>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="snfy-layout">
 
           {/* LEFT COLUMN */}
           <div>
+            {!cockpitActive && (
             <div className="snfy-greeting">
               <h1>{getGreeting()},<br /><em>{name}.</em></h1>
               <p>
@@ -1206,6 +1332,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   : "You're making real progress. Keep going."}
               </p>
             </div>
+            )}
 
             {/* COMMON TRACK DECISION — shown when assigned common but not yet decided */}
             {needsCommonDecision && (
@@ -1229,7 +1356,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {/* DAILY CHECK-IN PROMPT — shown when active and today's check-in isn't done.
                 Only once the protocol has actually begun (currentDay >= 1), so it
                 doesn't appear the day before, while elimination "starts tomorrow". */}
-            {!dailyDone && !needsCommonDecision && !showIntakeCard && !showLabCard && !showPendingLabCard &&
+            {!cockpitActive && !dailyDone && !needsCommonDecision && !showIntakeCard && !showLabCard && !showPendingLabCard &&
              ((currentDay >= 1 && (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction')) || isTracking) && (
               <button className="snfy-action" style={{ width: '100%', textAlign: 'left', cursor: 'pointer', border: '1px solid rgba(61,92,60,0.2)', background: '#EDF3ED' }} onClick={() => setScreen('daily-checkin')}>
                 <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.7px', color: '#3D5C3C', marginBottom: '6px' }}>Daily check-in</div>
@@ -1250,7 +1377,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
 
             {/* DARK PROTOCOL CARD */}
-            {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && (
+            {!cockpitActive && (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && (
               <div className="snfy-phase">
                 <div className="snfy-phase-orb" />
                 <div className="snfy-phase-orb2" />
@@ -1296,7 +1423,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                         : labResult.foods.filter(f => f.level === level)
                       ).filter(f => {
                         const q = freq[f.name]
-                        return q && q !== 'never' && q !== 'rarely' && !doneOrActive.has(f.name)
+                        return q && q !== 'never' && !doneOrActive.has(f.name)
                       }).length
                       const tiers = [
                         { floor: 57, count: remainingFor('Low') },
@@ -1328,86 +1455,6 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
-            {/* FIRST WEEK GUIDE (#19, button + panel form) — days 1-7, retires after first weekly check-in */}
-            {calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 7 && checkins.length === 0 && (() => {
-              const flagged = (labResult?.foods || []).filter(f => f.level !== 'No sensitivity')
-              const goto = (t, s) => { setGuideOpen(false); window.scrollTo(0, 0); setTab(t); setScreen(s) }
-              return (
-                <>
-                  <button onClick={() => setGuideOpen(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: 14, padding: '14px 15px', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 2px 10px rgba(61,92,60,0.1)', marginBottom: 14 }}>
-                    <div style={{ width: 34, height: 34, borderRadius: 10, background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: '#1C1C1C' }}>Your first-week guide</div>
-                      <div style={{ fontSize: 11.5, color: '#7A7A72', marginTop: 1 }}>What to do, and what every tab is for</div>
-                    </div>
-                    <span style={{ color: '#3D5C3C', fontSize: 16, fontWeight: 600 }}>›</span>
-                  </button>
-
-                  {guideOpen && (
-                    <div onClick={() => setGuideOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18 }}>
-                      <div onClick={e => e.stopPropagation()} style={{ background: '#FAF8F4', borderRadius: 18, padding: '20px 18px', maxWidth: 420, width: '100%', maxHeight: '86vh', overflowY: 'auto', boxShadow: '0 30px 80px rgba(0,0,0,0.25)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 400, color: '#1C1C1C' }}>Your first week</div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ background: '#EDF3ED', color: '#3D5C3C', borderRadius: 12, padding: '3px 10px', fontSize: 10, fontWeight: 600 }}>DAY {currentDay} OF 7</span>
-                            <button onClick={() => setGuideOpen(false)} style={{ width: 27, height: 27, borderRadius: '50%', background: '#EFEDE6', border: 'none', color: '#7A7A72', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>✕</button>
-                          </div>
-                        </div>
-                        <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.65, marginBottom: 16 }}>{currentDay === 1 ? 'Elimination starts today.' : 'Elimination is underway.'} Eight clean weeks gives your body a quiet baseline, and every answer you earn later is measured against it.</div>
-
-                        <div style={{ display: 'flex', gap: 12, marginBottom: 15 }}>
-                          <div style={{ width: 25, height: 25, borderRadius: '50%', background: '#3D5C3C', color: '#fff', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</div>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 6 }}>Stop eating your flagged foods</div>
-                            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
-                              {flagged.map(f => <span key={f.name} style={{ background: '#EFEDE6', color: '#5A5A52', borderRadius: 14, padding: '3px 9px', fontSize: 11 }}>{f.name}</span>)}
-                            </div>
-                            <button onClick={() => goto('food-map', 'food-map')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#3D5C3C', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>See sensitivity levels →</button>
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: 12, marginBottom: 15 }}>
-                          <div style={{ width: 25, height: 25, borderRadius: '50%', background: dailyDone ? '#3D5C3C' : '#8BAE8A', color: '#fff', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            {dailyDone ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg> : '2'}
-                          </div>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 2 }}>{dailyDone ? (currentDay === 1 ? 'First check-in logged' : "Today's check-in logged") : 'Check in every day'}</div>
-                            <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>{dailyDone ? `Day ${currentDay === 1 ? 'one' : currentDay} is on the record. ${7 - currentDay} more night${7 - currentDay !== 1 ? 's' : ''} this week, ten seconds each.` : `Ten seconds each night: did you stick to it, how you slept, how you feel. ${currentDay === 1 ? 'Tonight is your first.' : 'Tonight counts.'}`}</div>
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: 12, marginBottom: 17 }}>
-                          <div style={{ width: 25, height: 25, borderRadius: '50%', background: '#E0DED6', color: '#7A7A72', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>3</div>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 2 }}>Every week, a bigger check-in</div>
-                            <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>A real review of your week against your baseline. Your first lands {currentDay >= 7 ? 'today' : currentDay === 6 ? 'tomorrow' : `in ${7 - currentDay} days`}.</div>
-                          </div>
-                        </div>
-
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.07)', paddingTop: 15 }}>
-                          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 16, fontWeight: 400, color: '#1C1C1C', marginBottom: 3 }}>Know your tabs</div>
-                          <div style={{ fontSize: 11.5, color: '#A8A69E', marginBottom: 12 }}>Tap any of them to look around. Nothing breaks.</div>
-                          {[
-                            ['Ask Sensify', 'Can I eat this? What can I eat at an Italian restaurant? Ask anything, starting now.', 'ask-sensify', 'ask-sensify'],
-                            ['History', 'Every check-in logged, and your symptoms graphed against your baseline so you can see yourself getting better.', 'history', 'checkin-history'],
-                            ['Reintro', 'From day 57, you eat your flagged foods again one at a time to find out which ones actually cause problems.', 'reintro', 'reintro-tab'],
-                            ['Food Map', "Where it all ends up. Your flagged foods today, turning into answers you've earned along the way.", 'food-map', 'food-map'],
-                          ].map(([nm, desc, t, scr], i, arr) => (
-                            <button key={nm} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '10px 11px', borderRadius: 11, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.05)', marginBottom: i < arr.length - 1 ? 7 : 0, width: '100%', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif' }}>
-                              <span style={{ background: '#EDF3ED', borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 600, color: '#3D5C3C', flexShrink: 0 }}>{nm}</span>
-                              <span style={{ fontSize: 11.5, color: '#7A7A72', lineHeight: 1.5, flex: 1 }}>{desc}</span>
-                              <span style={{ color: '#C8C6BE', fontSize: 13 }}>›</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )
-            })()}
 
             {/* AWAITING APPROVAL state */}
             {profile?.program_phase === 'pending_review' && !showIntakeCard && !showLabCard && (
@@ -1481,14 +1528,6 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
-            {showCheckinCard && (
-              <div className={`snfy-action${checkinLate ? ' amber' : ''}`}>
-                <div className={`snfy-action-tag${checkinLate ? ' amber' : ''}`}>{checkinLate ? 'Catch up' : <><div className="snfy-action-dot"></div>Due now</>}</div>
-                <h2>Your weekly <em className={checkinLate ? 'amber' : ''}>check-in.</em></h2>
-                <p>{checkinLate ? "You missed this week's window — but your data still matters. Complete it now to keep your insights on track." : "Takes 2 minutes. The AI uses your answers to generate this week's personalized insight."}</p>
-                <button className={`snfy-btn${checkinLate ? ' amber' : ''}`} onClick={() => setScreen('checkin')}>Start check-in →</button>
-              </div>
-            )}
 
             {showReintroCard && (
               <div className="snfy-action">
@@ -1525,6 +1564,47 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
               )
             })()}
+
+            {/* SIGNAL CARD — AI insight + symptom graph + weekly check-in row */}
+            <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '18px 20px', marginTop: 14 }}>
+              {/* WEEKLY INSIGHT — instrument style */}
+              <div className="snfy-insight">
+                <div className="snfy-insight-head">
+                  <span className="snfy-insight-dot"></span>
+                  <span className="snfy-insight-tag">{
+                    profile?.latest_insight ? `WEEKLY INSIGHT · WEEK ${profile?.latest_insight_week || 1}`
+                    : (currentDay >= 1 ? `PROTOCOL · DAY ${currentDay}` : 'GETTING STARTED')
+                  }</span>
+                </div>
+                <p>{
+                  profile?.latest_insight
+                  || (currentDay >= 1
+                    ? `You're on day ${currentDay} of your ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'} phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.`
+                    : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
+                }</p>
+                {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
+              </div>
+              <div style={{ marginTop: 14 }}>
+                <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
+              </div>
+              {showCheckinCard ? (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: checkinLate ? '#FDF2EA' : '#EDF3ED', border: checkinLate ? '1px solid rgba(212,137,74,0.25)' : '1px solid rgba(61,92,60,0.18)', borderRadius: 12, padding: '12px 14px', marginTop: 14 }}>
+                  <div>
+                    <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1C1C1C' }}>Weekly check-in</div>
+                    <div style={{ fontSize: 10.5, color: checkinLate ? '#8A5410' : '#3D5C3C', marginTop: 1 }}>{checkinLate ? "Catch up — your data still matters" : 'Due now · takes 2 minutes'}</div>
+                  </div>
+                  <button className={`snfy-btn${checkinLate ? ' amber' : ''}`} style={{ padding: '9px 15px', fontSize: 12.5 }} onClick={() => setScreen('checkin')}>Start →</button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FAF8F4', borderRadius: 12, padding: '12px 14px', marginTop: 14 }}>
+                  <div>
+                    <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1C1C1C' }}>Weekly check-in</div>
+                    <div style={{ fontSize: 10.5, color: '#8A8A82', marginTop: 1 }}>{checkins.length === 0 ? 'Opens at the end of week 1' : 'Done — next one opens at week\u2019s end'}</div>
+                  </div>
+                  <span style={{ fontSize: 11, color: '#B8B6AE' }}>{checkins.length === 0 ? 'Locked' : '\u2713'}</span>
+                </div>
+              )}
+            </div>
 
             {/* COMPLIANCE DOTS */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
@@ -1608,6 +1688,86 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
           {/* RIGHT COLUMN */}
           <div>
+            {/* FIRST WEEK GUIDE (#19, button + panel form) — days 1-7, retires after first weekly check-in */}
+            {calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 7 && checkins.length === 0 && (() => {
+              const flagged = (labResult?.foods || []).filter(f => f.level !== 'No sensitivity')
+              const goto = (t, s) => { setGuideOpen(false); window.scrollTo(0, 0); setTab(t); setScreen(s) }
+              return (
+                <>
+                  <button onClick={() => setGuideOpen(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: 14, padding: '14px 15px', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 2px 10px rgba(61,92,60,0.1)', marginBottom: 14 }}>
+                    <div style={{ width: 34, height: 34, borderRadius: 10, background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#1C1C1C' }}>Your first-week guide</div>
+                      <div style={{ fontSize: 11.5, color: '#7A7A72', marginTop: 1 }}>What to do, and what every tab is for</div>
+                    </div>
+                    <span style={{ color: '#3D5C3C', fontSize: 16, fontWeight: 600 }}>›</span>
+                  </button>
+
+                  {guideOpen && (
+                    <div onClick={() => setGuideOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18 }}>
+                      <div onClick={e => e.stopPropagation()} style={{ background: '#FAF8F4', borderRadius: 18, padding: '20px 18px', maxWidth: 420, width: '100%', maxHeight: '86vh', overflowY: 'auto', boxShadow: '0 30px 80px rgba(0,0,0,0.25)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 400, color: '#1C1C1C' }}>Your first week</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ background: '#EDF3ED', color: '#3D5C3C', borderRadius: 12, padding: '3px 10px', fontSize: 10, fontWeight: 600 }}>DAY {currentDay} OF 7</span>
+                            <button onClick={() => setGuideOpen(false)} style={{ width: 27, height: 27, borderRadius: '50%', background: '#EFEDE6', border: 'none', color: '#7A7A72', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>✕</button>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.65, marginBottom: 16 }}>{currentDay === 1 ? 'Elimination starts today.' : 'Elimination is underway.'} Eight clean weeks gives your body a quiet baseline, and every answer you earn later is measured against it.</div>
+
+                        <div style={{ display: 'flex', gap: 12, marginBottom: 15 }}>
+                          <div style={{ width: 25, height: 25, borderRadius: '50%', background: '#3D5C3C', color: '#fff', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 6 }}>Stop eating your flagged foods</div>
+                            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
+                              {flagged.map(f => <span key={f.name} style={{ background: '#EFEDE6', color: '#5A5A52', borderRadius: 14, padding: '3px 9px', fontSize: 11 }}>{f.name}</span>)}
+                            </div>
+                            <button onClick={() => goto('food-map', 'food-map')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#3D5C3C', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>See sensitivity levels →</button>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: 12, marginBottom: 15 }}>
+                          <div style={{ width: 25, height: 25, borderRadius: '50%', background: dailyDone ? '#3D5C3C' : '#8BAE8A', color: '#fff', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            {dailyDone ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg> : '2'}
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 2 }}>{dailyDone ? (currentDay === 1 ? 'First check-in logged' : "Today's check-in logged") : 'Check in every day'}</div>
+                            <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>{dailyDone ? `Day ${currentDay === 1 ? 'one' : currentDay} is on the record. ${7 - currentDay} more night${7 - currentDay !== 1 ? 's' : ''} this week, ten seconds each.` : `Ten seconds each night: did you stick to it, how you slept, how you feel. ${currentDay === 1 ? 'Tonight is your first.' : 'Tonight counts.'}`}</div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: 12, marginBottom: 17 }}>
+                          <div style={{ width: 25, height: 25, borderRadius: '50%', background: '#E0DED6', color: '#7A7A72', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>3</div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 2 }}>Every week, a bigger check-in</div>
+                            <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>A real review of your week against your baseline. Your first lands {currentDay >= 7 ? 'today' : currentDay === 6 ? 'tomorrow' : `in ${7 - currentDay} days`}.</div>
+                          </div>
+                        </div>
+
+                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.07)', paddingTop: 15 }}>
+                          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 16, fontWeight: 400, color: '#1C1C1C', marginBottom: 3 }}>Know your tabs</div>
+                          <div style={{ fontSize: 11.5, color: '#A8A69E', marginBottom: 12 }}>Tap any of them to look around. Nothing breaks.</div>
+                          {[
+                            ['Ask Sensify', 'Can I eat this? What can I eat at an Italian restaurant? Ask anything, starting now.', 'ask-sensify', 'ask-sensify'],
+                            ['History', 'Every check-in logged, and your symptoms graphed against your baseline so you can see yourself getting better.', 'history', 'checkin-history'],
+                            ['Reintro', 'From day 57, you eat your flagged foods again one at a time to find out which ones actually cause problems.', 'reintro', 'reintro-tab'],
+                            ['Food Map', "Where it all ends up. Your flagged foods today, turning into answers you've earned along the way.", 'food-map', 'food-map'],
+                          ].map(([nm, desc, t, scr], i, arr) => (
+                            <button key={nm} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '10px 11px', borderRadius: 11, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.05)', marginBottom: i < arr.length - 1 ? 7 : 0, width: '100%', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif' }}>
+                              <span style={{ background: '#EDF3ED', borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 600, color: '#3D5C3C', flexShrink: 0 }}>{nm}</span>
+                              <span style={{ fontSize: 11.5, color: '#7A7A72', lineHeight: 1.5, flex: 1 }}>{desc}</span>
+                              <span style={{ color: '#C8C6BE', fontSize: 13 }}>›</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
             {/* FULL CATEGORIZED AVOIDING LIST */}
             <div className="snfy-avoiding">
               <div className="snfy-avoid-header">
@@ -1665,34 +1825,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
               )}
 
-              {/* WEEKLY INSIGHT — instrument style */}
-              <div className="snfy-insight">
-                <div className="snfy-insight-head">
-                  <span className="snfy-insight-dot"></span>
-                  <span className="snfy-insight-tag">{
-                    profile?.latest_insight ? `WEEKLY INSIGHT · WEEK ${profile?.latest_insight_week || 1}`
-                    : (currentDay >= 1 ? `PROTOCOL · DAY ${currentDay}` : 'GETTING STARTED')
-                  }</span>
-                </div>
-                <p>{
-                  profile?.latest_insight
-                  || (currentDay >= 1
-                    ? `You're on day ${currentDay} of your ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'} phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.`
-                    : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
-                }</p>
-                {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
-              </div>
             </div>
 
-            {/* SYMPTOM GRAPH */}
-            <div style={{ marginTop: '14px' }}>
-              <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
-              <YourNumbers profile={profile} weekFactors={weekFactors} />
-            </div>
           </div>
 
         </div>
-      )}
+      </>)}
 
       {/* CONFETTI OVERLAY */}
       {showConfetti && <ConfettiOverlay />}

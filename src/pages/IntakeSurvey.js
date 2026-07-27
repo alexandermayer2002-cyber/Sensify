@@ -624,13 +624,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           {drinks === 'yes' && (
             <div style={s.questionBlock}>
               <div style={s.questionLabel}>About how many drinks per week, on average?</div>
-              <div style={s.freqBtns}>
-                {[{ label: '1–3', value: '1-3' }, { label: '4–7', value: '4-7' }, { label: '8–14', value: '8-14' }, { label: '15+', value: '15plus' }].map(opt => (
-                  <button key={opt.value}
-                    style={lifestyle.avg_drinks_week === opt.value ? s.freqBtnOn : s.freqBtn}
-                    onClick={() => setLife('avg_drinks_week', opt.value)}>{opt.label}</button>
-                ))}
-              </div>
+              <NumField field="avg_drinks_week" unit="drinks / week" maxDigits={2} />
             </div>
           )}
         </div>
