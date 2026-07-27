@@ -290,7 +290,7 @@ const FAQ_GROUPS = [
   {
     group: 'Getting started',
     items: [
-      { q: 'Do I need to already have a lab test?', a: 'No. When you purchase the program we guide you through ordering your food sensitivity test during onboarding. We tell you exactly which test to get and how to complete it from home.' },
+      { q: 'Do I need to already have a lab test?', a: 'No. Your test kit is included in the program and ships to your door after you purchase. There is no separate lab bill and nothing to order yourself. We walk you through completing it at home and sending it back.' },
       { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your completed Food Map. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
       { q: 'How much time does it take each week?', a: 'The daily check-in takes a second. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
     ],
@@ -637,12 +637,13 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           </div>
           <div className="mk-hero-eyebrow" style={{ position: 'relative' }}>Test. Eliminate. Reintroduce. Know.</div>
           <div className="mk-h1 centered">Stop guessing what your body <em>can't handle.</em></div>
-          <div className="mk-sub centered">Lab testing, a structured elimination and reintroduction protocol, and daily guidance that gives you a definitive answer about how food affects your body. You end with a personal Food Map of exactly where you stand.</div>
+          <div className="mk-sub centered">Lab testing, a structured elimination and reintroduction protocol, and daily guidance that shows you how individual foods actually affect you. You end with a personal Food Map of exactly where you stand.</div>
           <div className="mk-actions centered">
             <button className="btn-p" onClick={onGetStarted} style={{ background: '#8BAE8A', color: '#22301F', fontWeight: 600 }}>Start your program</button>
             <button className="btn-g" onClick={() => setTab('how')} style={{ borderColor: 'rgba(250,248,244,0.25)', color: '#FAF8F4' }}>See how it works</button>
           </div>
           <div className="mk-price-line">$399 · lab test included · one payment</div>
+          <div style={{ fontSize: '11.5px', color: 'rgba(250,248,244,0.38)', marginTop: '7px', lineHeight: 1.6, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>Lab test, elimination protocol, daily and weekly check-ins, personalized insights, guided reintroductions, Ask Sensify, and your final Food Map.</div>
         </div>
       </div>
 
@@ -689,11 +690,12 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-section-inner" style={{ textAlign: 'center' }}>
           <div className="ey">Inside the program</div>
           <div className="sh">A look at what you're getting.</div>
-          <div style={{ fontSize: '15px', color: '#7A7A72', lineHeight: 1.65, maxWidth: 520, margin: '10px auto 26px' }}>Ten seconds a day. One real check-in a week. And every so often, a verdict you earned.</div>
+          <div style={{ fontSize: '15px', color: '#7A7A72', lineHeight: 1.65, maxWidth: 520, margin: '10px auto 18px' }}>Ten seconds a day. One real check-in a week. And every so often, a verdict you earned.</div>
+          <div style={{ fontSize: '12px', color: '#A8A69E', marginBottom: '14px' }}>Tap through the screens below.</div>
 
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 26, flexWrap: 'wrap' }}>
             {['Dashboard', 'History', 'Reintro', 'Food Map', 'Ask Sensify'].map(t => (
-              <button key={t} onClick={() => setShowcaseTab(t)} style={{ background: showcaseTab === t ? '#22301F' : '#F4F2EC', color: showcaseTab === t ? '#FAF8F4' : '#7A7A72', border: 'none', borderRadius: 20, padding: '9px 17px', fontSize: 13, fontWeight: showcaseTab === t ? 600 : 400, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.15s' }}>{t}</button>
+              <button key={t} onClick={() => setShowcaseTab(t)} style={{ background: showcaseTab === t ? '#22301F' : '#FFFFFF', color: showcaseTab === t ? '#FAF8F4' : '#5A5A52', border: showcaseTab === t ? '1px solid #22301F' : '1px solid rgba(0,0,0,0.14)', borderRadius: 20, padding: '9px 17px', fontSize: 13, fontWeight: showcaseTab === t ? 600 : 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.15s', boxShadow: showcaseTab === t ? 'none' : '0 1px 3px rgba(0,0,0,0.04)' }}>{t}</button>
             ))}
           </div>
 
@@ -731,6 +733,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                   </div>
                 ))}
               </div>
+              <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.7, marginTop: '18px', paddingTop: '16px', borderTop: '1px solid rgba(0,0,0,0.07)' }}>And sometimes the answer is that food was never the problem. That is a real result too, and knowing it saves you from years of cutting things out for nothing.</div>
             </div>
             <div className={`fmcard${mapInView ? ' inview' : ''}`} ref={fmcardRef}>
               <div className="fmcard-orb" />
@@ -828,7 +831,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="spine-dot"></div>
               <div className="spine-tag">Step 2</div>
               <div className="spine-title">Order your lab test, we guide you to the right one</div>
-              <div className="spine-desc">We point you to our certified lab partner and walk you through exactly which test to order. It ships to your door, you complete it at home, and send it back. Results arrive in about a week. No clinic visits.</div>
+              <div className="spine-desc">Your test kit is part of the $399, so there is no separate lab bill. It ships to your door from our certified lab partner, you complete it at home, and send it back. Results arrive in about a week. No clinic visits.</div>
             </div>
             <div className="spine-step">
               <div className="spine-dot"></div>
@@ -956,10 +959,10 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           </div>
 
           <div className="ey">Why the method works</div>
-          <div className="sh" style={{ fontSize: '28px', marginBottom: '8px' }}>Built on the clinical gold standard.</div>
+          <div className="sh" style={{ fontSize: '28px', marginBottom: '8px' }}>Built on the method clinicians actually use.</div>
           <div className="sci-grid" style={{ marginTop: '24px' }}>
             {[
-              { title: 'Elimination & reintroduction', desc: 'The most clinically validated method for identifying food sensitivities. Used by gastroenterologists and functional medicine practitioners worldwide.', badge: null },
+              { title: 'Elimination & reintroduction', desc: 'The standard clinical approach for identifying food triggers, used by gastroenterologists and dietitians to separate real reactions from suspicion.', badge: null },
               { title: '14-day reintroduction cycles', desc: 'Each food is reintroduced for 3 days then removed for 11. This exposure-washout pattern isolates symptom responses with enough signal to draw reliable conclusions.', badge: null },
               { title: 'Daily compliance tracking', desc: 'Daily check-ins give seven data points per week instead of one. That resolution makes it possible to spot patterns, like symptoms spiking the day after a slip-up, that weekly surveys miss entirely.', badge: null },
               { title: 'Built on the clinical standard', desc: 'Our elimination timelines and reintroduction structure follow the clinical elimination diet method. Formal physician review of the full protocol is in progress.', badge: 'Review pending' },
