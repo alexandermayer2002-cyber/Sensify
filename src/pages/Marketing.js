@@ -719,10 +719,17 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="ey">The outcome</div>
               <div className="sh" style={{ fontSize: '32px', marginBottom: '18px' }}>A Food Map that's actually earned.</div>
               <div className="ss" style={{ marginBottom: '22px' }}>No food gets labeled Safe without being tested. No food gets labeled Avoid without structured evidence. Everything you eat, sorted into three honest categories by your own body, and yours to keep.</div>
-              <div className="fmshow-points">
-                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#2C9D8A' }}></div><div><strong>Safe</strong>: tested, tolerated, eat freely.</div></div>
-                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#E8941F' }}></div><div><strong>Limit</strong>: fine in small amounts.</div></div>
-                <div className="fmshow-point"><div className="fmshow-pdot" style={{ background: '#D64545' }}></div><div><strong>Avoid</strong>: a confirmed trigger.</div></div>
+              <div>
+                {[
+                  ['Safe', 'Tested, tolerated, eat freely.', '#137663', 'rgba(44,157,138,0.09)', 'rgba(44,157,138,0.4)', 'rgba(44,157,138,0.25)'],
+                  ['Limit', 'Fine in small amounts.', '#9A5E0B', 'rgba(232,148,31,0.09)', 'rgba(232,148,31,0.42)', 'rgba(232,148,31,0.24)'],
+                  ['Avoid', 'A confirmed trigger.', '#B03434', 'rgba(214,69,69,0.08)', 'rgba(214,69,69,0.4)', 'rgba(214,69,69,0.22)'],
+                ].map(([name, desc, fg, bg, bd, glow]) => (
+                  <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 0' }}>
+                    <span style={{ background: bg, color: fg, border: `1px solid ${bd}`, boxShadow: `0 0 16px ${glow}`, borderRadius: 20, padding: '8px 18px', fontSize: 14, fontWeight: 700, flexShrink: 0, minWidth: 64, textAlign: 'center' }}>{name}</span>
+                    <span style={{ fontSize: 13.5, color: '#5A5A52', lineHeight: 1.5 }}>{desc}</span>
+                  </div>
+                ))}
               </div>
             </div>
             <div className={`fmcard${mapInView ? ' inview' : ''}`} ref={fmcardRef}>

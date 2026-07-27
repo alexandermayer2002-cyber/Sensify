@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
+import NumPad from '../components/NumPad'
 
 const FOOD_CATEGORIES = [
   { category: 'Proteins', foods: ['Beef', 'Chicken', 'Pork', 'Lamb', 'Turkey', 'Egg White', 'Egg Yolk'] },
@@ -112,6 +113,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   // Lifestyle baselines (sleep/stress/hydration/gender/alcohol) — the personal
   // "normal" that daily check-in factors are compared against for divergence.
   const [lifestyle, setLifestyle] = useState({})
+  const [openPad, setOpenPad] = useState(null)
   const [saving, setSaving] = useState(false)
 
   const hasDigestive = selectedCategories.includes('digestive')
@@ -554,6 +556,18 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     const lifestyleComplete = lifestyle.avg_sleep && lifestyle.avg_stress && lifestyle.avg_hydration
       && lifestyle.gender && lifestyle.drinks_alcohol
       && (lifestyle.drinks_alcohol === 'no' || lifestyle.avg_drinks_week)
+    const NumField = ({ field, unit, decimals, maxDigits }) => (
+      <>
+        <button type="button" onClick={() => setOpenPad(openPad === field ? null : field)} style={{ width: '100%', textAlign: 'left', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: !lifestyle[field] ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+          {!lifestyle[field] ? 'Tap to enter' : `${lifestyle[field]} ${unit}`}
+        </button>
+        {openPad === field && (
+          <div style={{ marginTop: 10 }}>
+            <NumPad value={lifestyle[field] || ''} onChange={v => setLifestyle({ ...lifestyle, [field]: v })} decimals={decimals} maxDigits={maxDigits} unit={unit} onSubmit={() => setOpenPad(null)} />
+          </div>
+        )}
+      </>
+    )
     const Band = ({ field, options }) => (
       <div style={s.freqBtns}>
         {options.map(opt => (
@@ -577,8 +591,8 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           <div style={s.hint}>Sleep, stress, and a few habits shape how you feel as much as food does. Knowing your usual baseline lets us tell a real change from an ordinary day later on.</div>
 
           <div style={s.questionBlock}>
-            <div style={s.questionLabel}>On a typical night, how much do you sleep?</div>
-            <Band field="avg_sleep" options={SLEEP_BANDS} />
+            <div style={s.questionLabel}>On a typical night, how many hours do you sleep? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>(7.5 counts)</span></div>
+            <NumField field="avg_sleep" unit="hours" decimals maxDigits={2} />
           </div>
 
           <div style={s.questionBlock}>
@@ -587,8 +601,8 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           </div>
 
           <div style={s.questionBlock}>
-            <div style={s.questionLabel}>On a typical day, how much water do you drink?</div>
-            <Band field="avg_hydration" options={HYDRATION_BANDS} />
+            <div style={s.questionLabel}>On a typical day, how many cups of water do you drink?</div>
+            <NumField field="avg_hydration" unit="cups" maxDigits={2} />
           </div>
 
           <div style={s.questionBlock}>

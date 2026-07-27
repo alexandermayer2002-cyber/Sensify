@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
 import { protocolDay } from '../utils/protocolDay'
+import NumPad from '../components/NumPad'
 import { todayLocal, localDateString } from '../utils/dateUtils'
 
 // ============================================================
@@ -67,9 +68,10 @@ const s = {
 
 export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   const [followed, setFollowed] = useState(null)
-  const [sleep, setSleep] = useState(null)
+  const [sleep, setSleep] = useState('')
+  const [openPad, setOpenPad] = useState(null)
   const [stress, setStress] = useState(null)
-  const [hydration, setHydration] = useState(null)
+  const [hydration, setHydration] = useState('')
   const [cyclePhase, setCyclePhase] = useState(null)
   const [drinks, setDrinks] = useState(0)
   const [saving, setSaving] = useState(false)
@@ -233,8 +235,15 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         )}
 
         <div style={s.block}>
-          <div style={s.label}>How did you sleep last night?</div>
-          <Bands options={SLEEP_BANDS} value={sleep} onPick={setSleep} />
+          <div style={s.label}>How many hours did you sleep last night? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>(7.5 counts)</span></div>
+          <button type="button" onClick={() => setOpenPad(openPad === 'sleep' ? null : 'sleep')} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: sleep === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+            {sleep === '' ? 'Tap to enter' : `${sleep} hours`}
+          </button>
+          {openPad === 'sleep' && (
+            <div style={{ marginTop: 10 }}>
+              <NumPad value={sleep} onChange={setSleep} decimals maxDigits={2} unit="hours" onSubmit={() => setOpenPad(hydration === '' ? 'hydration' : null)} />
+            </div>
+          )}
         </div>
 
         <div style={s.block}>
@@ -243,8 +252,15 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         </div>
 
         <div style={s.block}>
-          <div style={s.label}>How much water today? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>(cups)</span></div>
-          <Bands options={HYDRATION_BANDS} value={hydration} onPick={setHydration} />
+          <div style={s.label}>How many cups of water today?</div>
+          <button type="button" onClick={() => setOpenPad(openPad === 'hydration' ? null : 'hydration')} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: hydration === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+            {hydration === '' ? 'Tap to enter' : `${hydration} cups`}
+          </button>
+          {openPad === 'hydration' && (
+            <div style={{ marginTop: 10 }}>
+              <NumPad value={hydration} onChange={setHydration} maxDigits={2} unit="cups" onSubmit={() => setOpenPad(null)} />
+            </div>
+          )}
         </div>
 
         {isWoman && (

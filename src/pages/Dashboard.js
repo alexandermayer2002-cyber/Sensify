@@ -275,6 +275,69 @@ function ConfettiOverlay() {
 }
 
 // Interactive symptom graph
+
+function YourNumbers({ profile, weekFactors }) {
+  const [cat, setCat] = useState('sleep')
+  const CATS = {
+    sleep: { label: 'Sleep', unit: 'hours', field: 'sleep', baseline: parseFloat(profile?.baseline_avg_sleep), higherIsBetter: true, decimals: 1 },
+    hydration: { label: 'Water', unit: 'cups', field: 'hydration', baseline: parseFloat(profile?.baseline_avg_hydration), higherIsBetter: true, decimals: 1 },
+  }
+  const cfg = CATS[cat]
+  const nums = (rows) => rows.map(r => parseFloat(r[cfg.field])).filter(n => !isNaN(n))
+  const avg = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null
+  const today = new Date(); today.setHours(0,0,0,0)
+  const wk = (weekFactors || []).filter(r => {
+    const [y, m, d] = r.log_date.split('-').map(Number)
+    return (today - new Date(y, m - 1, d)) / 86400000 <= 6
+  })
+  const weekAvg = avg(nums(wk))
+  const protoAvg = avg(nums(weekFactors || []))
+  const baseline = isNaN(cfg.baseline) ? null : cfg.baseline
+  const bars = [
+    { label: 'Baseline', sub: 'from intake', v: baseline, color: '#E0DED6', tcolor: '#7A7A72' },
+    { label: 'This week', sub: `${wk.length} check-in${wk.length !== 1 ? 's' : ''}`, v: weekAvg, color: '#8BAE8A', tcolor: '#3D5C3C' },
+    { label: 'Protocol', sub: `${(weekFactors || []).length} days`, v: protoAvg, color: '#3D5C3C', tcolor: '#3D5C3C' },
+  ]
+  const present = bars.filter(b => b.v != null)
+  if (present.length < 2) return null
+  const max = Math.max(...present.map(b => b.v), 1)
+  const ref = weekAvg != null ? weekAvg : protoAvg
+  const delta = baseline != null && ref != null ? ref - baseline : null
+  const improving = delta != null && (cfg.higherIsBetter ? delta >= 0 : delta <= 0)
+  const fmt = (v) => v == null ? '—' : (Math.round(v * 10) / 10).toFixed(cfg.decimals).replace(/\.0$/, '')
+  return (
+    <div className="snfy-card" style={{ marginTop: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#1C1C1C' }}>Your numbers</div>
+        <select value={cat} onChange={e => setCat(e.target.value)} style={{ background: '#F4F2EC', border: 'none', borderRadius: 10, padding: '7px 11px', fontSize: 12, color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', cursor: 'pointer', outline: 'none' }}>
+          {Object.entries(CATS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+        </select>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 20, height: 108, padding: '0 6px', marginBottom: 6 }}>
+        {bars.map(b => (
+          <div key={b.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, height: '100%', justifyContent: 'flex-end' }}>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 14, color: b.v == null ? '#C8C6BE' : b.tcolor }}>{fmt(b.v)}</div>
+            <div style={{ width: '100%', maxWidth: 50, height: b.v == null ? 3 : `${Math.max((b.v / max) * 78, 5)}%`, background: b.v == null ? '#EFEDE6' : b.color, borderRadius: '8px 8px 3px 3px' }} />
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: 20, padding: '0 6px', marginBottom: 12 }}>
+        {bars.map(b => (
+          <div key={b.label} style={{ flex: 1, textAlign: 'center', fontSize: 9.5, color: '#8A8A82', lineHeight: 1.4 }}>{b.label}<br /><span style={{ color: '#B8B6AE' }}>{b.sub}</span></div>
+        ))}
+      </div>
+      {delta != null && Math.abs(delta) >= 0.05 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: improving ? '#EDF3ED' : '#FDF2EA', borderRadius: 10, padding: '9px 12px' }}>
+          <span style={{ fontSize: 13, color: improving ? '#3D5C3C' : '#8A5410' }}>{delta >= 0 ? '↑' : '↓'}</span>
+          <span style={{ fontSize: 11.5, color: improving ? '#3D5C3C' : '#8A5410', lineHeight: 1.5 }}>
+            <strong>{delta >= 0 ? '+' : '−'}{fmt(Math.abs(delta))} {cfg.unit} vs baseline.</strong> {improving ? (cfg.higherIsBetter ? `More ${cfg.label.toLowerCase()} is exactly the right direction.` : 'Moving the right way.') : 'Worth keeping an eye on.'}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
   const [trendLens, setTrendLens] = React.useState('average')
   const metrics = []
@@ -1624,6 +1687,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {/* SYMPTOM GRAPH */}
             <div style={{ marginTop: '14px' }}>
               <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
+              <YourNumbers profile={profile} weekFactors={weekFactors} />
             </div>
           </div>
 
