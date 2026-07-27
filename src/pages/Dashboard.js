@@ -1109,13 +1109,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const showLabCard = profile?.intake_completed_at && !labResult
   const showPendingLabCard = labResult?.status === 'pending_review'
   const showCheckinCard = weeklyDue && !showIntakeCard && !showLabCard && !showSlipupCard && !showAuditCard
-  const cockpitActive = (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && currentDay >= 1 && !needsCommonDecision && !isTracking && !showIntakeCard && !showLabCard && !showPendingLabCard
   // Common-track user who has been assigned but hasn't chosen a tier or declined yet.
   const needsCommonDecision = profile?.protocol_track === 'common'
     && profile?.track_decision !== 'active'
     && profile?.track_decision !== 'declined'
   // User who declined the protocol and is in self-tracking mode.
   const isTracking = profile?.track_decision === 'declined'
+  const cockpitActive = (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && currentDay >= 1 && !needsCommonDecision && !isTracking && !showIntakeCard && !showLabCard && !showPendingLabCard
   const showReintroCard = calculatedPhase === 'reintroduction' && profile?.current_reintro_day >= 14
 
   const phaseLabel = calculatedPhase === 'elimination' ? 'Elimination'
