@@ -5,7 +5,7 @@ import { protocolDay } from '../utils/protocolDay'
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=DM+Mono:wght@400;500&display=swap');
 
-  .fm-wrap { min-height: calc(100vh - 56px); background: radial-gradient(ellipse 90% 70% at 50% 38%, #F6F2E8 0%, #EFEADD 58%, #E9E3D2 100%); font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
+  .fm-wrap { min-height: calc(100vh - 56px); background: #FAF8F4; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
   .fm-content { max-width: 760px; margin: 0 auto; padding: 24px 20px 56px; }
   .fm-loading { display: flex; align-items: center; justify-content: center; min-height: 50vh; font-size: 14px; color: #7A7A72; }
 
@@ -18,7 +18,13 @@ const css = `
   .fm-name em { font-style: normal; color: #1C1C1C; }
   .fm-meta { font-family: 'DM Mono', monospace; font-size: 8px; color: #9A927E; text-align: center; line-height: 1.9; letter-spacing: 0.8px; }
   .fm-meta span { color: #3D5C3C; }
-  .fm-cert { position: relative; background: linear-gradient(180deg, #FDFBF6, #F8F4EA); border: 1px solid rgba(0,0,0,0.11); border-radius: 4px; padding: 40px 38px 30px; box-shadow: 0 24px 60px rgba(60,50,30,0.22), 0 4px 14px rgba(60,50,30,0.1), inset 0 0 80px rgba(201,162,39,0.035); max-width: 600px; margin: 0 auto; min-height: 760px; display: flex; flex-direction: column; }
+  .fm-cert { position: relative; background: linear-gradient(180deg, #FDFBF6, #F8F4EA); border: 1px solid rgba(0,0,0,0.11); border-radius: 4px; padding: 40px 38px 30px; box-shadow: 0 24px 60px rgba(60,50,30,0.22), 0 4px 14px rgba(60,50,30,0.1), inset 0 0 80px rgba(201,162,39,0.035); max-width: 600px; margin: 0 auto; min-height: 760px; display: flex; flex-direction: column; animation: fmSetDown 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: 50% 20%; }
+  @keyframes fmSetDown {
+    0% { opacity: 0; transform: perspective(1400px) rotateX(16deg) translateY(-36px) scale(1.05); box-shadow: 0 70px 110px rgba(60,50,30,0.3), 0 20px 40px rgba(60,50,30,0.14), inset 0 0 80px rgba(201,162,39,0.035); }
+    55% { opacity: 1; }
+    100% { opacity: 1; transform: perspective(1400px) rotateX(0deg) translateY(0) scale(1); box-shadow: 0 24px 60px rgba(60,50,30,0.22), 0 4px 14px rgba(60,50,30,0.1), inset 0 0 80px rgba(201,162,39,0.035); }
+  }
+  @media (prefers-reduced-motion: reduce) { .fm-cert { animation: none; } }
   .fm-cert::before { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(160,140,90,0.22); border-radius: 2px; pointer-events: none; }
   .fm-cert::after { content: 'S.'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Fraunces', serif; font-size: 260px; font-weight: 300; color: rgba(60,50,30,0.025); pointer-events: none; line-height: 1; }
   @media (max-width: 620px) { .fm-cert { padding: 26px 20px 22px; } .fm-cert::after { font-size: 190px; } }
@@ -34,8 +40,8 @@ const css = `
   @keyframes fmFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fmRule { from { width: 0; } to { width: 44px; } }
   @keyframes fmRow { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-  .fm-typewriter { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: #8A8474; overflow: hidden; white-space: nowrap; display: inline-block; width: 0; animation: fmType 1.6s steps(11) 1.8s forwards; }
-  @keyframes fmType { to { width: 10.5ch; } }
+  .fm-typewriter { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.2px; color: #8A8474; overflow: hidden; white-space: nowrap; display: inline-block; width: 0; animation: fmType 1.6s steps(11) 1.8s forwards; }
+  @keyframes fmType { to { width: 14ch; } }
   .fm-caret { display: inline-block; width: 6px; height: 11px; background: #8A8474; margin-left: 3px; animation: fmCaret 1s steps(1) infinite; }
   @keyframes fmCaret { 50% { opacity: 0; } }
   @keyframes fmStamp { 0% { opacity: 0; transform: rotate(-8deg) scale(2.6); } 60% { opacity: 1; transform: rotate(-8deg) scale(0.92); } 80% { transform: rotate(-8deg) scale(1.06); } 100% { opacity: 1; transform: rotate(-8deg) scale(1); } }
