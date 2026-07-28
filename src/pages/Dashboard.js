@@ -1299,7 +1299,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       ) : (<>
         {cockpitActive && (
           <div style={{ maxWidth: 960, margin: '0 auto', padding: '20px 20px 0' }}>
-            <div style={{ position: 'relative', background: '#22301F', borderRadius: 20, padding: '24px 26px 20px', overflow: 'hidden', boxShadow: '0 18px 44px rgba(34,48,31,0.3)' }}>
+            <div style={{ position: 'relative', background: '#22301F', borderRadius: 20, padding: '32px 28px 26px', overflow: 'hidden', boxShadow: '0 18px 44px rgba(34,48,31,0.3)' }}>
               <div className="snfy-phase-orb" />
               <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14, marginBottom: 16 }}>
                 <div>

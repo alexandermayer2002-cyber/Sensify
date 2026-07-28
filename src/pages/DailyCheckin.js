@@ -73,7 +73,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   const [stress, setStress] = useState(null)
   const [hydration, setHydration] = useState('')
   const [cyclePhase, setCyclePhase] = useState(null)
-  const [drinks, setDrinks] = useState(0)
+  const [drinks, setDrinks] = useState('')
   const [saving, setSaving] = useState(false)
   const [reward, setReward] = useState(null)  // { streak, weekDays, reflection } after completion
   // Phase-aware reintro block (active cycle -> food questions prepend)
@@ -139,7 +139,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       followed_protocol: onProtocol ? followed : null,
       sleep, stress, hydration,
       cycle_phase: isWoman ? cyclePhase : null,
-      drinks: isDrinker ? drinks : null,
+      drinks: isDrinker ? (drinks === '' ? 0 : parseInt(drinks, 10)) : null,
     }
     // Phase-aware: persist the reintro log + exposure counting in the same save
     if (showReintroBlock && activeReintro) {
@@ -467,12 +467,15 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
 
         {isDrinker && (
           <div style={s.block}>
-            <div style={s.label}>Any drinks today?</div>
-            <div style={s.stepper}>
-              <button style={s.stepBtn} onClick={() => setDrinks(d => Math.max(0, d - 1))}>−</button>
-              <span style={s.stepVal}>{drinks}</span>
-              <button style={s.stepBtn} onClick={() => setDrinks(d => d + 1)}>+</button>
-            </div>
+            <div style={s.label}>How many drinks today?</div>
+            <button type="button" onClick={() => setOpenPad(openPad === 'drinks' ? null : 'drinks')} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: drinks === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+              {drinks === '' ? 'Tap to enter' : `${drinks} ${drinks === '1' ? 'drink' : 'drinks'}`}
+            </button>
+            {openPad === 'drinks' && (
+              <div style={{ marginTop: 10 }}>
+                <NumPad value={drinks} onChange={setDrinks} maxDigits={2} unit="drinks" onSubmit={() => setOpenPad(null)} />
+              </div>
+            )}
           </div>
         )}
       </div>

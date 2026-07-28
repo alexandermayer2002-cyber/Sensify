@@ -10,53 +10,67 @@ const css = `
   .fm-loading { display: flex; align-items: center; justify-content: center; min-height: 50vh; font-size: 14px; color: #7A7A72; }
 
   /* DARK INSTRUMENT HEADER */
-  .fm-header { background: #22301F; border-radius: 22px; padding: 26px 26px 24px; margin-bottom: 18px; position: relative; overflow: hidden; box-shadow: 0 18px 44px rgba(34,48,31,0.28); }
-  .fm-header-orb { position: absolute; top: -70px; right: -70px; width: 240px; height: 240px; border-radius: 50%; background: #8BAE8A; animation: fmHdrGlow 5s ease-in-out infinite; pointer-events: none; }
-  .fm-header-orb2 { position: absolute; bottom: -90px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: #E8941F; opacity: 0.05; pointer-events: none; }
-  @keyframes fmHdrGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
-  .fm-header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 240px; height: 240px; background: radial-gradient(circle, rgba(139,174,138,0.13) 0%, transparent 65%); pointer-events: none; }
-  .fm-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; position: relative; }
-  .fm-eyebrow { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.6px; color: rgba(139,174,138,0.7); margin-bottom: 8px; }
-  .fm-name { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 300; color: white; letter-spacing: -0.5px; }
-  .fm-name em { font-style: italic; color: #8BAE8A; }
-  .fm-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.3); text-align: right; line-height: 1.9; }
-  .fm-meta span { color: rgba(139,174,138,0.8); }
+  .fm-header { background: transparent; border-radius: 0; padding: 0 0 18px; margin-bottom: 18px; position: relative; overflow: visible; box-shadow: none; border-bottom: 1px solid rgba(0,0,0,0.08); }
+  .fm-header-orb, .fm-header-orb2 { display: none; }
+  .fm-header-top { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 16px; position: relative; animation: fmFade 0.55s ease 0.15s both; }
+  .fm-eyebrow { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 2.2px; color: #9A927E; margin-bottom: 8px; }
+  .fm-name { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 400; color: #1C1C1C; letter-spacing: -0.3px; }
+  .fm-name em { font-style: normal; color: #1C1C1C; }
+  .fm-meta { font-family: 'DM Mono', monospace; font-size: 8px; color: #9A927E; text-align: center; line-height: 1.9; letter-spacing: 0.8px; }
+  .fm-meta span { color: #3D5C3C; }
+  .fm-cert { position: relative; background: linear-gradient(180deg, #FDFBF6, #F8F4EA); border: 1px solid rgba(0,0,0,0.09); border-radius: 6px; padding: 26px 22px; box-shadow: 0 16px 40px rgba(60,50,30,0.13), inset 0 0 60px rgba(201,162,39,0.03); }
+  .fm-serial { position: absolute; top: 14px; right: 16px; font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 1.2px; color: #B8B0A0; }
+  .fm-cert-eyebrow { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 2.2px; color: #9A927E; margin-bottom: 8px; text-align: center; text-transform: uppercase; }
+  .fm-gold-rule { height: 2px; background: #C9A227; margin: 10px auto 12px; opacity: 0.5; width: 44px; animation: fmRule 0.5s ease 0.5s both; }
+  @keyframes fmFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fmRule { from { width: 0; } to { width: 44px; } }
+  @keyframes fmRow { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes fmStamp { 0% { opacity: 0; transform: rotate(-8deg) scale(2.6); } 60% { opacity: 1; transform: rotate(-8deg) scale(0.92); } 80% { transform: rotate(-8deg) scale(1.06); } 100% { opacity: 1; transform: rotate(-8deg) scale(1); } }
+  .fm-anim-1 { animation: fmFade 0.55s ease 0.15s both; }
+  .fm-anim-2 { animation: fmFade 0.5s ease 0.7s both; }
+  .fm-anim-3 { animation: fmFade 0.45s ease 1.0s both; }
+  .fm-anim-4 { animation: fmFade 0.45s ease 1.25s both; }
+  .fm-anim-5 { animation: fmFade 0.45s ease 1.5s both; }
+  .fm-stamp { width: 60px; height: 60px; border: 2px solid rgba(61,92,60,0.45); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: fmStamp 0.55s cubic-bezier(0.2,1.4,0.4,1) 1.9s both; }
+  .fm-stamp-text { font-family: 'DM Mono', monospace; font-size: 6px; letter-spacing: 0.6px; color: #3D5C3C; line-height: 1.5; text-align: center; }
+  .fm-progress-mark { width: 52px; height: 52px; border: 1.5px dashed rgba(0,0,0,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
   .fm-scan { display: flex; gap: 16px; align-items: center; position: relative; }
   @media (max-width: 540px) { .fm-scan { flex-direction: column; align-items: stretch; } .fm-ring-wrap { margin: 0 auto; } }
   .fm-ring-wrap { position: relative; width: 104px; height: 104px; flex-shrink: 0; }
   .fm-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .fm-ring-num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; color: white; }
-  .fm-ring-sub { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.35); margin-top: 3px; }
+  .fm-ring-num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; color: #1C1C1C; }
+  .fm-ring-sub { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: #9A927E; margin-top: 3px; }
   .fm-dist { flex: 1; }
   .fm-dist-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
   .fm-dist-row:last-child { margin-bottom: 0; }
-  .fm-dist-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; width: 42px; }
-  .fm-dist-track { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .fm-dist-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; width: 42px; }
+  .fm-dist-track { flex: 1; height: 4px; background: rgba(0,0,0,0.06); border-radius: 2px; overflow: hidden; }
   .fm-dist-fill { height: 4px; border-radius: 2px; transition: width 0.7s ease; }
-  .fm-dist-count { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.45); width: 20px; text-align: right; }
+  .fm-dist-count { font-family: 'DM Mono', monospace; font-size: 11px; color: #9A927E; width: 20px; text-align: right; }
 
   /* SECTIONS */
-  .fm-section { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 18px 20px; margin-bottom: 12px; }
-  .fm-section.empty { opacity: 0.65; }
-  .fm-sec-head { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
-  .fm-sec-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .fm-sec-dot.safe { background: #4A8C6A; box-shadow: 0 0 8px rgba(74,140,106,0.5); }
-  .fm-sec-dot.limit { background: #D4894A; box-shadow: 0 0 8px rgba(212,137,74,0.45); }
-  .fm-sec-dot.avoid { background: #C95B5B; box-shadow: 0 0 8px rgba(201,91,91,0.45); }
-  .fm-sec-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-  .fm-sec-name.safe { color: #2D6B42; }
-  .fm-sec-name.limit { color: #9A5F1A; }
-  .fm-sec-name.avoid { color: #8B2E2E; }
+  .fm-section { background: transparent; border: none; border-radius: 0; padding: 0; margin-bottom: 18px; }
+  .fm-section.empty { opacity: 0.55; }
+  .fm-sec-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+  .fm-sec-dot { display: none; }
+  .fm-sec-name { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .fm-sec-name.safe { color: #137663; }
+  .fm-sec-name.limit { color: #9A5E0B; }
+  .fm-sec-name.avoid { color: #B03434; }
   .fm-sec-desc { font-size: 11px; color: #7A7A72; margin-left: 4px; }
-  .fm-sec-line { flex: 1; height: 1px; background: rgba(0,0,0,0.05); }
-  .fm-sec-count { font-family: 'DM Mono', monospace; font-size: 10px; color: #7A7A72; }
+  .fm-sec-line { flex: 1; border-bottom: 1px dotted rgba(0,0,0,0.15); height: auto; background: none; align-self: center; }
+  .fm-sec-count { font-family: 'DM Mono', monospace; font-size: 7.5px; letter-spacing: 0.8px; color: #9A927E; }
 
-  .fm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 7px; }
-  .fm-chip { border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .fm-chip.safe { background: rgba(74,140,106,0.06); border: 1px solid rgba(74,140,106,0.2); }
-  .fm-chip.limit { background: rgba(212,137,74,0.06); border: 1px solid rgba(212,137,74,0.2); }
-  .fm-chip.avoid { background: rgba(201,91,91,0.05); border: 1px solid rgba(201,91,91,0.2); }
+  .fm-grid { display: flex; flex-direction: column; gap: 0; }
+  .fm-chip { border-radius: 0; padding: 9px 3px; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); animation: fmRow 0.4s ease both; }
+  .fm-chip:last-child { border-bottom: none; }
+  .fm-chip::before { content: ''; width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .fm-chip.safe::before { background: #2C9D8A; }
+  .fm-chip.limit::before { background: #E8941F; }
+  .fm-chip.avoid::before { background: #D64545; }
+  .fm-chip.empty::before { display: none; }
+  .fm-chip.safe, .fm-chip.limit, .fm-chip.avoid { background: transparent; border-left: none; border-right: none; border-top: none; }
   .fm-chip.empty { background: #FAF8F4; border: 1px dashed rgba(0,0,0,0.1); justify-content: center; }
   .fm-chip-name { font-size: 12.5px; font-weight: 400; color: #1C1C1C; }
   .fm-chip-empty-text { font-size: 12px; color: #7A7A72; }
@@ -172,9 +186,20 @@ export default function FoodMap({ session, profile, labResult }) {
 
   // Reaction label from stored reintro data if present
   const reactionLabel = (f) => {
-    if (f.verdict === 'Safe') return 'no reaction'
-    if (f.verdict === 'Limit') return 'mild'
-    if (f.verdict === 'Avoid') return 'strong'
+    const dayEarned = (() => {
+      try {
+        if (!profile?.protocol_start_date || !f.updated_at) return null
+        const [y, m, d] = String(profile.protocol_start_date).split('T')[0].split('-').map(Number)
+        const start = new Date(y, m - 1, d)
+        const upd = new Date(f.updated_at)
+        const dd = Math.floor((new Date(upd.getFullYear(), upd.getMonth(), upd.getDate()) - start) / 86400000) + 1
+        return dd > 0 ? dd : null
+      } catch (e) { return null }
+    })()
+    const pre = dayEarned ? `DAY ${dayEarned} · ` : ''
+    if (f.verdict === 'Safe') return pre + 'NO REACTION'
+    if (f.verdict === 'Limit') return pre + 'MILD, DOSE-LINKED'
+    if (f.verdict === 'Avoid') return pre + 'SYMPTOMS CONFIRMED'
     return ''
   }
 
@@ -272,19 +297,16 @@ export default function FoodMap({ session, profile, labResult }) {
       <style>{css}</style>
       <div className="fm-content">
 
-        {/* DARK INSTRUMENT HEADER */}
+        {/* CERTIFICATE HEAD */}
+        <div className="fm-cert">
+        <div className="fm-serial">№ 0001</div>
         <div className="fm-header">
-        <div className="fm-header-orb" />
-        <div className="fm-header-orb2" />
           <div className="fm-header-top">
-            <div>
-              <div className="fm-eyebrow">Sensify · {isComplete ? 'Verified result' : totalTested === 0 ? 'Calibrating' : 'Building'}</div>
-              <div className="fm-name"><em>{name}'s</em> Food Map.</div>
-            </div>
+            <div className="fm-eyebrow">Sensify · {isComplete ? 'Verified result' : totalTested === 0 ? 'In calibration' : 'In progress'}</div>
+            <div className="fm-name">{name}'s Food Map</div>
+            <div className="fm-gold-rule"></div>
             <div className="fm-meta">
-              PROTOCOL <span>{isComplete ? 'COMPLETE' : 'ACTIVE'}</span><br />
-              {protocolDays > 0 ? `${protocolDays} DAYS` : '—'} · {totalTested} REINTRO{totalTested !== 1 ? 'S' : ''}<br />
-              {completedDate ? `UPDATED ${completedDate.toUpperCase()}` : 'IN PROGRESS'}
+              {totalTested} OF {Math.max(manifestTotal, totalTested)} FOODS TESTED · {protocolDays > 0 ? `DAY ${protocolDays}` : 'DAY —'}{completedDate ? ` · COMPLETED ${completedDate.toUpperCase()}` : ''}
             </div>
           </div>
 
@@ -292,7 +314,7 @@ export default function FoodMap({ session, profile, labResult }) {
             <div className="fm-scan">
               <div className="fm-ring-wrap">
                 <svg viewBox="0 0 104 104" width="104" height="104">
-                  <circle cx="52" cy="52" r="44" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
+                  <circle cx="52" cy="52" r="44" fill="none" stroke="rgba(0,0,0,0.07)" strokeWidth="6" />
                   <circle cx="52" cy="52" r="44" fill="none" stroke="#8BAE8A" strokeWidth="6" strokeLinecap="round"
                     strokeDasharray={`${(Math.min(protocolDays, 56) / 56) * 276.5} 276.5`} transform="rotate(-90 52 52)" />
                 </svg>
@@ -357,7 +379,7 @@ export default function FoodMap({ session, profile, labResult }) {
 
         {/* ELIMINATION STATE: the testing manifest — exact order, tier-grouped */}
         {totalTested === 0 && manifestTotal > 0 && (
-          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '16px 18px', marginBottom: '14px' }}>
+          <div style={{ background: 'transparent', border: 'none', borderTop: '1px solid rgba(0,0,0,0.06)', borderRadius: 0, padding: '16px 2px 0', marginBottom: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '12px' }}>
               <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17px', color: '#1C1C1C' }}>Testing <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>manifest.</em></div>
               <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#A0A096', letterSpacing: '0.5px' }}>EXACT TESTING ORDER</div>
@@ -406,7 +428,7 @@ export default function FoodMap({ session, profile, labResult }) {
 
         {/* SAFE */}
         {totalTested === 0 && (
-          <div style={{ background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '16px 18px', marginBottom: '14px' }}>
+          <div style={{ background: 'transparent', border: 'none', borderTop: '1px solid rgba(0,0,0,0.06)', borderRadius: 0, padding: '16px 2px 0', marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
               <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17px', color: '#1C1C1C' }}>Where verdicts <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>land.</em></div>
               <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#A0A096', letterSpacing: '0.5px' }}>0 / {manifestTotal} EARNED</div>
@@ -434,9 +456,9 @@ export default function FoodMap({ session, profile, labResult }) {
         <div className={`fm-section${safeFoods.length === 0 ? ' empty' : ''}`}>
           <div className="fm-sec-head">
             <div className="fm-sec-dot safe"></div>
-            <div className="fm-sec-name safe">Safe — eat freely</div>
+            <div className="fm-sec-name safe">Safe</div>
             <div className="fm-sec-line"></div>
-            <div className="fm-sec-count">{safeFoods.length} FOOD{safeFoods.length !== 1 ? 'S' : ''}</div>
+            <div className="fm-sec-count">EAT FREELY · {safeFoods.length} EARNED</div>
           </div>
           <div className="fm-grid">
             {safeFoods.length > 0
@@ -454,9 +476,9 @@ export default function FoodMap({ session, profile, labResult }) {
         <div className={`fm-section${limitFoods.length === 0 ? ' empty' : ''}`}>
           <div className="fm-sec-head">
             <div className="fm-sec-dot limit"></div>
-            <div className="fm-sec-name limit">Limit — small amounts</div>
+            <div className="fm-sec-name limit">Limit</div>
             <div className="fm-sec-line"></div>
-            <div className="fm-sec-count">{limitFoods.length} FOOD{limitFoods.length !== 1 ? 'S' : ''}</div>
+            <div className="fm-sec-count">SMALL AMOUNTS · {limitFoods.length} EARNED</div>
           </div>
           <div className="fm-grid">
             {limitFoods.length > 0
@@ -474,9 +496,9 @@ export default function FoodMap({ session, profile, labResult }) {
         <div className={`fm-section${avoidFoods.length === 0 ? ' empty' : ''}`}>
           <div className="fm-sec-head">
             <div className="fm-sec-dot avoid"></div>
-            <div className="fm-sec-name avoid">Avoid — clear triggers</div>
+            <div className="fm-sec-name avoid">Avoid</div>
             <div className="fm-sec-line"></div>
-            <div className="fm-sec-count">{avoidFoods.length} FOOD{avoidFoods.length !== 1 ? 'S' : ''}</div>
+            <div className="fm-sec-count">CONFIRMED · {avoidFoods.length}</div>
           </div>
           <div className="fm-grid">
             {avoidFoods.length > 0
@@ -488,6 +510,16 @@ export default function FoodMap({ session, profile, labResult }) {
                 ))
               : <div className="fm-chip empty"><span className="fm-chip-empty-text">No trigger foods confirmed yet</span></div>}
           </div>
+        </div>
+
+        {/* CERTIFICATE FOOTER */}
+        <div className="fm-anim-5" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 20, paddingTop: 14, borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '0.9px', color: '#9A927E', lineHeight: 1.8 }}>EVERY VERDICT EARNED<br />ON YOUR BODY</div>
+          {isComplete ? (
+            <div className="fm-stamp"><div className="fm-stamp-text">SENSIFY<br />VERIFIED<br />·</div></div>
+          ) : (
+            <div className="fm-progress-mark"><div style={{ fontFamily: 'DM Mono, monospace', fontSize: 6, letterSpacing: '0.5px', color: '#9A927E', textAlign: 'center', lineHeight: 1.6 }}>IN<br />PROGRESS</div></div>
+          )}
         </div>
 
         </>)}
@@ -538,6 +570,7 @@ export default function FoodMap({ session, profile, labResult }) {
           <button className="fm-share-btn">Share my Food Map →</button>
         </div>
 
+      </div>
       </div>
     </div>
   )
