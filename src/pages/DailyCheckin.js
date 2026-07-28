@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { protocolDay } from '../utils/protocolDay'
 import NumPad from '../components/NumPad'
@@ -76,6 +76,45 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   const [drinks, setDrinks] = useState(0)
   const [saving, setSaving] = useState(false)
   const [reward, setReward] = useState(null)  // { streak, weekDays, reflection } after completion
+  // Phase-aware reintro block (active cycle -> food questions prepend)
+  const [activeReintro, setActiveReintro] = useState(null)
+  const [reintroLoggedToday, setReintroLoggedToday] = useState(false)
+  const [ateFood, setAteFood] = useState(null)
+  const [hadSymptoms, setHadSymptoms] = useState(null)
+  const [symptomIntensities, setSymptomIntensities] = useState({})
+  const [otherText, setOtherText] = useState('')
+  const [showSevereWarning, setShowSevereWarning] = useState(false)
+
+  useEffect(() => {
+    const loadReintro = async () => {
+      try {
+        const { data: active } = await supabase.from('reintroduction_results')
+          .select('*').eq('user_id', session.user.id).is('verdict', null)
+          .order('started_at', { ascending: false }).limit(1).maybeSingle()
+        if (!active) return
+        setActiveReintro(active)
+        const { data: log } = await supabase.from('reintro_daily_logs')
+          .select('id').eq('user_id', session.user.id).eq('reintro_id', active.id)
+          .eq('log_date', todayLocal()).maybeSingle()
+        setReintroLoggedToday(!!log)
+      } catch (e) {}
+    }
+    loadReintro()
+  }, [session.user.id])
+
+  const reintroPhase = activeReintro ? ((activeReintro.exposure_days_completed || 0) < 3 ? 'exposure' : 'washout') : null
+  const showReintroBlock = !!activeReintro && !reintroLoggedToday
+  const reintroSymptoms = (() => {
+    const list = []
+    const sym = profile?.symptoms || []
+    if (sym.includes('Digestive')) list.push('Bloating', 'Gas', 'Cramping', 'Reflux', 'Loose stools')
+    if (sym.includes('Energy')) list.push('Fatigue', 'Afternoon crash', 'Brain fog')
+    if (sym.includes('General wellness')) list.push('Headache', 'Joint aches', 'Skin flare', 'Poor sleep')
+    list.push('Other')
+    return [...new Set(list.length > 1 ? list : ['Bloating', 'Gas', 'Cramping', 'Fatigue', 'Headache', 'Other'])]
+  })()
+  const toggleSymptom = (nm) => setSymptomIntensities(prev => { const n = { ...prev }; if (n[nm]) delete n[nm]; else n[nm] = 'mild'; return n })
+  const setIntensity = (nm, lvl) => { setSymptomIntensities(prev => ({ ...prev, [nm]: lvl })); if (lvl === 'severe') setShowSevereWarning(true) }
 
   const isWoman = profile?.gender === 'female'
   const isDrinker = profile?.drinks_alcohol === true
@@ -83,7 +122,12 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   const onProtocol = profile?.program_phase === 'elimination' || profile?.program_phase === 'reintroduction'
 
   // Core required: sleep, stress, hydration. Compliance required only if on protocol.
-  const complete = sleep && stress && hydration && (!onProtocol || followed !== null)
+  const reintroComplete = !showReintroBlock || (
+    (reintroPhase === 'washout' || ateFood !== null) &&
+    (hadSymptoms !== null) &&
+    (hadSymptoms === false || Object.keys(symptomIntensities).length > 0)
+  )
+  const complete = sleep && stress && hydration && (!onProtocol || followed !== null) && reintroComplete
 
   const submit = async () => {
     if (!complete || saving) return
@@ -97,6 +141,32 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       cycle_phase: isWoman ? cyclePhase : null,
       drinks: isDrinker ? drinks : null,
     }
+    // Phase-aware: persist the reintro log + exposure counting in the same save
+    if (showReintroBlock && activeReintro) {
+      try {
+        const symptoms = Object.entries(symptomIntensities).map(([nm, intensity]) => ({ name: nm === 'Other' && otherText.trim() ? otherText.trim() : nm, intensity }))
+        const wasExposure = reintroPhase === 'exposure'
+        await supabase.from('reintro_daily_logs').upsert({
+          user_id: session.user.id,
+          reintro_id: activeReintro.id,
+          food: activeReintro.food,
+          log_date: today,
+          phase: reintroPhase,
+          ate_food: wasExposure ? ateFood : null,
+          exposure_number: wasExposure && ateFood ? (activeReintro.exposure_days_completed || 0) + 1 : null,
+          had_symptoms: symptoms.length > 0,
+          symptoms,
+          stopped_early: false,
+        }, { onConflict: 'user_id,reintro_id,log_date' })
+        if (wasExposure && ateFood) {
+          const newCount = (activeReintro.exposure_days_completed || 0) + 1
+          const updates = { exposure_days_completed: newCount }
+          if (newCount >= 3) updates.washout_started_at = today
+          await supabase.from('reintroduction_results').update(updates).eq('id', activeReintro.id)
+        }
+      } catch (e) { console.error('reintro save error:', e) }
+    }
+
     const { error } = await supabase.from('daily_factors').upsert(row, { onConflict: 'user_id,log_date' })
 
     // Feed the existing compliance system (streaks, audits, 3-NOs trigger) from
@@ -184,10 +254,13 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           <div style={{ width: 40 }} />
         </div>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', textAlign: 'center' }}>
-          <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, marginBottom: 20 }}>✓</div>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#1C1C1C', marginBottom: 6 }}>Checked in for today</div>
+          <div style={{ width: 68, height: 68, borderRadius: '50%', background: '#22301F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#8BAE8A', marginBottom: 22, boxShadow: '0 12px 32px rgba(34,48,31,0.28), 0 0 0 8px rgba(139,174,138,0.08)' }}>✓</div>
+          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 30, fontWeight: 300, color: '#1C1C1C', marginBottom: 8 }}>Today, logged.</div>
           {reward.streak > 1 && (
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 13, color: '#3D5C3C', fontWeight: 600, marginBottom: 24, textTransform: 'uppercase', letterSpacing: '1px' }}>{reward.streak}-day streak 🔥</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 24 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.7)' }}></span>
+              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 12, color: '#3D5C3C', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.2px' }}>{reward.streak} day streak, unbroken</span>
+            </div>
           )}
           {/* Week row */}
           <div style={{ display: 'flex', gap: 10, marginBottom: 28 }}>
@@ -224,6 +297,128 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         <div style={s.title}>How's today?</div>
         <div style={s.hint}>A few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.</div>
 
+        {showReintroBlock && (
+          <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.10), rgba(44,157,138,0.04)), #FFFFFF', border: '1px solid rgba(61,92,60,0.16)', borderRadius: '16px', padding: '18px', marginBottom: '18px' }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1px', color: '#3D5C3C', marginBottom: '12px' }}>Reintroduction · {activeReintro.food}</div>
+            {reintroPhase === 'exposure' && (
+              <div style={{ marginBottom: ateFood !== null ? 16 : 0 }}>
+                <div style={s.label}>Did you eat {activeReintro.food.toLowerCase()} today?</div>
+                <div style={s.yn}>
+                  <button style={ateFood === true ? s.ynYes : s.ynBtn} onClick={() => setAteFood(true)}>Yes</button>
+                  <button style={ateFood === false ? { ...s.ynYes, background: '#7A7A72', borderColor: '#7A7A72' } : s.ynBtn} onClick={() => { setAteFood(false); setHadSymptoms(null); setSymptomIntensities({}) }}>No</button>
+                </div>
+              </div>
+            )}
+            {(reintroPhase === 'washout' || ateFood !== null) && (
+              <div>
+                <div style={s.label}>Any symptoms today?</div>
+                <div style={s.yn}>
+                  <button style={hadSymptoms === true ? s.ynYes : s.ynBtn} onClick={() => setHadSymptoms(true)}>Yes</button>
+                  <button style={hadSymptoms === false ? s.ynYes : s.ynBtn} onClick={() => { setHadSymptoms(false); setSymptomIntensities({}) }}>No</button>
+                </div>
+                {hadSymptoms === true && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
+                    {reintroSymptoms.map(nm => {
+                      const active = !!symptomIntensities[nm]
+                      return (
+                        <div key={nm} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <button style={{ textAlign: 'left', background: active ? '#3D5C3C' : '#F4F2EC', border: 'none', borderRadius: '10px', padding: '12px 14px', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: active ? '#FFFFFF' : '#3A3A35', fontWeight: active ? 500 : 400 }} onClick={() => toggleSymptom(nm)}>{nm}</button>
+                          {active && nm === 'Other' && (
+                            <input type="text" value={otherText} onChange={e => setOtherText(e.target.value)} placeholder="What did you notice?" style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '10px', padding: '12px 14px', fontSize: '13px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', outline: 'none' }} />
+                          )}
+                          {active && (
+                            <div style={{ display: 'flex', gap: '6px', paddingLeft: '4px' }}>
+                              {['mild', 'moderate', 'severe'].map(lvl => {
+                                const on = symptomIntensities[nm] === lvl
+                                const onStyle = lvl === 'mild' ? { background: '#EAF4EE', border: '1px solid rgba(74,140,106,0.4)', color: '#2D6B42', fontWeight: 500 }
+                                  : lvl === 'moderate' ? { background: '#FDF2EA', border: '1px solid rgba(212,137,74,0.4)', color: '#9A5F1A', fontWeight: 500 }
+                                  : { background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.4)', color: '#8B2E2E', fontWeight: 500 }
+                                return <button key={lvl} style={{ flex: 1, background: 'white', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '8px', fontSize: '12px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#7A7A72', textTransform: 'capitalize', ...(on ? onStyle : {}) }} onClick={() => setIntensity(nm, lvl)}>{lvl}</button>
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+                {showSevereWarning && (
+                  <div style={{ background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.3)', borderRadius: '12px', padding: '14px', marginTop: '12px' }}>
+                    <div style={{ fontSize: '13px', color: '#8B2E2E', fontWeight: 600, marginBottom: '6px' }}>Severe reaction noted</div>
+                    <div style={{ fontSize: '12.5px', color: '#1C1C1C', lineHeight: 1.6 }}>A severe response is a clear answer on its own. You can stop this cycle from the Reintro tab and {activeReintro.food.toLowerCase()} will be marked Avoid, or keep logging and finish the cycle. If symptoms feel serious, please seek medical care.</div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {showReintroBlock && (
+          <div style={{ ...s.block, background: 'linear-gradient(135deg, rgba(139,174,138,0.10), rgba(44,157,138,0.04)), #FFFFFF', border: '1px solid rgba(61,92,60,0.16)', borderRadius: '16px', padding: '18px' }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: '12px' }}>
+              {activeReintro.food} cycle · {reintroPhase === 'exposure' ? `Exposure` : `Washout`}
+            </div>
+            {reintroPhase === 'exposure' && (
+              <>
+                <div style={s.label}>Did you eat {activeReintro.food.toLowerCase()} today?</div>
+                <div style={{ ...s.yn, marginBottom: '16px' }}>
+                  <button style={ateFood === true ? s.ynYes : s.ynBtn} onClick={() => setAteFood(true)}>Yes</button>
+                  <button style={ateFood === false ? { ...s.ynYes, background: '#7A7A72', borderColor: '#7A7A72' } : s.ynBtn} onClick={() => { setAteFood(false); }}>Not today</button>
+                </div>
+              </>
+            )}
+            {(reintroPhase === 'washout' || ateFood !== null) && (
+              <>
+                <div style={s.label}>Any symptoms today?</div>
+                <div style={{ ...s.yn, marginBottom: hadSymptoms ? '14px' : 0 }}>
+                  <button style={hadSymptoms === true ? { ...s.ynYes, background: '#C95B5B', borderColor: '#C95B5B' } : s.ynBtn} onClick={() => setHadSymptoms(true)}>Yes</button>
+                  <button style={hadSymptoms === false ? s.ynYes : s.ynBtn} onClick={() => { setHadSymptoms(false); setSymptomIntensities({}) }}>No, felt fine</button>
+                </div>
+                {hadSymptoms && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {reintroSymptoms.map(nm => {
+                      const active = !!symptomIntensities[nm]
+                      return (
+                        <div key={nm} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <button
+                            style={{ textAlign: 'left', background: active ? '#3D5C3C' : '#F4F2EC', border: 'none', borderRadius: '10px', padding: '12px 14px', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: active ? '#FFFFFF' : '#3A3A35', fontWeight: active ? 500 : 400 }}
+                            onClick={() => toggleSymptom(nm)}
+                          >{nm}</button>
+                          {active && nm === 'Other' && (
+                            <input type="text" value={otherText} onChange={e => setOtherText(e.target.value)} placeholder="What did you notice?"
+                              style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '10px', padding: '12px 14px', fontSize: '13px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', outline: 'none' }} />
+                          )}
+                          {active && (
+                            <div style={{ display: 'flex', gap: '6px', paddingLeft: '4px' }}>
+                              {['mild', 'moderate', 'severe'].map(lvl => {
+                                const on = symptomIntensities[nm] === lvl
+                                const onStyle = lvl === 'mild' ? { background: '#EAF4EE', border: '1px solid rgba(74,140,106,0.4)', color: '#2D6B42', fontWeight: 500 }
+                                  : lvl === 'moderate' ? { background: '#FDF2EA', border: '1px solid rgba(212,137,74,0.4)', color: '#9A5F1A', fontWeight: 500 }
+                                  : { background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.4)', color: '#8B2E2E', fontWeight: 500 }
+                                return (
+                                  <button key={lvl} onClick={() => setIntensity(nm, lvl)}
+                                    style={{ flex: 1, background: 'white', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '8px', fontSize: '12px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#7A7A72', textTransform: 'capitalize', ...(on ? onStyle : {}) }}
+                                  >{lvl}</button>
+                                )
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+                {showSevereWarning && (
+                  <div style={{ background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.3)', borderRadius: '12px', padding: '14px', marginTop: '12px' }}>
+                    <div style={{ fontSize: '13px', color: '#8B2E2E', fontWeight: 600, marginBottom: '6px' }}>That sounds severe.</div>
+                    <div style={{ fontSize: '12.5px', color: '#1C1C1C', lineHeight: 1.6 }}>If this reaction feels serious, stop eating {activeReintro.food.toLowerCase()} now. You can end this cycle from the Reintro tab — it will be marked Avoid with your evidence. If symptoms are severe or worsening, contact a medical professional.</div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
         {onProtocol && (
           <div style={s.block}>
             <div style={s.label}>Did you stay on your plan today?</div>
@@ -241,7 +436,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           </button>
           {openPad === 'sleep' && (
             <div style={{ marginTop: 10 }}>
-              <NumPad value={sleep} onChange={setSleep} decimals maxDigits={2} unit="hours" onSubmit={() => setOpenPad(hydration === '' ? 'hydration' : null)} />
+              <NumPad value={sleep} onChange={setSleep} decimals maxDigits={2} unit="hours" onSubmit={() => setOpenPad(null)} />
             </div>
           )}
         </div>

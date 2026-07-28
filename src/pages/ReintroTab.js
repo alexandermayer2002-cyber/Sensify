@@ -143,11 +143,12 @@ const css = `
 
   .rt-section-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-bottom: 10px; margin-top: 20px; }
 
-  .rt-food-card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 14px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-  .rt-food-card.recommended { border-color: #3D5C3C; }
+  .rt-food-card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 18px; padding: 17px 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; transition: border-color 0.15s, box-shadow 0.15s; }
+  .rt-food-card:hover { border-color: rgba(61,92,60,0.3); box-shadow: 0 4px 16px rgba(34,48,31,0.07); }
+  .rt-food-card.recommended { border: 1.5px solid #3D5C3C; box-shadow: 0 4px 18px rgba(61,92,60,0.1); background: linear-gradient(135deg, rgba(139,174,138,0.06), rgba(44,157,138,0.02)), #FFFFFF; }
   .rt-food-left { display: flex; align-items: center; gap: 12px; }
-  .rt-food-rank { width: 28px; height: 28px; border-radius: 8px; background: #FAF8F4; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #7A7A72; flex-shrink: 0; }
-  .rt-food-rank.top { background: #EDF3ED; color: #3D5C3C; }
+  .rt-food-rank { width: 30px; height: 30px; border-radius: 10px; background: #F4F2EC; display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 14px; font-weight: 400; color: #7A7A72; flex-shrink: 0; }
+  .rt-food-rank.top { background: #22301F; color: #8BAE8A; }
   .rt-food-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
   .rt-food-freq { font-size: 12px; color: #7A7A72; }
   .rt-rec-badge { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #3D5C3C; background: #EDF3ED; padding: 2px 8px; border-radius: 20px; margin-left: 8px; }
@@ -530,11 +531,12 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const EXPOSURE_CALENDAR_CAP = 5
   const WASHOUT_LENGTH = 11
 
-  const cycleStart = activeReintro?.started_at ? new Date(activeReintro.started_at) : null
+  const parseLocal = (str) => { if (!str) return null; const [y, m, d] = String(str).split('T')[0].split('-').map(Number); return new Date(y, m - 1, d) }
+  const cycleStart = activeReintro?.started_at ? parseLocal(activeReintro.started_at) : null
   const today = new Date()
   const calDaysSinceStart = cycleStart
-    ? Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate())) / (1000 * 60 * 60 * 24))
-    : 0
+    ? Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - cycleStart) / (1000 * 60 * 60 * 24)) + 1
+    : 1
 
   const exposureDaysCompleted = activeReintro?.exposure_days_completed || 0
   const inExposure = exposureDaysCompleted < EXPOSURE_TARGET
@@ -551,9 +553,9 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const nextExposureNumber = exposureDaysCompleted + 1
 
   // Days into washout + verdict readiness
-  const washoutStart = activeReintro?.washout_started_at ? new Date(activeReintro.washout_started_at) : null
+  const washoutStart = activeReintro?.washout_started_at ? parseLocal(activeReintro.washout_started_at) : null
   const washoutDay = washoutStart
-    ? Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - new Date(washoutStart.getFullYear(), washoutStart.getMonth(), washoutStart.getDate())) / (1000 * 60 * 60 * 24)) + 1
+    ? Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - washoutStart) / (1000 * 60 * 60 * 24)) + 1
     : 0
   const isVerdictDay = !inExposure && washoutDay > WASHOUT_LENGTH
 

@@ -21,6 +21,7 @@ export default function ReintroDailyCheckin({ session, profile, reintro, phase, 
   const [symptomIntensities, setSymptomIntensities] = useState({}) // { name: intensity }
   const [saving, setSaving] = useState(false)
   const [showSevereWarning, setShowSevereWarning] = useState(false)
+  const [otherText, setOtherText] = useState('')
 
   const toggleSymptom = (name) => {
     setSymptomIntensities(prev => {
@@ -41,7 +42,7 @@ export default function ReintroDailyCheckin({ session, profile, reintro, phase, 
   const save = async (stoppedEarly = false) => {
     setSaving(true)
     const today = todayLocal()
-    const symptoms = Object.entries(symptomIntensities).map(([name, intensity]) => ({ name, intensity }))
+    const symptoms = Object.entries(symptomIntensities).map(([name, intensity]) => ({ name: name === 'Other' && otherText.trim() ? otherText.trim() : name, intensity }))
 
     const { error } = await supabase.from('reintro_daily_logs').upsert({
       user_id: session.user.id,
@@ -130,6 +131,15 @@ export default function ReintroDailyCheckin({ session, profile, reintro, phase, 
                           style={{ ...s.symptomToggle, ...(active ? s.symptomToggleActive : {}) }}
                           onClick={() => toggleSymptom(name)}
                         >{name}</button>
+                        {active && name === 'Other' && (
+                          <input
+                            type="text"
+                            value={otherText}
+                            onChange={e => setOtherText(e.target.value)}
+                            placeholder="What did you notice?"
+                            style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '10px', padding: '12px 14px', fontSize: '13px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', outline: 'none', marginLeft: '4px' }}
+                          />
+                        )}
                         {active && (
                           <div style={s.intensityRow}>
                             {INTENSITIES.map(level => (

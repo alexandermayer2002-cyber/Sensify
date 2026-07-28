@@ -1028,7 +1028,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         } catch (e) {}
       }
     }
-    else if (day === 57) {
+    else if (day >= 57 && day < 113) {
       const shown = await checkMilestoneShown(supabase, session.user.id, 'day57')
       if (!shown) {
         try {
@@ -1041,7 +1041,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       }
     }
     // Day 113 — moderate unlocks
-    else if (day === 113) {
+    else if (day >= 113 && day < 169) {
       const shown = await checkMilestoneShown(supabase, session.user.id, 'day113')
       if (!shown) {
         try {
@@ -1053,7 +1053,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       }
     }
     // Day 169 — high unlocks
-    else if (day === 169) {
+    else if (day >= 169) {
       const shown = await checkMilestoneShown(supabase, session.user.id, 'day169')
       if (!shown) {
         try {
