@@ -297,280 +297,93 @@ export default function FoodMap({ session, profile, labResult }) {
       <style>{css}</style>
       <div className="fm-content">
 
-        {/* CERTIFICATE HEAD */}
+        {/* THE CERTIFICATE — mirrors the approved mock exactly */}
         <div className="fm-cert">
-        <div className="fm-serial">№ 0001</div>
-        <div className="fm-header">
-          <div className="fm-header-top">
-            <div className="fm-eyebrow">Sensify · {isComplete ? 'Verified result' : totalTested === 0 ? 'In calibration' : 'In progress'}</div>
-            <div className="fm-name">{name}'s Food Map</div>
+          <div className="fm-serial">№ 0001</div>
+
+          <div className="fm-anim-1" style={{ textAlign: 'center', marginBottom: 6 }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '2.2px', color: '#9A927E', marginBottom: 7, textTransform: 'uppercase' }}>SENSIFY · {isComplete ? 'VERIFIED RESULT' : totalTested === 0 ? 'IN CALIBRATION' : 'IN PROGRESS'}</div>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, color: '#1C1C1C' }}>{name}'s Food Map</div>
             <div className="fm-gold-rule"></div>
-            <div className="fm-meta">
-              {totalTested} OF {Math.max(manifestTotal, totalTested)} FOODS TESTED · {protocolDays > 0 ? `DAY ${protocolDays}` : 'DAY —'}{completedDate ? ` · COMPLETED ${completedDate.toUpperCase()}` : ''}
-            </div>
+          </div>
+          <div className="fm-anim-2" style={{ textAlign: 'center', fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E', marginBottom: 18 }}>
+            {totalTested} OF {Math.max(manifestTotal + totalTested, totalTested) || totalTested} FOODS TESTED{protocolDays > 0 ? ` · DAY ${protocolDays}` : ''}{completedDate ? ` · ${completedDate.toUpperCase()}` : ''}
           </div>
 
-          {totalTested === 0 ? (
-            <div className="fm-scan">
-              <div className="fm-ring-wrap">
-                <svg viewBox="0 0 104 104" width="104" height="104">
-                  <circle cx="52" cy="52" r="44" fill="none" stroke="rgba(0,0,0,0.07)" strokeWidth="6" />
-                  <circle cx="52" cy="52" r="44" fill="none" stroke="#8BAE8A" strokeWidth="6" strokeLinecap="round"
-                    strokeDasharray={`${(Math.min(protocolDays, 56) / 56) * 276.5} 276.5`} transform="rotate(-90 52 52)" />
-                </svg>
-                <div className="fm-ring-label">
-                  <div className="fm-ring-num">{Math.min(Math.round((Math.min(protocolDays, 56) / 56) * 100), 100)}<span style={{ fontSize: '14px' }}>%</span></div>
-                  <div className="fm-ring-sub">Baseline</div>
+          {[
+            { key: 'safe', label: 'Safe', sub: totalTested === 0 ? 'EAT FREELY' : `${safeFoods.length} EARNED`, subPre: totalTested === 0 ? null : 'EAT FREELY · ', color: '#137663', mark: '#2C9D8A', foods: safeFoods, empty: 'Awaiting first clean reintroduction' },
+            { key: 'limit', label: 'Limit', sub: totalTested === 0 ? 'SMALL AMOUNTS' : `${limitFoods.length} EARNED`, subPre: totalTested === 0 ? null : 'SMALL AMOUNTS · ', color: '#9A5E0B', mark: '#E8941F', foods: limitFoods, empty: 'No dose-linked verdicts yet' },
+            { key: 'avoid', label: 'Avoid', sub: totalTested === 0 ? 'CONFIRMED TRIGGERS' : `${avoidFoods.length} CONFIRMED`, subPre: null, color: '#B03434', mark: '#D64545', foods: avoidFoods, empty: 'No confirmed triggers yet' },
+          ].map((tier, ti) => (
+            <div key={tier.key} className={`fm-anim-${ti + 3}`} style={{ marginBottom: 15 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
+                <span style={{ fontFamily: 'Fraunces, serif', fontSize: '15px', color: tier.color }}>{tier.label}</span>
+                <span style={{ flex: 1, borderBottom: '1px dotted rgba(0,0,0,0.15)', alignSelf: 'center' }}></span>
+                <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E' }}>{tier.subPre || ''}{tier.sub}</span>
+              </div>
+              {tier.foods.length > 0 ? tier.foods.map((f, fi) => (
+                <div key={fi} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 2px', borderBottom: fi < tier.foods.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none', animation: `fmRow 0.4s ease ${1.1 + ti * 0.25 + fi * 0.12}s both` }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 2, background: tier.mark, flexShrink: 0 }}></span>
+                    <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C' }}>{f.food}</span>
+                  </div>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{reactionLabel(f)}</span>
                 </div>
+              )) : (
+                <div style={{ padding: '8px 2px', fontSize: '11.5px', color: '#B8B0A0', fontStyle: 'normal' }}>{tier.empty}</div>
+              )}
+            </div>
+          ))}
+
+          {totalTested === 0 && manifestTotal > 0 && (
+            <div className="fm-anim-5" style={{ marginTop: 4, marginBottom: 15 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
+                <span style={{ fontFamily: 'Fraunces, serif', fontSize: '15px', color: '#1C1C1C' }}>Testing schedule</span>
+                <span style={{ flex: 1, borderBottom: '1px dotted rgba(0,0,0,0.15)', alignSelf: 'center' }}></span>
+                <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E' }}>FIRST VERDICTS ~DAY 71</span>
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '12px', color: 'rgba(250,248,244,0.85)', lineHeight: 1.6, marginBottom: '9px' }}>Your instrument is calibrating. Eight clean weeks build the baseline every verdict gets measured against.</div>
-                <div style={{ display: 'flex', gap: '4px' }}>
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} style={{ flex: 1, height: '3px', borderRadius: '2px', background: i < Math.min(Math.ceil(protocolDays / 7), 8) ? '#8BAE8A' : 'rgba(255,255,255,0.14)' }} />
-                  ))}
+              {(() => { let n = 0; return manifestTiers.map((mt, mi) => mt.foods.map((f, fi) => { n += 1; return (
+                <div key={`${mi}-${fi}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 2px', borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', color: '#C9C2B0', width: 16 }}>{String(n).padStart(2, '0')}</span>
+                    <span style={{ fontSize: '12.5px', fontWeight: 500, color: '#1C1C1C' }}>{f.name}</span>
+                  </div>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '0.5px', color: '#9A927E' }}>DAY {mt.day}+</span>
                 </div>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', color: 'rgba(250,248,244,0.45)', marginTop: '6px', letterSpacing: '0.8px' }}>WEEK {Math.min(Math.ceil(Math.max(protocolDays, 1) / 7), 8)} OF 8 · FIRST VERDICTS ~DAY 71</div>
-              </div>
+              ) }) ) })()}
             </div>
-          ) : (
-          <div className="fm-scan">
-            <div className="fm-ring-wrap">
-              <svg viewBox="0 0 104 104" width="104" height="104">
-                <circle cx="52" cy="52" r="44" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
-                {safeFoods.length > 0 && (
-                  <circle cx="52" cy="52" r="44" fill="none" stroke="#8BAE8A" strokeWidth="6" strokeLinecap="round"
-                    strokeDasharray={`${safeLen} ${C}`} transform="rotate(-90 52 52)" />
-                )}
-                {limitFoods.length > 0 && (
-                  <circle cx="52" cy="52" r="44" fill="none" stroke="#D4894A" strokeWidth="6" strokeLinecap="round"
-                    strokeDasharray={`${limitLen} ${C}`} strokeDashoffset={limitOffset} transform="rotate(-90 52 52)" />
-                )}
-                {avoidFoods.length > 0 && (
-                  <circle cx="52" cy="52" r="44" fill="none" stroke="#E06A6A" strokeWidth="6" strokeLinecap="round"
-                    strokeDasharray={`${avoidLen} ${C}`} strokeDashoffset={avoidOffset} transform="rotate(-90 52 52)" />
-                )}
-              </svg>
-              <div className="fm-ring-label">
-                <div className="fm-ring-num">{totalTested}</div>
-                <div className="fm-ring-sub">food{totalTested !== 1 ? 's' : ''} mapped</div>
-              </div>
-            </div>
-            <div className="fm-dist">
-              <div className="fm-dist-row">
-                <div className="fm-dist-label" style={{ color: '#A8C5A7' }}>Safe</div>
-                <div className="fm-dist-track"><div className="fm-dist-fill" style={{ width: `${totalTested ? (safeFoods.length / totalTested) * 100 : 0}%`, background: '#8BAE8A' }}></div></div>
-                <div className="fm-dist-count">{safeFoods.length}</div>
-              </div>
-              <div className="fm-dist-row">
-                <div className="fm-dist-label" style={{ color: '#E0A977' }}>Limit</div>
-                <div className="fm-dist-track"><div className="fm-dist-fill" style={{ width: `${totalTested ? (limitFoods.length / totalTested) * 100 : 0}%`, background: '#D4894A' }}></div></div>
-                <div className="fm-dist-count">{limitFoods.length}</div>
-              </div>
-              <div className="fm-dist-row">
-                <div className="fm-dist-label" style={{ color: '#EC9A9A' }}>Avoid</div>
-                <div className="fm-dist-track"><div className="fm-dist-fill" style={{ width: `${totalTested ? (avoidFoods.length / totalTested) * 100 : 0}%`, background: '#E06A6A' }}></div></div>
-                <div className="fm-dist-count">{avoidFoods.length}</div>
-              </div>
-            </div>
-          </div>
           )}
-        </div>
 
-        {/* ELIMINATION STATE: the testing manifest — exact order, tier-grouped */}
-        {totalTested === 0 && manifestTotal > 0 && (
-          <div style={{ background: 'transparent', border: 'none', borderTop: '1px solid rgba(0,0,0,0.06)', borderRadius: 0, padding: '16px 2px 0', marginBottom: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '12px' }}>
-              <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17px', color: '#1C1C1C' }}>Testing <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>manifest.</em></div>
-              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#A0A096', letterSpacing: '0.5px' }}>EXACT TESTING ORDER</div>
+          {notScheduled.length > 0 && (
+            <div style={{ marginBottom: 15 }}>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '0.8px', color: '#B8B0A0', marginBottom: 6 }}>NOT SCHEDULED — YOU TOLD US YOU NEVER EAT THESE</div>
+              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                {notScheduled.map(f => (
+                  <button key={f.name} onClick={() => setConfirmAdd(f)} style={{ background: 'rgba(0,0,0,0.04)', color: '#8A8474', borderRadius: 12, padding: '4px 10px', fontSize: '11px', border: '1px dashed rgba(0,0,0,0.12)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{f.name}</button>
+                ))}
+              </div>
+              {confirmAdd && (
+                <div style={{ marginTop: 8, padding: '10px 12px', background: 'rgba(0,0,0,0.03)', borderRadius: 8 }}>
+                  <div style={{ fontSize: '11.5px', color: '#1C1C1C', marginBottom: 8 }}>Add <strong>{confirmAdd.name}</strong> to your testing plan?</div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button onClick={() => addToPlan(confirmAdd)} style={{ background: '#3D5C3C', color: '#fff', border: 'none', borderRadius: 7, padding: '6px 13px', fontSize: '11.5px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Add to plan</button>
+                    <button onClick={() => setConfirmAdd(null)} style={{ background: 'rgba(0,0,0,0.05)', color: '#7A7A72', border: 'none', borderRadius: 7, padding: '6px 13px', fontSize: '11.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Cancel</button>
+                  </div>
+                </div>
+              )}
             </div>
-            {(() => { let n = 0; return manifestTiers.map((tier, ti) => (
-              <div key={ti} style={{ marginBottom: ti < manifestTiers.length - 1 ? '12px' : 0, opacity: ti === 0 ? 1 : ti === 1 ? 0.7 : 0.55 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 700, color: tier.chipText, background: tier.chip, padding: '2px 7px', borderRadius: '4px', letterSpacing: '0.8px' }}>DAY {tier.day}</div>
-                  <div style={{ fontSize: '10.5px', fontWeight: 600, color: tier.accent }}>{tier.title}</div>
-                  <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.05)' }}></div>
-                </div>
-                {tier.foods.map((f, fi) => { n += 1; return (
-                  <div key={fi} style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '6px 0', borderBottom: fi < tier.foods.length - 1 ? '1px solid rgba(0,0,0,0.04)' : 'none' }}>
-                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9.5px', color: '#C9C6BC', width: '16px' }}>{String(n).padStart(2, '0')}</span>
-                    <span style={{ fontSize: '12.5px', color: '#1C1C1C', fontWeight: 500 }}>{f.name}</span>
-                    <span style={{ marginLeft: 'auto', fontFamily: 'DM Mono, monospace', fontSize: '8.5px', color: '#A0A096', letterSpacing: '0.5px' }}>{FREQ_TAG[foodFrequency[f.name]] || ''}</span>
-                  </div>
-                ) })}
-              </div>
-            )) })()}
-            <div style={{ fontSize: '11.5px', color: '#7A7A72', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>Within each phase, the foods you eat most test first — the answers that matter most, measured against your freshest baseline. First verdicts land around <strong style={{ color: '#3D5C3C' }}>Day 71</strong>.</div>
+          )}
 
-            {notScheduled.length > 0 && (
-              <div style={{ background: '#FAF8F4', border: '1px dashed rgba(0,0,0,0.12)', borderRadius: '14px', padding: '15px 16px', marginTop: '14px' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: '#7A7A72', marginBottom: '7px' }}>Not scheduled</div>
-                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: '9px' }}>
-                  {notScheduled.map(f => (
-                    <button key={f.name} onClick={() => setConfirmAdd(f)} style={{ background: '#EFEDE6', color: '#8A8A82', borderRadius: '20px', padding: '5px 11px', fontSize: '12px', border: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{f.name}</button>
-                  ))}
-                </div>
-                {confirmAdd ? (
-                  <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '10px', padding: '11px 13px' }}>
-                    <div style={{ fontSize: '12px', color: '#1C1C1C', lineHeight: 1.5, marginBottom: '9px' }}>Add <strong>{confirmAdd.name}</strong> to your testing plan? It will be scheduled with your {confirmAdd.level.toLowerCase()}-sensitivity foods.</div>
-                    <div style={{ display: 'flex', gap: '7px' }}>
-                      <button onClick={() => addToPlan(confirmAdd)} style={{ background: '#3D5C3C', color: '#fff', border: 'none', borderRadius: '8px', padding: '7px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Add to plan</button>
-                      <button onClick={() => setConfirmAdd(null)} style={{ background: '#F4F2EC', color: '#7A7A72', border: 'none', borderRadius: '8px', padding: '7px 14px', fontSize: '12px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Cancel</button>
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ fontSize: '11.5px', color: '#8A8A82', lineHeight: 1.6 }}>Your test flagged these, but you told us you never eat them, so they aren't in your testing plan. Tap any food to add it.</div>
-                )}
-              </div>
+          <div className="fm-anim-5" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 20, paddingTop: 14, borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '6.5px', letterSpacing: '0.9px', color: '#9A927E', lineHeight: 1.8 }}>EVERY VERDICT EARNED<br />ON YOUR BODY</div>
+            {isComplete ? (
+              <div className="fm-stamp"><div className="fm-stamp-text">SENSIFY<br />VERIFIED<br />·</div></div>
+            ) : (
+              <div className="fm-progress-mark"><div style={{ fontFamily: 'DM Mono, monospace', fontSize: '6px', letterSpacing: '0.5px', color: '#9A927E', textAlign: 'center', lineHeight: 1.6 }}>IN<br />PROGRESS</div></div>
             )}
           </div>
-        )}
-
-        {/* SAFE */}
-        {totalTested === 0 && (
-          <div style={{ background: 'transparent', border: 'none', borderTop: '1px solid rgba(0,0,0,0.06)', borderRadius: 0, padding: '16px 2px 0', marginBottom: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17px', color: '#1C1C1C' }}>Where verdicts <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>land.</em></div>
-              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#A0A096', letterSpacing: '0.5px' }}>0 / {manifestTotal} EARNED</div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-              {[
-                { name: 'Safe', desc: 'earned by a clean reintro', bg: '#DEF2EE', dot: '#2C9D8A', text: '#1A6256', count: safeFoods.length },
-                { name: 'Limit', desc: 'small amounts sit fine', bg: '#FCEFD9', dot: '#E8941F', text: '#8A5410', count: limitFoods.length },
-                { name: 'Avoid', desc: 'your body objects, twice', bg: '#FBE9E9', dot: '#D64545', text: '#A32D2D', count: avoidFoods.length },
-              ].map((s, i) => (
-                <div key={i} style={{ background: s.bg, borderRadius: '11px', padding: '12px 10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: s.dot }}></div>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '12px', fontWeight: 500, color: s.text }}>{s.count}</div>
-                  </div>
-                  <div style={{ fontSize: '12.5px', fontWeight: 700, color: s.text }}>{s.name}</div>
-                  <div style={{ fontSize: '9.5px', color: s.text, opacity: 0.75, lineHeight: 1.45, marginTop: '3px' }}>{s.desc}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ fontSize: '10.5px', color: '#A0A096', marginTop: '11px', fontStyle: 'italic', textAlign: 'center' }}>Nothing gets a label without being tested.</div>
-          </div>
-        )}
-        {totalTested > 0 && (<>
-        <div className={`fm-section${safeFoods.length === 0 ? ' empty' : ''}`}>
-          <div className="fm-sec-head">
-            <div className="fm-sec-dot safe"></div>
-            <div className="fm-sec-name safe">Safe</div>
-            <div className="fm-sec-line"></div>
-            <div className="fm-sec-count">EAT FREELY · {safeFoods.length} EARNED</div>
-          </div>
-          <div className="fm-grid">
-            {safeFoods.length > 0
-              ? safeFoods.map((f, i) => (
-                  <div key={i} className="fm-chip safe">
-                    <span className="fm-chip-name">{f.food}</span>
-                    <span className="fm-chip-val">{reactionLabel(f)}</span>
-                  </div>
-                ))
-              : <div className="fm-chip empty"><span className="fm-chip-empty-text">No safe foods confirmed yet</span></div>}
-          </div>
         </div>
 
-        {/* LIMIT */}
-        <div className={`fm-section${limitFoods.length === 0 ? ' empty' : ''}`}>
-          <div className="fm-sec-head">
-            <div className="fm-sec-dot limit"></div>
-            <div className="fm-sec-name limit">Limit</div>
-            <div className="fm-sec-line"></div>
-            <div className="fm-sec-count">SMALL AMOUNTS · {limitFoods.length} EARNED</div>
-          </div>
-          <div className="fm-grid">
-            {limitFoods.length > 0
-              ? limitFoods.map((f, i) => (
-                  <div key={i} className="fm-chip limit">
-                    <span className="fm-chip-name">{f.food}</span>
-                    <span className="fm-chip-val">{reactionLabel(f)}</span>
-                  </div>
-                ))
-              : <div className="fm-chip empty"><span className="fm-chip-empty-text">No limit foods confirmed yet</span></div>}
-          </div>
-        </div>
-
-        {/* AVOID */}
-        <div className={`fm-section${avoidFoods.length === 0 ? ' empty' : ''}`}>
-          <div className="fm-sec-head">
-            <div className="fm-sec-dot avoid"></div>
-            <div className="fm-sec-name avoid">Avoid</div>
-            <div className="fm-sec-line"></div>
-            <div className="fm-sec-count">CONFIRMED · {avoidFoods.length}</div>
-          </div>
-          <div className="fm-grid">
-            {avoidFoods.length > 0
-              ? avoidFoods.map((f, i) => (
-                  <div key={i} className="fm-chip avoid">
-                    <span className="fm-chip-name">{f.food}</span>
-                    <span className="fm-chip-val">{reactionLabel(f)}</span>
-                  </div>
-                ))
-              : <div className="fm-chip empty"><span className="fm-chip-empty-text">No trigger foods confirmed yet</span></div>}
-          </div>
-        </div>
-
-        {/* CERTIFICATE FOOTER */}
-        <div className="fm-anim-5" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 20, paddingTop: 14, borderTop: '1px solid rgba(0,0,0,0.08)' }}>
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '0.9px', color: '#9A927E', lineHeight: 1.8 }}>EVERY VERDICT EARNED<br />ON YOUR BODY</div>
-          {isComplete ? (
-            <div className="fm-stamp"><div className="fm-stamp-text">SENSIFY<br />VERIFIED<br />·</div></div>
-          ) : (
-            <div className="fm-progress-mark"><div style={{ fontFamily: 'DM Mono, monospace', fontSize: 6, letterSpacing: '0.5px', color: '#9A927E', textAlign: 'center', lineHeight: 1.6 }}>IN<br />PROGRESS</div></div>
-          )}
-        </div>
-
-        </>)}
-
-        {/* FLAGGED NOT YET TESTED (mid-reintro: some verdicts in, rest queued) */}
-        {totalTested > 0 && flaggedFoods.length > 0 && (
-          <div className="fm-flagged">
-            <div className="fm-sec-head">
-              <div className="fm-sec-dot" style={{ background: 'rgba(0,0,0,0.2)' }}></div>
-              <div className="fm-sec-name" style={{ color: '#7A7A72' }}>Awaiting reintroduction</div>
-              <div className="fm-sec-line"></div>
-              <div className="fm-sec-count">{flaggedFoods.length} FOOD{flaggedFoods.length !== 1 ? 'S' : ''}</div>
-            </div>
-            {flaggedFoods.map((f, i) => (
-              <div key={i} className="fm-flagged-item">
-                <div className="fm-flagged-left">
-                  <div className="fm-flagged-dot" style={{ background: f.level === 'High' ? '#D64545' : f.level === 'Moderate' ? '#E8941F' : '#2C9D8A' }} />
-                  {f.name}
-                </div>
-                <div className="fm-flagged-status">{f.level} · QUEUED</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* NO SENSITIVITY */}
-        {noSensitivityFoods.length > 0 && (
-          <div className="fm-nosens">
-            <div className="fm-sec-head">
-              <div className="fm-sec-dot" style={{ background: 'rgba(0,0,0,0.12)' }}></div>
-              <div className="fm-sec-name" style={{ color: '#7A7A72' }}>No sensitivity detected</div>
-              <div className="fm-sec-line"></div>
-              <div className="fm-sec-count">{noSensitivityFoods.length} FOODS</div>
-            </div>
-            <div className="fm-nosens-pills">
-              {noSensitivityFoods.map((f, i) => (
-                <div key={i} className="fm-nosens-pill">{f.name}</div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* VERIFICATION FOOTER */}
-        <div className="fm-footer">
-          <div className="fm-verify">
-            SENSIFY VERIFIED · {memberId}{protocolDays > 0 ? ` · TESTED OVER ${protocolDays} DAYS` : ''}
-          </div>
-          <button className="fm-share-btn">Share my Food Map →</button>
-        </div>
-
-      </div>
       </div>
     </div>
   )
