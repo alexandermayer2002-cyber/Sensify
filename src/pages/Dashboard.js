@@ -1562,32 +1562,6 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 }</p>
                 {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
               </div>
-            {/* STAT CARDS — 3 column */}
-            {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && checkins.length > 0 && (() => {
-              const latest = checkins[0]
-              const metrics = []
-              if (profile?.baseline_bloating && latest?.answers?.bloating !== undefined) metrics.push({ label: 'Bloating', val: latest.answers.bloating, baseline: profile.baseline_bloating, lowerBetter: true })
-              if (profile?.baseline_energy && latest?.answers?.energy !== undefined) metrics.push({ label: 'Energy', val: latest.answers.energy, baseline: profile.baseline_energy, lowerBetter: false })
-              if (profile?.baseline_clarity && latest?.answers?.clarity !== undefined) metrics.push({ label: 'Clarity', val: latest.answers.clarity, baseline: profile.baseline_clarity, lowerBetter: false })
-              if (metrics.length === 0) return null
-              return (
-                <div className="snfy-stats" style={{ gridTemplateColumns: `repeat(${Math.min(metrics.length, 3)}, 1fr)`, marginTop: '14px' }}>
-                  {metrics.slice(0, 3).map((m, i) => {
-                    const change = Math.round(((m.val - m.baseline) / m.baseline) * 100)
-                    const improved = m.lowerBetter ? change < 0 : change > 0
-                    return (
-                      <div key={i} className="snfy-stat">
-                        <div className="snfy-stat-label">{m.label}</div>
-                        <div className="snfy-stat-val">{m.val}</div>
-                        <div className="snfy-stat-change" style={{ color: improved ? '#4A8C6A' : change === 0 ? '#7A7A72' : '#C95B5B' }}>
-                          {change > 0 ? '↑' : change < 0 ? '↓' : '—'} {Math.abs(change)}% baseline
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )
-            })()}
               <div className="snfy-graph-embed" style={{ marginTop: 14 }}>
                 <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
               </div>
