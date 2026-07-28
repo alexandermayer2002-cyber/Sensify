@@ -41,7 +41,8 @@ const css = `
   @keyframes fmRule { from { width: 0; } to { width: 44px; } }
   @keyframes fmRow { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
   .fm-typewriter { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.2px; color: #8A8474; overflow: hidden; white-space: nowrap; display: inline-block; width: 0; animation: fmType 1.6s steps(11) 1.8s forwards; }
-  @keyframes fmType { to { width: 14ch; } }
+  @keyframes fmType { to { width: 78px; } }
+  .fm-typewriter, .fm-caret { flex-shrink: 0; }
   .fm-caret { display: inline-block; width: 6px; height: 11px; background: #8A8474; margin-left: 3px; animation: fmCaret 1s steps(1) infinite; }
   @keyframes fmCaret { 50% { opacity: 0; } }
   @keyframes fmStamp { 0% { opacity: 0; transform: rotate(-8deg) scale(2.6); } 60% { opacity: 1; transform: rotate(-8deg) scale(0.92); } 80% { transform: rotate(-8deg) scale(1.06); } 100% { opacity: 1; transform: rotate(-8deg) scale(1); } }
