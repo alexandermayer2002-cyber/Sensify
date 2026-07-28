@@ -78,10 +78,17 @@ const css = `
   .snfy-signout:hover { color: #1C1C1C; }
 
   .snfy-layout { padding: 24px 20px 40px; max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
-  .snfy-layout > div:last-child { order: -1; }
+  .snfy-layout > div { display: contents; }
+  .snfy-avoiding { order: 1; }
+  .snfy-guide-slot { order: 2; }
+  .snfy-insight { order: 3; }
+  .snfy-weekly-card { order: 4; }
+  .snfy-comp { order: 5; }
+  .snfy-trends { order: 6; }
+  .snfy-layout .snfy-action, .snfy-layout .snfy-greeting, .snfy-layout .snfy-phase { order: -1; }
   @media (min-width: 680px) {
     .snfy-layout { display: grid; grid-template-columns: 1.45fr 1fr; gap: 18px; padding: 24px 28px 48px; align-items: start; }
-    .snfy-layout > div:last-child { order: 0; }
+    .snfy-layout > div { display: block; }
   }
 
   /* Greeting */
@@ -130,7 +137,6 @@ const css = `
   /* Stat cards — 3 column */
   .snfy-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
   .snfy-stat { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 12px; padding: 14px; }
-  .snfy-signal .snfy-stat { background: #F6F3EB; border: none; }
   .snfy-stat-label { font-size: 10px; color: #7A7A72; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
   .snfy-stat-val { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; margin-bottom: 3px; }
   .snfy-stat-change { font-size: 10px; font-weight: 500; margin-top: 3px; color: #4A8C6A; }
@@ -191,10 +197,11 @@ const css = `
   .snfy-avoid-chip { font-size: 13px; padding: 7px 13px; border-radius: 10px; font-weight: 500; }
 
   /* Weekly insight — instrument style */
-  .snfy-insight { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 16px; margin-top: 16px; }
-  .snfy-signal .snfy-insight { background: linear-gradient(135deg, rgba(139,174,138,0.10), rgba(44,157,138,0.05)); border: none; border-radius: 12px; padding: 14px 15px; margin-top: 0; }
-  .snfy-graph-embed > div { background: transparent !important; border: none !important; border-radius: 0 !important; padding: 0 !important; margin-top: 0 !important; }
-  .snfy-graph-embed { padding-top: 14px; border-top: 1px solid rgba(0,0,0,0.06); }
+  .snfy-insight { background: linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF; border: 1px solid rgba(61,92,60,0.14); border-radius: 18px; padding: 18px 20px; margin-top: 16px; }
+  .snfy-weekly-card { margin-top: 14px; }
+  .snfy-weekly-card > div { border-radius: 18px !important; padding: 15px 18px !important; margin-top: 0 !important; }
+  .snfy-trends { margin-top: 14px; }
+  .snfy-trends > div { border-radius: 18px !important; margin-top: 0 !important; }
   .snfy-insight-head { display: flex; align-items: center; gap: 7px; margin-bottom: 9px; }
   .snfy-insight-dot { width: 6px; height: 6px; border-radius: 50%; background: #2C9D8A; animation: snfyPulse 1.6s infinite; flex-shrink: 0; }
   .snfy-insight-tag { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: #3D5C3C; }
@@ -1543,45 +1550,43 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
 
 
-            {/* SIGNAL CARD — AI insight + symptom graph + weekly check-in row */}
-            <div className="snfy-signal" style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '18px 20px', marginTop: 14 }}>
-              {/* WEEKLY INSIGHT — instrument style */}
-              <div className="snfy-insight">
-                <div className="snfy-insight-head">
-                  <span className="snfy-insight-dot"></span>
-                  <span className="snfy-insight-tag">{
-                    profile?.latest_insight ? `WEEKLY INSIGHT · WEEK ${profile?.latest_insight_week || 1}`
-                    : (currentDay >= 1 ? `PROTOCOL · DAY ${currentDay}` : 'GETTING STARTED')
-                  }</span>
-                </div>
-                <p>{
-                  profile?.latest_insight
-                  || (currentDay >= 1
-                    ? `You're on day ${currentDay} of your ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'} phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.`
-                    : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
-                }</p>
-                {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
+            {/* AI INSIGHT — the voice card */}
+            <div className="snfy-insight" style={{ marginTop: 14 }}>
+              <div className="snfy-insight-head">
+                <span className="snfy-insight-dot"></span>
+                <span className="snfy-insight-tag">{
+                  profile?.latest_insight ? `WEEKLY INSIGHT · WEEK ${profile?.latest_insight_week || 1}`
+                  : (currentDay >= 1 ? `PROTOCOL · DAY ${currentDay}` : 'GETTING STARTED')
+                }</span>
               </div>
-              <div className="snfy-graph-embed" style={{ marginTop: 14 }}>
-                <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
+              <p>{
+                profile?.latest_insight
+                || (currentDay >= 1
+                  ? `You're on day ${currentDay} of your ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'} phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.`
+                  : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
+              }</p>
+              {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
+            </div>
+
+            {/* WEEKLY CHECK-IN — slim state card */}
+            <div className="snfy-weekly-card">
+            {showCheckinCard ? (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: checkinLate ? '#FDF2EA' : '#EDF3ED', border: checkinLate ? '1px solid rgba(212,137,74,0.25)' : '1px solid rgba(61,92,60,0.18)', borderRadius: 12, padding: '12px 14px', marginTop: 14 }}>
+                <div>
+                  <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1C1C1C' }}>Weekly check-in</div>
+                  <div style={{ fontSize: 10.5, color: checkinLate ? '#8A5410' : '#3D5C3C', marginTop: 1 }}>{checkinLate ? "Catch up — your data still matters" : 'Due now · takes 2 minutes'}</div>
+                </div>
+                <button className={`snfy-btn${checkinLate ? ' amber' : ''}`} style={{ padding: '9px 15px', fontSize: 12.5 }} onClick={() => setScreen('checkin')}>Start →</button>
               </div>
-              {showCheckinCard ? (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: checkinLate ? '#FDF2EA' : '#EDF3ED', border: checkinLate ? '1px solid rgba(212,137,74,0.25)' : '1px solid rgba(61,92,60,0.18)', borderRadius: 12, padding: '12px 14px', marginTop: 14 }}>
-                  <div>
-                    <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1C1C1C' }}>Weekly check-in</div>
-                    <div style={{ fontSize: 10.5, color: checkinLate ? '#8A5410' : '#3D5C3C', marginTop: 1 }}>{checkinLate ? "Catch up — your data still matters" : 'Due now · takes 2 minutes'}</div>
-                  </div>
-                  <button className={`snfy-btn${checkinLate ? ' amber' : ''}`} style={{ padding: '9px 15px', fontSize: 12.5 }} onClick={() => setScreen('checkin')}>Start →</button>
+            ) : (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FAF8F4', borderRadius: 12, padding: '12px 14px', marginTop: 14 }}>
+                <div>
+                  <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1C1C1C' }}>Weekly check-in</div>
+                  <div style={{ fontSize: 10.5, color: '#8A8A82', marginTop: 1 }}>{checkins.length === 0 ? 'Opens at the end of week 1' : 'Done — next one opens at week\u2019s end'}</div>
                 </div>
-              ) : (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FAF8F4', borderRadius: 12, padding: '12px 14px', marginTop: 14 }}>
-                  <div>
-                    <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1C1C1C' }}>Weekly check-in</div>
-                    <div style={{ fontSize: 10.5, color: '#8A8A82', marginTop: 1 }}>{checkins.length === 0 ? 'Opens at the end of week 1' : 'Done — next one opens at week\u2019s end'}</div>
-                  </div>
-                  <span style={{ fontSize: 11, color: '#B8B6AE' }}>{checkins.length === 0 ? 'Locked' : '\u2713'}</span>
-                </div>
-              )}
+                <span style={{ fontSize: 11, color: '#B8B6AE' }}>{checkins.length === 0 ? 'Locked' : '\u2713'}</span>
+              </div>
+            )}
             </div>
 
             {/* COMPLIANCE DOTS */}
@@ -1672,7 +1677,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               const goto = (t, s) => { setGuideOpen(false); window.scrollTo(0, 0); setTab(t); setScreen(s) }
               return (
                 <>
-                  <button onClick={() => setGuideOpen(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: 14, padding: '14px 15px', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 2px 10px rgba(61,92,60,0.1)', marginBottom: 14 }}>
+                  <button className="snfy-guide-slot" onClick={() => setGuideOpen(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: 18, padding: '14px 15px', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 2px 10px rgba(61,92,60,0.1)', marginBottom: 14 }}>
                     <div style={{ width: 34, height: 34, borderRadius: 10, background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
                     </div>
@@ -1803,6 +1808,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
               )}
 
+            </div>
+
+            {/* SYMPTOM TRENDS — ambient monitor */}
+            <div className="snfy-trends">
+              <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
             </div>
 
           </div>
