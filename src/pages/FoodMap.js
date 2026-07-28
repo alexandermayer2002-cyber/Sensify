@@ -5,7 +5,7 @@ import { protocolDay } from '../utils/protocolDay'
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=DM+Mono:wght@400;500&display=swap');
 
-  .fm-wrap { min-height: calc(100vh - 56px); background: #FAF8F4; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
+  .fm-wrap { min-height: calc(100vh - 56px); background: linear-gradient(180deg, #F4F0E6 0%, #F8F5EE 320px, #F8F5EE 100%); font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
   .fm-content { max-width: 760px; margin: 0 auto; padding: 24px 20px 56px; }
   .fm-loading { display: flex; align-items: center; justify-content: center; min-height: 50vh; font-size: 14px; color: #7A7A72; }
 

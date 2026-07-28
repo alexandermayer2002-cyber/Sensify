@@ -114,7 +114,7 @@ function ProgramComplete({ session, profile, labResult, completedFoods }) {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
-  .rt-wrap { min-height: 100vh; background: #FAF8F4; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
+  .rt-wrap { min-height: 100vh; background: linear-gradient(180deg, #F4F0E6 0%, #F8F5EE 320px, #F8F5EE 100%); font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
   .rt-content { max-width: 680px; margin: 0 auto; padding: 24px 20px 60px; }
   .rt-header { margin-bottom: 24px; }
   .rt-title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; margin-bottom: 5px; letter-spacing: -0.3px; }

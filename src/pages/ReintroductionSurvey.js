@@ -4,7 +4,7 @@ import { computeProvisionalVerdict, applyAiAdjustment } from '../utils/verdictEn
 import { generateReintroVerdict } from '../utils/aiInsights'
 
 const s = {
-  wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column' },
+  wrap: { minHeight: '100vh', background: "linear-gradient(180deg, #F4F0E6 0%, #F8F5EE 320px, #F8F5EE 100%)", display: 'flex', flexDirection: 'column' },
   topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)' },
   logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
   logoEm: { color: '#3D5C3C', fontStyle: 'italic' },

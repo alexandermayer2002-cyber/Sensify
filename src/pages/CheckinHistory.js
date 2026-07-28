@@ -331,7 +331,7 @@ function CheckinCard({ checkin: c, index: i, profile, formatDate, complianceColo
 }
 
 const s = {
-  wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column' },
+  wrap: { minHeight: '100vh', background: "linear-gradient(180deg, #F4F0E6 0%, #F8F5EE 320px, #F8F5EE 100%)", display: 'flex', flexDirection: 'column' },
   content: { flex: 1, padding: '24px 20px 48px', maxWidth: '960px', margin: '0 auto', width: '100%' },
   header: { marginBottom: '24px' },
   title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, marginBottom: '5px', letterSpacing: '-0.3px' },

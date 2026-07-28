@@ -39,7 +39,7 @@ const CYCLE_PHASES = [
 ]
 
 const s = {
-  wrap: { minHeight: '100vh', background: '#FAF8F4', fontFamily: 'DM Sans, sans-serif', display: 'flex', flexDirection: 'column' },
+  wrap: { minHeight: '100vh', background: "linear-gradient(180deg, #F4F0E6 0%, #F8F5EE 320px, #F8F5EE 100%)", fontFamily: 'DM Sans, sans-serif', display: 'flex', flexDirection: 'column' },
   topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 10 },
   back: { background: 'none', border: 'none', color: '#7A7A72', fontSize: '14px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
   logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
