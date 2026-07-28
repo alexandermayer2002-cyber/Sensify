@@ -33,7 +33,7 @@ import {
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
 
-  .snfy-app { min-height: 100vh; background: #FAF8F4; color: #1C1C1C; font-family: 'DM Sans', sans-serif; }
+  .snfy-app { min-height: 100vh; background: linear-gradient(180deg, #F4F0E6 0%, #F8F5EE 320px, #F8F5EE 100%); color: #1C1C1C; font-family: 'DM Sans', sans-serif; }
 
   .snfy-nav {
     background: rgba(255,255,255,0.92);
@@ -130,12 +130,13 @@ const css = `
   /* Stat cards — 3 column */
   .snfy-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
   .snfy-stat { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 12px; padding: 14px; }
+  .snfy-signal .snfy-stat { background: #F6F3EB; border: none; }
   .snfy-stat-label { font-size: 10px; color: #7A7A72; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
   .snfy-stat-val { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; margin-bottom: 3px; }
   .snfy-stat-change { font-size: 10px; font-weight: 500; margin-top: 3px; color: #4A8C6A; }
 
   /* Compliance dots */
-  .snfy-comp { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 18px; margin-bottom: 0; }
+  .snfy-comp { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 18px; padding: 20px; margin-bottom: 0; }
   .snfy-comp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .snfy-comp-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-bottom: 4px; }
   .snfy-comp-count { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1; color: #1C1C1C; }
@@ -175,7 +176,7 @@ const css = `
   .snfy-sec-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-bottom: 9px; }
 
   /* Avoiding list — full categorized */
-  .snfy-avoiding { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 20px; margin-bottom: 0; }
+  .snfy-avoiding { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 18px; padding: 20px; margin-bottom: 0; }
   .snfy-avoid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .snfy-avoid-count { font-size: 11px; color: #A8A69E; }
   .snfy-avoid-bar { display: flex; gap: 2px; height: 8px; border-radius: 5px; overflow: hidden; margin-bottom: 20px; }
@@ -191,6 +192,9 @@ const css = `
 
   /* Weekly insight — instrument style */
   .snfy-insight { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 16px; margin-top: 16px; }
+  .snfy-signal .snfy-insight { background: linear-gradient(135deg, rgba(139,174,138,0.10), rgba(44,157,138,0.05)); border: none; border-radius: 12px; padding: 14px 15px; margin-top: 0; }
+  .snfy-graph-embed > div { background: transparent !important; border: none !important; border-radius: 0 !important; padding: 0 !important; margin-top: 0 !important; }
+  .snfy-graph-embed { padding-top: 14px; border-top: 1px solid rgba(0,0,0,0.06); }
   .snfy-insight-head { display: flex; align-items: center; gap: 7px; margin-bottom: 9px; }
   .snfy-insight-dot { width: 6px; height: 6px; border-radius: 50%; background: #2C9D8A; animation: snfyPulse 1.6s infinite; flex-shrink: 0; }
   .snfy-insight-tag { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: #3D5C3C; }
@@ -1538,6 +1542,26 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
+
+            {/* SIGNAL CARD — AI insight + symptom graph + weekly check-in row */}
+            <div className="snfy-signal" style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '18px 20px', marginTop: 14 }}>
+              {/* WEEKLY INSIGHT — instrument style */}
+              <div className="snfy-insight">
+                <div className="snfy-insight-head">
+                  <span className="snfy-insight-dot"></span>
+                  <span className="snfy-insight-tag">{
+                    profile?.latest_insight ? `WEEKLY INSIGHT · WEEK ${profile?.latest_insight_week || 1}`
+                    : (currentDay >= 1 ? `PROTOCOL · DAY ${currentDay}` : 'GETTING STARTED')
+                  }</span>
+                </div>
+                <p>{
+                  profile?.latest_insight
+                  || (currentDay >= 1
+                    ? `You're on day ${currentDay} of your ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'} phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.`
+                    : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
+                }</p>
+                {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
+              </div>
             {/* STAT CARDS — 3 column */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && checkins.length > 0 && (() => {
               const latest = checkins[0]
@@ -1564,27 +1588,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
               )
             })()}
-
-            {/* SIGNAL CARD — AI insight + symptom graph + weekly check-in row */}
-            <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '18px 20px', marginTop: 14 }}>
-              {/* WEEKLY INSIGHT — instrument style */}
-              <div className="snfy-insight">
-                <div className="snfy-insight-head">
-                  <span className="snfy-insight-dot"></span>
-                  <span className="snfy-insight-tag">{
-                    profile?.latest_insight ? `WEEKLY INSIGHT · WEEK ${profile?.latest_insight_week || 1}`
-                    : (currentDay >= 1 ? `PROTOCOL · DAY ${currentDay}` : 'GETTING STARTED')
-                  }</span>
-                </div>
-                <p>{
-                  profile?.latest_insight
-                  || (currentDay >= 1
-                    ? `You're on day ${currentDay} of your ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'} phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.`
-                    : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
-                }</p>
-                {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
-              </div>
-              <div style={{ marginTop: 14 }}>
+              <div className="snfy-graph-embed" style={{ marginTop: 14 }}>
                 <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
               </div>
               {showCheckinCard ? (
