@@ -18,7 +18,13 @@ const css = `
   .fm-name em { font-style: normal; color: #1C1C1C; }
   .fm-meta { font-family: 'DM Mono', monospace; font-size: 8px; color: #9A927E; text-align: center; line-height: 1.9; letter-spacing: 0.8px; }
   .fm-meta span { color: #3D5C3C; }
-  .fm-cert { position: relative; background: linear-gradient(180deg, #FDFBF6, #F8F4EA); border: 1px solid rgba(0,0,0,0.11); border-radius: 4px; padding: 40px 38px 30px; box-shadow: 0 24px 60px rgba(60,50,30,0.22), 0 4px 14px rgba(60,50,30,0.1), inset 0 0 80px rgba(201,162,39,0.035); max-width: 600px; margin: 0 auto; min-height: 760px; display: flex; flex-direction: column; animation: fmSetDown 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: 50% 20%; }
+  .fm-cert { position: relative; background: linear-gradient(180deg, #FDFBF6, #F8F4EA); border: 1px solid rgba(0,0,0,0.11); border-radius: 4px; padding: 40px 38px 30px; box-shadow: 0 24px 60px rgba(60,50,30,0.22), 0 4px 14px rgba(60,50,30,0.1), inset 0 0 80px rgba(201,162,39,0.035); max-width: 600px; margin: 0 auto; min-height: 760px; display: flex; flex-direction: column; animation: fmSetDown 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: 50% 20%;  animation: fmLay 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  @keyframes fmLay {
+    0% { opacity: 0; transform: translateY(-42px) scale(1.05) rotate(-1.6deg); }
+    55% { opacity: 1; transform: translateY(0) scale(1) rotate(0.4deg); }
+    75% { transform: rotate(-0.2deg); }
+    100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  }
   @keyframes fmSetDown {
     0% { opacity: 0; transform: perspective(1400px) rotateX(16deg) translateY(-36px) scale(1.05); box-shadow: 0 70px 110px rgba(60,50,30,0.3), 0 20px 40px rgba(60,50,30,0.14), inset 0 0 80px rgba(201,162,39,0.035); }
     55% { opacity: 1; }
@@ -26,8 +32,7 @@ const css = `
   }
   @media (prefers-reduced-motion: reduce) { .fm-cert { animation: none; } }
   .fm-cert::before { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(160,140,90,0.22); border-radius: 2px; pointer-events: none; }
-  .fm-cert::after { content: 'S.'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Fraunces', serif; font-size: 260px; font-weight: 300; color: rgba(60,50,30,0.025); pointer-events: none; line-height: 1; }
-  @media (max-width: 620px) { .fm-cert { padding: 26px 20px 22px; } .fm-cert::after { font-size: 190px; } }
+  @media (max-width: 620px) { .fm-cert { padding: 26px 20px 22px; } }
   .fm-ghost-row { display: flex; align-items: center; gap: 9px; padding: 9px 2px; border-bottom: 1px solid rgba(0,0,0,0.05); }
   .fm-ghost-row:last-child { border-bottom: none; }
   .fm-ghost-mark { width: 8px; height: 8px; border-radius: 2px; border: 1px dashed rgba(0,0,0,0.16); }
@@ -333,7 +338,7 @@ export default function FoodMap({ session, profile, labResult }) {
 
           <div className="fm-anim-1" style={{ textAlign: 'center', marginBottom: 6 }}>
             <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '2.2px', color: '#9A927E', marginBottom: 7, textTransform: 'uppercase' }}>SENSIFY · {isComplete ? 'VERIFIED RESULT' : (protocolDays > 0 && protocolDays <= 56) ? 'IN CALIBRATION' : 'IN PROGRESS'}</div>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '31px', fontWeight: 400, color: '#1C1C1C', letterSpacing: '-0.3px' }}>{name}'s Food Map</div>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '32px', fontWeight: 380, color: '#2A2620', letterSpacing: '0.2px', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{name}'s Food Map</div>
             <div className="fm-gold-rule"></div>
           </div>
           <div className="fm-anim-2" style={{ textAlign: 'center', fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E', marginBottom: 18 }}>
