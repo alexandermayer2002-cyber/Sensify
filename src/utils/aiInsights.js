@@ -218,7 +218,10 @@ Write 3-4 sentences. Rules:
 - Name their specific Low sensitivity foods that are now available
 - Explain the reintroduction cycle briefly — one food at a time, 14 days per food
 - Tell them to go to the Reintro tab to choose their first food
+- If there are Low sensitivity foods, name the top recommended first food (first in the list) and say "we suggest starting with [food]" or similar — make it feel like a real recommendation, not just a list
+- You can choose to test on their own or they can follow the recommended order
 - Confident and celebratory but not over the top
+- Do NOT use markdown formatting like **bold** or *italic* — plain text only
 - Do NOT mention texts or SMS
 - Do NOT say "Congratulations" as the opening word
 
@@ -259,6 +262,7 @@ Write 3 to 4 sentences. Rules:
 
 CRITICAL: Never state, suggest, or imply a serving size, portion, quantity, or amount to eat (no cups, grams, pieces, "a small portion", "build gradually", etc). Do not give a titration or ramp up schedule. The protocol itself dictates portions, not you. If you mention eating the food, refer only to "your normal serving" without specifying any amount.
 
+Do NOT use markdown formatting like **bold** or *italic* — plain text only.
 Write only the message. No labels.`
 
   return callClaude(prompt, 220)

@@ -121,7 +121,7 @@ const css = `
   .rt-title em { font-style: italic; color: #3D5C3C; }
   .rt-sub { font-size: 13px; color: #7A7A72; line-height: 1.55; }
 
-  .rt-active-card { background: #1C1C1C; border-radius: 18px; padding: 24px; margin-bottom: 14px; color: white; }
+  .rt-active-card { background: #22301F; border-radius: 18px; padding: 24px; margin-bottom: 14px; color: white; }
   .rt-active-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; opacity: 0.45; margin-bottom: 6px; }
   .rt-active-food { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; letter-spacing: -0.5px; margin-bottom: 4px; }
   .rt-active-food em { font-style: italic; color: #8BAE8A; }
@@ -425,17 +425,21 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
     if (!activeReintro) return
     const wasExposure = (activeReintro.exposure_days_completed || 0) < 3
 
-    if (wasExposure && ateFood) {
-      const newCount = (activeReintro.exposure_days_completed || 0) + 1
-      const updates = { exposure_days_completed: newCount }
-      // Hitting the 3rd exposure day starts washout
-      if (newCount >= 3) {
-        updates.washout_started_at = todayLocal()
+    try {
+      if (wasExposure && ateFood) {
+        const newCount = (activeReintro.exposure_days_completed || 0) + 1
+        const updates = { exposure_days_completed: newCount }
+        if (newCount >= 3) {
+          updates.washout_started_at = todayLocal()
+        }
+        await supabase.from('reintroduction_results').update(updates).eq('id', activeReintro.id)
       }
-      await supabase.from('reintroduction_results').update(updates).eq('id', activeReintro.id)
+      await loadData()
+    } catch (e) {
+      console.error('handleDailyComplete error:', e)
+    } finally {
+      setShowDailyCheckin(false)
     }
-    setShowDailyCheckin(false)
-    await loadData()
   }
 
   // Severe reaction -> stop cycle, auto-verdict Avoid
@@ -529,8 +533,8 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const cycleStart = activeReintro?.started_at ? new Date(activeReintro.started_at) : null
   const today = new Date()
   const calDaysSinceStart = cycleStart
-    ? Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate())) / (1000 * 60 * 60 * 24)) + 1
-    : 1
+    ? Math.floor((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate())) / (1000 * 60 * 60 * 24))
+    : 0
 
   const exposureDaysCompleted = activeReintro?.exposure_days_completed || 0
   const inExposure = exposureDaysCompleted < EXPOSURE_TARGET
@@ -798,12 +802,12 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               </div>
             )}
             {foodBriefing && !loadingBriefing && (
-              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '16px', marginBottom: '14px' }}>
+              <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: '14px', padding: '16px', marginBottom: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '9px' }}>
                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2C9D8A', animation: 'snfyPulse 1.6s infinite', flexShrink: 0 }}></span>
                   <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#3D5C3C' }}>REINTRODUCTION BRIEFING</span>
                 </div>
-                <div style={{ fontSize: '13.5px', color: '#1C1C1C', lineHeight: 1.7 }}>{foodBriefing}</div>
+                <div style={{ fontSize: '13.5px', color: '#1C1C1C', lineHeight: 1.7 }}>{foodBriefing.replace(/\*\*/g, '')}</div>
                 <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8.5px', letterSpacing: '0.6px', color: '#A8A69E', textTransform: 'uppercase', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>BASED ON YOUR SENSITIVITY LEVEL</div>
               </div>
             )}
