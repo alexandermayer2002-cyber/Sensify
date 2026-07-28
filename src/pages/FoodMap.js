@@ -5,7 +5,7 @@ import { protocolDay } from '../utils/protocolDay'
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=DM+Mono:wght@400;500&display=swap');
 
-  .fm-wrap { min-height: calc(100vh - 56px); background: linear-gradient(180deg, #F4F0E6 0%, #F8F5EE 320px, #F8F5EE 100%); font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
+  .fm-wrap { min-height: calc(100vh - 56px); background: transparent; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
   .fm-content { max-width: 760px; margin: 0 auto; padding: 24px 20px 56px; }
   .fm-loading { display: flex; align-items: center; justify-content: center; min-height: 50vh; font-size: 14px; color: #7A7A72; }
 
@@ -18,7 +18,7 @@ const css = `
   .fm-name em { font-style: normal; color: #1C1C1C; }
   .fm-meta { font-family: 'DM Mono', monospace; font-size: 8px; color: #9A927E; text-align: center; line-height: 1.9; letter-spacing: 0.8px; }
   .fm-meta span { color: #3D5C3C; }
-  .fm-cert { position: relative; background: linear-gradient(180deg, #FDFBF6, #F8F4EA); border: 1px solid rgba(0,0,0,0.11); border-radius: 4px; padding: 40px 38px 30px; box-shadow: 0 24px 60px rgba(60,50,30,0.22), 0 4px 14px rgba(60,50,30,0.1), inset 0 0 80px rgba(201,162,39,0.035); max-width: 600px; margin: 0 auto; min-height: 760px; display: flex; flex-direction: column; animation: fmSetDown 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: 50% 20%;  animation: fmLay 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .fm-cert { position: relative; background: linear-gradient(180deg, #FDFBF6, #F8F4EA); border: 1px solid rgba(0,0,0,0.11); border-radius: 6px; padding: 38px 40px 28px; box-shadow: 0 24px 60px rgba(60,50,30,0.2), 0 4px 14px rgba(60,50,30,0.09), inset 0 0 80px rgba(201,162,39,0.035); max-width: 680px; margin: 0 auto; animation: fmLay 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
   @keyframes fmLay {
     0% { opacity: 0; transform: translateY(-42px) scale(1.05) rotate(-1.6deg); }
     55% { opacity: 1; transform: translateY(0) scale(1) rotate(0.4deg); }
@@ -32,7 +32,7 @@ const css = `
   }
   @media (prefers-reduced-motion: reduce) { .fm-cert { animation: none; } }
   .fm-cert::before { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(160,140,90,0.22); border-radius: 2px; pointer-events: none; }
-  @media (max-width: 620px) { .fm-cert { padding: 26px 20px 22px; } }
+  @media (max-width: 620px) { .fm-cert { padding: 26px 18px 20px; border-radius: 8px; } }
   .fm-ghost-row { display: flex; align-items: center; gap: 9px; padding: 9px 2px; border-bottom: 1px solid rgba(0,0,0,0.05); }
   .fm-ghost-row:last-child { border-bottom: none; }
   .fm-ghost-mark { width: 8px; height: 8px; border-radius: 2px; border: 1px dashed rgba(0,0,0,0.16); }

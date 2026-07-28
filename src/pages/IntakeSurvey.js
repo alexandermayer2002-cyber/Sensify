@@ -57,7 +57,7 @@ const isFrequent = (val) => val && FREQ_FREQUENT.some(f => val.includes(f.split(
 const isNever = (val) => !val || FREQ_NEVER.includes(val)
 
 const s = {
-  wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column', fontFamily: 'DM Sans, sans-serif' },
+  wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column', fontFamily: 'DM Sans, sans-serif' },
   topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 10 },
   logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
   logoEm: { color: '#3D5C3C' },

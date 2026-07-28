@@ -284,7 +284,7 @@ const s = {
   priorHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#A0A096', fontWeight: 600, margin: '4px 0 12px' },
   priorHide: { background: 'none', border: 'none', color: '#8BAE8A', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textTransform: 'uppercase', letterSpacing: '0.5px' },
   priorDivider: { textAlign: 'center', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#A0A096', fontWeight: 600, margin: '8px 0 16px', paddingTop: '12px', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  wrap: { display: 'flex', flexDirection: 'column', height: 'calc(100% - 24px)', maxWidth: '680px', margin: '12px auto', width: 'calc(100% - 24px)', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '16px', overflow: 'hidden' },
+  wrap: { display: 'flex', flexDirection: 'column', height: 'calc(100% - 24px)', maxWidth: '680px', margin: '12px auto', width: 'calc(100% - 24px)', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '16px', overflow: 'hidden' },
   header: { padding: '20px 20px 14px', borderBottom: '1px solid rgba(0,0,0,0.05)', background: '#FFFFFF' },
   headerTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300 },
   em: { fontStyle: 'italic', color: '#3D5C3C' },

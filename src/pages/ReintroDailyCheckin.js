@@ -186,7 +186,7 @@ function buildSymptomList(profile) {
 }
 
 const s = {
-  wrap: { minHeight: 'calc(100vh - 56px)', background: "linear-gradient(180deg, #F4F0E6 0%, #F8F5EE 320px, #F8F5EE 100%)", padding: '24px 20px', fontFamily: 'DM Sans, sans-serif' },
+  wrap: { minHeight: 'calc(100vh - 56px)', background: 'transparent', padding: '24px 20px', fontFamily: 'DM Sans, sans-serif' },
   card: { maxWidth: '460px', margin: '0 auto', background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '18px', padding: '26px' },
   eyebrow: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#3D5C3C', marginBottom: '16px' },
   q: { fontFamily: 'Fraunces, serif', fontSize: '23px', fontWeight: 300, marginBottom: '8px', lineHeight: 1.25 },
