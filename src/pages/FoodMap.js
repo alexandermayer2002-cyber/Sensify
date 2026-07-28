@@ -18,13 +18,24 @@ const css = `
   .fm-name em { font-style: normal; color: #1C1C1C; }
   .fm-meta { font-family: 'DM Mono', monospace; font-size: 8px; color: #9A927E; text-align: center; line-height: 1.9; letter-spacing: 0.8px; }
   .fm-meta span { color: #3D5C3C; }
-  .fm-cert { position: relative; background: linear-gradient(180deg, #FDFBF6, #F8F4EA); border: 1px solid rgba(0,0,0,0.09); border-radius: 6px; padding: 26px 22px; box-shadow: 0 16px 40px rgba(60,50,30,0.13), inset 0 0 60px rgba(201,162,39,0.03); }
+  .fm-cert { position: relative; background: linear-gradient(180deg, #FDFBF6, #F8F4EA); border: 1px solid rgba(0,0,0,0.11); border-radius: 4px; padding: 40px 38px 30px; box-shadow: 0 20px 50px rgba(60,50,30,0.15), inset 0 0 80px rgba(201,162,39,0.035); max-width: 560px; margin: 0 auto; min-height: 724px; display: flex; flex-direction: column; }
+  .fm-cert::before { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(160,140,90,0.22); border-radius: 2px; pointer-events: none; }
+  .fm-cert::after { content: 'S.'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Fraunces', serif; font-size: 260px; font-weight: 300; color: rgba(60,50,30,0.025); pointer-events: none; line-height: 1; }
+  @media (max-width: 620px) { .fm-cert { padding: 26px 20px 22px; } .fm-cert::after { font-size: 190px; } }
+  .fm-ghost-row { display: flex; align-items: center; gap: 9px; padding: 9px 2px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .fm-ghost-row:last-child { border-bottom: none; }
+  .fm-ghost-mark { width: 8px; height: 8px; border-radius: 2px; border: 1px dashed rgba(0,0,0,0.16); }
+  .fm-ghost-line { flex: 1; }
+  @keyframes fmTestPulse { 0%, 100% { background: rgba(232,148,31,0.06); } 50% { background: rgba(232,148,31,0.13); } }
+  .fm-testing-row { animation: fmTestPulse 2.4s ease-in-out infinite; border-radius: 8px; }
   .fm-serial { position: absolute; top: 14px; right: 16px; font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 1.2px; color: #B8B0A0; }
   .fm-cert-eyebrow { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 2.2px; color: #9A927E; margin-bottom: 8px; text-align: center; text-transform: uppercase; }
   .fm-gold-rule { height: 2px; background: #C9A227; margin: 10px auto 12px; opacity: 0.5; width: 44px; animation: fmRule 0.5s ease 0.5s both; }
   @keyframes fmFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fmRule { from { width: 0; } to { width: 44px; } }
   @keyframes fmRow { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes fmSign { to { stroke-dashoffset: 0; } }
+  @keyframes fmSignLoop { 0% { stroke-dashoffset: 220; } 45% { stroke-dashoffset: 0; } 70% { stroke-dashoffset: 0; opacity: 1; } 85% { opacity: 0; } 86% { stroke-dashoffset: 220; opacity: 0; } 100% { opacity: 1; stroke-dashoffset: 220; } }
   @keyframes fmStamp { 0% { opacity: 0; transform: rotate(-8deg) scale(2.6); } 60% { opacity: 1; transform: rotate(-8deg) scale(0.92); } 80% { transform: rotate(-8deg) scale(1.06); } 100% { opacity: 1; transform: rotate(-8deg) scale(1); } }
   .fm-anim-1 { animation: fmFade 0.55s ease 0.15s both; }
   .fm-anim-2 { animation: fmFade 0.5s ease 0.7s both; }
@@ -111,6 +122,7 @@ const css = `
 
 export default function FoodMap({ session, profile, labResult }) {
   const [foodMap, setFoodMap] = useState([])
+  const [activeCycle, setActiveCycle] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -126,6 +138,15 @@ export default function FoodMap({ session, profile, labResult }) {
         .eq('user_id', session.user.id)
         .order('updated_at', { ascending: false })
       if (data) setFoodMap(data)
+      const { data: active } = await supabase
+        .from('reintroduction_results')
+        .select('food, started_at, exposure_days_completed, washout_started_at')
+        .eq('user_id', session.user.id)
+        .is('verdict', null)
+        .order('started_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      setActiveCycle(active || null)
     } catch (e) {}
     setLoading(false)
   }
@@ -299,16 +320,28 @@ export default function FoodMap({ session, profile, labResult }) {
 
         {/* THE CERTIFICATE — mirrors the approved mock exactly */}
         <div className="fm-cert">
-          <div className="fm-serial">№ 0001</div>
+          <div className="fm-serial">NO. 0001</div>
 
           <div className="fm-anim-1" style={{ textAlign: 'center', marginBottom: 6 }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '2.2px', color: '#9A927E', marginBottom: 7, textTransform: 'uppercase' }}>SENSIFY · {isComplete ? 'VERIFIED RESULT' : totalTested === 0 ? 'IN CALIBRATION' : 'IN PROGRESS'}</div>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, color: '#1C1C1C' }}>{name}'s Food Map</div>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '2.2px', color: '#9A927E', marginBottom: 7, textTransform: 'uppercase' }}>SENSIFY · {isComplete ? 'VERIFIED RESULT' : (protocolDays > 0 && protocolDays <= 56) ? 'IN CALIBRATION' : 'IN PROGRESS'}</div>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '31px', fontWeight: 400, color: '#1C1C1C', letterSpacing: '-0.3px' }}>{name}'s Food Map</div>
             <div className="fm-gold-rule"></div>
           </div>
           <div className="fm-anim-2" style={{ textAlign: 'center', fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E', marginBottom: 18 }}>
             {totalTested} OF {Math.max(manifestTotal + totalTested, totalTested) || totalTested} FOODS TESTED{protocolDays > 0 ? ` · DAY ${protocolDays}` : ''}{completedDate ? ` · ${completedDate.toUpperCase()}` : ''}
           </div>
+
+          {activeCycle && (
+            <div className="fm-anim-3 fm-testing-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 12px', marginBottom: 16, border: '1px solid rgba(232,148,31,0.3)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#E8941F', boxShadow: '0 0 10px rgba(232,148,31,0.6)' }}></span>
+                <span style={{ fontSize: '13.5px', fontWeight: 700, color: '#9A5E0B' }}>{activeCycle.food}</span>
+              </div>
+              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A5E0B' }}>
+                NOW TESTING · {(activeCycle.exposure_days_completed || 0) < 3 ? `EXPOSURE ${Math.min((activeCycle.exposure_days_completed || 0) + 1, 3)} OF 3` : 'WASHOUT'} · VERDICT PENDING
+              </span>
+            </div>
+          )}
 
           {[
             { key: 'safe', label: 'Safe', sub: totalTested === 0 ? 'EAT FREELY' : `${safeFoods.length} EARNED`, subPre: totalTested === 0 ? null : 'EAT FREELY · ', color: '#137663', mark: '#2C9D8A', foods: safeFoods, empty: 'Awaiting first clean reintroduction' },
@@ -317,7 +350,7 @@ export default function FoodMap({ session, profile, labResult }) {
           ].map((tier, ti) => (
             <div key={tier.key} className={`fm-anim-${ti + 3}`} style={{ marginBottom: 15 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontFamily: 'Fraunces, serif', fontSize: '15px', color: tier.color }}>{tier.label}</span>
+                <span style={{ fontFamily: 'Fraunces, serif', fontSize: '19px', color: tier.color }}>{tier.label}</span>
                 <span style={{ flex: 1, borderBottom: '1px dotted rgba(0,0,0,0.15)', alignSelf: 'center' }}></span>
                 <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E' }}>{tier.subPre || ''}{tier.sub}</span>
               </div>
@@ -330,7 +363,10 @@ export default function FoodMap({ session, profile, labResult }) {
                   <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{reactionLabel(f)}</span>
                 </div>
               )) : (
-                <div style={{ padding: '8px 2px', fontSize: '11.5px', color: '#B8B0A0', fontStyle: 'normal' }}>{tier.empty}</div>
+                <>
+                  <div className="fm-ghost-row"><span className="fm-ghost-mark"></span><span className="fm-ghost-line"></span></div>
+                  <div className="fm-ghost-row"><span className="fm-ghost-mark"></span><span className="fm-ghost-line"></span><span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '0.7px', color: '#C9C2B0' }}>{tier.empty.toUpperCase()}</span></div>
+                </>
               )}
             </div>
           ))}
@@ -348,7 +384,7 @@ export default function FoodMap({ session, profile, labResult }) {
                     <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', color: '#C9C2B0', width: 16 }}>{String(n).padStart(2, '0')}</span>
                     <span style={{ fontSize: '12.5px', fontWeight: 500, color: '#1C1C1C' }}>{f.name}</span>
                   </div>
-                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '0.5px', color: '#9A927E' }}>DAY {mt.day}+</span>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '0.5px', color: protocolDays >= mt.day ? '#3D5C3C' : '#9A927E', fontWeight: protocolDays >= mt.day ? 700 : 400 }}>{protocolDays >= mt.day ? 'UNLOCKED' : (mt.day - protocolDays) === 1 ? 'UNLOCKS TOMORROW' : `IN ${mt.day - protocolDays} DAYS`}</span>
                 </div>
               ) }) ) })()}
             </div>
@@ -375,7 +411,15 @@ export default function FoodMap({ session, profile, labResult }) {
           )}
 
           <div className="fm-anim-5" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 20, paddingTop: 14, borderTop: '1px solid rgba(0,0,0,0.08)' }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '6.5px', letterSpacing: '0.9px', color: '#9A927E', lineHeight: 1.8 }}>EVERY VERDICT EARNED<br />ON YOUR BODY</div>
+            <div>
+              <svg width="130" height="30" viewBox="0 0 130 30" style={{ display: 'block', marginBottom: 4 }}>
+                <path d="M 4 20 C 12 8, 18 24, 26 15 S 40 6, 46 16 S 58 26, 66 14 S 80 5, 88 17 S 102 24, 110 12 S 122 10, 126 16"
+                  fill="none" stroke="rgba(61,92,60,0.55)" strokeWidth="1.4" strokeLinecap="round"
+                  strokeDasharray="220" strokeDashoffset="220"
+                  style={{ animation: isComplete ? 'fmSign 2.2s ease 2.2s forwards' : 'fmSignLoop 6s ease-in-out 2.2s infinite' }} />
+              </svg>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '6.5px', letterSpacing: '0.9px', color: '#9A927E', lineHeight: 1.8 }}>SIGNED CONTINUOUSLY, YOUR BODY<br />EVERY VERDICT EARNED</div>
+            </div>
             {isComplete ? (
               <div className="fm-stamp"><div className="fm-stamp-text">SENSIFY<br />VERIFIED<br />·</div></div>
             ) : (
