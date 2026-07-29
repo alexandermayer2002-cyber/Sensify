@@ -1290,6 +1290,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           profile={profile}
           labResult={labResult}
           currentDay={currentDay}
+          onOpenDailyCheckin={() => setScreen('daily-checkin')}
           onStartVerdictSurvey={(food) => {
             setScreen('reintro-survey')
           }}

@@ -311,7 +311,10 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
             )}
             {(reintroPhase === 'washout' || ateFood !== null) && (
               <div>
-                <div style={s.label}>Any symptoms today?</div>
+                <div style={s.label}>{reintroPhase === 'washout' ? 'Anything surface today?' : 'Any symptoms today?'}</div>
+                {reintroPhase === 'washout' && (
+                  <div style={{ fontSize: '12px', color: '#7A7A72', lineHeight: 1.55, marginTop: '-6px', marginBottom: '10px' }}>Reactions can show up a day or two after the last serving. That's what this window watches for.</div>
+                )}
                 <div style={s.yn}>
                   <button style={hadSymptoms === true ? s.ynYes : s.ynBtn} onClick={() => setHadSymptoms(true)}>Yes</button>
                   <button style={hadSymptoms === false ? s.ynYes : s.ynBtn} onClick={() => { setHadSymptoms(false); setSymptomIntensities({}) }}>No, felt fine</button>

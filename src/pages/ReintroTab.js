@@ -419,7 +419,7 @@ const cs = {
   symPill: { fontSize: '11px', padding: '2px 8px', borderRadius: '20px', border: '1px solid', textTransform: 'capitalize' },
 }
 
-export default function ReintroTab({ session, profile, labResult, currentDay, onStartVerdictSurvey }) {
+export default function ReintroTab({ session, profile, labResult, currentDay, onStartVerdictSurvey, onOpenDailyCheckin }) {
   const [foodMap, setFoodMap] = useState([])
   const [activeReintro, setActiveReintro] = useState(null)
   const [dailyLogs, setDailyLogs] = useState([])
@@ -893,7 +893,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                     <div style={{ marginTop: '14px', fontSize: '12px', color: '#4A8C6A', fontWeight: 500 }}>✓ Logged for today. See you tomorrow.</div>
                   ) : (
                     <button
-                      onClick={() => setShowDailyCheckin(true)}
+                      onClick={() => onOpenDailyCheckin ? onOpenDailyCheckin() : setShowDailyCheckin(true)}
                       style={{ marginTop: '14px', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '10px', padding: '11px 20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
                     >
                       {isExposure ? 'Log today\u2019s check-in \u2192' : 'Log washout check \u2192'}
@@ -932,9 +932,9 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
             {isVerdictDay && (
               <div style={{ background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: '14px', padding: '18px', marginBottom: '14px' }}>
-                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 9px', borderRadius: '20px', display: 'inline-block', marginBottom: '10px' }}>Day 14 — verdict ready</div>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, marginBottom: '6px' }}><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>{activeReintro.food}</em> reintroduction complete.</div>
-                <div style={{ fontSize: '13px', color: '#7A7A72', marginBottom: '14px', lineHeight: 1.6 }}>Complete your survey and get your AI verdict — Safe, Limit, or Avoid.</div>
+                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 9px', borderRadius: '20px', display: 'inline-block', marginBottom: '10px' }}>Day 14 · Verdict ready</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, marginBottom: '6px' }}><span style={{ color: '#3D5C3C' }}>{activeReintro.food}</span> reintroduction complete.</div>
+                <div style={{ fontSize: '13px', color: '#7A7A72', marginBottom: '14px', lineHeight: 1.6 }}>One last survey. Your answers and fourteen days of logs decide the verdict: Safe, Limit, or Avoid.</div>
                 <button style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '9px', padding: '11px 20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }} onClick={() => onStartVerdictSurvey(activeReintro.food)}>
                   Get my verdict →
                 </button>
