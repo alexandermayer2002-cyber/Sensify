@@ -368,6 +368,7 @@ function YourNumbers({ profile, weekFactors }) {
 
 function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
   const [trendLens, setTrendLens] = React.useState('average')
+  const [phaseLens, setPhaseLens] = React.useState('all')
   const metrics = []
   if (profile?.baseline_bloating) metrics.push({ id: 'bloating', label: 'Bloating', baseline: profile.baseline_bloating, color: '#C95B5B', lowerIsBetter: true })
   if (profile?.baseline_energy) metrics.push({ id: 'energy', label: 'Energy', baseline: profile.baseline_energy, color: '#3D5C3C', lowerIsBetter: false })
@@ -390,12 +391,16 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
   }
 
   const sortedCheckins = [...checkins].sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at))
-  const points = [{ week: 0, val: metric.baseline, label: 'Baseline' }]
+  let points = [{ week: 0, val: metric.baseline, label: 'Baseline' }]
   sortedCheckins.forEach((c, i) => {
     if (c.answers?.[metric.id] !== undefined) {
-      points.push({ week: c.week_number || i + 1, val: c.answers[metric.id], label: `Week ${c.week_number || i + 1}` })
+      points.push({ week: c.week_number || i + 1, val: c.answers[metric.id], label: `Week ${c.week_number || i + 1}`, reintro: c.answers?._phase === 'reintroduction' || (c.week_number || i + 1) > 8, exposure: c.answers?._cycle?.phase === 'exposure', cycleFood: c.answers?._cycle?.food || null })
     }
   })
+
+  const allPoints = points
+  if (phaseLens === 'elimination') points = points.filter(p => !p.reintro)
+  else if (phaseLens === 'reintroduction') points = points.filter(p => p.reintro || p.week === 0)
 
   const latest = points[points.length - 1]
   // Values from actual check-ins (exclude the baseline point at index 0)
@@ -420,6 +425,8 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
   const toY = (v) => padT + gH - ((v - minVal) / (maxVal - minVal)) * gH
 
   const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${toX(i)} ${toY(p.val)}`).join(' ')
+  // Reintro divider: where the story changes chapters (only meaningful in 'all' view)
+  const firstReintroIdx = phaseLens === 'all' ? points.findIndex(p => p.reintro) : -1
   const areaD = points.length > 0
     ? `${pathD} L ${toX(points.length - 1)} ${H - padB} L ${toX(0)} ${H - padB} Z`
     : ''
@@ -430,12 +437,17 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
         <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72' }}>Symptom trends</div>
         <div style={{ fontSize: '11px', fontWeight: 500, color: improved ? '#4A8C6A' : change === 0 ? '#7A7A72' : '#C95B5B' }}>{changeLabel} vs baseline</div>
       </div>
-      {checkinVals.length >= 2 && (
-        <div style={{ display: 'flex', gap: '4px', background: '#F0EEE7', borderRadius: '8px', padding: '3px', marginBottom: '14px' }}>
+      {checkinVals.length >= 2 && (<>
+        <div style={{ display: 'flex', gap: '4px', background: '#F0EEE7', borderRadius: '8px', padding: '3px', marginBottom: '6px' }}>
           <button onClick={() => setTrendLens('week')} style={{ flex: 1, textAlign: 'center', fontSize: '11.5px', fontWeight: trendLens === 'week' ? 600 : 400, color: trendLens === 'week' ? '#1C1C1C' : '#8A8A82', background: trendLens === 'week' ? '#fff' : 'transparent', padding: '5px 0', borderRadius: '6px', border: 'none', cursor: 'pointer', boxShadow: trendLens === 'week' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none' }}>Latest week</button>
           <button onClick={() => setTrendLens('average')} style={{ flex: 1, textAlign: 'center', fontSize: '11.5px', fontWeight: trendLens === 'average' ? 600 : 400, color: trendLens === 'average' ? '#1C1C1C' : '#8A8A82', background: trendLens === 'average' ? '#fff' : 'transparent', padding: '5px 0', borderRadius: '6px', border: 'none', cursor: 'pointer', boxShadow: trendLens === 'average' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none' }}>Overall average</button>
         </div>
-      )}
+        <div style={{ display: 'flex', gap: 4, marginTop: 6, marginBottom: 4 }}>
+          {[['all', 'Both phases'], ['elimination', 'Elimination'], ['reintroduction', 'Reintro']].map(([key, label]) => (
+            <button key={key} onClick={() => setPhaseLens(key)} style={{ flex: 1, textAlign: 'center', fontSize: '10.5px', fontWeight: phaseLens === key ? 600 : 400, color: phaseLens === key ? '#1C1C1C' : '#8A8A82', background: phaseLens === key ? '#fff' : 'transparent', padding: '4px 0', borderRadius: '6px', border: phaseLens === key ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{label}</button>
+          ))}
+        </div>
+      </>)}
 
       {/* Metric selector pills */}
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
@@ -467,11 +479,16 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
         {areaD && <path d={areaD} fill={metric.color} opacity="0.07" />}
         {/* Line */}
         <path d={pathD} fill="none" stroke={metric.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        {firstReintroIdx > 0 && (<>
+          <line x1={toX(firstReintroIdx)} y1={padT} x2={toX(firstReintroIdx)} y2={H - padB} stroke="#D4894A" strokeWidth="1" strokeDasharray="3,3" opacity="0.5" />
+          <text x={toX(firstReintroIdx) + 3} y={padT + 7} fontSize="6" fill="#D4894A" fontFamily="DM Mono, monospace" letterSpacing="0.5">REINTRO</text>
+        </>)}
 
         {/* Points */}
         {points.map((p, i) => (
           <g key={i}>
-            <circle cx={toX(i)} cy={toY(p.val)} r="4" fill="white" stroke={metric.color} strokeWidth="2" />
+            <circle cx={toX(i)} cy={toY(p.val)} r="4" fill="white" stroke={p.exposure ? '#D4894A' : metric.color} strokeWidth="2">{p.cycleFood && <title>{`${p.cycleFood} ${p.exposure ? 'exposure' : 'washout'} week`}</title>}</circle>
+            {p.exposure && <circle cx={toX(i)} cy={toY(p.val)} r="7" fill="none" stroke="#D4894A" strokeWidth="1" opacity="0.5" />}
             {i === points.length - 1 && (
               <text x={toX(i)} y={toY(p.val) - 8} textAnchor="middle" fontSize="10" fill={metric.color} fontFamily="DM Sans, sans-serif" fontWeight="500">{p.val}</text>
             )}
@@ -750,6 +767,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [checkinLate, setCheckinLate] = useState(false)
   const [activeCheckinWeek, setActiveCheckinWeek] = useState(1)
   const [activeReintroId, setActiveReintroId] = useState(null)
+  const [activeCycleLite, setActiveCycleLite] = useState(null)
   const [complianceData, setComplianceData] = useState([])
   const [weekFactors, setWeekFactors] = useState([])
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
@@ -814,12 +832,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       const { data: c } = await supabase.from('weekly_checkins').select('*').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(8)
       if (c) setCheckins(c)
 
-      // Active reintro cycle id (for the verdict survey)
-      if (p?.current_reintro_food) {
+      // Active reintro cycle (verdict survey id + verdict-ready detection for the hero)
+      {
         const { data: ar } = await supabase.from('reintroduction_results')
-          .select('id').eq('user_id', session.user.id).is('verdict', null)
+          .select('id, food, started_at, exposure_days_completed, washout_started_at')
+          .eq('user_id', session.user.id).is('verdict', null)
           .order('started_at', { ascending: false }).limit(1).maybeSingle()
         setActiveReintroId(ar?.id || null)
+        setActiveCycleLite(ar || null)
       }
 
       const { data: comp } = await supabase.from('daily_compliance').select('*').eq('user_id', session.user.id).gte('date', localDateOffset(-10)).order('date', { ascending: false })
@@ -1126,6 +1146,17 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     && profile?.track_decision !== 'declined'
   // User who declined the protocol and is in self-tracking mode.
   const isTracking = profile?.track_decision === 'declined'
+  const verdictReadyFood = (() => {
+    try {
+      if (!activeCycleLite?.washout_started_at) return null
+      const [y, m, d] = String(activeCycleLite.washout_started_at).split('T')[0].split('-').map(Number)
+      const ws = new Date(y, m - 1, d)
+      const now = new Date()
+      const washoutDay = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - ws) / 86400000) + 1
+      return washoutDay > 11 ? activeCycleLite.food : null
+    } catch (e) { return null }
+  })()
+
   const cockpitActive = (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && currentDay >= 1 && !needsCommonDecision && !isTracking && !showIntakeCard && !showLabCard && !showPendingLabCard
   const showReintroCard = calculatedPhase === 'reintroduction' && profile?.current_reintro_day >= 14
 
@@ -1307,7 +1338,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.5)', marginBottom: 3 }}>{getGreeting()}, {name}</div>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.1 }}>Day {calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of {calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.</div>
                 </div>
-                {!dailyDone ? (
+                {verdictReadyFood ? (
+                  <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#C9A227', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 0 22px rgba(201,162,39,0.35)' }}>
+                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Your {verdictReadyFood} verdict is ready</span>
+                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
+                  </button>
+                ) : !dailyDone ? (
                   <button onClick={() => setScreen('daily-checkin')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Tonight's check-in</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>

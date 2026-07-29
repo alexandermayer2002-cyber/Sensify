@@ -853,12 +853,23 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <div className="rt-active-card">
               <div className="rt-active-eyebrow">Currently testing</div>
               <div className="rt-active-food"><em>{activeReintro.food}</em></div>
-              <div className="rt-active-sub">14-day reintroduction cycle · Day {cycleDay} of 14</div>
+              <div className="rt-active-sub">14-day reintroduction cycle · Day {Math.min(cycleDay, 14)} of 14</div>
 
-              <div className={`rt-phase-badge ${isExposure ? 'exposure' : 'washout'}`}>
-                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isExposure ? '#6DBF8A' : '#D4894A', flexShrink: 0 }}></div>
-                {isExposure ? 'Exposure phase — eat this food' : 'Washout phase — avoid this food'}
+              <div className={`rt-phase-badge ${isVerdictDay ? 'exposure' : isExposure ? 'exposure' : 'washout'}`}>
+                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isVerdictDay ? '#3D5C3C' : isExposure ? '#6DBF8A' : '#D4894A', flexShrink: 0 }}></div>
+                {isVerdictDay ? 'Cycle complete' : isExposure ? 'Exposure phase: eat this food' : 'Washout phase: avoid this food'}
               </div>
+
+              {isVerdictDay && (
+              <div style={{ background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: '14px', padding: '18px', marginBottom: '14px' }}>
+                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 9px', borderRadius: '20px', display: 'inline-block', marginBottom: '10px' }}>Day 14 · Verdict ready</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, marginBottom: '6px' }}><span style={{ color: '#3D5C3C' }}>{activeReintro.food}</span> reintroduction complete.</div>
+                <div style={{ fontSize: '13px', color: '#7A7A72', marginBottom: '14px', lineHeight: 1.6 }}>One last survey. Your answers and fourteen days of logs decide the verdict: Safe, Limit, or Avoid.</div>
+                <button style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '9px', padding: '11px 20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }} onClick={() => onStartVerdictSurvey(activeReintro.food)}>
+                  Get my verdict →
+                </button>
+              </div>
+            )}
 
               {/* 14-day timeline */}
               <div className="rt-timeline">
@@ -879,6 +890,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                 <span style={{ flex: 11, textAlign: 'right' }}>Washout (days 4 to 14)</span>
               </div>
 
+              {!isVerdictDay && (<>
               <div className="rt-instruction">
                 <div className="rt-instruction-label">Today's instruction</div>
                 <div className="rt-instruction-text">
@@ -901,6 +913,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                   )
                 )}
               </div>
+              </>)}
             </div>
 
             {/* Food briefing */}
@@ -909,7 +922,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                 <div style={{ fontSize: '12px', color: '#7A7A72', fontStyle: 'italic' }}>Getting your personalized briefing...</div>
               </div>
             )}
-            {foodBriefing && !loadingBriefing && (
+            {foodBriefing && !loadingBriefing && !isVerdictDay && (
               <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: '14px', padding: '16px', marginBottom: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '9px' }}>
                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2C9D8A', animation: 'snfyPulse 1.6s infinite', flexShrink: 0 }}></span>
@@ -930,16 +943,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               cycleStart={activeReintro.started_at}
             />
 
-            {isVerdictDay && (
-              <div style={{ background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: '14px', padding: '18px', marginBottom: '14px' }}>
-                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 9px', borderRadius: '20px', display: 'inline-block', marginBottom: '10px' }}>Day 14 · Verdict ready</div>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, marginBottom: '6px' }}><span style={{ color: '#3D5C3C' }}>{activeReintro.food}</span> reintroduction complete.</div>
-                <div style={{ fontSize: '13px', color: '#7A7A72', marginBottom: '14px', lineHeight: 1.6 }}>One last survey. Your answers and fourteen days of logs decide the verdict: Safe, Limit, or Avoid.</div>
-                <button style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '9px', padding: '11px 20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }} onClick={() => onStartVerdictSurvey(activeReintro.food)}>
-                  Get my verdict →
-                </button>
-              </div>
-            )}
+
           </>
         )}
 

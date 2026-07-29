@@ -401,6 +401,7 @@ const COMPLIANCE_COLORS = {
 export default function CheckinHistory({ session, profile, weeklyDue, onStartCheckin }) {
   const [checkins, setCheckins] = useState([])
   const [loading, setLoading] = useState(true)
+  const [phaseFilter, setPhaseFilter] = useState('all')
 
   useEffect(() => {
     loadCheckins()
@@ -562,8 +563,19 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
         {/* CHECK-IN HISTORY */}
         {!loading && checkins.length > 0 && (
           <>
-            <div style={s.secLabel}>Past entries</div>
-            {checkins.map((c, i) => (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+              <div style={s.secLabel}>Past entries</div>
+              <div style={{ display: 'flex', gap: 5 }}>
+                {[['all', 'All'], ['elimination', 'Elimination'], ['reintroduction', 'Reintro']].map(([key, label]) => (
+                  <button key={key} onClick={() => setPhaseFilter(key)} style={{ background: phaseFilter === key ? '#3D5C3C' : '#FFFFFF', color: phaseFilter === key ? '#FFFFFF' : '#7A7A72', border: phaseFilter === key ? '1px solid #3D5C3C' : '1px solid rgba(0,0,0,0.1)', borderRadius: 16, padding: '5px 12px', fontSize: 11.5, fontWeight: phaseFilter === key ? 600 : 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{label}</button>
+                ))}
+              </div>
+            </div>
+            {checkins.filter(c => {
+              if (phaseFilter === 'all') return true
+              const entryPhase = c.answers?._phase || ((c.week_number || 0) > 8 ? 'reintroduction' : 'elimination')
+              return entryPhase === phaseFilter
+            }).map((c, i) => (
               <CheckinCard key={i} checkin={c} index={i} profile={profile} formatDate={formatDate} complianceColors={COMPLIANCE_COLORS} styles={s} />
             ))}
           </>

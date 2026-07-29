@@ -108,6 +108,21 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
     } catch (e) { /* adherence never blocks the insight */ }
   }
 
+  // ---- Active reintro cycle context (so the insight never misreads a test week) ----
+  let cycleLine = ''
+  if (session?.user?.id) {
+    try {
+      const { data: ac } = await supabase.from('reintroduction_results')
+        .select('food, exposure_days_completed, washout_started_at')
+        .eq('user_id', session.user.id).is('verdict', null)
+        .order('started_at', { ascending: false }).limit(1).maybeSingle()
+      if (ac) {
+        const inWashout = !!ac.washout_started_at
+        cycleLine = `\nACTIVE REINTRODUCTION CYCLE: currently testing ${ac.food} (${inWashout ? 'washout phase, food removed again' : `exposure phase, ${ac.exposure_days_completed || 0} of 3 exposure days logged`}).`
+      }
+    } catch (e) { /* cycle context never blocks the insight */ }
+  }
+
   // ---- Layer 2: confound analysis (gated; surfaces at most one gentle note) ----
   let confoundFragment = ''
   if (CONFOUND_ENABLED && session?.user?.id) {
@@ -186,7 +201,7 @@ ${previousScores ? `LAST WEEK'S SCORES:\n${previousScores}` : 'This is their fir
 
 OVERALL FEELING: ${answers.overall_feeling || 'not specified'}
 WHAT CHANGED THIS WEEK: ${contextStr}
-COMPLIANCE: ${answers.compliance || 'not specified'}${adherenceLine}
+COMPLIANCE: ${answers.compliance || 'not specified'}${adherenceLine}${cycleLine}
 ${answers.notes ? `USER NOTES: ${answers.notes}` : ''}
 
 YOUR TASK:
@@ -196,6 +211,7 @@ Write a personalized weekly insight. Rules:
 - CRITICAL: each score is tagged "higher is better" or "higher is worse", and changes are tagged [IMPROVED] or [WORSENED]. Interpret direction correctly: a rising energy or clarity score is GOOD, a rising bloating or reflux score is BAD. Never call a worsening a win or an improvement a setback.
 - Reference specific numbers and percentage changes, never be vague
 - Factor in what changed this week (travel, stress, etc.) when explaining score shifts
+- If an ACTIVE REINTRODUCTION CYCLE is listed and symptoms rose this week, attribute the rise to the food being tested rather than calling it a setback. That signal is the test doing its job. Never predict or assign the verdict, the cycle survey decides that.
 - Voice: a sharp analyst who respects the reader. Direct, specific, calm. NOT a cheerleader, NOT a coach. Never use phrases like "wins you've earned", "keep crushing it", "you've got this", "momentum", or "journey"
 - Never use em dashes or hyphens as punctuation. Use commas or periods instead
 - Never say "based on your data" or "according to your responses"
@@ -326,10 +342,21 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
     }
     setGeneratingInsight(false)
 
+    // Stamp the cycle context onto the record at write time. Context not captured
+    // now is unrecoverable later; this is what makes honest filtering possible.
+    let cycleTag = null
+    try {
+      const { data: tagCycle } = await supabase.from('reintroduction_results')
+        .select('food, washout_started_at')
+        .eq('user_id', session.user.id).is('verdict', null)
+        .order('started_at', { ascending: false }).limit(1).maybeSingle()
+      if (tagCycle) cycleTag = { food: tagCycle.food, phase: tagCycle.washout_started_at ? 'washout' : 'exposure' }
+    } catch (e) {}
+
     await supabase.from('weekly_checkins').insert({
       user_id: session.user.id,
       week_number: weekNumber,
-      answers,
+      answers: { ...answers, _cycle: cycleTag, _phase: (phase === 'reintroduction' ? 'reintroduction' : 'elimination') },
       ai_insight: aiInsight,
       submitted_at: new Date().toISOString(),
     })
