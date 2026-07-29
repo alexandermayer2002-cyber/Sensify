@@ -399,6 +399,7 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
   })
 
   const allPoints = points
+  const allCheckinCount = allPoints.length - 1
   if (phaseLens === 'elimination') points = points.filter(p => !p.reintro)
   else if (phaseLens === 'reintroduction') points = points.filter(p => p.reintro || p.week === 0)
 
@@ -437,7 +438,7 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
         <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72' }}>Symptom trends</div>
         <div style={{ fontSize: '11px', fontWeight: 500, color: improved ? '#4A8C6A' : change === 0 ? '#7A7A72' : '#C95B5B' }}>{changeLabel} vs baseline</div>
       </div>
-      {checkinVals.length >= 2 && (<>
+      {allCheckinCount >= 2 && (<>
         <div style={{ display: 'flex', gap: '4px', background: '#F0EEE7', borderRadius: '8px', padding: '3px', marginBottom: '6px' }}>
           <button onClick={() => setTrendLens('week')} style={{ flex: 1, textAlign: 'center', fontSize: '11.5px', fontWeight: trendLens === 'week' ? 600 : 400, color: trendLens === 'week' ? '#1C1C1C' : '#8A8A82', background: trendLens === 'week' ? '#fff' : 'transparent', padding: '5px 0', borderRadius: '6px', border: 'none', cursor: 'pointer', boxShadow: trendLens === 'week' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none' }}>Latest week</button>
           <button onClick={() => setTrendLens('average')} style={{ flex: 1, textAlign: 'center', fontSize: '11.5px', fontWeight: trendLens === 'average' ? 600 : 400, color: trendLens === 'average' ? '#1C1C1C' : '#8A8A82', background: trendLens === 'average' ? '#fff' : 'transparent', padding: '5px 0', borderRadius: '6px', border: 'none', cursor: 'pointer', boxShadow: trendLens === 'average' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none' }}>Overall average</button>

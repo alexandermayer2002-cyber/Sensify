@@ -22,12 +22,12 @@ const s = {
   sectionLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '14px' },
   questionBlock: { marginBottom: '28px' },
   questionSub: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.55, marginTop: '-4px', marginBottom: '12px' },
-  summaryCard: { background: '#0E0E0C', borderRadius: '14px', padding: '20px', marginBottom: '28px' },
+  summaryCard: { background: '#22301F', borderRadius: '18px', padding: '22px', marginBottom: '28px' },
   summaryText: { fontSize: '14.5px', color: 'rgba(255,255,255,0.92)', lineHeight: 1.7 },
   stackBtns: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  stackBtn: { textAlign: 'left', padding: '14px 16px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.1)', background: '#FFFFFF', fontSize: '13.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1C1C1C', transition: 'all 0.12s' },
-  stackBtnOn: { textAlign: 'left', padding: '14px 16px', borderRadius: '11px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '13.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#2D6B42' },
-  textarea: { width: '100%', boxSizing: 'border-box', padding: '14px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.1)', background: '#FFFFFF', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', resize: 'vertical', lineHeight: 1.5 },
+  stackBtn: { textAlign: 'left', padding: '14px 16px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.09)', background: '#FAF8F4', fontSize: '13.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1C1C1C', transition: 'all 0.12s' },
+  stackBtnOn: { textAlign: 'left', padding: '14px 16px', borderRadius: '12px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '13.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#2D6B42' },
+  textarea: { width: '100%', boxSizing: 'border-box', padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.09)', background: '#FAF8F4', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', resize: 'vertical', lineHeight: 1.5 },
   questionLabel: { fontSize: '14px', fontWeight: 500, marginBottom: '10px', lineHeight: 1.5 },
   scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#7A7A72', marginBottom: '7px' },
   scaleRow: { display: 'flex', gap: '5px' },
@@ -38,24 +38,25 @@ const s = {
   triggerBtn: { flex: 1, padding: '13px', borderRadius: '10px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1C1C1C', textAlign: 'center', transition: 'all 0.12s' },
   triggerBtnOn: { flex: 1, padding: '13px', borderRadius: '10px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: 'white', textAlign: 'center' },
   triggerBtnUnsure: { flex: 1, padding: '13px', borderRadius: '10px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FAF8F4', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#7A7A72', textAlign: 'center', transition: 'all 0.12s' },
-  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#FAF8F4', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
+  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#F6F3EC', borderTop: '1px solid rgba(0,0,0,0.06)' },
+  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
   verdictWrap: { flex: 1, padding: '28px 24px', display: 'flex', flexDirection: 'column' },
-  verdictBox: { borderRadius: '14px', padding: '24px', textAlign: 'center', marginBottom: '16px' },
-  verdictEmoji: { fontSize: '40px', marginBottom: '12px' },
-  verdictTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '6px' },
+  verdictBox: { borderRadius: '18px', padding: '28px 24px', textAlign: 'center', marginBottom: '16px' },
+  verdictEmoji: { display: 'flex', justifyContent: 'center', marginBottom: '12px' },
+  verdictTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 400, marginBottom: '6px' },
   verdictSub: { fontSize: '13px', opacity: 0.8, lineHeight: 1.6 },
-  analysisCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '16px', marginBottom: '12px' },
+  analysisCard: { background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: '18px', padding: '18px 20px', marginBottom: '12px' },
   analysisTag: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 8px', borderRadius: '20px', display: 'inline-block', marginBottom: '8px' },
   analysisText: { fontSize: '13px', color: '#1C1C1C', lineHeight: 1.65 },
   spinner: { width: '32px', height: '32px', border: '3px solid #EDF3ED', borderTopColor: '#3D5C3C', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '40px auto 16px' },
-  processingText: { textAlign: 'center', fontSize: '14px', color: '#7A7A72', fontFamily: 'Fraunces, serif', fontStyle: 'italic' },
+  processingText: { textAlign: 'center', fontSize: '14px', color: '#7A7A72', fontFamily: 'Fraunces, serif' },
 }
 
 const VERDICT_CONFIG = {
   Safe: {
     bg: '#EAF4EE',
-    border: 'rgba(74,140,106,0.15)',
+    border: 'rgba(44,157,138,0.4)',
+    glow: '0 0 24px rgba(44,157,138,0.18)',
     color: '#4A8C6A',
     icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4A8C6A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
     title: 'You tolerated {food} well.',
@@ -63,7 +64,8 @@ const VERDICT_CONFIG = {
   },
   Limit: {
     bg: '#FDF2EA',
-    border: 'rgba(212,137,74,0.15)',
+    border: 'rgba(232,148,31,0.4)',
+    glow: '0 0 24px rgba(232,148,31,0.16)',
     color: '#D4894A',
     icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4894A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
     title: 'Be mindful with {food}.',
@@ -71,7 +73,8 @@ const VERDICT_CONFIG = {
   },
   Avoid: {
     bg: '#FAEAEA',
-    border: 'rgba(201,91,91,0.15)',
+    border: 'rgba(214,69,69,0.4)',
+    glow: '0 0 24px rgba(214,69,69,0.15)',
     color: '#C95B5B',
     icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C95B5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>,
     title: 'We recommend avoiding {food}.',
@@ -224,7 +227,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
           <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '2px' }}>{food} <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>Verdict.</em></div>
           <div style={{ fontSize: '12px', color: '#7A7A72', marginBottom: '20px' }}>Based on your 14-day reintroduction cycle</div>
 
-          <div style={{ ...s.verdictBox, background: config.bg, border: `1px solid ${config.border}` }}>
+          <div style={{ ...s.verdictBox, background: config.bg, border: `1.5px solid ${config.border}`, boxShadow: config.glow }}>
             <div style={{ width: '56px', height: '56px', background: config.bg, border: `1px solid ${config.border}`, borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>{config.icon}</div>
             <div style={{ ...s.verdictTitle, color: config.color }}>{config.title.replace('{food}', food)}</div>
             <div style={{ ...s.verdictSub, color: config.color }}>{config.sub.replace(/{food}/g, food)}</div>
