@@ -305,7 +305,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                 <div style={s.label}>Did you eat {activeReintro.food.toLowerCase()} today?</div>
                 <div style={s.yn}>
                   <button style={ateFood === true ? s.ynYes : s.ynBtn} onClick={() => setAteFood(true)}>Yes</button>
-                  <button style={ateFood === false ? { ...s.ynYes, background: '#7A7A72', borderColor: '#7A7A72' } : s.ynBtn} onClick={() => { setAteFood(false); setHadSymptoms(null); setSymptomIntensities({}) }}>No</button>
+                  <button style={ateFood === false ? { ...s.ynYes, background: '#7A7A72', borderColor: '#7A7A72' } : s.ynBtn} onClick={() => { setAteFood(false); setHadSymptoms(null); setSymptomIntensities({}) }}>Not today</button>
                 </div>
               </div>
             )}
@@ -314,7 +314,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                 <div style={s.label}>Any symptoms today?</div>
                 <div style={s.yn}>
                   <button style={hadSymptoms === true ? s.ynYes : s.ynBtn} onClick={() => setHadSymptoms(true)}>Yes</button>
-                  <button style={hadSymptoms === false ? s.ynYes : s.ynBtn} onClick={() => { setHadSymptoms(false); setSymptomIntensities({}) }}>No</button>
+                  <button style={hadSymptoms === false ? s.ynYes : s.ynBtn} onClick={() => { setHadSymptoms(false); setSymptomIntensities({}) }}>No, felt fine</button>
                 </div>
                 {hadSymptoms === true && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
@@ -353,73 +353,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           </div>
         )}
 
-        {showReintroBlock && (
-          <div style={{ ...s.block, background: 'linear-gradient(135deg, rgba(139,174,138,0.10), rgba(44,157,138,0.04)), #FFFFFF', border: '1px solid rgba(61,92,60,0.16)', borderRadius: '16px', padding: '18px' }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: '12px' }}>
-              {activeReintro.food} cycle · {reintroPhase === 'exposure' ? `Exposure` : `Washout`}
-            </div>
-            {reintroPhase === 'exposure' && (
-              <>
-                <div style={s.label}>Did you eat {activeReintro.food.toLowerCase()} today?</div>
-                <div style={{ ...s.yn, marginBottom: '16px' }}>
-                  <button style={ateFood === true ? s.ynYes : s.ynBtn} onClick={() => setAteFood(true)}>Yes</button>
-                  <button style={ateFood === false ? { ...s.ynYes, background: '#7A7A72', borderColor: '#7A7A72' } : s.ynBtn} onClick={() => { setAteFood(false); }}>Not today</button>
-                </div>
-              </>
-            )}
-            {(reintroPhase === 'washout' || ateFood !== null) && (
-              <>
-                <div style={s.label}>Any symptoms today?</div>
-                <div style={{ ...s.yn, marginBottom: hadSymptoms ? '14px' : 0 }}>
-                  <button style={hadSymptoms === true ? { ...s.ynYes, background: '#C95B5B', borderColor: '#C95B5B' } : s.ynBtn} onClick={() => setHadSymptoms(true)}>Yes</button>
-                  <button style={hadSymptoms === false ? s.ynYes : s.ynBtn} onClick={() => { setHadSymptoms(false); setSymptomIntensities({}) }}>No, felt fine</button>
-                </div>
-                {hadSymptoms && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {reintroSymptoms.map(nm => {
-                      const active = !!symptomIntensities[nm]
-                      return (
-                        <div key={nm} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          <button
-                            style={{ textAlign: 'left', background: active ? '#3D5C3C' : '#F4F2EC', border: 'none', borderRadius: '10px', padding: '12px 14px', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: active ? '#FFFFFF' : '#3A3A35', fontWeight: active ? 500 : 400 }}
-                            onClick={() => toggleSymptom(nm)}
-                          >{nm}</button>
-                          {active && nm === 'Other' && (
-                            <input type="text" value={otherText} onChange={e => setOtherText(e.target.value)} placeholder="What did you notice?"
-                              style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '10px', padding: '12px 14px', fontSize: '13px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', outline: 'none' }} />
-                          )}
-                          {active && (
-                            <div style={{ display: 'flex', gap: '6px', paddingLeft: '4px' }}>
-                              {['mild', 'moderate', 'severe'].map(lvl => {
-                                const on = symptomIntensities[nm] === lvl
-                                const onStyle = lvl === 'mild' ? { background: '#EAF4EE', border: '1px solid rgba(74,140,106,0.4)', color: '#2D6B42', fontWeight: 500 }
-                                  : lvl === 'moderate' ? { background: '#FDF2EA', border: '1px solid rgba(212,137,74,0.4)', color: '#9A5F1A', fontWeight: 500 }
-                                  : { background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.4)', color: '#8B2E2E', fontWeight: 500 }
-                                return (
-                                  <button key={lvl} onClick={() => setIntensity(nm, lvl)}
-                                    style={{ flex: 1, background: 'white', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '8px', fontSize: '12px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#7A7A72', textTransform: 'capitalize', ...(on ? onStyle : {}) }}
-                                  >{lvl}</button>
-                                )
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-                {showSevereWarning && (
-                  <div style={{ background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.3)', borderRadius: '12px', padding: '14px', marginTop: '12px' }}>
-                    <div style={{ fontSize: '13px', color: '#8B2E2E', fontWeight: 600, marginBottom: '6px' }}>That sounds severe.</div>
-                    <div style={{ fontSize: '12.5px', color: '#1C1C1C', lineHeight: 1.6 }}>If this reaction feels serious, stop eating {activeReintro.food.toLowerCase()} now. You can end this cycle from the Reintro tab — it will be marked Avoid with your evidence. If symptoms are severe or worsening, contact a medical professional.</div>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        )}
-
-        {onProtocol && (
+{onProtocol && (
           <div style={s.block}>
             <div style={s.label}>Did you stay on your plan today?</div>
             <div style={s.yn}>

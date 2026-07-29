@@ -514,46 +514,46 @@ function ShowcaseScreen({ tab }) {
   if (tab === 'Food Map') return (
     <>
       <TopBar />
-      <div style={{ position: 'relative', background: '#22301F', borderRadius: 14, padding: '14px 14px', overflow: 'hidden', boxShadow: '0 12px 30px rgba(34,48,31,0.28)', marginBottom: 10 }}>
-        <div style={{ position: 'absolute', top: -40, right: -40, width: 120, height: 120, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1 }} />
-        <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', marginBottom: 9 }}>
-          <span style={{ fontFamily: mono, fontSize: 7, letterSpacing: '1px', color: '#8BAE8A' }}>SENSIFY · MAP</span>
-          <span style={{ fontFamily: mono, fontSize: 6.5, letterSpacing: '0.8px', color: 'rgba(250,248,244,0.5)' }}>DAY 64</span>
+      <div style={{ position: 'relative', background: 'linear-gradient(180deg, #FDFBF6, #F8F4EA)', border: '1px solid rgba(0,0,0,0.11)', borderRadius: 5, padding: '18px 15px 13px', boxShadow: '0 10px 26px rgba(60,50,30,0.16), inset 0 0 40px rgba(201,162,39,0.035)' }}>
+        <div style={{ position: 'absolute', inset: 5, border: '1px solid rgba(160,140,90,0.22)', borderRadius: 3, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 8, right: 10, fontFamily: mono, fontSize: 5.5, letterSpacing: '1px', color: '#B8B0A0' }}>NO. 0001</div>
+
+        <div style={{ textAlign: 'center', marginBottom: 4 }}>
+          <div style={{ fontFamily: mono, fontSize: 6, letterSpacing: '1.8px', color: '#9A927E', marginBottom: 5, textTransform: 'uppercase' }}>SENSIFY · VERIFIED RESULT</div>
+          <div style={{ fontFamily: serif, fontSize: 17, fontWeight: 380, color: '#2A2620', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Sarah's Food Map</div>
+          <div style={{ width: 30, height: 1.5, background: '#C9A227', opacity: 0.5, margin: '6px auto 7px' }} />
+          <div style={{ fontFamily: mono, fontSize: 5.5, letterSpacing: '0.7px', color: '#9A927E', marginBottom: 11 }}>12 OF 12 FOODS TESTED · COMPLETED DAY 184</div>
         </div>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ position: 'relative', width: 46, height: 46, flexShrink: 0 }}>
-            <svg width="46" height="46" viewBox="0 0 46 46">
-              <circle cx="23" cy="23" r="19" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3.5" />
-              <circle cx="23" cy="23" r="19" fill="none" stroke="#8BAE8A" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="70 119" transform="rotate(-90 23 23)" />
-            </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: serif, fontSize: 13, color: '#FAF8F4' }}>7</div>
+
+        {[
+          ['Safe', '#137663', '#2C9D8A', 'EAT FREELY · 3', [['Wheat', 'DAY 71 · NO REACTION'], ['Oats', 'DAY 99 · NO REACTION'], ['Almond', 'DAY 127 · NO REACTION']]],
+          ['Limit', '#9A5E0B', '#E8941F', 'SMALL AMOUNTS · 2', [['Coffee', 'DAY 113 · MILD, DOSE-LINKED'], ['Soy', 'DAY 141 · MILD, DOSE-LINKED']]],
+          ['Avoid', '#B03434', '#D64545', 'CONFIRMED · 2', [['Gluten', 'DAY 85 · SYMPTOMS CONFIRMED'], ['Dairy', 'DAY 155 · SYMPTOMS CONFIRMED']]],
+        ].map(([tname, tcolor, mark, sub, foods]) => (
+          <div key={tname} style={{ marginBottom: 9, position: 'relative' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 3 }}>
+              <span style={{ fontFamily: serif, fontSize: 12, color: tcolor }}>{tname}</span>
+              <span style={{ flex: 1, borderBottom: '1px dotted rgba(0,0,0,0.15)', alignSelf: 'center' }} />
+              <span style={{ fontFamily: mono, fontSize: 5.5, letterSpacing: '0.6px', color: '#9A927E' }}>{sub}</span>
+            </div>
+            {foods.map(([f, ev], fi) => (
+              <div key={f} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4.5px 2px', borderBottom: fi < foods.length - 1 ? '1px solid rgba(0,0,0,0.045)' : 'none' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: 1.5, background: mark, flexShrink: 0 }} />
+                  <span style={{ fontSize: 10, fontWeight: 600, color: '#1C1C1C' }}>{f}</span>
+                </div>
+                <span style={{ fontFamily: mono, fontSize: 5, letterSpacing: '0.4px', color: '#8A8474' }}>{ev}</span>
+              </div>
+            ))}
           </div>
-          <div>
-            <div style={{ fontFamily: serif, fontSize: 15, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.25 }}>Your <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>Food Map.</em></div>
-            <div style={{ fontSize: 8, color: 'rgba(250,248,244,0.55)', marginTop: 2 }}>7 of 12 verdicts earned · every one tested on your body</div>
+        ))}
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(0,0,0,0.08)', position: 'relative' }}>
+          <div style={{ fontFamily: mono, fontSize: 5, letterSpacing: '0.8px', color: '#9A927E' }}>EVERY VERDICT EARNED ON YOUR BODY</div>
+          <div style={{ width: 40, height: 40, border: '1.5px solid rgba(61,92,60,0.45)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'rotate(-8deg)', flexShrink: 0 }}>
+            <div style={{ fontFamily: mono, fontSize: 4.2, letterSpacing: '0.5px', color: '#3D5C3C', lineHeight: 1.5, textAlign: 'center' }}>SENSIFY<br />VERIFIED<br />·</div>
           </div>
         </div>
-      </div>
-      {[
-        ['Safe', 'EAT FREELY', '#3D5C3C', '#EDF3ED', ['Wheat', 'Oats', 'Almond'], 'Tested with no reaction. Back on your plate.'],
-        ['Limit', 'SMALL AMOUNTS', '#D4894A', '#FDF2EA', ['Coffee', 'Soy'], 'Mild reactions. Fine sometimes, not every day.'],
-        ['Avoid', 'CAUSES SYMPTOMS', '#C95B5B', '#FAEAEA', ['Gluten', 'Dairy'], 'Clear, repeated symptoms when tested.'],
-      ].map(([name, sub, color, chipBg, foods, note]) => (
-        <div key={name} style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginBottom: 6 }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, position: 'relative', top: -1 }} />
-            <span style={{ fontFamily: serif, fontSize: 15, color: '#1C1C1C' }}>{name}</span>
-            <span style={{ fontFamily: mono, fontSize: 6.5, letterSpacing: '0.8px', color: '#A8A69E' }}>{sub} · {foods.length}</span>
-          </div>
-          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
-            {foods.map(f => <span key={f} style={{ background: chipBg, color, borderRadius: 14, padding: '5px 12px', fontSize: 10.5, fontWeight: 600 }}>{f}</span>)}
-          </div>
-          <div style={{ fontSize: 8, color: '#A8A69E', lineHeight: 1.5, paddingLeft: 14 }}>{note}</div>
-        </div>
-      ))}
-      <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 9, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontFamily: mono, fontSize: 7, letterSpacing: '0.8px', color: '#7A7A72', textTransform: 'uppercase' }}>Still testing</span>
-        <span style={{ fontSize: 8.5, color: '#7A7A72' }}>Eggs now · 4 more waiting</span>
       </div>
     </>
   )

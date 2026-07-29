@@ -7,6 +7,99 @@ import { generateReintroFoodBriefing, generateProgramCompleteMessage } from '../
 
 // Offered to a common-track Test-2 user who finished without a clear trigger.
 // Lets them escalate to Test 8 (the full panel) or accept the result and finish.
+
+// ============================================================
+// TestedLedger — the trial record. Every completed cycle as an
+// expandable row: verdict + dates collapsed, the full day-by-day
+// evidence (exposures, symptoms, intensities, washout) on tap.
+// This is the provenance layer: the certificate shows the verdict,
+// this shows how it was earned.
+// ============================================================
+function TestedLedger({ cycles, protocolStartDate }) {
+  const [expandedId, setExpandedId] = useState(null)
+  const [logsMap, setLogsMap] = useState({})
+  const [loadingId, setLoadingId] = useState(null)
+
+  const parseL = (str) => { if (!str) return null; const [y, m, d] = String(str).split('T')[0].split('-').map(Number); return new Date(y, m - 1, d) }
+  const pStart = parseL(protocolStartDate)
+  const protoDay = (dateStr) => {
+    const d = parseL(dateStr)
+    if (!d || !pStart) return null
+    return Math.floor((d - pStart) / 86400000) + 1
+  }
+
+  const toggle = async (cyc) => {
+    if (expandedId === cyc.id) { setExpandedId(null); return }
+    setExpandedId(cyc.id)
+    if (!logsMap[cyc.id]) {
+      setLoadingId(cyc.id)
+      try {
+        const { data } = await supabase.from('reintro_daily_logs').select('*').eq('reintro_id', cyc.id).order('log_date', { ascending: true })
+        setLogsMap(prev => ({ ...prev, [cyc.id]: data || [] }))
+      } catch (e) { setLogsMap(prev => ({ ...prev, [cyc.id]: [] })) }
+      setLoadingId(null)
+    }
+  }
+
+  const symptomText = (log) => {
+    let syms = log.symptoms
+    if (typeof syms === 'string') { try { syms = JSON.parse(syms) } catch (e) { syms = null } }
+    if (Array.isArray(syms) && syms.length > 0) {
+      return syms.map(s => (s && s.name) ? `${s.name}${s.intensity ? ` (${s.intensity})` : ''}` : String(s)).join(', ')
+    }
+    return log.had_symptoms ? 'Symptoms noted' : 'No symptoms'
+  }
+
+  return (
+    <>
+      <div className="rt-section-label" style={{ marginTop: '20px' }}>Tested — {cycles.length} food{cycles.length !== 1 ? 's' : ''}</div>
+      {cycles.map((cyc) => {
+        const open = expandedId === cyc.id
+        const startDay = protoDay(cyc.started_at)
+        const endDay = protoDay(cyc.updated_at || cyc.started_at)
+        const logs = logsMap[cyc.id]
+        return (
+          <div key={cyc.id} style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', marginBottom: '8px', overflow: 'hidden' }}>
+            <button onClick={() => toggle(cyc)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', background: 'transparent', border: 'none', padding: '14px 16px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textAlign: 'left' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                <div style={{ fontSize: '14px', fontWeight: 500, color: '#1C1C1C' }}>{cyc.food}</div>
+                {startDay && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.6px', color: '#9A927E' }}>DAY {startDay}{endDay && endDay !== startDay ? ` → ${endDay}` : ''}</div>}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                <div className={`rt-verdict-pill ${cyc.verdict}`}>{cyc.verdict}</div>
+                <span style={{ fontSize: '11px', color: '#A8A69E', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>▾</span>
+              </div>
+            </button>
+            {open && (
+              <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', padding: '12px 16px 14px' }}>
+                {loadingId === cyc.id && <div style={{ fontSize: '12px', color: '#A8A69E', padding: '6px 0' }}>Loading the record...</div>}
+                {logs && logs.length === 0 && <div style={{ fontSize: '12px', color: '#A8A69E', padding: '6px 0' }}>No daily logs were recorded for this cycle.</div>}
+                {logs && logs.length > 0 && logs.map((log, li) => (
+                  <div key={li} style={{ display: 'flex', gap: '10px', padding: '7px 0', borderBottom: li < logs.length - 1 ? '1px solid rgba(0,0,0,0.04)' : 'none' }}>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.5px', color: '#9A927E', width: '86px', flexShrink: 0, paddingTop: '2px' }}>
+                      {protoDay(log.log_date) ? `DAY ${protoDay(log.log_date)}` : ''} · {log.phase === 'exposure' ? `EXP ${log.exposure_number || ''}`.trim() : 'WASHOUT'}
+                    </div>
+                    <div style={{ fontSize: '12.5px', color: '#3A3A35', lineHeight: 1.5 }}>
+                      {log.phase === 'exposure' && (log.ate_food === false ? 'Skipped the food this day. ' : log.ate_food === true ? 'Ate it. ' : '')}
+                      {symptomText(log)}
+                    </div>
+                  </div>
+                ))}
+                {cyc.verdict_reason && (
+                  <div style={{ marginTop: '10px', padding: '10px 12px', background: '#FAF9F5', borderRadius: '10px', fontSize: '12px', color: '#5A5A52', lineHeight: 1.55 }}>
+                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.7px', color: '#9A927E' }}>VERDICT · </span>
+                    {cyc.verdict_reason}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </>
+  )
+}
+
 function TierEscalation({ session, profile, completedFoods, onFinish }) {
   const [saving, setSaving] = useState(false)
   const avoids = completedFoods.filter(f => f.verdict === 'Avoid').length
@@ -131,10 +224,12 @@ const css = `
   .rt-phase-badge.washout { background: rgba(212,137,74,0.2); color: #D4894A; }
   .rt-timeline { display: flex; gap: 4px; margin-bottom: 10px; }
   .rt-day-dot { flex: 1; height: 9px; border-radius: 4px; }
-  .rt-day-dot.past { background: rgba(255,255,255,0.55); }
+  .rt-day-dot.past-logged { background: #8BAE8A; box-shadow: 0 0 6px rgba(139,174,138,0.4); }
+  .rt-day-dot.past-skipped { background: rgba(255,255,255,0.18); }
   .rt-day-dot.current { background: white; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
-  .rt-day-dot.exposure-future { background: #6DBF8A; }
-  .rt-day-dot.washout-future { background: #E0A977; }
+  .rt-day-dot.past-logged.current { background: #8BAE8A; }
+  .rt-day-dot.exposure-future { background: rgba(109,191,138,0.4); }
+  .rt-day-dot.washout-future { background: rgba(224,169,119,0.4); }
   .rt-day-dot.exp-divider { margin-right: 8px; }
   .rt-timeline-labels { display: flex; font-size: 10px; opacity: 0.55; margin-bottom: 16px; }
   .rt-instruction { background: rgba(255,255,255,0.07); border-radius: 11px; padding: 14px; }
@@ -328,6 +423,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const [foodMap, setFoodMap] = useState([])
   const [activeReintro, setActiveReintro] = useState(null)
   const [dailyLogs, setDailyLogs] = useState([])
+  const [completedCycles, setCompletedCycles] = useState([])
   const [logExpanded, setLogExpanded] = useState(false)
   const [showDailyCheckin, setShowDailyCheckin] = useState(false)
   const [restartNotice, setRestartNotice] = useState(false)
@@ -346,6 +442,14 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
     try {
       const { data: fm } = await supabase.from('food_map').select('*').eq('user_id', session.user.id)
       if (fm) setFoodMap(fm)
+
+      const { data: done } = await supabase
+        .from('reintroduction_results')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .not('verdict', 'is', null)
+        .order('started_at', { ascending: true })
+      setCompletedCycles(done || [])
 
       const { data: active } = await supabase
         .from('reintroduction_results')
@@ -763,8 +867,10 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                   const isPast = day < cycleDay
                   const isCurrent = day === cycleDay
                   const isExp = day <= 3
+                  const dayDate = cycleStart ? (() => { const d = new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + day - 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` })() : null
+                  const wasLogged = dayDate && dailyLogs?.some(l => String(l.log_date).slice(0, 10) === dayDate)
                   return (
-                    <div key={i} className={`rt-day-dot ${day === 3 ? 'exp-divider ' : ''}${isPast ? 'past' : isCurrent ? 'current' : isExp ? 'exposure-future' : 'washout-future'}`} />
+                    <div key={i} className={`rt-day-dot ${day === 3 ? 'exp-divider ' : ''}${isPast ? (wasLogged ? 'past-logged' : 'past-skipped') : isCurrent ? (wasLogged ? 'past-logged current' : 'current') : isExp ? 'exposure-future' : 'washout-future'}`} />
                   )
                 })}
               </div>
@@ -932,17 +1038,9 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
           </>
         )}
 
-        {/* COMPLETED FOODS */}
-        {completedFoods.length > 0 && (
-          <>
-            <div className="rt-section-label" style={{ marginTop: '20px' }}>Completed — {completedFoods.length} food{completedFoods.length !== 1 ? 's' : ''}</div>
-            {completedFoods.map((f, i) => (
-              <div key={i} className="rt-completed-card">
-                <div style={{ fontSize: '14px', fontWeight: 500 }}>{f.food}</div>
-                <div className={`rt-verdict-pill ${f.verdict}`}>{f.verdict}</div>
-              </div>
-            ))}
-          </>
+        {/* TESTED LEDGER — the trial record, expandable evidence per cycle */}
+        {completedCycles.length > 0 && (
+          <TestedLedger cycles={completedCycles} protocolStartDate={profile?.protocol_start_date} />
         )}
 
         {/* ALL DONE */}
