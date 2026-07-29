@@ -45,11 +45,12 @@ const css = `
   @keyframes fmFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fmRule { from { width: 0; } to { width: 44px; } }
   @keyframes fmRow { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-  .fm-typewriter { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.2px; color: #8A8474; overflow: hidden; white-space: nowrap; display: inline-block; width: 0; animation: fmType 1.6s steps(11) 1.8s forwards; }
-  @keyframes fmType { to { width: 78px; } }
-  .fm-typewriter, .fm-caret { flex-shrink: 0; }
-  .fm-caret { display: inline-block; width: 6px; height: 11px; background: #8A8474; margin-left: 3px; animation: fmCaret 1s steps(1) infinite; }
+  .fm-title-type { overflow: hidden; white-space: nowrap; display: inline-block; max-width: 0; animation: fmTitleType 1.7s 0.7s forwards; }
+  @keyframes fmTitleType { to { max-width: 100%; } }
+  .fm-title-caret { display: inline-block; width: 2.5px; height: 26px; background: #8A8474; margin-left: 6px; vertical-align: -3px; animation: fmCaret 1s steps(1) 0.7s infinite; }
   @keyframes fmCaret { 50% { opacity: 0; } }
+  .fm-stamp-progress { width: 60px; height: 60px; border: 2px dashed rgba(138,132,116,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); animation: fmFade 0.6s ease 2s both; }
+  .fm-stamp-progress-text { font-family: 'DM Mono', monospace; font-size: 6px; letter-spacing: 0.6px; color: #8A8474; line-height: 1.5; text-align: center; }
   @keyframes fmStamp { 0% { opacity: 0; transform: rotate(-8deg) scale(2.6); } 60% { opacity: 1; transform: rotate(-8deg) scale(0.92); } 80% { transform: rotate(-8deg) scale(1.06); } 100% { opacity: 1; transform: rotate(-8deg) scale(1); } }
   .fm-anim-1 { animation: fmFade 0.55s ease 0.15s both; }
   .fm-anim-2 { animation: fmFade 0.5s ease 0.7s both; }
@@ -338,7 +339,9 @@ export default function FoodMap({ session, profile, labResult }) {
 
           <div className="fm-anim-1" style={{ textAlign: 'center', marginBottom: 6 }}>
             <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '2.2px', color: '#9A927E', marginBottom: 7, textTransform: 'uppercase' }}>SENSIFY · {isComplete ? 'VERIFIED RESULT' : (protocolDays > 0 && protocolDays <= 56) ? 'IN CALIBRATION' : 'IN PROGRESS'}</div>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '32px', fontWeight: 380, color: '#2A2620', letterSpacing: '0.2px', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{name}'s Food Map</div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div className="fm-title-type" style={{ fontFamily: 'Fraunces, serif', fontSize: '32px', fontWeight: 380, color: '#2A2620', letterSpacing: '0.2px', fontVariationSettings: "'SOFT' 60, 'WONK' 1", animationTimingFunction: `steps(${(name + "'s Food Map").length})` }}>{name}'s Food Map<span className="fm-title-caret"></span></div>
+            </div>
             <div className="fm-gold-rule"></div>
           </div>
           <div className="fm-anim-2" style={{ textAlign: 'center', fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E', marginBottom: 18 }}>
@@ -429,10 +432,7 @@ export default function FoodMap({ session, profile, labResult }) {
             {isComplete ? (
               <div className="fm-stamp"><div className="fm-stamp-text">SENSIFY<br />VERIFIED<br />·</div></div>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                <span className="fm-typewriter">IN PROGRESS</span>
-                <span className="fm-caret"></span>
-              </div>
+              <div className="fm-stamp-progress"><div className="fm-stamp-progress-text">IN<br />PROGRESS<br />·</div></div>
             )}
           </div>
         </div>

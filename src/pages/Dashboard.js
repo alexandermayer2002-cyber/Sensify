@@ -33,7 +33,7 @@ import {
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
 
-  .snfy-app { min-height: 100vh; background: linear-gradient(180deg, #F4F0E6 0%, #F8F5EE 320px, #F8F5EE 100%); color: #1C1C1C; font-family: 'DM Sans', sans-serif; }
+  .snfy-app { min-height: 100vh; background: #F6F3EC; color: #1C1C1C; font-family: 'DM Sans', sans-serif; }
 
   .snfy-nav {
     background: rgba(255,255,255,0.92);
