@@ -895,13 +895,18 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               <div className="rt-instruction">
                 <div className="rt-instruction-label">Today's instruction</div>
                 <div className="rt-instruction-text">
-                  {isVerdictDay
+                  {cycleDay < 1
+                    ? `Nothing to do yet. Day 1 begins tomorrow, eat ${activeReintro.food} as you normally would then. Tonight's check-in is just your usual sleep, water, and stress.`
+                    : isVerdictDay
                     ? `Your ${activeReintro.food} cycle is complete. Complete your verdict survey to get your result.`
                     : isExposure
                     ? `Eat ${activeReintro.food} today as you normally would. You're on exposure day ${nextExposureNumber} of 3. Don't change anything else about your diet.`
                     : `Avoid ${activeReintro.food} completely today. This is washout day ${washoutDay} of ${WASHOUT_LENGTH}. Continue your elimination diet as usual.`}
                 </div>
-                {!isVerdictDay && (
+                {cycleDay < 1 && (
+                  <div style={{ marginTop: '12px', fontFamily: 'DM Mono, monospace', fontSize: '9px', letterSpacing: '0.8px', color: '#9A927E' }}>YOUR FIRST CHECK-IN UNLOCKS WITH DAY 1</div>
+                )}
+                {!isVerdictDay && cycleDay >= 1 && (
                   loggedToday ? (
                     <div style={{ marginTop: '14px', fontSize: '12px', color: '#4A8C6A', fontWeight: 500 }}>✓ Logged for today. See you tomorrow.</div>
                   ) : (
