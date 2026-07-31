@@ -430,6 +430,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const [showComplete, setShowComplete] = useState(false)
   const [loading, setLoading] = useState(true)
   const [starting, setStarting] = useState(null)
+  const [pendingStart, setPendingStart] = useState(null)  // { food, level } awaiting today/tomorrow choice
   const [foodBriefing, setFoodBriefing] = useState('')
   const [loadingBriefing, setLoadingBriefing] = useState(false)
 
@@ -485,9 +486,9 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
     setLoading(false)
   }
 
-  const startReintro = async (food, level) => {
+  const startReintro = async (food, level, startDate) => {
     setStarting(food)
-    const today = todayLocal()
+    const today = startDate || todayLocal()
     const { error: insertError } = await supabase.from('reintroduction_results').insert({
       user_id: session.user.id,
       food,
@@ -853,7 +854,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <div className="rt-active-card">
               <div className="rt-active-eyebrow">Currently testing</div>
               <div className="rt-active-food"><em>{activeReintro.food}</em></div>
-              <div className="rt-active-sub">14-day reintroduction cycle · Day {Math.min(cycleDay, 14)} of 14</div>
+              <div className="rt-active-sub">{cycleDay < 1 ? '14-day reintroduction cycle · Starts tomorrow' : `14-day reintroduction cycle · Day ${Math.min(cycleDay, 14)} of 14`}</div>
 
               <div className={`rt-phase-badge ${isVerdictDay ? 'exposure' : isExposure ? 'exposure' : 'washout'}`}>
                 <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isVerdictDay ? '#3D5C3C' : isExposure ? '#6DBF8A' : '#D4894A', flexShrink: 0 }}></div>
@@ -947,13 +948,41 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
           </>
         )}
 
+        {/* START CHOICE — day 1 begins when the person says so, not when the button was pressed */}
+        {pendingStart && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, padding: '20px' }} onClick={() => setPendingStart(null)}>
+            <div style={{ background: '#FFFFFF', borderRadius: '18px', padding: '24px', maxWidth: '380px', width: '100%', boxShadow: '0 24px 60px rgba(0,0,0,0.25)' }} onClick={e => e.stopPropagation()}>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: '8px' }}>{pendingStart.food} cycle</div>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 400, color: '#1C1C1C', marginBottom: '6px' }}>When should day 1 begin?</div>
+              <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.55, marginBottom: '16px' }}>Day 1 is an exposure day, you'll want a real chance to eat {pendingStart.food.toLowerCase()} that day.{new Date().getHours() >= 17 ? ' It\u2019s getting late, so starting tomorrow is probably the honest choice.' : ''}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <button disabled={!!starting} onClick={() => { const t = new Date(); const tm = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1); const s = `${tm.getFullYear()}-${String(tm.getMonth() + 1).padStart(2, '0')}-${String(tm.getDate()).padStart(2, '0')}`; startReintro(pendingStart.food, pendingStart.level, s); setPendingStart(null) }}
+                  style={{ background: new Date().getHours() >= 17 ? '#3D5C3C' : '#FAF8F4', color: new Date().getHours() >= 17 ? '#FFFFFF' : '#1C1C1C', border: new Date().getHours() >= 17 ? 'none' : '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', padding: '13px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  Start tomorrow, day 1 is {new Date(Date.now() + 86400000).toLocaleDateString('en-US', { weekday: 'long' })}
+                </button>
+                <button disabled={!!starting} onClick={() => { startReintro(pendingStart.food, pendingStart.level, todayLocal()); setPendingStart(null) }}
+                  style={{ background: new Date().getHours() >= 17 ? '#FAF8F4' : '#3D5C3C', color: new Date().getHours() >= 17 ? '#1C1C1C' : '#FFFFFF', border: new Date().getHours() >= 17 ? '1px solid rgba(0,0,0,0.09)' : 'none', borderRadius: '12px', padding: '13px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  Start today
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* AVAILABLE FOODS BY TIER */}
         {!activeReintro && (
           <>
+            {completedCycles.length > 0 && (
+              <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: '18px', padding: '20px', marginBottom: '16px' }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: '8px' }}>Cycle complete · {completedCycles.length} verdict{completedCycles.length !== 1 ? 's' : ''} earned</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '21px', fontWeight: 400, color: '#1C1C1C', marginBottom: '4px' }}>Choose your next food.</div>
+                <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.55 }}>Your {completedCycles[completedCycles.length - 1].food.toLowerCase()} verdict is on the map. Pick the next food below to start a fresh 14-day cycle, day 1 starts when you do.</div>
+              </div>
+            )}
             {lowUnlocked && (
               <>
                 <div className="rt-section-label">
-                  {isCommonTrack ? 'Your foods — unlocked' : 'Low sensitivity — unlocked'}
+                  {isCommonTrack ? 'Your foods · unlocked' : 'Low sensitivity · unlocked'}
                   {getRemainingFoods('Low').length === 0 && ' · none to test'}
                 </div>
                 {getRemainingFoods('Low').map((food, i) => (
@@ -968,7 +997,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                         <div className="rt-food-freq">{FREQ_LABEL[foodFrequency[food.name]] || ''}</div>
                       </div>
                     </div>
-                    <button className="rt-start-btn" disabled={!!starting} onClick={() => startReintro(food.name, food.level)}>
+                    <button className="rt-start-btn" disabled={!!starting} onClick={() => setPendingStart({ food: food.name, level: food.level })}>
                       {starting === food.name ? 'Starting...' : 'Start cycle →'}
                     </button>
                   </div>
@@ -978,7 +1007,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
             {moderateUnlocked && (
               <>
-                <div className="rt-section-label">Moderate sensitivity — unlocked</div>
+                <div className="rt-section-label">Moderate sensitivity · unlocked</div>
                 {getRemainingFoods('Moderate').map((food, i) => (
                   <div key={food.name} className={`rt-food-card${i === 0 ? ' recommended' : ''}`}>
                     <div className="rt-food-left">
@@ -991,7 +1020,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                         <div className="rt-food-freq">{FREQ_LABEL[foodFrequency[food.name]] || ''}</div>
                       </div>
                     </div>
-                    <button className="rt-start-btn" disabled={!!starting} onClick={() => startReintro(food.name, food.level)}>
+                    <button className="rt-start-btn" disabled={!!starting} onClick={() => setPendingStart({ food: food.name, level: food.level })}>
                       {starting === food.name ? 'Starting...' : 'Start cycle →'}
                     </button>
                   </div>
@@ -1010,7 +1039,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
             {highUnlocked && (
               <>
-                <div className="rt-section-label">High sensitivity — unlocked</div>
+                <div className="rt-section-label">High sensitivity · unlocked</div>
                 {getRemainingFoods('High').map((food, i) => (
                   <div key={food.name} className={`rt-food-card${i === 0 ? ' recommended' : ''}`}>
                     <div className="rt-food-left">
@@ -1023,7 +1052,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                         <div className="rt-food-freq">{FREQ_LABEL[foodFrequency[food.name]] || ''}</div>
                       </div>
                     </div>
-                    <button className="rt-start-btn" disabled={!!starting} onClick={() => startReintro(food.name, food.level)}>
+                    <button className="rt-start-btn" disabled={!!starting} onClick={() => setPendingStart({ food: food.name, level: food.level })}>
                       {starting === food.name ? 'Starting...' : 'Start cycle →'}
                     </button>
                   </div>

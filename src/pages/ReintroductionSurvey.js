@@ -10,7 +10,7 @@ const s = {
   logoEm: { color: '#3D5C3C', fontStyle: 'italic' },
   back: { fontSize: '13px', color: '#7A7A72', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'DM Sans, sans-serif' },
   day14Badge: { fontSize: '11px', color: '#D4894A', background: '#FDF2EA', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 },
-  content: { flex: 1, padding: '28px 24px 100px' },
+  content: { flex: 1, padding: '28px 24px 100px', maxWidth: '620px', margin: '0 auto', width: '100%', boxSizing: 'border-box' },
   foodName: { fontFamily: 'Fraunces, serif', fontSize: '32px', fontWeight: 300, color: '#3D5C3C', fontStyle: 'italic', marginBottom: '4px' },
   title: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '8px' },
   hint: { fontSize: '13px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.65 },
@@ -39,8 +39,8 @@ const s = {
   triggerBtnOn: { flex: 1, padding: '13px', borderRadius: '10px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: 'white', textAlign: 'center' },
   triggerBtnUnsure: { flex: 1, padding: '13px', borderRadius: '10px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FAF8F4', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#7A7A72', textAlign: 'center', transition: 'all 0.12s' },
   footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#F6F3EC', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
-  verdictWrap: { flex: 1, padding: '28px 24px', display: 'flex', flexDirection: 'column' },
+  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', maxWidth: '572px', margin: '0 auto', display: 'block', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
+  verdictWrap: { flex: 1, padding: '28px 24px', display: 'flex', flexDirection: 'column', maxWidth: '620px', margin: '0 auto', width: '100%', boxSizing: 'border-box' },
   verdictBox: { borderRadius: '18px', padding: '28px 24px', textAlign: 'center', marginBottom: '16px' },
   verdictEmoji: { display: 'flex', justifyContent: 'center', marginBottom: '12px' },
   verdictTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 400, marginBottom: '6px' },
@@ -224,23 +224,36 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
           <div style={{ width: 40 }}></div>
         </div>
         <div style={s.verdictWrap}>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '2px' }}>{food} <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>Verdict.</em></div>
-          <div style={{ fontSize: '12px', color: '#7A7A72', marginBottom: '20px' }}>Based on your 14-day reintroduction cycle</div>
+          <div style={{ textAlign: 'center', marginBottom: 22, marginTop: 8 }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '2px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 10 }}>Verdict entered · Day 14 of 14</div>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '21px', fontWeight: 400, color: '#1C1C1C', marginBottom: 2 }}>{food}</div>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '46px', fontWeight: 400, color: config.color, lineHeight: 1.15, textShadow: config.glow.replace('0 0 24px', '0 0 34px') }}>{verdict}.</div>
+            <div style={{ width: '38px', height: '2px', background: config.color, opacity: 0.45, margin: '14px auto 12px' }} />
+            <div style={{ fontSize: '13.5px', color: '#5A5A52', lineHeight: 1.6, maxWidth: 420, margin: '0 auto' }}>{config.sub.replace(/{food}/g, food)}</div>
+          </div>
 
-          <div style={{ ...s.verdictBox, background: config.bg, border: `1.5px solid ${config.border}`, boxShadow: config.glow }}>
-            <div style={{ width: '56px', height: '56px', background: config.bg, border: `1px solid ${config.border}`, borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>{config.icon}</div>
-            <div style={{ ...s.verdictTitle, color: config.color }}>{config.title.replace('{food}', food)}</div>
-            <div style={{ ...s.verdictSub, color: config.color }}>{config.sub.replace(/{food}/g, food)}</div>
+          <div style={{ background: 'linear-gradient(180deg, #FDFBF6, #F8F4EA)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '6px', padding: '13px 16px', marginBottom: '14px', boxShadow: '0 6px 18px rgba(60,50,30,0.09), inset 0 0 30px rgba(201,162,39,0.03)' }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '1.2px', color: '#9A927E', marginBottom: 8 }}>ENTERED ON YOUR FOOD MAP</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                <span style={{ width: 8, height: 8, borderRadius: 2, background: verdict === 'Safe' ? '#2C9D8A' : verdict === 'Limit' ? '#E8941F' : '#D64545', flexShrink: 0 }}></span>
+                <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C' }}>{food}</span>
+              </div>
+              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{verdict === 'Safe' ? 'NO REACTION' : verdict === 'Limit' ? 'MILD, DOSE-LINKED' : 'SYMPTOMS CONFIRMED'}</span>
+            </div>
           </div>
 
           <div style={s.analysisCard}>
-            <div style={s.analysisTag}>AI analysis</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 9 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2C9D8A', boxShadow: '0 0 8px rgba(44,157,138,0.6)' }}></span>
+              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#3D5C3C' }}>The analysis</span>
+            </div>
             <div style={s.analysisText}>{analysis}</div>
           </div>
 
-          <div style={s.analysisCard}>
-            <div style={s.analysisTag}>Worth knowing</div>
-            <div style={s.analysisText}>This isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food in your Avoid list.</div>
+          <div style={{ padding: '14px 16px', marginBottom: '12px' }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 7 }}>Worth knowing</div>
+            <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>This isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food in your Avoid list.</div>
           </div>
         </div>
         <div style={s.footer}>

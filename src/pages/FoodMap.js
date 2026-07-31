@@ -191,6 +191,7 @@ export default function FoodMap({ session, profile, labResult }) {
       : labResult.foods.filter(f => f.level === level)
     return pool
       .filter(f => foodFrequency[f.name] !== 'never')
+      .filter(f => !foodMap.some(m => m.food === f.name))
       .sort((a, b) => (FREQ_RANK[foodFrequency[a.name]] || 99) - (FREQ_RANK[foodFrequency[b.name]] || 99))
   }
   const notScheduled = (labResult?.foods || []).filter(f => foodFrequency[f.name] === 'never' && f.level !== 'No sensitivity')
@@ -388,12 +389,12 @@ export default function FoodMap({ session, profile, labResult }) {
             </div>
           ))}
 
-          {totalTested === 0 && manifestTotal > 0 && (
+          {manifestTotal > 0 && (
             <div className="fm-anim-5" style={{ marginTop: 4, marginBottom: 15 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
                 <span style={{ fontFamily: 'Fraunces, serif', fontSize: '15px', color: '#1C1C1C' }}>Testing schedule</span>
                 <span style={{ flex: 1, borderBottom: '1px dotted rgba(0,0,0,0.15)', alignSelf: 'center' }}></span>
-                <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E' }}>FIRST VERDICTS ~DAY 71</span>
+                <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E' }}>{totalTested === 0 ? 'FIRST VERDICTS ~DAY 71' : `${manifestTotal} REMAINING`}</span>
               </div>
               {(() => { let n = 0; return manifestTiers.map((mt, mi) => mt.foods.map((f, fi) => { n += 1; return (
                 <div key={`${mi}-${fi}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 2px', borderBottom: '1px solid rgba(0,0,0,0.04)' }}>

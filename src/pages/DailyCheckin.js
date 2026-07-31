@@ -103,7 +103,16 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   }, [session.user.id])
 
   const reintroPhase = activeReintro ? ((activeReintro.exposure_days_completed || 0) < 3 ? 'exposure' : 'washout') : null
-  const showReintroBlock = !!activeReintro && !reintroLoggedToday
+  const reintroStarted = (() => {
+    try {
+      if (!activeReintro?.started_at) return false
+      const [y, m, d] = String(activeReintro.started_at).split('T')[0].split('-').map(Number)
+      const start = new Date(y, m - 1, d)
+      const now = new Date()
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate()) >= start
+    } catch (e) { return true }
+  })()
+  const showReintroBlock = !!activeReintro && !reintroLoggedToday && reintroStarted
   const reintroSymptoms = (() => {
     const list = []
     const sym = profile?.symptoms || []

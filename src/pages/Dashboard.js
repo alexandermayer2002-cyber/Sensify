@@ -1158,6 +1158,21 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     } catch (e) { return null }
   })()
 
+  const betweenCycles = calculatedPhase === 'reintroduction' && !activeCycleLite && !verdictReadyFood
+
+  const cycleLine = (() => {
+    if (!activeCycleLite?.started_at) return null
+    try {
+      const [y, m, d] = String(activeCycleLite.started_at).split('T')[0].split('-').map(Number)
+      const cs = new Date(y, m - 1, d)
+      const now = new Date()
+      const cd = Math.min(Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - cs) / 86400000) + 1, 14)
+      if (cd < 1) return `${activeCycleLite.food.toUpperCase()} CYCLE · STARTS TOMORROW`
+      const ph = activeCycleLite.washout_started_at ? 'WASHOUT' : 'EXPOSURE'
+      return `${activeCycleLite.food.toUpperCase()} CYCLE · DAY ${cd} OF 14 · ${ph}`
+    } catch (e) { return null }
+  })()
+
   const cockpitActive = (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && currentDay >= 1 && !needsCommonDecision && !isTracking && !showIntakeCard && !showLabCard && !showPendingLabCard
   const showReintroCard = calculatedPhase === 'reintroduction' && profile?.current_reintro_day >= 14
 
@@ -1337,13 +1352,23 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14, marginBottom: 16 }}>
                 <div>
                   <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.5)', marginBottom: 3 }}>{getGreeting()}, {name}</div>
-                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.1 }}>Day {calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of {calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.</div>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.1 }}>{betweenCycles ? 'Choose your next food.' : `Day ${calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.`}</div>
+                  {cycleLine && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>{cycleLine}</div>}
+                  {betweenCycles && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>REINTRODUCTION · DAY {currentDay - 56} OF 112 · CYCLE COMPLETE</div>}
                 </div>
                 {verdictReadyFood ? (
                   <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#C9A227', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 0 22px rgba(201,162,39,0.35)' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Your {verdictReadyFood} verdict is ready</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                   </button>
+                ) : betweenCycles ? (
+                  <div>
+                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Pick your next food</span>
+                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
+                    </button>
+                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: '8px 2px 0', fontSize: 12, color: 'rgba(250,248,244,0.5)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textDecoration: 'underline', textUnderlineOffset: 3 }}>or log tonight's check-in</button>}
+                  </div>
                 ) : !dailyDone ? (
                   <button onClick={() => setScreen('daily-checkin')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Tonight's check-in</span>
