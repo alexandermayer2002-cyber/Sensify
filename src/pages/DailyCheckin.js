@@ -102,6 +102,18 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
     loadReintro()
   }, [session.user.id])
 
+  const cycleStale = (() => {
+    try {
+      if (!activeReintro?.started_at) return false
+      const done = activeReintro.exposure_days_completed || 0
+      if (done >= 3) return false
+      const [y, m, d] = String(activeReintro.started_at).split('T')[0].split('-').map(Number)
+      const start = new Date(y, m - 1, d)
+      const now = new Date()
+      const cd = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - start) / 86400000) + 1
+      return cd > 5  // mirrors ReintroTab's EXPOSURE_CALENDAR_CAP restart rule
+    } catch (e) { return false }
+  })()
   const reintroPhase = activeReintro ? ((activeReintro.exposure_days_completed || 0) < 3 ? 'exposure' : 'washout') : null
   const reintroStarted = (() => {
     try {
@@ -112,7 +124,20 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       return new Date(now.getFullYear(), now.getMonth(), now.getDate()) >= start
     } catch (e) { return true }
   })()
-  const showReintroBlock = !!activeReintro && !reintroLoggedToday && reintroStarted
+  // Stale cycle: >5 calendar days without reaching 3 exposures means the reintro tab
+  // is asking for a restart. The check-in must agree, plain factors only until restarted.
+  const reintroStale = (() => {
+    try {
+      if (!activeReintro?.started_at || activeReintro.washout_started_at) return false
+      if ((activeReintro.exposure_days_completed || 0) >= 3) return false
+      const [y, m, d] = String(activeReintro.started_at).split('T')[0].split('-').map(Number)
+      const start = new Date(y, m - 1, d)
+      const now = new Date()
+      const cd = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - start) / 86400000) + 1
+      return cd > 5
+    } catch (e) { return false }
+  })()
+  const showReintroBlock = !!activeReintro && !reintroLoggedToday && reintroStarted && !cycleStale && !reintroStale
   const reintroSymptoms = (() => {
     const list = []
     const sym = profile?.symptoms || []

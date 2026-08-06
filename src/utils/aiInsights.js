@@ -248,13 +248,14 @@ USER:
 - Tracks digestive symptoms: ${hasDigestive}
 - Tracks energy symptoms: ${hasEnergy}
 
-Write 3 to 4 sentences. Rules:
-- Brief them specifically on testing ${food}
-- Frame everything as what to OBSERVE and LOG, never as what will happen to them. Say "watch for" and "note whether", never "you will feel" or "this will cause"
-- Tell them what symptoms to observe during exposure days (days 1 to 3), specific to their symptom focus
-- Tell them what to observe during washout (days 4 to 14)
-- One practical tip for the exposure phase
-- SAFETY: If at any point they have a severe reaction such as difficulty breathing, throat tightening, swelling, hives, or vomiting, tell them to stop immediately and seek medical care. Include this only briefly and naturally, weighted more for a ${sensitivityLevel} sensitivity food.${isHigh ? ' This is a High sensitivity food, so lead with the safety note.' : ''}
+Output EXACTLY three sections separated by these literal delimiters on their own lines: [WATCH] then the watch-for text, [TIP] then the tip text, [SAFETY] then the safety text. No other headers, no preamble.
+
+Rules:
+- [WATCH]: two sentences max. What symptoms to observe on exposure days, specific to their symptom focus, plus that timing matters (right after eating vs building later). Frame as OBSERVE and LOG, never predictions. Say "watch for" and "note whether", never "you will feel"
+- [TIP]: one sentence. One practical tip for the exposure phase
+- [SAFETY]: one sentence listing the stop-immediately symptoms (difficulty breathing, throat tightening, swelling, hives, vomiting) and to seek medical care
+- Do NOT brief the washout period, the app handles day-by-day washout guidance itself
+- Weight the safety language more strongly for a ${sensitivityLevel} sensitivity food${isHigh ? ' (High sensitivity: make the safety section unmissable)' : ''}
 - Do not diagnose, do not predict outcomes, do not give dosage or medical instructions beyond observing and logging
 - Do NOT mention texts or SMS
 - Specific to the actual food, not generic reintroduction advice

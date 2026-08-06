@@ -1166,8 +1166,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       const [y, m, d] = String(activeCycleLite.started_at).split('T')[0].split('-').map(Number)
       const cs = new Date(y, m - 1, d)
       const now = new Date()
-      const cd = Math.min(Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - cs) / 86400000) + 1, 14)
+      const rawCd = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - cs) / 86400000) + 1
+      const cd = Math.min(rawCd, 14)
       if (cd < 1) return `${activeCycleLite.food.toUpperCase()} CYCLE · STARTS TOMORROW`
+      if (cd > 5 && (activeCycleLite.exposure_days_completed || 0) < 3 && !activeCycleLite.washout_started_at) return `${activeCycleLite.food.toUpperCase()} CYCLE · NEEDS A RESTART · SEE THE REINTRO TAB`
+      if (!activeCycleLite.washout_started_at && (activeCycleLite.exposure_days_completed || 0) < 3 && rawCd > 5) return `${activeCycleLite.food.toUpperCase()} CYCLE · PAUSED · RESTART FROM THE REINTRO TAB`
       const ph = activeCycleLite.washout_started_at ? 'WASHOUT' : 'EXPOSURE'
       return `${activeCycleLite.food.toUpperCase()} CYCLE · DAY ${cd} OF 14 · ${ph}`
     } catch (e) { return null }
@@ -1367,11 +1370,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Pick your next food</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                     </button>
-                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: '8px 2px 0', fontSize: 12, color: 'rgba(250,248,244,0.5)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textDecoration: 'underline', textUnderlineOffset: 3 }}>or log tonight's check-in</button>}
+                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: '8px 2px 0', fontSize: 12, color: 'rgba(250,248,244,0.5)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textDecoration: 'underline', textUnderlineOffset: 3 }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
                   </div>
                 ) : !dailyDone ? (
                   <button onClick={() => setScreen('daily-checkin')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
-                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Tonight's check-in</span>
+                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>{new Date().getHours() >= 17 ? "Tonight's check-in" : "Today's check-in"}</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                   </button>
                 ) : (

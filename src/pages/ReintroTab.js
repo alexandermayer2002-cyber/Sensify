@@ -860,6 +860,9 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                 <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isVerdictDay ? '#3D5C3C' : isExposure ? '#6DBF8A' : '#D4894A', flexShrink: 0 }}></div>
                 {isVerdictDay ? 'Cycle complete' : isExposure ? 'Exposure phase: eat this food' : 'Washout phase: avoid this food'}
               </div>
+              {!isVerdictDay && (
+                <div style={{ marginTop: '10px', padding: '8px 12px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '9px', fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.8px', color: 'rgba(250,248,244,0.75)' }}>ONLY {activeReintro.food.toUpperCase()} COMES BACK · EVERY OTHER FOOD ON YOUR LIST STAYS ELIMINATED</div>
+              )}
 
               {isVerdictDay && (
               <div style={{ background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: '14px', padding: '18px', marginBottom: '14px' }}>
@@ -900,7 +903,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                     : isVerdictDay
                     ? `Your ${activeReintro.food} cycle is complete. Complete your verdict survey to get your result.`
                     : isExposure
-                    ? `Eat ${activeReintro.food} today as you normally would. You're on exposure day ${nextExposureNumber} of 3. Don't change anything else about your diet.`
+                    ? `Eat ${activeReintro.food} today as you normally would. You're on exposure day ${nextExposureNumber} of 3. Every other food on your elimination list stays off the plate.`
                     : `Avoid ${activeReintro.food} completely today. This is washout day ${washoutDay} of ${WASHOUT_LENGTH}. Continue your elimination diet as usual.`}
                 </div>
                 {cycleDay < 1 && (
@@ -934,7 +937,26 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2C9D8A', animation: 'snfyPulse 1.6s infinite', flexShrink: 0 }}></span>
                   <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#3D5C3C' }}>REINTRODUCTION BRIEFING</span>
                 </div>
-                <div style={{ fontSize: '13.5px', color: '#1C1C1C', lineHeight: 1.7 }}>{foodBriefing.replace(/\*\*/g, '')}</div>
+                {(() => {
+                  const clean = foodBriefing.replace(/\*\*/g, '')
+                  const w = clean.match(/\[WATCH\]([\s\S]*?)(?=\[TIP\]|\[SAFETY\]|$)/)
+                  const t = clean.match(/\[TIP\]([\s\S]*?)(?=\[SAFETY\]|$)/)
+                  const sf = clean.match(/\[SAFETY\]([\s\S]*?)$/)
+                  if (!w || !sf) return <div style={{ fontSize: '13.5px', color: '#1C1C1C', lineHeight: 1.7 }}>{clean.replace(/\[(WATCH|TIP|SAFETY)\]/g, '')}</div>
+                  const mono = { fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '1px', color: '#9A927E', marginBottom: '4px' }
+                  return (
+                    <>
+                      <div style={mono}>WATCH FOR</div>
+                      <div style={{ fontSize: '12.5px', color: '#1C1C1C', lineHeight: 1.65, marginBottom: '12px' }}>{w[1].trim()}</div>
+                      {t && <><div style={mono}>ONE TIP</div>
+                      <div style={{ fontSize: '12.5px', color: '#1C1C1C', lineHeight: 1.65, marginBottom: '12px' }}>{t[1].trim()}</div></>}
+                      <div style={{ background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.3)', borderRadius: '10px', padding: '10px 12px' }}>
+                        <div style={{ ...mono, color: '#8B2E2E' }}>STOP IMMEDIATELY IF</div>
+                        <div style={{ fontSize: '12px', color: '#1C1C1C', lineHeight: 1.55 }}>{sf[1].trim()}</div>
+                      </div>
+                    </>
+                  )
+                })()}
                 <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8.5px', letterSpacing: '0.6px', color: '#A8A69E', textTransform: 'uppercase', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>BASED ON YOUR SENSITIVITY LEVEL</div>
               </div>
             )}
@@ -959,7 +981,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <div style={{ background: '#FFFFFF', borderRadius: '18px', padding: '24px', maxWidth: '380px', width: '100%', boxShadow: '0 24px 60px rgba(0,0,0,0.25)' }} onClick={e => e.stopPropagation()}>
               <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: '8px' }}>{pendingStart.food} cycle</div>
               <div style={{ fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 400, color: '#1C1C1C', marginBottom: '6px' }}>When should day 1 begin?</div>
-              <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.55, marginBottom: '16px' }}>Day 1 is an exposure day, you'll want a real chance to eat {pendingStart.food.toLowerCase()} that day.{new Date().getHours() >= 17 ? ' It\u2019s getting late, so starting tomorrow is probably the honest choice.' : ''}</div>
+              <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.55, marginBottom: '16px' }}>Only {pendingStart.food.toLowerCase()} comes back during this cycle. Everything else on your list stays eliminated. Day 1 is an exposure day, you'll want a real chance to eat {pendingStart.food.toLowerCase()} that day.{new Date().getHours() >= 17 ? ' It\u2019s getting late, so starting tomorrow is probably the honest choice.' : ''}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <button disabled={!!starting} onClick={() => { const t = new Date(); const tm = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1); const s = `${tm.getFullYear()}-${String(tm.getMonth() + 1).padStart(2, '0')}-${String(tm.getDate()).padStart(2, '0')}`; startReintro(pendingStart.food, pendingStart.level, s); setPendingStart(null) }}
                   style={{ background: new Date().getHours() >= 17 ? '#3D5C3C' : '#FAF8F4', color: new Date().getHours() >= 17 ? '#FFFFFF' : '#1C1C1C', border: new Date().getHours() >= 17 ? 'none' : '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', padding: '13px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>

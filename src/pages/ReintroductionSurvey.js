@@ -257,7 +257,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
           </div>
         </div>
         <div style={s.footer}>
-          <button style={s.cta} onClick={onComplete}>View updated Food Map →</button>
+          <button style={{ ...s.cta, opacity: allAnswered() ? 1 : 0.45, cursor: allAnswered() ? 'pointer' : 'not-allowed' }} onClick={onComplete}>View updated Food Map →</button>
         </div>
       </div>
     )
@@ -299,7 +299,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
 
         {/* BLOCK 3 — Confounders, free text, no examples */}
         <div style={s.questionBlock}>
-          <div style={s.questionLabel}>Was anything else going on?</div>
+          <div style={s.questionLabel}>Was anything else going on? (optional)</div>
           <div style={s.questionSub}>Things outside of {food.toLowerCase()} can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.</div>
           <textarea
             style={s.textarea}
@@ -315,6 +315,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         <button
           style={allAnswered() ? s.cta : { ...s.cta, opacity: 0.35, cursor: 'not-allowed' }}
           disabled={!allAnswered()}
+          title={!allAnswered() ? 'Answer the accuracy question above first' : undefined}
           onClick={handleSubmit}
         >
           Get my verdict →
