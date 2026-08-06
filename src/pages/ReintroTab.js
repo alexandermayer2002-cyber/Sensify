@@ -566,9 +566,9 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   }
 
   // Restart cycle after exceeding the 5-day exposure cap
-  const handleRestartCycle = async () => {
+  const handleRestartCycle = async (startDate) => {
     if (!activeReintro) return
-    const today = todayLocal()
+    const today = startDate || todayLocal()
     await supabase.from('reintro_daily_logs').delete().eq('reintro_id', activeReintro.id)
     await supabase.from('reintroduction_results').update({
       started_at: today,
@@ -703,9 +703,16 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <p style={{ fontSize: '14px', color: '#7A7A72', lineHeight: 1.7, marginBottom: '20px' }}>
               Getting three exposure days close together gives the clearest read on how {activeReintro.food} affects you. It's been more than five days without reaching three, so we'll start fresh whenever you're ready. Nothing you logged counts against you.
             </p>
-            <button onClick={handleRestartCycle} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
-              Restart {activeReintro.food} cycle
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button onClick={() => { const t = new Date(); const tm = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1); handleRestartCycle(`${tm.getFullYear()}-${String(tm.getMonth() + 1).padStart(2, '0')}-${String(tm.getDate()).padStart(2, '0')}`) }}
+                style={{ width: '100%', background: new Date().getHours() >= 17 ? '#3D5C3C' : '#FAF8F4', color: new Date().getHours() >= 17 ? '#FFFFFF' : '#1C1C1C', border: new Date().getHours() >= 17 ? 'none' : '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                Restart tomorrow, day 1 is {new Date(Date.now() + 86400000).toLocaleDateString('en-US', { weekday: 'long' })}
+              </button>
+              <button onClick={() => handleRestartCycle(todayLocal())}
+                style={{ width: '100%', background: new Date().getHours() >= 17 ? '#FAF8F4' : '#3D5C3C', color: new Date().getHours() >= 17 ? '#1C1C1C' : '#FFFFFF', border: new Date().getHours() >= 17 ? '1px solid rgba(0,0,0,0.09)' : 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                Restart today
+              </button>
+            </div>
           </div>
         </div>
       </div>

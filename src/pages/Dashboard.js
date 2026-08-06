@@ -1158,6 +1158,29 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     } catch (e) { return null }
   })()
 
+  const cycleStaleLite = (() => {
+    try {
+      if (!activeCycleLite?.started_at || activeCycleLite.washout_started_at) return false
+      if ((activeCycleLite.exposure_days_completed || 0) >= 3) return false
+      const [y, m, d] = String(activeCycleLite.started_at).split('T')[0].split('-').map(Number)
+      const cs = new Date(y, m - 1, d)
+      const now = new Date()
+      return Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - cs) / 86400000) + 1 > 5
+    } catch (e) { return false }
+  })()
+
+  const cycleStaleFood = (() => {
+    try {
+      if (!activeCycleLite?.started_at || activeCycleLite.washout_started_at) return null
+      if ((activeCycleLite.exposure_days_completed || 0) >= 3) return null
+      const [y, m, d] = String(activeCycleLite.started_at).split('T')[0].split('-').map(Number)
+      const cs = new Date(y, m - 1, d)
+      const now = new Date()
+      const cd = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - cs) / 86400000) + 1
+      return cd > 5 ? activeCycleLite.food : null
+    } catch (e) { return null }
+  })()
+
   const betweenCycles = calculatedPhase === 'reintroduction' && !activeCycleLite && !verdictReadyFood
 
   const cycleLine = (() => {
@@ -1364,6 +1387,22 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Your {verdictReadyFood} verdict is ready</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                   </button>
+                ) : cycleStaleLite ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                      <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Restart the {activeCycleLite.food.toLowerCase()} cycle</span>
+                      <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
+                    </button>
+                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11.5, color: 'rgba(250,248,244,0.55)', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
+                  </div>
+                ) : cycleStaleFood ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#D4894A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 0 20px rgba(212,137,74,0.3)' }}>
+                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Restart your {cycleStaleFood.toLowerCase()} cycle</span>
+                      <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
+                    </button>
+                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11.5, color: 'rgba(250,248,244,0.55)', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
+                  </div>
                 ) : betweenCycles ? (
                   <div>
                     <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
