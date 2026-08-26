@@ -9,7 +9,7 @@
 // real users until the medical advisor has signed off on the tier food lists,
 // the GI/FODMAP logic, and the timings. Flip to true only after sign-off.
 // The flagged track is unaffected by this and stays fully live.
-export const COMMON_TRACK_ENABLED = false
+export const COMMON_TRACK_ENABLED = true
 
 // The rest of the app asks getProtocolFoods() for "what is this
 // user eliminating and reintroducing" instead of reading the

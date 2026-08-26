@@ -278,9 +278,9 @@ export default function FoodMap({ session, profile, labResult }) {
           </div>
 
           {[
-            { label: 'Safe', color: '#137663', sub: 'EAT FREELY' },
-            { label: 'Limit', color: '#9A5E0B', sub: 'SMALL AMOUNTS' },
-            { label: 'Avoid', color: '#B03434', sub: 'CONFIRMED TRIGGERS' },
+            { label: 'Safe', color: '#137663', mark: '#2C9D8A', sub: 'EAT FREELY', sample: 'Almond', ev: 'DAY 71 · NO REACTION' },
+            { label: 'Limit', color: '#9A5E0B', mark: '#E8941F', sub: 'SMALL AMOUNTS', sample: 'Coffee', ev: 'DAY 113 · MILD, DOSE-LINKED' },
+            { label: 'Avoid', color: '#B03434', mark: '#D64545', sub: 'CONFIRMED TRIGGERS', sample: 'Dairy', ev: 'DAY 85 · SYMPTOMS CONFIRMED' },
           ].map((tier, ti) => (
             <div key={tier.label} className={`fm-anim-${ti + 3}`} style={{ marginBottom: 15 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
@@ -288,13 +288,21 @@ export default function FoodMap({ session, profile, labResult }) {
                 <span style={{ flex: 1, borderBottom: '1px dotted rgba(0,0,0,0.15)', alignSelf: 'center' }}></span>
                 <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E' }}>{tier.sub}</span>
               </div>
-              <div className="fm-ghost-row"><span className="fm-ghost-mark"></span><span className="fm-ghost-line"></span></div>
-              <div className="fm-ghost-row"><span className="fm-ghost-mark"></span><span className="fm-ghost-line"></span></div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 2px', opacity: 0.45, borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 2, background: tier.mark, flexShrink: 0 }}></span>
+                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C' }}>{tier.sample}</span>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '6px', letterSpacing: '0.7px', color: '#9A927E', border: '1px solid rgba(0,0,0,0.14)', borderRadius: 8, padding: '1.5px 6px' }}>EXAMPLE</span>
+                </div>
+                <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{tier.ev}</span>
+              </div>
+              <div className="fm-ghost-row"><span className="fm-ghost-mark" style={{ borderColor: tier.mark, opacity: 0.4 }}></span><span className="fm-ghost-line"></span></div>
+              <div className="fm-ghost-row"><span className="fm-ghost-mark" style={{ borderColor: tier.mark, opacity: 0.4 }}></span><span className="fm-ghost-line"></span></div>
             </div>
           ))}
 
           <div className="fm-anim-5" style={{ textAlign: 'center', fontSize: '12.5px', color: '#8A8474', lineHeight: 1.6, margin: '4px auto 6px', maxWidth: 340 }}>
-            Your lab results write the first entries here. Your body earns every verdict after that.
+            The faded rows are examples of what an earned verdict looks like. Your lab results write the real first entries, your body earns every one after that.
           </div>
 
           <div className="fm-anim-5" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 18, paddingTop: 14, borderTop: '1px solid rgba(0,0,0,0.08)' }}>
