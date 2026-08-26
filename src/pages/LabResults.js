@@ -85,6 +85,7 @@ export default function LabResults({ session, onComplete, onBack }) {
   const [search, setSearch] = useState('')
   const [manualFoods, setManualFoods] = useState({})
   const [saving, setSaving] = useState(false)
+  const [noSensitivities, setNoSensitivities] = useState(false)
   const fileRef = useRef()
   const cameraRef = useRef()
 
@@ -190,9 +191,11 @@ Rules:
     const foods = method === 'manual' ? getManualFoodsAsArray() : extractedFoods
 
     if (!foods || foods.length === 0) {
-      setError('Please add at least one flagged food before continuing.')
-      setSaving(false)
-      return
+      if (!noSensitivities) {
+        setError('Please add at least one flagged food, or select "My report shows no sensitivities" below.')
+        setSaving(false)
+        return
+      }
     }
 
     let file_url = null
@@ -375,6 +378,18 @@ Rules:
               )
             })}
 
+            {method === 'manual' && (
+
+              <button onClick={() => { setNoSensitivities(v => !v); setError('') }} style={{ width: '100%', textAlign: 'left', background: noSensitivities ? '#EDF3ED' : '#FAF8F4', border: noSensitivities ? '1.5px solid #3D5C3C' : '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', padding: '13px 15px', fontSize: '13.5px', color: '#1C1C1C', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px', fontWeight: noSensitivities ? 600 : 400 }}>
+
+                My report shows no sensitivities
+
+                <div style={{ fontSize: '12px', color: '#7A7A72', fontWeight: 400, marginTop: '3px', lineHeight: 1.5 }}>That's a real result. We'll review it and recommend the right path, often testing common trigger foods instead.</div>
+
+              </button>
+
+            )}
+
             <button style={s.cta} onClick={handleSave} disabled={saving}>
               {saving ? 'Submitting...' : 'Looks right, submit for review →'}
             </button>
@@ -382,6 +397,9 @@ Rules:
           </>
         )}
 
+        {method === 'manual' && (
+          <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.6, marginBottom: '12px' }}>Add each food your lab report flags, one at a time. Most reports list 3 to 12 foods. Search below and pick the sensitivity level shown on your report.</div>
+        )}
         {method === 'manual' && (
           <>
             <input

@@ -34,19 +34,19 @@ export const COMMON_TRACK_ENABLED = true
 // have no lab severity, so they all sit in one tier and default to 'Moderate'.
 
 export const COMMON_TIER_1 = [
-  { name: 'Dairy', level: 'Moderate', fodmap: false },
-  { name: 'Gluten / wheat', level: 'Moderate', fodmap: false },
+  { name: 'Dairy', level: 'Common', fodmap: false },
+  { name: 'Gluten / wheat', level: 'Common', fodmap: false },
 ]
 
 export const COMMON_TIER_2 = [
-  { name: 'Dairy', level: 'Moderate', fodmap: false },
-  { name: 'Gluten / wheat', level: 'Moderate', fodmap: false },
-  { name: 'Eggs', level: 'Moderate', fodmap: false },
-  { name: 'Soy', level: 'Moderate', fodmap: false },
-  { name: 'Tree nuts', level: 'Moderate', fodmap: false },
-  { name: 'Corn', level: 'Moderate', fodmap: false },
-  { name: 'Onion / garlic', level: 'Moderate', fodmap: true },
-  { name: 'Legumes', level: 'Moderate', fodmap: true },
+  { name: 'Dairy', level: 'Common', fodmap: false },
+  { name: 'Gluten / wheat', level: 'Common', fodmap: false },
+  { name: 'Eggs', level: 'Common', fodmap: false },
+  { name: 'Soy', level: 'Common', fodmap: false },
+  { name: 'Tree nuts', level: 'Common', fodmap: false },
+  { name: 'Corn', level: 'Common', fodmap: false },
+  { name: 'Onion / garlic', level: 'Common', fodmap: true },
+  { name: 'Legumes', level: 'Common', fodmap: true },
 ]
 
 // User-facing labels for the two tiers (plain language, the user sees these).

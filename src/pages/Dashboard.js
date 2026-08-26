@@ -1655,6 +1655,21 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
 
 
+            {/* THE PROTOCOL — designed explainer for the common track (week 1 + eve). Static copy, deliberately not the AI voice. */}
+            {profile?.protocol_track === 'common' && currentDay <= 7 && (
+              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '20px', marginTop: 14 }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#7A7A72', marginBottom: 10 }}>How your protocol works</div>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+                  {[`${profile?.track_foods?.length || 8} FOODS REMOVED`, '56 DAYS CLEAN', 'THEN TESTED BACK, ONE AT A TIME'].map(t => (
+                    <div key={t} style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>{t}</div>
+                  ))}
+                </div>
+                <div style={{ fontSize: 13.5, color: '#3A3A35', lineHeight: 1.65 }}>
+                  For the next eight weeks you keep {profile?.track_foods?.length === 2 ? 'both' : `all ${profile?.track_foods?.length || 8}`} foods off your plate while your daily and weekly check-ins track how your body responds. Then each food comes back one at a time, three exposure days and a washout, until every one has a verdict earned from your own data. Nothing gets labeled without being tested.
+                </div>
+              </div>
+            )}
+
             {/* AI INSIGHT — the voice card */}
             <div className="snfy-insight" style={{ marginTop: 14 }}>
               <div className="snfy-insight-head">
@@ -1668,6 +1683,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 profile?.latest_insight
                 || (currentDay >= 1
                   ? `You're on day ${currentDay} of your ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'} phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.`
+                  : (profile?.protocol_start_date && currentDay < 1)
+                  ? 'You are set. Elimination begins tomorrow. Your day 1 briefing will meet you here.'
                   : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
               }</p>
               {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
@@ -1866,10 +1883,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               {showAvoidingList && labResult?.foods?.length > 0 ? (
                 <>
                   {(() => {
-                    const colors = { High: '#D64545', Moderate: '#E8941F', Low: '#2C9D8A' }
-                    const textColors = { High: '#A32D2D', Moderate: '#8A5410', Low: '#1A6256' }
-                    const chipBg = { High: '#FBE9E9', Moderate: '#FCEFD9', Low: '#DEF2EE' }
-                    const order = ['High', 'Moderate', 'Low']
+                    const colors = { High: '#D64545', Moderate: '#E8941F', Low: '#2C9D8A', Common: '#8BAE8A' }
+                    const textColors = { High: '#A32D2D', Moderate: '#8A5410', Low: '#1A6256', Common: '#3D5C3C' }
+                    const chipBg = { High: '#FBE9E9', Moderate: '#FCEFD9', Low: '#DEF2EE', Common: '#EDF3ED' }
+                    const order = ['High', 'Moderate', 'Low', 'Common']
                     const grouped = order.map(level => ({
                       level,
                       foods: labResult.foods.filter(f => f.level === level),
@@ -1888,7 +1905,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           <div key={g.level} className="snfy-avoid-group">
                             <div className="snfy-avoid-group-head">
                               <div className="snfy-avoid-level-dot" style={{ background: colors[g.level] }}></div>
-                              <div className="snfy-avoid-level-name" style={{ color: textColors[g.level] }}>{g.level} sensitivity</div>
+                              <div className="snfy-avoid-level-name" style={{ color: textColors[g.level] }}>{g.level === 'Common' ? 'Common triggers \u00b7 not lab-flagged' : `${g.level} sensitivity`}</div>
                               <div className="snfy-avoid-level-count">{g.foods.length}</div>
                             </div>
                             <div className="snfy-avoid-chips">
