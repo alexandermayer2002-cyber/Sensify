@@ -778,6 +778,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [loading, setLoading] = useState(true)
   const [milestoneMessage, setMilestoneMessage] = useState(null)
   const [milestoneKey, setMilestoneKey] = useState(null)
+  const [legendOpen, setLegendOpen] = useState(false)
   const [guideOpen, setGuideOpen] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const [checkins, setCheckins] = useState([])
@@ -1771,18 +1772,36 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           </div>
                         ))}
                       </div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '10px', justifyContent: 'center' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '10px', justifyContent: 'center', alignItems: 'center' }}>
                         {[
-                          { bg: '#3D5C3C', fg: 'white', m: '\u2713', label: 'Followed plan' },
+                          { bg: '#3D5C3C', fg: 'white', m: '\u2713', label: 'On plan' },
                           { bg: '#C95B5B', fg: 'white', m: '\u2717', label: 'Slipped' },
-                          { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', label: 'Missed \u2014 resets streak' },
+                          { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', label: 'No check-in' },
                         ].map((l, i) => (
                           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                             <span style={{ width: '14px', height: '14px', borderRadius: '4px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, flexShrink: 0 }}>{l.m}</span>
                             <span style={{ fontSize: '10px', color: '#8A8A82' }}>{l.label}</span>
                           </div>
                         ))}
+                        <button onClick={() => setLegendOpen(v => !v)} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: '10px', color: '#3D5C3C', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{legendOpen ? 'Hide' : 'What do these mean?'}</button>
                       </div>
+                      {legendOpen && (
+                        <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {[
+                            { bg: '#3D5C3C', fg: 'white', m: '\u2713', title: 'On plan', text: 'You checked in and stayed on your plan. A clean day. Builds your streak.' },
+                            { bg: '#C95B5B', fg: 'white', m: '\u2717', title: 'Slipped', text: 'You checked in and honestly logged eating something off-plan. Your streak keeps going. An honest slip is real data, and it never counts against you.' },
+                            { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', title: 'No check-in', text: 'The day went unlogged, so there is no data at all. This is the one that resets your streak. A slip we can work with. A blank we cannot.' },
+                          ].map((l, i) => (
+                            <div key={i} style={{ display: 'flex', gap: '10px', background: '#FAF9F5', borderRadius: '10px', padding: '10px 12px' }}>
+                              <span style={{ width: '18px', height: '18px', borderRadius: '5px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0, marginTop: '1px' }}>{l.m}</span>
+                              <div>
+                                <div style={{ fontSize: '12px', fontWeight: 600, color: '#1C1C1C', marginBottom: '2px' }}>{l.title}</div>
+                                <div style={{ fontSize: '11.5px', color: '#7A7A72', lineHeight: 1.55 }}>{l.text}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                       <WeekFactorCards days={days} factors={weekFactors} profile={profile} />
                     </>
                   )
