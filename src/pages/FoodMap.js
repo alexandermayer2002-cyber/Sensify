@@ -119,7 +119,6 @@ const css = `
   .fm-nosens-pill { font-size: 12px; padding: 6px 12px; border-radius: 20px; background: #FAF8F4; color: #7A7A72; border: 1px solid rgba(0,0,0,0.07); }
 
   /* FOOTER */
-  .fm-footer { background: #0E0E0C; border-radius: 16px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; gap: 14px; }
   @media (max-width: 540px) { .fm-footer { flex-direction: column; align-items: stretch; text-align: center; } }
   .fm-verify { font-family: 'DM Mono', monospace; font-size: 9.5px; color: rgba(255,255,255,0.3); letter-spacing: 0.5px; line-height: 1.7; }
   .fm-share-btn { background: #8BAE8A; color: #0E0E0C; border: none; border-radius: 9px; padding: 11px 18px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; transition: opacity 0.15s; }
@@ -261,69 +260,48 @@ export default function FoodMap({ session, profile, labResult }) {
   if (hasNoResults) return (
     <div className="fm-wrap">
       <style>{css}</style>
-      <style>{`
-        @keyframes fmChipIn { from { opacity: 0; transform: translateY(12px) scale(0.92); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes fmGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
-        @keyframes fmRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes fmSlotPulse { 0%, 100% { box-shadow: 0 0 0 rgba(0,0,0,0); } 50% { box-shadow: 0 0 18px var(--slot-glow); } }
-        @keyframes fmMsgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-      `}</style>
-      <div className="fm-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '70vh' }}>
+      <div className="fm-content">
 
-        <div style={{ textAlign: 'center', marginBottom: 24, animation: 'fmMsgIn 0.5s ease both' }}>
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, letterSpacing: '2.5px', color: '#C9A227', marginBottom: 12 }}>UNCHARTED · AWAITING YOUR RESULTS</div>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 36, fontWeight: 300, color: '#1C1C1C', lineHeight: 1.1 }}>Right now, every food<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>is a question mark.</em></div>
-        </div>
+        {/* THE BLANK CERTIFICATE — same document, earliest era. It exists from day zero, waiting to be written. */}
+        <div className="fm-cert">
+          <div className="fm-serial">NO. 0001</div>
 
-        <div style={{ position: 'relative', background: '#22301F', borderRadius: 22, padding: '26px 24px 22px', overflow: 'hidden', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'fmRise 0.7s cubic-bezier(0.16,1,0.3,1) both' }}>
-          <div style={{ position: 'absolute', top: -70, left: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'fmGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: -90, right: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative' }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · CARTOGRAPHY</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8941F' }} />
-              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.55)' }}>{programNotStarted ? 'AWAITING LAB' : 'RESULTS IN REVIEW'}</span>
+          <div className="fm-anim-1" style={{ textAlign: 'center', marginBottom: 6 }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '2.2px', color: '#9A927E', marginBottom: 7, textTransform: 'uppercase' }}>SENSIFY · {programNotStarted ? 'AWAITING LAB RESULTS' : 'RESULTS IN REVIEW'}</div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div className="fm-title-type" style={{ fontFamily: 'Fraunces, serif', fontSize: '32px', fontWeight: 380, color: '#2A2620', letterSpacing: '0.2px', fontVariationSettings: "'SOFT' 60, 'WONK' 1", animationTimingFunction: `steps(${(name + "'s Food Map").length})` }}>{name}'s Food Map<span className="fm-title-caret"></span></div>
             </div>
+            <div className="fm-gold-rule"></div>
+          </div>
+          <div className="fm-anim-2" style={{ textAlign: 'center', fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E', marginBottom: 18 }}>
+            NO FOODS TESTED YET · PROTOCOL NOT STARTED
           </div>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', position: 'relative', marginBottom: 22 }}>
-            {['Dairy', 'Gluten', 'Eggs', 'Soy', 'Almonds', 'Tomatoes', 'Corn', 'Shellfish'].map((f, i) => (
-              <span key={f} style={{
-                fontSize: 13, fontWeight: 300, color: 'rgba(250,248,244,0.85)',
-                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)',
-                padding: '6px 14px', borderRadius: 20,
-                animation: `fmChipIn 0.5s ease ${0.4 + i * 0.12}s both`,
-              }}>{f}<span style={{ color: '#C9A227', marginLeft: 6, fontFamily: 'DM Mono, monospace', fontSize: 11 }}>?</span></span>
-            ))}
-          </div>
-
-          <div style={{ fontSize: 13.5, lineHeight: 1.65, color: 'rgba(250,248,244,0.75)', textAlign: 'center', maxWidth: 340, margin: '0 auto 22px', position: 'relative', animation: 'fmMsgIn 0.6s ease 1.5s both', fontWeight: 300 }}>
-            {programNotStarted
-              ? 'Upload your lab results and start your elimination protocol to begin building your personal Food Map.'
-              : 'Your results are being reviewed. Once approved, your testing queue takes shape and the sorting begins.'}
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, position: 'relative', animation: 'fmMsgIn 0.6s ease 1.9s both' }}>
-            {[
-              { name: 'SAFE', color: '#5FD4BC', glow: 'rgba(44,157,138,0.35)', border: 'rgba(44,157,138,0.45)' },
-              { name: 'LIMIT', color: '#F2C078', glow: 'rgba(232,148,31,0.3)', border: 'rgba(232,148,31,0.45)' },
-              { name: 'AVOID', color: '#F2A0A0', glow: 'rgba(214,69,69,0.3)', border: 'rgba(214,69,69,0.45)' },
-            ].map((v, i) => (
-              <div key={v.name} style={{
-                border: `1px solid ${v.border}`, borderRadius: 12, padding: '13px 8px', textAlign: 'center',
-                animation: `fmSlotPulse ${4 + i * 0.6}s ease-in-out infinite`, ['--slot-glow']: v.glow,
-              }}>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: 21, fontWeight: 300, color: v.color, lineHeight: 1 }}>0</div>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.2px', color: v.color, marginTop: 5, opacity: 0.85 }}>{v.name}</div>
+          {[
+            { label: 'Safe', color: '#137663', sub: 'EAT FREELY' },
+            { label: 'Limit', color: '#9A5E0B', sub: 'SMALL AMOUNTS' },
+            { label: 'Avoid', color: '#B03434', sub: 'CONFIRMED TRIGGERS' },
+          ].map((tier, ti) => (
+            <div key={tier.label} className={`fm-anim-${ti + 3}`} style={{ marginBottom: 15 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
+                <span style={{ fontFamily: 'Fraunces, serif', fontSize: '19px', color: tier.color }}>{tier.label}</span>
+                <span style={{ flex: 1, borderBottom: '1px dotted rgba(0,0,0,0.15)', alignSelf: 'center' }}></span>
+                <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '0.8px', color: '#9A927E' }}>{tier.sub}</span>
               </div>
-            ))}
+              <div className="fm-ghost-row"><span className="fm-ghost-mark"></span><span className="fm-ghost-line"></span></div>
+              <div className="fm-ghost-row"><span className="fm-ghost-mark"></span><span className="fm-ghost-line"></span></div>
+            </div>
+          ))}
+
+          <div className="fm-anim-5" style={{ textAlign: 'center', fontSize: '12.5px', color: '#8A8474', lineHeight: 1.6, margin: '4px auto 6px', maxWidth: 340 }}>
+            Your lab results write the first entries here. Your body earns every verdict after that.
           </div>
 
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.2px', color: 'rgba(250,248,244,0.4)', textAlign: 'center', marginTop: 16, position: 'relative' }}>EVERY VERDICT IS EARNED · NEVER ASSUMED</div>
+          <div className="fm-anim-5" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 18, paddingTop: 14, borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '1px', color: '#9A927E' }}>EVERY VERDICT EARNED ON YOUR BODY</div>
+            <div className="fm-stamp-progress"><div className="fm-stamp-progress-text">IN<br />PROGRESS<br />·</div></div>
+          </div>
         </div>
-
-        <div style={{ fontSize: 13, color: '#7A7A72', lineHeight: 1.65, textAlign: 'center', maxWidth: 360, margin: '18px auto 0', animation: 'fmMsgIn 0.6s ease 0.3s both' }}>Your lab results draw the first lines. Your body finishes the map.</div>
 
       </div>
     </div>

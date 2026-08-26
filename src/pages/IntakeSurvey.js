@@ -83,8 +83,8 @@ const s = {
   questionBlock: { marginBottom: '14px', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px' },
   questionLabel: { fontFamily: 'Fraunces, serif', fontSize: '17.5px', fontWeight: 400, marginBottom: '12px', lineHeight: 1.3, color: '#1C1C1C' },
   optionGrid: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  option: { padding: '13px 16px', borderRadius: '11px', border: 'none', background: '#F4F2EC', fontSize: '14px', cursor: 'pointer', color: '#3A3A35', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', transition: 'all 0.12s', lineHeight: 1.4 },
-  optionOn: { padding: '13px 16px', borderRadius: '11px', border: 'none', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', fontWeight: 500, lineHeight: 1.4, boxShadow: '0 2px 8px rgba(61,92,60,0.28)' },
+  option: { padding: '13px 16px', borderRadius: '12px', border: 'none', background: '#F4F2EC', fontSize: '14px', cursor: 'pointer', color: '#3A3A35', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', transition: 'all 0.12s', lineHeight: 1.4 },
+  optionOn: { padding: '13px 16px', borderRadius: '12px', border: 'none', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', fontWeight: 500, lineHeight: 1.4, boxShadow: '0 2px 8px rgba(61,92,60,0.28)' },
   sectionDivider: { display: 'flex', alignItems: 'center', gap: '12px', margin: '28px 0 24px' },
   sectionDividerLine: { flex: 1, height: '1px', background: 'rgba(0,0,0,0.07)' },
   sectionDividerLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', whiteSpace: 'nowrap' },
@@ -99,8 +99,8 @@ const s = {
   freqBtn: { padding: '7px 11px', borderRadius: '8px', border: 'none', background: '#EDF3ED', fontSize: '12px', cursor: 'pointer', color: '#5A5A52', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s', whiteSpace: 'nowrap' },
   freqBtnOn: { padding: '7px 11px', borderRadius: '8px', border: 'none', background: '#3D5C3C', fontSize: '12px', cursor: 'pointer', color: '#FFFFFF', fontWeight: 500, fontFamily: 'DM Sans, sans-serif', boxShadow: '0 2px 6px rgba(61,92,60,0.25)', whiteSpace: 'nowrap' },
   footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#FAF8F4', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
-  ctaDisabled: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif', opacity: 0.35 },
+  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
+  ctaDisabled: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif', opacity: 0.35 },
 }
 
 export default function IntakeSurvey({ session, onComplete, onBack }) {
@@ -480,7 +480,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           <div style={{ position: 'relative', background: '#22301F', borderRadius: '18px', padding: '22px 20px', marginBottom: '18px', overflow: 'hidden', boxShadow: '0 16px 40px rgba(34,48,31,0.25)' }}>
             <div style={{ position: 'absolute', top: -50, right: -50, width: 170, height: 170, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
             <div style={{ position: 'relative', fontFamily: 'DM Mono, monospace', fontSize: '9px', letterSpacing: '1.5px', color: '#C9A227', textTransform: 'uppercase', marginBottom: '10px' }}>This part matters most</div>
-            <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: '21px', fontWeight: 300, color: '#FAF8F4', lineHeight: 1.25, marginBottom: '8px' }}>Think about what's <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>normal for you.</em></div>
+            <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: '21px', fontWeight: 400, color: '#FAF8F4', lineHeight: 1.25, marginBottom: '8px' }}>Think about what's <em style={{ color: '#8BAE8A' }}>normal for you.</em></div>
             <div style={{ position: 'relative', fontSize: '12.5px', color: 'rgba(250,248,244,0.65)', lineHeight: 1.6 }}>A typical week over the past couple of months, not just how you feel today. This becomes your baseline, and everything you improve gets measured against it.</div>
           </div>
         )}
