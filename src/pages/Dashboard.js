@@ -769,7 +769,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [activeCheckinWeek, setActiveCheckinWeek] = useState(1)
   const [activeReintroId, setActiveReintroId] = useState(null)
   const [activeCycleLite, setActiveCycleLite] = useState(null)
-  const [awayGap, setAwayGap] = useState(null)  // { days, hard } when the away-gate should show
+  const [awayGap, setAwayGap] = useState(null)
+  const [recordStats, setRecordStats] = useState({ days: 0, events: 0 })  // { days, hard } when the away-gate should show
   const [complianceData, setComplianceData] = useState([])
   const [weekFactors, setWeekFactors] = useState([])
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
@@ -832,6 +833,15 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             const silent = Math.floor((todayD - anchorD) / 86400000) - 1  // full days between last log and today
             if (silent >= AWAY_GATE.SOFT_MIN) setAwayGap({ days: silent, hard: silent >= AWAY_GATE.HARD_MIN })
           }
+        }
+      } catch (e) {}
+
+      // The Record stats (weeks 1-4 card)
+      try {
+        if (p?.protocol_start_date) {
+          const { count: dCount } = await supabase.from('daily_factors').select('id', { count: 'exact', head: true }).eq('user_id', session.user.id)
+          const { count: eCount } = await supabase.from('symptom_logs').select('id', { count: 'exact', head: true }).eq('user_id', session.user.id)
+          setRecordStats({ days: dCount || 0, events: eCount || 0 })
         }
       } catch (e) {}
 
@@ -1717,6 +1727,19 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ fontSize: 13.5, color: '#3A3A35', lineHeight: 1.55 }}>Done with your test? Tell us so we know your results are on the way.</div>
                 </div>
                 <button onClick={async () => { const sm = { ...(profile?.shown_milestones || {}), test_taken: true }; await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '11px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 }}>I took my test</button>
+              </div>
+            )}
+
+            {/* THE RECORD — the intelligence visibly assembling (weeks 1-4 of elimination) */}
+            {calculatedPhase === 'elimination' && currentDay >= 2 && currentDay <= 28 && (
+              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '18px 20px', marginTop: 14 }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#7A7A72', marginBottom: 10 }}>Your record</div>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>{recordStats.days} DAY{recordStats.days === 1 ? '' : 'S'} LOGGED</div>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>{recordStats.events} SYMPTOM EVENT{recordStats.events === 1 ? '' : 'S'} CAPTURED</div>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#9A6212', background: '#FBEFD8', borderRadius: 9, padding: '5px 10px' }}>PATTERN DETECTION {currentDay >= 28 ? 'ACTIVE' : `IN ${Math.ceil((28 - currentDay) / 7)} WEEK${Math.ceil((28 - currentDay) / 7) === 1 ? '' : 'S'}`}</div>
+                </div>
+                <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.6 }}>Every day you log builds the baseline your verdicts get measured against. Once four weeks are on the record, Sensify starts cross-referencing sleep, stress, and hydration against how you feel.</div>
               </div>
             )}
 

@@ -513,7 +513,18 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
     // Generate food briefing
     setLoadingBriefing(true)
     try {
-      const msg = await generateReintroFoodBriefing({ name, food, sensitivityLevel: level, profile })
+      let symptomPattern = null
+      try {
+        const { data: ev } = await supabase.from('symptom_logs').select('symptom, note').eq('user_id', session.user.id).limit(200)
+        if (ev && ev.length >= 3) {
+          const counts = {}; const timings = {}
+          for (const e of ev) { counts[e.symptom] = (counts[e.symptom] || 0) + 1; if (e.note) timings[e.note] = (timings[e.note] || 0) + 1 }
+          const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => k.toLowerCase()).join(' and ')
+          const when = Object.entries(timings).sort((a, b) => b[1] - a[1])[0]
+          symptomPattern = top + (when ? `, usually ${when[0]}` : '')
+        }
+      } catch (e) {}
+      const msg = await generateReintroFoodBriefing({ name, food, sensitivityLevel: level, profile, symptomPattern })
       setFoodBriefing(msg)
       // Persist so it shows every time the active cycle is viewed, not just at start
       if (msg) {

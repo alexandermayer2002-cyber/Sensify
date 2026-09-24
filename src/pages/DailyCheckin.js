@@ -147,6 +147,12 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
     list.push('Other')
     return [...new Set(list.length > 1 ? list : ['Bloating', 'Gas', 'Cramping', 'Fatigue', 'Headache', 'Other'])]
   })()
+  // Elimination-era symptom events (the day-grain layer; skippable by design)
+  const [offToday, setOffToday] = useState(null)          // null | 'fine' | 'mild' | 'notable'
+  const [elimSymptoms, setElimSymptoms] = useState({})    // { name: true }
+  const [elimTiming, setElimTiming] = useState(null)      // 'morning' | 'after a meal' | 'evening' | 'all day'
+  const toggleElimSymptom = (nm) => setElimSymptoms(prev => { const n = { ...prev }; if (n[nm]) delete n[nm]; else n[nm] = true; return n })
+
   const toggleSymptom = (nm) => setSymptomIntensities(prev => { const n = { ...prev }; if (n[nm]) delete n[nm]; else n[nm] = 'mild'; return n })
   const setIntensity = (nm, lvl) => { setSymptomIntensities(prev => ({ ...prev, [nm]: lvl })); if (lvl === 'severe') setShowSevereWarning(true) }
 
@@ -200,6 +206,29 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         }
       } catch (e) { console.error('reintro save error:', e) }
     }
+
+    // Day-grain symptom events (elimination era): unrecoverable if not captured now.
+    let onRecord = null
+    try {
+      if (!showReintroBlock && (offToday === 'mild' || offToday === 'notable')) {
+        const names = Object.keys(elimSymptoms)
+        if (names.length > 0) {
+          await supabase.from('symptom_logs').insert(names.map(nm => ({ user_id: session.user.id, symptom: nm, severity: offToday, note: elimTiming || null })))
+          // The memory beat: the system counting in front of you.
+          const since30 = new Date(Date.now() - 30 * 86400000).toISOString()
+          const { data: hist } = await supabase.from('symptom_logs').select('symptom, note').eq('user_id', session.user.id).gte('logged_at', since30)
+          const first = names[0]
+          const symCount = (hist || []).filter(h => h.symptom === first).length
+          const timeCount = elimTiming ? (hist || []).filter(h => h.note === elimTiming).length : 0
+          const ord = (n) => n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : `${n}th`
+          const pieces = [`${first}${elimTiming ? ', ' + elimTiming : ''}`]
+          if (symCount > 1) pieces.push(`your ${ord(symCount)} ${first.toLowerCase()} event this month`)
+          else if (timeCount > 1) pieces.push(`your ${ord(timeCount)} ${elimTiming} event this month`)
+          else pieces.push('first of its kind on your record')
+          onRecord = pieces.join(' \u00b7 ')
+        }
+      }
+    } catch (e) { /* events never block the check-in */ }
 
     const { error } = await supabase.from('daily_factors').upsert(row, { onConflict: 'user_id,log_date' })
 
@@ -265,7 +294,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       else if (streak >= 3) reflection = `${streak}-day streak. Consistency like this is exactly what makes your insights sharper.`
       else if (loggedThisWeek >= 2) reflection = `That's ${loggedThisWeek} check-ins this week. Every one adds to the picture.`
       else reflection = `Logged for today. Each check-in helps us understand what's really going on.`
-      setReward({ streak, weekDays, reflection })
+      setReward({ streak, weekDays, reflection, onRecord })
     } catch (e) {
       onComplete && onComplete()  // if reward calc fails, just exit normally
     }
@@ -312,7 +341,13 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
               </div>
             ))}
           </div>
-          <div style={{ fontSize: 15, lineHeight: 1.6, color: '#4A4A45', maxWidth: 320, marginBottom: 32 }}>{reward.reflection}</div>
+          <div style={{ fontSize: 15, lineHeight: 1.6, color: '#4A4A45', maxWidth: 320, marginBottom: reward.onRecord ? 14 : 32 }}>{reward.reflection}</div>
+          {reward.onRecord && (
+            <div style={{ background: '#FFFFFF', border: '1px solid rgba(61,92,60,0.18)', borderRadius: 12, padding: '11px 15px', marginBottom: 28, maxWidth: 320 }}>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7.5, letterSpacing: '1.2px', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2C9D8A', boxShadow: '0 0 7px rgba(44,157,138,0.7)' }}></span>On the record</div>
+              <div style={{ fontSize: 12.5, color: '#4A4A45', lineHeight: 1.55 }}>{reward.onRecord}</div>
+            </div>
+          )}
           <button style={{ ...s.cta, maxWidth: 280 }} onClick={() => { onComplete && onComplete() }}>Done →</button>
         </div>
       </div>
@@ -450,6 +485,35 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           </div>
         )}
       </div>
+      {!showReintroBlock && activeReintro !== undefined && (
+        <div style={{ maxWidth: '560px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
+          <div style={s.block}>
+            <div style={s.label}>Anything off today? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>optional</span></div>
+            <div style={s.opts}>
+              {[['fine', 'Felt fine'], ['mild', 'Something mild'], ['notable', 'Something notable']].map(([v, l]) => (
+                <button key={v} style={offToday === v ? s.optOn : s.opt} onClick={() => { setOffToday(v); if (v === 'fine') { setElimSymptoms({}); setElimTiming(null) } }}>{l}</button>
+              ))}
+            </div>
+            {(offToday === 'mild' || offToday === 'notable') && (
+              <div style={{ marginTop: '13px' }}>
+                <div style={{ fontSize: '12.5px', color: '#7A7A72', marginBottom: '8px' }}>What was it?</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                  {reintroSymptoms.map(nm => (
+                    <button key={nm} style={elimSymptoms[nm] ? { ...s.optOn, flex: 'none' } : { ...s.opt, flex: 'none' }} onClick={() => toggleElimSymptom(nm)}>{nm}</button>
+                  ))}
+                </div>
+                <div style={{ fontSize: '12.5px', color: '#7A7A72', marginBottom: '8px' }}>When did it hit?</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {['morning', 'after a meal', 'evening', 'all day'].map(t => (
+                    <button key={t} style={elimTiming === t ? { ...s.optOn, flex: 'none' } : { ...s.opt, flex: 'none' }} onClick={() => setElimTiming(t)}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div style={s.footer}>
         <button style={complete ? s.cta : s.ctaOff} disabled={!complete || saving} onClick={submit}>
           {saving ? 'Saving...' : 'Done for today →'}

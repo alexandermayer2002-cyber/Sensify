@@ -232,7 +232,7 @@ Write only the message. No labels.`
 }
 
 // REINTRODUCTION FOOD BRIEFING
-export const generateReintroFoodBriefing = async ({ name, food, sensitivityLevel, profile }) => {
+export const generateReintroFoodBriefing = async ({ name, food, sensitivityLevel, profile, symptomPattern }) => {
   const symptoms = formatSymptoms(profile?.symptoms)
   const hasDigestive = profile?.symptoms?.includes('Digestive')
   const hasEnergy = profile?.symptoms?.includes('Energy')
@@ -251,6 +251,7 @@ USER:
 
 Output EXACTLY three sections separated by these literal delimiters on their own lines: [WATCH] then the watch-for text, [TIP] then the tip text, [SAFETY] then the safety text. No other headers, no preamble.
 
+${symptomPattern ? `Their elimination-era symptom pattern: ${symptomPattern}. Aim the [WATCH] section at it.\n` : ''}
 Rules:
 - [WATCH]: two sentences max. What symptoms to observe on exposure days, specific to their symptom focus, plus that timing matters (right after eating vs building later). Frame as OBSERVE and LOG, never predictions. Say "watch for" and "note whether", never "you will feel"
 - [TIP]: one sentence. One practical tip for the exposure phase
@@ -407,7 +408,7 @@ export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
 // based on logged daily data. The AI may CONFIRM it, or adjust by ONE
 // level with a stated reason. It never overrides the data wholesale.
 // Returns { verdict, analysis }.
-export const generateReintroVerdict = async ({ name, food, provisionalVerdict, signals, dailyLogs = [], surveyAnswers = {}, accuracyNote, contextNote }) => {
+export const generateReintroVerdict = async ({ name, food, provisionalVerdict, signals, dailyLogs = [], surveyAnswers = {}, accuracyNote, contextNote, dayGrainContext }) => {
   const exposureSummary = dailyLogs
     .filter(l => l.phase === 'exposure')
     .map(l => `Day(ate:${l.ate_food ? 'yes' : 'no'}, symptoms:${(l.symptoms || []).map(s => `${s.name}/${s.intensity}`).join(',') || 'none'})`)
@@ -425,7 +426,7 @@ LOGGED EXPOSURE DAYS: ${exposureSummary || 'no daily logs'}
 LOGGED WASHOUT SYMPTOMS: ${washoutSummary || 'none logged'}
 SIGNALS: ${JSON.stringify(signals || {})}
 USER CONFIRMED ACCURACY: ${accuracyNote === 'accurate' ? 'says the logged data is accurate' : accuracyNote === 'worse' ? 'says it actually felt WORSE than logged' : accuracyNote === 'milder' ? 'says it actually felt MILDER than logged' : 'no response'}
-USER NOTED CONTEXT (other things going on, may explain symptoms): ${contextNote ? `"${contextNote}"` : 'none noted'}
+${dayGrainContext ? dayGrainContext + '\n' : ''}USER NOTED CONTEXT (other things going on, may explain symptoms): ${contextNote ? `"${contextNote}"` : 'none noted'}
 
 YOUR TASK:
 Decide the final verdict: Safe, Limit, or Avoid. Then write a 2 to 3 sentence explanation.

@@ -122,6 +122,8 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
   const [logsLoaded, setLogsLoaded] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [verdict, setVerdict] = useState(null)
+  const [noiseFloor, setNoiseFloor] = useState(null)
+  const [sleepOverlap, setSleepOverlap] = useState(null)
   const [analysis, setAnalysis] = useState('')
 
   // Load the cycle's daily logs so we can summarize them back to the user
@@ -131,6 +133,32 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
       if (!activeReintroId) { setLogsLoaded(true); return }
       try {
         const { data } = await supabase.from('reintro_daily_logs').select('*').eq('reintro_id', activeReintroId).order('log_date', { ascending: true })
+
+        // ---- Day-grain intelligence (surface + prompt context; never decides) ----
+        try {
+          // Noise floor: elimination-era symptom events per week (clean baseline rumble)
+          const { data: cyc } = await supabase.from('reintroduction_results').select('started_at').eq('id', activeReintroId).single()
+          if (cyc?.started_at) {
+            const cycStart = String(cyc.started_at).split('T')[0]
+            const { data: elimEvents } = await supabase.from('symptom_logs').select('symptom, severity, logged_at').eq('user_id', session.user.id).lt('logged_at', cycStart)
+            if (elimEvents && elimEvents.length >= 0) {
+              const dayset = new Set(elimEvents.map(e => String(e.logged_at).split('T')[0]))
+              const span = elimEvents.length ? Math.max(7, (new Date() - new Date([...dayset].sort()[0])) / 86400000) : 56
+              const perWeek = dayset.size ? (dayset.size / (span / 7)) : 0
+              setNoiseFloor({ daysPerWeek: Math.round(perWeek * 10) / 10, totalDays: dayset.size })
+            }
+            // Sleep cross-ref: symptom days vs worst-sleep nights inside the cycle
+            const symDays = (data || []).filter(l => (l.symptoms || []).length > 0).map(l => l.log_date)
+            if (symDays.length >= 2) {
+              const { data: dfs } = await supabase.from('daily_factors').select('log_date, sleep').eq('user_id', session.user.id).gte('log_date', cycStart)
+              const SLEEP_RANK = { under6: 1, '6-7': 2, '7-8': 3, '8plus': 4 }
+              const ranked = (dfs || []).filter(d => d.sleep).sort((a, b) => SLEEP_RANK[a.sleep] - SLEEP_RANK[b.sleep])
+              const worst = new Set(ranked.slice(0, Math.max(2, symDays.length)).map(d => d.log_date))
+              const overlap = symDays.filter(d => worst.has(d)).length
+              if (overlap >= 2) setSleepOverlap({ overlap, symDays: symDays.length })
+            }
+          }
+        } catch (e) { /* intelligence never blocks the survey */ }
         if (active) { setDailyLogs(data || []); setLogsLoaded(true) }
       } catch (e) { if (active) setLogsLoaded(true) }
     }
@@ -159,6 +187,10 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         dailyLogs,
         surveyAnswers: { accuracy, context },
         accuracyNote: accuracy,
+        dayGrainContext: [
+          noiseFloor ? `Clean-baseline noise floor: during elimination this person logged symptoms on about ${noiseFloor.daysPerWeek} day(s) per week (${noiseFloor.totalDays} symptom days total). Weigh exposure symptoms against that background, and say so if the exposure pattern clearly exceeds it.` : null,
+          sleepOverlap ? `Sleep cross-reference: ${sleepOverlap.overlap} of their ${sleepOverlap.symDays} symptom days in this cycle were also among their worst sleep nights. Mention this as honest context; it may inflate the signal.` : null,
+        ].filter(Boolean).join('\n'),
         contextNote: context,
       })
       if (aiResult?.verdict) computedVerdict = applyAiAdjustment(
@@ -281,6 +313,14 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         <div style={s.summaryCard}>
           {logsLoaded ? <div style={s.summaryText}>{buildSummary(dailyLogs, food)}</div> : <div style={s.summaryText}>Loading your cycle…</div>}
         </div>
+
+        {(noiseFloor?.totalDays > 0 || sleepOverlap) && (
+          <div style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '12px 14px', marginBottom: '14px' }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 6 }}>Worth weighing</div>
+            {noiseFloor?.totalDays > 0 && <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6 }}>During clean elimination weeks you logged symptoms about {noiseFloor.daysPerWeek} day{noiseFloor.daysPerWeek === 1 ? '' : 's'} a week. That background is part of how this cycle gets read.</div>}
+            {sleepOverlap && <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6, marginTop: noiseFloor?.totalDays > 0 ? 6 : 0 }}>{sleepOverlap.overlap} of your {sleepOverlap.symDays} symptom days were also among your worst sleep nights this cycle. The analysis weighs that too.</div>}
+          </div>
+        )}
 
         {/* BLOCK 2 — Confirm accuracy */}
         <div style={s.questionBlock}>

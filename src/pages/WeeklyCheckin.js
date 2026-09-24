@@ -108,6 +108,19 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
     } catch (e) { /* adherence never blocks the insight */ }
   }
 
+  // ---- This week's symptom events (descriptive fuel for early-era insights) ----
+  let eventsLine = ''
+  if (session?.user?.id) {
+    try {
+      const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString()
+      const { data: evs } = await supabase.from('symptom_logs').select('symptom, severity, note').gte('logged_at', weekAgo).eq('user_id', session.user.id)
+      if (evs && evs.length > 0) {
+        const parts = evs.slice(0, 10).map(e => `${e.symptom}${e.note ? ' (' + e.note + ')' : ''}`)
+        eventsLine = `\nTHIS WEEK'S LOGGED SYMPTOM EVENTS: ${parts.join('; ')}. Describe what the record shows (types, timing) in plain terms. Do NOT make causal claims about foods or factors from these; pattern analysis handles that separately once enough weeks exist.`
+      }
+    } catch (e) {}
+  }
+
   // ---- Active reintro cycle context (so the insight never misreads a test week) ----
   let cycleLine = ''
   if (session?.user?.id) {
@@ -201,7 +214,7 @@ ${previousScores ? `LAST WEEK'S SCORES:\n${previousScores}` : 'This is their fir
 
 OVERALL FEELING: ${answers.overall_feeling || 'not specified'}
 WHAT CHANGED THIS WEEK: ${contextStr}
-COMPLIANCE: ${answers.compliance || 'not specified'}${adherenceLine}${cycleLine}
+COMPLIANCE: ${answers.compliance || 'not specified'}${adherenceLine}${cycleLine}${eventsLine}
 ${answers.notes ? `USER NOTES: ${answers.notes}` : ''}
 
 YOUR TASK:
