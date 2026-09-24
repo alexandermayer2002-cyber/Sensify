@@ -1730,16 +1730,30 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
-            {/* THE RECORD — the intelligence visibly assembling (weeks 1-4 of elimination) */}
-            {calculatedPhase === 'elimination' && currentDay >= 2 && currentDay <= 28 && (
+            {/* THE RECORD — the intelligence visibly assembling. Three eras: pre-protocol promise, day-1 opening, days 2-28 assembly. */}
+            {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 28) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (
               <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '18px 20px', marginTop: 14 }}>
                 <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#7A7A72', marginBottom: 10 }}>Your record</div>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>{recordStats.days} DAY{recordStats.days === 1 ? '' : 'S'} LOGGED</div>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>{recordStats.events} SYMPTOM EVENT{recordStats.events === 1 ? '' : 'S'} CAPTURED</div>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#9A6212', background: '#FBEFD8', borderRadius: 9, padding: '5px 10px' }}>PATTERN DETECTION {currentDay >= 28 ? 'ACTIVE' : `IN ${Math.ceil((28 - currentDay) / 7)} WEEK${Math.ceil((28 - currentDay) / 7) === 1 ? '' : 'S'}`}</div>
+                  {!profile?.protocol_start_date ? (<>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>OPENS WITH DAY 1</div>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#9A6212', background: '#FBEFD8', borderRadius: 9, padding: '5px 10px' }}>PATTERN DETECTION AT WEEK 4</div>
+                  </>) : currentDay === 1 && recordStats.days === 0 ? (<>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>0 DAYS LOGGED</div>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#9A6212', background: '#FBEFD8', borderRadius: 9, padding: '5px 10px' }}>OPENS TONIGHT</div>
+                  </>) : (<>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>{recordStats.days} DAY{recordStats.days === 1 ? '' : 'S'} LOGGED</div>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>{recordStats.events} SYMPTOM EVENT{recordStats.events === 1 ? '' : 'S'} CAPTURED</div>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#9A6212', background: '#FBEFD8', borderRadius: 9, padding: '5px 10px' }}>PATTERN DETECTION {currentDay >= 28 ? 'ACTIVE' : `IN ${Math.ceil((28 - currentDay) / 7)} WEEK${Math.ceil((28 - currentDay) / 7) === 1 ? '' : 'S'}`}</div>
+                  </>)}
                 </div>
-                <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.6 }}>Every day you log builds the baseline your verdicts get measured against. Once four weeks are on the record, Sensify starts cross-referencing sleep, stress, and hydration against how you feel.</div>
+                <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.6 }}>
+                  {!profile?.protocol_start_date
+                    ? 'Once your protocol starts, every day you log builds a private record: your sleep, stress, and symptoms, cross-referenced. By week 4, Sensify starts spotting patterns in it. No lab report can do that.'
+                    : currentDay === 1 && recordStats.days === 0
+                    ? "Tonight's check-in writes the first entry. Everything Sensify learns about you gets measured against what starts here."
+                    : 'Every day you log builds the baseline your verdicts get measured against. Once four weeks are on the record, Sensify starts cross-referencing sleep, stress, and hydration against how you feel.'}
+                </div>
               </div>
             )}
 
