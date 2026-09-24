@@ -31,7 +31,7 @@
 //  - the framing copy rules (in the prompt builder below)
 // ============================================================
 
-export const CONFOUND_ENABLED = false        // master gate
+export const CONFOUND_ENABLED = true         // master gate (flipped 8/27/26 on Alex's word; thresholds remain MD-review items)
 export const ENGINE1_ENABLED = true           // absolute-level (safer); independently togglable under the master gate
 export const ENGINE2_ENABLED = true           // divergence (riskier)
 
