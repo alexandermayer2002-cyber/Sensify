@@ -1656,6 +1656,17 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
 
 
+            {/* I TOOK THE TEST — persistent pleasant card until clicked (finding #14) */}
+            {!labResult && !profile?.shown_milestones?.test_taken && (showIntakeCard || showLabCard || showPendingLabCard) && (
+              <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: 18, padding: '18px 20px', marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: 6 }}>Your lab kit</div>
+                  <div style={{ fontSize: 13.5, color: '#3A3A35', lineHeight: 1.55 }}>Done with your test? Tell us so we know your results are on the way.</div>
+                </div>
+                <button onClick={async () => { const sm = { ...(profile?.shown_milestones || {}), test_taken: true }; await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '11px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 }}>I took my test</button>
+              </div>
+            )}
+
             {/* THE PROTOCOL — designed explainer for the common track (week 1 + eve). Static copy, deliberately not the AI voice. */}
             {profile?.protocol_track === 'common' && currentDay <= 7 && (
               <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '20px', marginTop: 14 }}>
@@ -1748,6 +1759,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     if (entry?.response === 'YES') { cls = 'yes'; mark = '\u2713' }        // did check-in + complied
                     else if (entry?.response === 'NO') { cls = 'no'; mark = '\u2717' }     // did check-in + slipped
                     else if (isFuture) { cls = 'future'; mark = '' }
+                    else if (profile?.protocol_start_date && dateStr < String(profile.protocol_start_date).split('T')[0]) { cls = 'future'; mark = '' }  // pre-protocol days: blank, never 'missed' (finding #8)
                     else if (isToday) { cls = 'empty'; mark = '\u00b7' }                   // today, pending - not missed yet
                     else { cls = 'missed'; mark = '\u2013' }  // forgot — the only streak-breaker
                     return { day, cls: cls + (isToday ? ' today' : ''), mark, dateStr, isFuture }

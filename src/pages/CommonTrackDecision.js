@@ -86,6 +86,8 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
       track_decision: 'active',
       program_phase: 'elimination',
       protocol_start_date: localDateString(tomorrow),
+      latest_insight: null,
+      latest_insight_week: null,
     }).eq('id', session.user.id)
     setSaving(false)
     if (error) { alert('Could not start protocol: ' + error.message); return }

@@ -186,7 +186,13 @@ Rules:
     return Object.entries(manualFoods).map(([name, level]) => ({ name, level }))
   }
 
+  const [reviewing, setReviewing] = useState(false)
   const handleSave = async () => {
+    // Manual entry gets a review gate: first press shows the read-back, second confirms (finding #16)
+    if (method === 'manual' && !reviewing) {
+      const list = getManualFoodsAsArray()
+      if ((list && list.length > 0) || noSensitivities) { setReviewing(true); setError(''); return }
+    }
     setSaving(true)
     const foods = method === 'manual' ? getManualFoodsAsArray() : extractedFoods
 
@@ -390,8 +396,19 @@ Rules:
 
             )}
 
+            {reviewing && method === 'manual' && (
+              <div style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 8 }}>Review before submitting</div>
+                <div style={{ fontSize: 13, color: '#1C1C1C', lineHeight: 1.7 }}>
+                  {noSensitivities && getManualFoodsAsArray().length === 0
+                    ? 'Your report shows no sensitivities. We will review this and recommend your path.'
+                    : getManualFoodsAsArray().map(f => `${f.name} (${f.level})`).join(' \u00b7 ')}
+                </div>
+                <button onClick={() => setReviewing(false)} style={{ background: 'transparent', border: 'none', padding: 0, marginTop: 8, fontSize: 12, color: '#3D5C3C', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Go back and edit</button>
+              </div>
+            )}
             <button style={s.cta} onClick={handleSave} disabled={saving}>
-              {saving ? 'Submitting...' : 'Looks right, submit for review →'}
+              {saving ? 'Submitting...' : (method === 'manual' && !reviewing) ? 'Review my entry \u2192' : 'Looks right, submit for review →'}
             </button>
             <button style={s.secBtn} onClick={() => setExtractedFoods(null)}>Re-analyze</button>
           </>
