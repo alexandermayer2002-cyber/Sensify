@@ -2030,81 +2030,83 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             </div>
 
-            {/* THE LEARNING GARDEN — the intelligence growing from seed to bloom over 28 days */}
+            {/* THE LEAF CONSTELLATION — 28 nights, one star per logged day, randomized per user; the leaf reveals at 28 */}
             {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 42) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
               const preP = !profile?.protocol_start_date
-              const gDay = preP ? 0 : Math.min(recordStats.days, 28)
-              const stage = preP || gDay < 1 ? 0 : gDay <= 3 ? 1 : gDay <= 7 ? 2 : gDay <= 14 ? 3 : gDay <= 21 ? 4 : gDay < 28 ? 5 : 6
-              const watch = (() => {
-                const sym = profile?.symptoms || []
-                const w = []
-                if (sym.includes('Digestive')) w.push('bloating', 'gas')
-                if (sym.includes('Energy')) w.push('brain fog', 'fatigue')
-                if (sym.includes('General wellness')) w.push('headaches', 'feeling off')
-                return w.slice(0, 3)
-              })()
+              const starCount = preP ? 0 : Math.min(recordStats.days, 28)
+              const complete = starCount >= 28
+              // 28 fixed anchors of the leaf (x, y, r)
+              const A = [[140,186,2],[140,177,1.5],[140,168,2.2],[106,146,1.7],[174,146,1.7],[86,116,1.7],[194,116,1.7],[81,86,1.7],[199,86,1.7],[92,52,1.7],[188,52,1.7],[112,26,1.7],[168,26,1.7],[126,14,1.5],[154,14,1.5],[140,8,2.2],[140,140,1.6],[140,108,1.6],[140,76,1.6],[100,106,1.4],[180,106,1.4],[106,74,1.4],[174,74,1.4],[118,42,1.4],[162,42,1.4],[122,122,1.3],[158,122,1.3],[140,58,1.3]]
+              const ADJ = [[0,1],[1,2],[2,3],[3,5],[5,7],[7,9],[9,11],[11,13],[13,15],[15,14],[14,12],[12,10],[10,8],[8,6],[6,4],[4,2],[2,16],[16,17],[17,18],[18,27],[27,15],[16,19],[16,20],[17,21],[17,22],[18,23],[18,24],[25,16],[26,16]]
+              // Deterministic per-user rng: fill order + tiny jitter, stable across reloads, unique per user
+              let seed = 0
+              const uid = session?.user?.id || 'sensify'
+              for (let i = 0; i < uid.length; i++) seed = (seed * 31 + uid.charCodeAt(i)) >>> 0
+              const rng = () => { seed = (seed + 0x6D2B79F5) >>> 0; let t = seed; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296 }
+              const order = A.map((_, i) => i)
+              for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); const tmp = order[i]; order[i] = order[j]; order[j] = tmp }
+              const jit = A.map(() => [(rng() - 0.5) * 4, (rng() - 0.5) * 4])
+              const present = new Set(order.slice(0, starCount))
+              const P = A.map(([x, y, r], i) => [x + jit[i][0], y + jit[i][1], r])
               return (
-                <div className="snfy-garden" style={{ background: '#22301F', borderRadius: 20, padding: 22, marginTop: 14, position: 'relative', overflow: 'hidden' }}>
+                <div className="snfy-garden" style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: 18, marginTop: 14 }}>
                   <style>{`
-                    @keyframes glDrift1 { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-25px,18px) } }
-                    @keyframes glDrift2 { 0%,100% { transform: translate(0,0) } 50% { transform: translate(22px,-15px) } }
-                    @keyframes glSway { 0%,100% { transform: rotate(-2.5deg) } 50% { transform: rotate(2.5deg) } }
-                    @keyframes glFadeIn { from { opacity: 0; transform: translateY(5px) } to { opacity: 1; transform: none } }
-                    @keyframes glBloom { 0%,100% { opacity: 0.75 } 50% { opacity: 1 } }
-                    @keyframes glUnfurlL { from { transform: rotate(-55deg) scale(0.3); opacity: 0 } to { transform: none; opacity: 1 } }
-                    @keyframes glUnfurlR { from { transform: rotate(55deg) scale(0.3); opacity: 0 } to { transform: none; opacity: 1 } }
+                    @keyframes lcTw { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }
+                    @keyframes lcGp { 0%,100% { opacity: 1 } 50% { opacity: 0.7 } }
                   `}</style>
-                  <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%', filter: 'blur(30px)', opacity: 0.5, background: 'radial-gradient(circle, #3D5C3C, transparent 70%)', top: -60, right: -40, animation: 'glDrift1 9s ease-in-out infinite' }} />
-                  <div style={{ position: 'absolute', width: 150, height: 150, borderRadius: '50%', filter: 'blur(30px)', opacity: 0.5, background: 'radial-gradient(circle, rgba(44,157,138,0.55), transparent 70%)', bottom: -50, left: -30, animation: 'glDrift2 11s ease-in-out infinite' }} />
-                  <div style={{ position: 'relative', display: 'flex', gap: 16 }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontFamily: 'Fraunces, serif', fontSize: 21, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.25, marginBottom: 11, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{stage === 6 ? <>Sensify <span style={{ color: '#8BAE8A' }}>knows your rhythm.</span></> : <>Sensify is <span style={{ color: '#8BAE8A' }}>learning you.</span></>}</div>
-                      {preP ? (
-                        <>
-                          <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease both' }}>A seed, waiting on your lab results.</div>
-                          <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease 0.6s both' }}>From day 1, every check-in feeds it: sleep, stress, symptoms, cross-referenced into an understanding no lab report has.</div>
-                        </>
-                      ) : (
-                        <>
-                          <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease both' }}><b style={{ color: '#FAF8F4', fontWeight: 600 }}>{recordStats.days}</b> day{recordStats.days === 1 ? '' : 's'} absorbed{recordStats.events > 0 ? <>, <b style={{ color: '#FAF8F4', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'} on the record</> : ', clean so far'}.</div>
-                          {watch.length > 0 && <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease 0.7s both' }}>Watching for <b style={{ color: '#FAF8F4', fontWeight: 600 }}>{watch.join(', ')}</b>, because that's what you told us matters.</div>}
-                          <div style={{ fontSize: 11, color: 'rgba(250,248,244,0.5)', marginTop: 12, lineHeight: 1.6, animation: 'glFadeIn 1s ease 1.4s both' }}>{stage === 6 ? <span style={{ color: '#8BAE8A' }}>The pattern engine is awake. It speaks when your data says something real.</span> : <>Every day you log, this grows. <span style={{ color: '#8BAE8A' }}>It blooms at 28 days, when pattern detection wakes.</span></>}</div>
-                        </>
-                      )}
-                    </div>
-                    <div style={{ width: 74, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
-                      <svg width="70" height="118" viewBox="0 0 70 120" style={{ animation: stage >= 2 ? 'glSway 5s ease-in-out infinite' : 'none', transformOrigin: 'bottom center', overflow: 'visible' }}>
-                        <line x1="12" y1="118" x2="58" y2="118" stroke="rgba(139,174,138,0.35)" strokeWidth="1.5" strokeLinecap="round" />
-                        {stage === 0 && <ellipse cx="35" cy="112" rx="5.5" ry="7" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1.2" />}
-                        {stage === 1 && (<>
-                          <ellipse cx="35" cy="113" rx="5" ry="6" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1.2" />
-                          <path d="M35 107 C35 101 34 96 35 90" stroke="#8BAE8A" strokeWidth="2.2" fill="none" strokeLinecap="round" />
-                          <path d="M35 92 C31 90 29 86 30 82 C33 84 34 88 35 92" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="0.9" />
-                          <path d="M35 92 C39 90 41 86 40 82 C37 84 36 88 35 92" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="0.9" />
-                        </>)}
-                        {stage === 2 && (<>
-                          <path d="M35 118 C35 105 34 92 35 80" stroke="#8BAE8A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                          <g style={{ transformOrigin: '35px 96px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 96 C26 93 21 86 22 79 C30 82 34 88 35 96" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
-                          <g style={{ transformOrigin: '35px 88px', animation: 'glUnfurlR 1.4s ease 0.5s both' }}><path d="M35 88 C44 85 49 78 48 71 C40 74 36 80 35 88" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
-                        </>)}
-                        {stage >= 3 && (<>
-                          <path d="M35 118 C35 95 34 70 35 48" stroke="#8BAE8A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                          <g style={{ transformOrigin: '35px 85px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 85 C20 80 12 68 14 56 C28 60 34 70 35 85" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
-                          {stage >= 4 && <g style={{ transformOrigin: '35px 68px', animation: 'glUnfurlR 1.4s ease 0.4s both' }}><path d="M35 68 C50 63 58 51 56 39 C42 43 36 53 35 68" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>}
-                          {stage === 5 && <g style={{ transformOrigin: '35px 48px', animation: 'glUnfurlL 1.4s ease 0.8s both' }}><path d="M35 48 C26 38 26 26 33 18 C41 26 42 38 35 48" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>}
-                          {stage >= 6 && (<>
-                            <g style={{ transformOrigin: '35px 48px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 48 C26 38 26 26 33 18 C41 26 42 38 35 48" fill="#2C9D8A" opacity="0.85" stroke="#8BAE8A" strokeWidth="1" /></g>
-                            <g style={{ animation: 'glBloom 3s ease-in-out infinite' }}><circle cx="35" cy="12" r="3.2" fill="#2C9D8A" /><path d="M35 4 C37.5 6.5 37.5 9.5 35 12 C32.5 9.5 32.5 6.5 35 4" fill="#2C9D8A" /><path d="M27 12 C29.5 9.5 32.5 9.5 35 12 C32.5 14.5 29.5 14.5 27 12" fill="#2C9D8A" opacity="0.85" /><path d="M43 12 C40.5 9.5 37.5 9.5 35 12 C37.5 14.5 40.5 14.5 43 12" fill="#2C9D8A" opacity="0.85" /></g>
-                          </>)}
-                        </>)}
-                      </svg>
-                      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.2px', color: 'rgba(139,174,138,0.55)', marginTop: 6, whiteSpace: 'nowrap' }}>{preP ? 'PLANTS WITH DAY 1' : stage === 6 ? 'IN BLOOM' : `DAY ${gDay} OF 28`}</div>
-                    </div>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.3px', color: '#7A7A72', textTransform: 'uppercase', marginBottom: 8 }}>{preP ? 'Sensify · Awaiting day 1' : complete ? 'Sensify · Pattern engine live' : 'Sensify · Charting you'}</div>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 19, fontWeight: 400, color: '#1C1C1C', lineHeight: 1.25, marginBottom: 7, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>
+                    {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#2C9D8A' }}>took shape.</span></> : starCount < 8 ? <>Sensify is <span style={{ color: '#3D5C3C' }}>charting you.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
                   </div>
+                  <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginBottom: 10 }}>
+                    {preP ? <>Every day you log becomes a star. 28 nights make a shape. Your first check-in hangs the first one.</> : complete ? <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>28</b> days charted. The engine is awake, reading your sky.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> day{starCount === 1 ? '' : 's'} on the record{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. {starCount < 8 ? 'Each one, a star. No two skies alike.' : 'Something is forming in there.'}</>}
+                  </div>
+                  <svg width="100%" viewBox="0 0 280 195" style={{ display: 'block', borderRadius: 14 }}>
+                    <defs>
+                      <radialGradient id="lcSky" cx="50%" cy="42%" r="82%"><stop offset="0%" stopColor="#1B2B27" /><stop offset="100%" stopColor="#101B18" /></radialGradient>
+                      <filter id="lcGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="1.5" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+                    </defs>
+                    <rect width="280" height="195" fill="url(#lcSky)" />
+                    {complete ? (
+                      <g style={{ animation: 'lcGp 4.5s ease-in-out infinite' }}>
+                        <g stroke="#2C9D8A" fill="none">
+                          <path d="M140 168 C110 152 88 128 82 100 C78 74 88 48 104 32 C116 20 128 12 140 8 C152 12 164 20 176 32 C192 48 202 74 198 100 C192 128 170 152 140 168" strokeWidth="1" opacity="0.6" />
+                          <path d="M140 186 L140 168 C140 140 139 110 140 76 C140 50 140 26 140 8" strokeWidth="0.9" opacity="0.55" />
+                          <path d="M140 140 C122 132 108 120 100 106" strokeWidth="0.65" opacity="0.42" />
+                          <path d="M140 108 C124 100 112 88 106 74" strokeWidth="0.65" opacity="0.42" />
+                          <path d="M140 76 C128 66 120 54 118 42" strokeWidth="0.65" opacity="0.42" />
+                          <path d="M140 140 C158 132 172 120 180 106" strokeWidth="0.65" opacity="0.42" />
+                          <path d="M140 108 C156 100 168 88 174 74" strokeWidth="0.65" opacity="0.42" />
+                          <path d="M140 76 C152 66 160 54 162 42" strokeWidth="0.65" opacity="0.42" />
+                        </g>
+                        <g filter="url(#lcGlow)" fill="#2C9D8A">
+                          {P.map(([x, y, r], i) => <circle key={i} cx={x} cy={y} r={r} />)}
+                        </g>
+                      </g>
+                    ) : (
+                      <>
+                        {starCount >= 8 && (
+                          <g stroke="#2C9D8A" fill="none" opacity="0.5">
+                            {ADJ.filter(([a, b]) => present.has(a) && present.has(b)).map(([a, b], i) => (
+                              <line key={i} x1={P[a][0]} y1={P[a][1]} x2={P[b][0]} y2={P[b][1]} strokeWidth="0.7" />
+                            ))}
+                          </g>
+                        )}
+                        <g filter="url(#lcGlow)" fill="#FAF8F4">
+                          {P.map(([x, y, r], i) => present.has(i) ? <circle key={i} cx={x} cy={y} r={r} style={{ animation: `lcTw 3.4s ease-in-out ${(i % 3) * 1.1}s infinite` }} /> : null)}
+                        </g>
+                      </>
+                    )}
+                    <g filter="url(#lcGlow)">
+                      <circle cx="34" cy="40" r="1" fill="#FAF8F4" opacity="0.45" style={{ animation: 'lcTw 3.4s ease-in-out 0.6s infinite' }} />
+                      <circle cx="250" cy="150" r="1.1" fill="#FAF8F4" opacity="0.5" style={{ animation: 'lcTw 3.4s ease-in-out 1.7s infinite' }} />
+                      <circle cx="246" cy="30" r="1" fill="#FAF8F4" opacity="0.4" style={{ animation: 'lcTw 3.4s ease-in-out 2.5s infinite' }} />
+                    </g>
+                  </svg>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.3px', color: complete ? 'rgba(44,157,138,0.75)' : '#9A927E', marginTop: 9, textTransform: 'uppercase' }}>{preP ? 'OPENS WITH DAY 1' : complete ? 'DAY 28 · YOUR LEAF, COMPLETE' : `DAY ${starCount} OF 28 · ${starCount < 8 ? starCount + ' STARS' : 'CONNECTING'}`}</div>
                 </div>
               )
             })()}
-
 
             {/* SYMPTOM TRENDS — ambient monitor */}
             <div className="snfy-trends">
