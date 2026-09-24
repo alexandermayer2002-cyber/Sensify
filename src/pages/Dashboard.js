@@ -12,7 +12,7 @@ import ReintroTab from './ReintroTab'
 import AskSensify from './AskSensify'
 import MaintainHub from './MaintainHub'
 import { protocolDay } from '../utils/protocolDay'
-import { getProtocolFoods } from '../utils/protocolEngine'
+import { AWAY_GATE, getProtocolFoods } from '../utils/protocolEngine'
 import { todayLocal, localDateString, localDateOffset } from '../utils/dateUtils'
 import Support from './Support'
 import CommonTrackDecision from './CommonTrackDecision'
@@ -769,6 +769,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [activeCheckinWeek, setActiveCheckinWeek] = useState(1)
   const [activeReintroId, setActiveReintroId] = useState(null)
   const [activeCycleLite, setActiveCycleLite] = useState(null)
+  const [awayGap, setAwayGap] = useState(null)  // { days, hard } when the away-gate should show
   const [complianceData, setComplianceData] = useState([])
   const [weekFactors, setWeekFactors] = useState([])
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
@@ -817,6 +818,22 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         resolvedLab = { ...(l || {}), foods: resolved.foods, status: 'approved' }
       }
       setLabResult(resolvedLab)
+
+      // Away-gate: consecutive silent days mid-elimination (finding #7).
+      try {
+        if (p?.protocol_start_date && p?.track_decision !== 'declined') {
+          const phaseNow = protocolDay(p.protocol_start_date) <= 56 ? 'elimination' : 'reintroduction'
+          if (phaseNow === 'elimination' && protocolDay(p.protocol_start_date) > 1) {
+            const { data: lastLog } = await supabase.from('daily_factors').select('log_date').eq('user_id', session.user.id).order('log_date', { ascending: false }).limit(1).maybeSingle()
+            const anchor = lastLog?.log_date || String(p.protocol_start_date).split('T')[0]
+            const [ay, am, ad] = anchor.split('-').map(Number)
+            const anchorD = new Date(ay, am - 1, ad)
+            const nowD = new Date(); const todayD = new Date(nowD.getFullYear(), nowD.getMonth(), nowD.getDate())
+            const silent = Math.floor((todayD - anchorD) / 86400000) - 1  // full days between last log and today
+            if (silent >= AWAY_GATE.SOFT_MIN) setAwayGap({ days: silent, hard: silent >= AWAY_GATE.HARD_MIN })
+          }
+        }
+      } catch (e) {}
 
       // Has the user done today's daily check-in?
       try {
@@ -1656,6 +1673,42 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
 
 
+            {/* AWAY GATE (finding #7): honest interception after a silent stretch mid-elimination */}
+            {awayGap && (
+              <div style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.5)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18 }}>
+                <div style={{ background: '#FAF8F4', borderRadius: 18, padding: '26px 24px', maxWidth: 430, width: '100%', boxShadow: '0 30px 80px rgba(0,0,0,0.3)' }}>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.4px', color: '#3D5C3C', marginBottom: 8 }}>Welcome back · {awayGap.days} days away</div>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: '#1C1C1C', marginBottom: 8, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{awayGap.hard ? 'Let\u2019s restart your clock.' : 'Were you on your plan?'}</div>
+                  <div style={{ fontSize: 13.5, color: '#5A5A52', lineHeight: 1.65, marginBottom: 18 }}>
+                    {awayGap.hard
+                      ? `It has been ${awayGap.days} days since your last check-in. For your Food Map to mean anything, elimination needs a continuous, verified stretch, so we restart the clock, keeping your lab results and everything else. Day 1 begins today.`
+                      : `It has been ${awayGap.days} days since your last check-in. The days themselves are fine. What matters is whether the elimination held while you were away.`}
+                  </div>
+                  {awayGap.hard ? (
+                    <button onClick={async () => {
+                      const t = todayLocal()
+                      await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigger_type: 'away_gap_restart', hardest_parts: [], status: 'responded', admin_note: `${awayGap.days} silent days → elimination clock restarted` })
+                      await supabase.from('profiles').update({ protocol_start_date: t }).eq('id', session.user.id)
+                      window.location.reload()
+                    }} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '14px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Restart elimination · day 1 today</button>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <button onClick={async () => {
+                        await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigger_type: 'away_gap_attested', hardest_parts: [], status: 'responded', admin_note: `${awayGap.days} silent days → user attested plan held (gap attested, not observed)` })
+                        setAwayGap(null)
+                      }} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '13px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Yes, I stayed on my plan</button>
+                      <button onClick={async () => {
+                        const t = todayLocal()
+                        await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigger_type: 'away_gap_restart', hardest_parts: [], status: 'responded', admin_note: `${awayGap.days} silent days → user chose restart (plan did not hold)` })
+                        await supabase.from('profiles').update({ protocol_start_date: t }).eq('id', session.user.id)
+                        window.location.reload()
+                      }} style={{ width: '100%', background: '#FAF8F4', color: '#1C1C1C', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 12, padding: '13px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Not really, restart my clock</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* I TOOK THE TEST — persistent pleasant card until clicked (finding #14) */}
             {!labResult && !profile?.shown_milestones?.test_taken && (showIntakeCard || showLabCard || showPendingLabCard) && (
               <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: 18, padding: '18px 20px', marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
@@ -1844,21 +1897,21 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   {guideOpen && (
                     <div onClick={() => setGuideOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18 }}>
                       <div onClick={e => e.stopPropagation()} style={{ background: '#FAF8F4', borderRadius: 18, padding: '20px 18px', maxWidth: 420, width: '100%', maxHeight: '86vh', overflowY: 'auto', boxShadow: '0 30px 80px rgba(0,0,0,0.25)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 400, color: '#1C1C1C' }}>Your first week</div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ background: '#EDF3ED', color: '#3D5C3C', borderRadius: 12, padding: '3px 10px', fontSize: 10, fontWeight: 600 }}>DAY {currentDay} OF 7</span>
-                            <button onClick={() => setGuideOpen(false)} style={{ width: 27, height: 27, borderRadius: '50%', background: '#EFEDE6', border: 'none', color: '#7A7A72', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>✕</button>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                          <div>
+                            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.4px', color: '#3D5C3C', marginBottom: 6 }}>Week one · Day {currentDay} of 7</div>
+                            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 23, fontWeight: 400, color: '#1C1C1C', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Your first week.</div>
                           </div>
+                          <button onClick={() => setGuideOpen(false)} style={{ width: 27, height: 27, borderRadius: '50%', background: '#EFEDE6', border: 'none', color: '#7A7A72', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 }}>✕</button>
                         </div>
-                        <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.65, marginBottom: 16 }}>{currentDay === 1 ? 'Elimination starts today.' : 'Elimination is underway.'} Eight clean weeks gives your body a quiet baseline, and every answer you earn later is measured against it.</div>
+                        <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.65, marginBottom: 18 }}>{currentDay === 1 ? 'Elimination starts today.' : 'Elimination is underway.'} Eight clean weeks gives your body a quiet baseline, and every answer you earn later is measured against it.</div>
 
                         <div style={{ display: 'flex', gap: 12, marginBottom: 15 }}>
                           <div style={{ width: 25, height: 25, borderRadius: '50%', background: '#3D5C3C', color: '#fff', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</div>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 6 }}>{profile?.protocol_track === 'common' ? 'Stop eating your trigger foods' : 'Stop eating your flagged foods'}</div>
                             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
-                              {flagged.map(f => <span key={f.name} style={{ background: '#EFEDE6', color: '#5A5A52', borderRadius: 14, padding: '3px 9px', fontSize: 11 }}>{f.name}</span>)}
+                              {flagged.map(f => <span key={f.name} style={{ background: '#EDF3ED', color: '#3D5C3C', borderRadius: 9, padding: '4px 11px', fontSize: 11.5, fontWeight: 600 }}>{f.name}</span>)}
                             </div>
                             <button onClick={() => goto('food-map', 'food-map')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#3D5C3C', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{profile?.protocol_track === 'common' ? 'See your foods \u2192' : 'See sensitivity levels \u2192'}</button>
                           </div>
@@ -1877,13 +1930,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                         <div style={{ display: 'flex', gap: 12, marginBottom: 17 }}>
                           <div style={{ width: 25, height: 25, borderRadius: '50%', background: '#E0DED6', color: '#7A7A72', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>3</div>
                           <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 2 }}>Every week, a bigger check-in</div>
-                            <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>A real review of your week against your baseline. Your first lands {currentDay >= 7 ? 'today' : currentDay === 6 ? 'tomorrow' : `in ${7 - currentDay} days`}.</div>
+                            <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 2 }}>Once a week, rate the week</div>
+                            <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>A short survey scoring the week as a whole. It builds the trend line your progress is measured on. Your first lands {currentDay >= 7 ? 'today' : currentDay === 6 ? 'tomorrow' : `in ${7 - currentDay} days`}.</div>
                           </div>
                         </div>
 
                         <div style={{ borderTop: '1px solid rgba(0,0,0,0.07)', paddingTop: 15 }}>
-                          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 16, fontWeight: 400, color: '#1C1C1C', marginBottom: 3 }}>Know your tabs</div>
+                          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.2px', color: '#7A7A72', marginBottom: 4 }}>Know your tabs</div>
                           <div style={{ fontSize: 11.5, color: '#A8A69E', marginBottom: 12 }}>Tap any of them to look around. Nothing breaks.</div>
                           {[
                             ['Ask Sensify', 'Can I eat this? What can I eat at an Italian restaurant? Ask anything, starting now.', 'ask-sensify', 'ask-sensify'],
@@ -1891,10 +1944,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             ['Reintro', `From day 57, you eat ${profile?.protocol_track === 'common' ? 'each food' : 'your flagged foods'} again one at a time to find out which ones actually cause problems.`, 'reintro', 'reintro-tab'],
                             ['Food Map', `Where it all ends up. ${profile?.protocol_track === 'common' ? 'The foods you are testing' : 'Your flagged foods'} today, turning into answers you've earned along the way.`, 'food-map', 'food-map'],
                           ].map(([nm, desc, t, scr], i, arr) => (
-                            <button key={nm} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '10px 11px', borderRadius: 11, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.05)', marginBottom: i < arr.length - 1 ? 7 : 0, width: '100%', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif' }}>
+                            <button key={nm} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '11px 13px', borderRadius: 12, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', marginBottom: i < arr.length - 1 ? 7 : 0, width: '100%', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif', transition: 'border-color 0.15s, box-shadow 0.15s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(61,92,60,0.3)'; e.currentTarget.style.boxShadow = '0 3px 12px rgba(34,48,31,0.06)' }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.07)'; e.currentTarget.style.boxShadow = 'none' }}>
                               <span style={{ background: '#EDF3ED', borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 600, color: '#3D5C3C', flexShrink: 0 }}>{nm}</span>
                               <span style={{ fontSize: 11.5, color: '#7A7A72', lineHeight: 1.5, flex: 1 }}>{desc}</span>
-                              <span style={{ color: '#C8C6BE', fontSize: 13 }}>›</span>
+                              <span style={{ color: '#3D5C3C', fontSize: 14, fontWeight: 600 }}>›</span>
                             </button>
                           ))}
                         </div>

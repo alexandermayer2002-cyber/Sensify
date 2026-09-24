@@ -11,6 +11,17 @@
 // The flagged track is unaffected by this and stays fully live.
 export const COMMON_TRACK_ENABLED = true
 
+// ---------------------------------------------------------------------------
+// AWAY GATE THRESHOLDS — consecutive unlogged days mid-elimination.
+// NOT a clinical standard until reviewed by the medical advisor (see master doc).
+// 1..SOFT_MIN-1  : streak reset only, life happens.
+// SOFT_MIN..HARD_MIN-1 : attestation gate on return — one question, user chooses
+//                        resume (gap marked ATTESTED, not observed) or restart.
+// HARD_MIN+      : restart required. With this much silence there is no evidence
+//                  elimination happened; a verdict built on it would cite fiction.
+// ---------------------------------------------------------------------------
+export const AWAY_GATE = { SOFT_MIN: 4, HARD_MIN: 14 }
+
 // The rest of the app asks getProtocolFoods() for "what is this
 // user eliminating and reintroducing" instead of reading the
 // lab results directly. That single seam lets the assigned track
