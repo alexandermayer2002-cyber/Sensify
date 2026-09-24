@@ -1754,6 +1754,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     @keyframes glSway { 0%,100% { transform: rotate(-2.5deg) } 50% { transform: rotate(2.5deg) } }
                     @keyframes glFadeIn { from { opacity: 0; transform: translateY(5px) } to { opacity: 1; transform: none } }
                     @keyframes glBloom { 0%,100% { opacity: 0.75 } 50% { opacity: 1 } }
+                    @keyframes glUnfurlL { from { transform: rotate(-55deg) scale(0.3); opacity: 0 } to { transform: none; opacity: 1 } }
+                    @keyframes glUnfurlR { from { transform: rotate(55deg) scale(0.3); opacity: 0 } to { transform: none; opacity: 1 } }
                   `}</style>
                   <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%', filter: 'blur(30px)', opacity: 0.5, background: 'radial-gradient(circle, #3D5C3C, transparent 70%)', top: -60, right: -40, animation: 'glDrift1 9s ease-in-out infinite' }} />
                   <div style={{ position: 'absolute', width: 150, height: 150, borderRadius: '50%', filter: 'blur(30px)', opacity: 0.5, background: 'radial-gradient(circle, rgba(44,157,138,0.55), transparent 70%)', bottom: -50, left: -30, animation: 'glDrift2 11s ease-in-out infinite' }} />
@@ -1774,16 +1776,30 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                       )}
                     </div>
                     <div style={{ width: 74, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
-                      <svg width="70" height="118" viewBox="0 0 70 120" style={{ animation: stage >= 2 ? 'glSway 5s ease-in-out infinite' : 'none', transformOrigin: 'bottom center' }}>
+                      <svg width="70" height="118" viewBox="0 0 70 120" style={{ animation: stage >= 2 ? 'glSway 5s ease-in-out infinite' : 'none', transformOrigin: 'bottom center', overflow: 'visible' }}>
                         <line x1="12" y1="118" x2="58" y2="118" stroke="rgba(139,174,138,0.35)" strokeWidth="1.5" strokeLinecap="round" />
-                        {stage === 0 && <ellipse cx="35" cy="113" rx="5" ry="6.5" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" />}
-                        {stage === 1 && (<><ellipse cx="35" cy="114" rx="4.5" ry="5.5" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /><path d="M35 109 C35 104 34 100 35 96" stroke="#8BAE8A" strokeWidth="2" fill="none" strokeLinecap="round" /></>)}
-                        {stage >= 2 && <path d={`M35 118 C35 ${110 - stage * 6} 34 ${95 - stage * 8} 35 ${88 - stage * 8}`} stroke="#8BAE8A" strokeWidth="2.5" fill="none" strokeLinecap="round" />}
-                        {stage === 2 && (<><path d="M35 100 C29 97 26 92 27 87 C32 89 34 94 35 100" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /><path d="M35 100 C41 97 44 92 43 87 C38 89 36 94 35 100" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></>)}
-                        {stage >= 3 && <path d="M35 85 C20 80 12 68 14 56 C28 60 34 70 35 85" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" />}
-                        {stage >= 4 && <path d="M35 68 C50 63 58 51 56 39 C42 43 36 53 35 68" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" />}
-                        {stage >= 5 && <path d="M35 52 C24 46 20 36 23 27 C34 32 36 42 35 52" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" />}
-                        {stage >= 6 && (<g style={{ animation: 'glBloom 3s ease-in-out infinite' }}><circle cx="35" cy="22" r="4" fill="#2C9D8A" /><path d="M35 12 C38 15 38 19 35 22 C32 19 32 15 35 12" fill="#2C9D8A" /><path d="M25 22 C28 19 32 19 35 22 C32 25 28 25 25 22" fill="#2C9D8A" opacity="0.85" /><path d="M45 22 C42 19 38 19 35 22 C38 25 42 25 45 22" fill="#2C9D8A" opacity="0.85" /><path d="M35 32 C32 29 32 25 35 22 C38 25 38 29 35 32" fill="#2C9D8A" opacity="0.85" /></g>)}
+                        {stage === 0 && <ellipse cx="35" cy="112" rx="5.5" ry="7" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1.2" />}
+                        {stage === 1 && (<>
+                          <ellipse cx="35" cy="113" rx="5" ry="6" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1.2" />
+                          <path d="M35 107 C35 101 34 96 35 90" stroke="#8BAE8A" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+                          <path d="M35 92 C31 90 29 86 30 82 C33 84 34 88 35 92" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="0.9" />
+                          <path d="M35 92 C39 90 41 86 40 82 C37 84 36 88 35 92" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="0.9" />
+                        </>)}
+                        {stage === 2 && (<>
+                          <path d="M35 118 C35 105 34 92 35 80" stroke="#8BAE8A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                          <g style={{ transformOrigin: '35px 96px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 96 C26 93 21 86 22 79 C30 82 34 88 35 96" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
+                          <g style={{ transformOrigin: '35px 88px', animation: 'glUnfurlR 1.4s ease 0.5s both' }}><path d="M35 88 C44 85 49 78 48 71 C40 74 36 80 35 88" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
+                        </>)}
+                        {stage >= 3 && (<>
+                          <path d="M35 118 C35 95 34 70 35 48" stroke="#8BAE8A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                          <g style={{ transformOrigin: '35px 85px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 85 C20 80 12 68 14 56 C28 60 34 70 35 85" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
+                          {stage >= 4 && <g style={{ transformOrigin: '35px 68px', animation: 'glUnfurlR 1.4s ease 0.4s both' }}><path d="M35 68 C50 63 58 51 56 39 C42 43 36 53 35 68" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>}
+                          {stage === 5 && <g style={{ transformOrigin: '35px 48px', animation: 'glUnfurlL 1.4s ease 0.8s both' }}><path d="M35 48 C26 38 26 26 33 18 C41 26 42 38 35 48" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>}
+                          {stage >= 6 && (<>
+                            <g style={{ transformOrigin: '35px 48px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 48 C26 38 26 26 33 18 C41 26 42 38 35 48" fill="#2C9D8A" opacity="0.85" stroke="#8BAE8A" strokeWidth="1" /></g>
+                            <g style={{ animation: 'glBloom 3s ease-in-out infinite' }}><circle cx="35" cy="12" r="3.2" fill="#2C9D8A" /><path d="M35 4 C37.5 6.5 37.5 9.5 35 12 C32.5 9.5 32.5 6.5 35 4" fill="#2C9D8A" /><path d="M27 12 C29.5 9.5 32.5 9.5 35 12 C32.5 14.5 29.5 14.5 27 12" fill="#2C9D8A" opacity="0.85" /><path d="M43 12 C40.5 9.5 37.5 9.5 35 12 C37.5 14.5 40.5 14.5 43 12" fill="#2C9D8A" opacity="0.85" /></g>
+                          </>)}
+                        </>)}
                       </svg>
                       <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.2px', color: 'rgba(139,174,138,0.55)', marginTop: 6, whiteSpace: 'nowrap' }}>{preP ? 'PLANTS WITH DAY 1' : stage === 6 ? 'IN BLOOM' : `DAY ${gDay} OF 28`}</div>
                     </div>
