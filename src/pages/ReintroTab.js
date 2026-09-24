@@ -307,8 +307,8 @@ const css = `
   @keyframes snfyPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 `
 
-const FREQ_RANK = { 'daily': 1, '3-5x': 2, '1-2x': 3, 'rarely': 4, 'never': 5 }
-const FREQ_LABEL = { 'daily': 'Daily', '3-5x': '3–5x per week', '1-2x': '1–2x per week', 'rarely': 'Rarely', 'never': 'Never' }
+const FREQ_RANK = { 'daily': 1, '3-5x': 2, '1-2x': 3, 'rarely': 4, 'almost-never': 5, 'never': 6 }
+const FREQ_LABEL = { 'daily': 'Daily', '3-5x': '3–5x per week', '1-2x': '1–2x per week', 'rarely': 'Rarely', 'almost-never': 'Almost never', 'never': 'Never' }
 
 // Cycle-so-far summary. FACTUAL ONLY — never hints at the verdict
 // (mid-cycle interpretation would bias the user's daily reporting and

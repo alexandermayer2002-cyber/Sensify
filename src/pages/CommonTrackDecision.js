@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { localDateString } from '../utils/dateUtils'
 import { TIER_META, symptomsAreGI } from '../utils/protocolEngine'
@@ -65,6 +65,15 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
   const [showPopup, setShowPopup] = useState(!profile?.seen_track_intro)
   const [expanded, setExpanded] = useState(false)
   const [tier, setTier] = useState(null)
+  const [labFoods, setLabFoods] = useState([])
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data: lab } = await supabase.from('lab_results').select('foods').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).maybeSingle()
+        setLabFoods((lab?.foods || []).filter(f => f.level && f.level !== 'No sensitivity'))
+      } catch (e) {}
+    })()
+  }, [])
   const [saving, setSaving] = useState(false)
   const gi = symptomsAreGI(profile)
   // Recommend Test 8 for GI symptoms (FODMAP coverage), else Test 2 as the lighter start.
@@ -138,7 +147,9 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
 
         {[1, 2].map(t => {
           const meta = TIER_META[t]
-          const isRec = t === recommendedTier
+          const impact = t === 1
+            ? { what: 'You eliminate and test the two most common trigger foods.', arc: 'Eight clean weeks, then a 14-day test cycle for each food.', tradeoff: 'The easiest version to stick to, and the fastest to answers. But only these two foods get verdicts. If your symptoms come from something else, this round will not find it.' }
+            : { what: 'You eliminate all eight common trigger groups at once.', arc: 'The same eight weeks, then every food tested back one at a time, which adds several months of cycles.', tradeoff: 'The strictest eight weeks and the longest road. In return, all eight get their own earned verdict, and the finished map covers the full set.' }
           return (
             <div key={t} className={`ctd-tier${tier === t ? ' on' : ''}`} onClick={() => setTier(t)}>
               <div className="ctd-tier-top">
@@ -146,12 +157,18 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
                   <span className={`ctd-radio${tier === t ? ' on' : ''}`} />
                   <span className="ctd-tier-name">{meta.label}</span>
                 </div>
-                {isRec && <span className="ctd-tier-rec">Recommended</span>}
               </div>
               <div className="ctd-tier-foods">{meta.foods.map(f => f.name).join(', ')}</div>
+              <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6, marginTop: '8px' }}>{impact.what} {impact.arc}</div>
+              <div style={{ fontSize: '11.5px', color: '#7A7A72', lineHeight: 1.6, marginTop: '6px' }}>{impact.tradeoff}</div>
             </div>
           )
         })}
+        {labFoods.length > 0 && (
+          <div style={{ background: '#EDF3ED', borderRadius: '12px', padding: '12px 14px', fontSize: '12.5px', color: '#3D5C3C', lineHeight: 1.6, marginBottom: '14px' }}>
+            Your lab also flagged {labFoods.map(f => f.name).join(', ')}. Whichever you choose, {labFoods.length === 1 ? 'it' : 'they'} come{labFoods.length === 1 ? 's' : ''} out with your trigger foods and get{labFoods.length === 1 ? 's' : ''} tested too.
+          </div>
+        )}
 
         <button className="ctd-btn primary" disabled={!tier || saving} onClick={startProtocol}>
           {saving ? 'Starting...' : 'Start my protocol'}

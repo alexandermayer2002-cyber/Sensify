@@ -90,10 +90,16 @@ export function getProtocolFoods(profile, labResult) {
 
   if (track === 'common') {
     const tier = Number(profile?.protocol_tier) === 2 ? 2 : 1
+    // Lab-flagged foods JOIN the elimination and the testing schedule (Alex's #17 ruling):
+    // a real flagged sensitivity left on the plate would contaminate the clean baseline
+    // every common-trigger verdict is measured against. On a name collision the lab
+    // entry wins, because a lab level is an earned finding and 'Common' is not.
+    const labFlagged = (labResult?.foods || []).filter(f => f.level && f.level !== 'No sensitivity')
+    const tierFoods = TIER_META[tier].foods.filter(tf => !labFlagged.some(lf => lf.name.toLowerCase() === tf.name.toLowerCase()))
     return {
       track: 'common',
       tier,
-      foods: TIER_META[tier].foods,
+      foods: [...tierFoods, ...labFlagged],
       timeline: TRACK_TIMELINE.common,
     }
   }

@@ -19,6 +19,7 @@ const FREQUENCY_OPTIONS = [
   { label: '3–5x/week', value: '3-5x' },
   { label: '1–2x/week', value: '1-2x' },
   { label: 'Rarely', value: 'rarely' },
+  { label: 'Almost never', value: 'almost-never' },
   { label: 'Never', value: 'never' },
 ]
 
@@ -159,12 +160,21 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     }
 
     if (hasGeneral) {
-      questions.push({ section: hasDigestive || hasEnergy ? 'General wellness' : 'Your wellness', id: 'general_digestion', label: 'How often do you experience digestive discomfort like bloating, gas, or cramping?', options: ['Rarely or never', 'Occasionally', 'Regularly', 'Almost daily'] })
+      // Strict category set (Alex's #9/#10 ruling): wellness owns its own questions,
+      // borrows nothing from digestive or energy. Deeper category rework waits on advisors.
+      questions.push({ section: hasDigestive || hasEnergy ? 'General wellness' : 'Your wellness', id: 'general_unwell_freq', label: 'How often do you feel generally unwell or below your normal?', options: ['Rarely or never', 'Occasionally', 'Regularly', 'Almost daily'] })
+      questions.push({ section: null, id: 'general_comfort', label: 'How would you describe your day to day physical comfort? Think headaches, aches, or heaviness.', options: ['Comfortable most days', 'Occasional discomfort', 'Uncomfortable most days', 'In discomfort daily'] })
+      questions.push({ section: null, id: 'general_postmeal', label: 'How often do you feel worse after eating, without knowing why?', options: ['Never', 'Occasionally', 'Regularly', 'Almost daily'] })
       if (!hasEnergy) {
-        questions.push({ section: null, id: 'general_energy', label: 'How would you describe your typical energy levels?', options: ['Consistently good', 'Variable. Good and bad days', 'Often low', 'Chronically poor'] })
-        questions.push({ section: null, id: 'general_crashes', label: 'Do you experience afternoon energy crashes?', options: ['Never', 'Occasionally', 'Most afternoons', 'Daily'] })
         questions.push({ section: null, id: 'sleep_quality', label: 'How would you describe your sleep quality?', options: ['Restful and consistent', 'Okay but not great', 'Poor. Hard to fall or stay asleep', 'Very poor'] })
       }
+      if (!hasDigestive) {
+        questions.push({ section: null, id: 'general_digestion', label: 'How often do you experience digestive discomfort like bloating, gas, or cramping?', options: ['Rarely or never', 'Occasionally', 'Regularly', 'Almost daily'] })
+      }
+      if (!hasEnergy) {
+        questions.push({ section: null, id: 'general_energy', label: 'How would you describe your typical energy levels?', options: ['Consistently good', 'Variable. Good and bad days', 'Often low', 'Chronically poor'] })
+      }
+      questions.push({ section: null, id: 'general_duration', label: 'How long have you felt below your baseline?', options: ['Less than 6 months', '6–12 months', '1–3 years', 'More than 3 years'] })
       questions.push({ section: null, id: 'interest_reason', label: 'What made you interested in food sensitivity testing?', options: null, type: 'text', placeholder: 'Tell us in your own words...', optional: true })
     }
 
@@ -211,10 +221,18 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       }
     }
 
-    // General fallback — if no specific symptoms flagged but they selected general
-    if (hasGeneral && scales.length === 0) {
+    // Wellness owns its baselines: every wellness selection produces a real weekly.
+    if (hasGeneral) {
       scales.push({ id: 'baseline_wellbeing', label: 'In a typical week, how would you rate your overall wellbeing?', low: 'Very poor', high: 'Excellent' })
-      scales.push({ id: 'baseline_energy', label: 'In a typical week, how would you rate your energy?', low: 'Exhausted', high: 'Full energy' })
+      if (a.general_energy && (a.general_energy === 'Often low' || a.general_energy === 'Chronically poor') && !scales.some(s => s.id === 'baseline_energy')) {
+        scales.push({ id: 'baseline_energy', label: 'In a typical week, how would you rate your energy?', low: 'Exhausted', high: 'Full energy' })
+      }
+      if (a.general_postmeal && a.general_postmeal !== 'Never' && !scales.some(s => s.id === 'baseline_digestive')) {
+        scales.push({ id: 'baseline_digestive', label: 'In a typical week, how would you rate your comfort after meals?', low: 'Very uncomfortable', high: 'Very comfortable' })
+      }
+      if (!hasEnergy && a.sleep_quality && a.sleep_quality !== 'Restful and consistent' && !scales.some(s => s.id === 'baseline_sleep')) {
+        scales.push({ id: 'baseline_sleep', label: 'In a typical week, how would you rate your sleep quality?', low: 'Very poor', high: 'Excellent' })
+      }
     }
 
     return scales

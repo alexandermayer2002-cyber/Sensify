@@ -44,24 +44,24 @@ const s = {
   back: { background: 'none', border: 'none', color: '#7A7A72', fontSize: '14px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
   logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
   content: { flex: 1, maxWidth: '560px', width: '100%', margin: '0 auto', padding: '28px 24px 40px' },
-  eyebrow: { fontFamily: 'DM Mono, monospace', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#8BAE8A', marginBottom: '10px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, lineHeight: 1.2, marginBottom: '6px', color: '#1C1C1C' },
-  titleEm: { fontStyle: 'italic', color: '#3D5C3C' },
+  eyebrow: { fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.4px', color: '#3D5C3C', marginBottom: '10px' },
+  title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 400, lineHeight: 1.2, marginBottom: '6px', color: '#1C1C1C', fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
+  titleEm: { color: '#3D5C3C' },
   hint: { fontSize: '13.5px', color: '#7A7A72', lineHeight: 1.5, marginBottom: '28px' },
-  block: { marginBottom: '24px' },
-  label: { fontSize: '15px', fontWeight: 500, marginBottom: '11px', lineHeight: 1.5, color: '#1C1C1C' },
+  block: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '18px', padding: '18px', marginBottom: '12px' },
+  label: { fontSize: '14.5px', fontWeight: 600, marginBottom: '11px', lineHeight: 1.5, color: '#1C1C1C' },
   opts: { display: 'flex', gap: '6px', flexWrap: 'wrap' },
-  opt: { padding: '11px 14px', borderRadius: '10px', border: 'none', background: '#EDF3ED', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#5A5A52', flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', transition: 'all 0.12s' },
-  optOn: { padding: '11px 14px', borderRadius: '10px', border: 'none', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#FFFFFF', fontWeight: 500, flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', boxShadow: '0 2px 8px rgba(61,92,60,0.28)' },
+  opt: { padding: '11px 14px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.07)', background: '#FAF8F4', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#5A5A52', flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', transition: 'all 0.12s' },
+  optOn: { padding: '11px 14px', borderRadius: '12px', border: '1px solid #3D5C3C', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#FFFFFF', fontWeight: 500, flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', boxShadow: '0 2px 8px rgba(61,92,60,0.28)' },
   yn: { display: 'flex', gap: '8px' },
   ynBtn: { flex: 1, padding: '14px', borderRadius: '12px', border: '1.5px solid rgba(0,0,0,0.1)', background: '#FFFFFF', fontSize: '15px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C' },
   ynYes: { flex: 1, padding: '14px', borderRadius: '12px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '15px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: 'white' },
   ynNo: { flex: 1, padding: '14px', borderRadius: '12px', border: '1.5px solid #D64545', background: '#D64545', fontSize: '15px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: 'white' },
   drinksRow: { display: 'flex', alignItems: 'center', gap: '12px' },
   stepper: { display: 'flex', alignItems: 'center', gap: '14px' },
-  stepBtn: { width: '38px', height: '38px', borderRadius: '10px', border: '1.5px solid rgba(0,0,0,0.12)', background: 'white', fontSize: '18px', cursor: 'pointer', color: '#3D5C3C', fontFamily: 'DM Sans, sans-serif' },
+  stepBtn: { width: '38px', height: '38px', borderRadius: '12px', border: '1.5px solid rgba(0,0,0,0.12)', background: 'white', fontSize: '18px', cursor: 'pointer', color: '#3D5C3C', fontFamily: 'DM Sans, sans-serif' },
   stepVal: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 400, minWidth: '28px', textAlign: 'center', color: '#1C1C1C' },
-  footer: { position: 'sticky', bottom: 0, background: '#FAF8F4', borderTop: '1px solid rgba(0,0,0,0.06)', padding: '16px 24px', maxWidth: '560px', width: '100%', margin: '0 auto' },
+  footer: { position: 'sticky', bottom: 0, background: '#F6F3EC', borderTop: '1px solid rgba(0,0,0,0.06)', padding: '16px 24px', maxWidth: '560px', width: '100%', margin: '0 auto' },
   cta: { width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: '#3D5C3C', color: 'white', fontSize: '15px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
   ctaOff: { width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: '#C3CDBF', color: 'white', fontSize: '15px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'not-allowed' },
 }
@@ -401,7 +401,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         )}
 
         <div style={s.block}>
-          <div style={s.label}>How many hours did you sleep last night? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>(7.5 counts)</span></div>
+          <div style={s.label}>How many hours did you sleep last night? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>to the half hour is fine</span></div>
           <button type="button" onClick={() => setOpenPad(openPad === 'sleep' ? null : 'sleep')} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: sleep === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
             {sleep === '' ? 'Tap to enter' : `${sleep} hours`}
           </button>

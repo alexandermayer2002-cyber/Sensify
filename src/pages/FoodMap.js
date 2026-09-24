@@ -180,8 +180,8 @@ export default function FoodMap({ session, profile, labResult }) {
   const [freqOverrides, setFreqOverrides] = useState({})
   const [confirmAdd, setConfirmAdd] = useState(null) // food object pending confirm
   const foodFrequency = { ...(profile?.food_frequency || {}), ...freqOverrides }
-  const FREQ_RANK = { 'daily': 1, '3-5x': 2, '1-2x': 3, 'rarely': 4, 'never': 5 }
-  const FREQ_TAG = { 'daily': 'EATEN DAILY', '3-5x': '3–5X / WEEK', '1-2x': '1–2X / WEEK', 'rarely': 'RARELY', 'never': 'NEVER' }
+  const FREQ_RANK = { 'daily': 1, '3-5x': 2, '1-2x': 3, 'rarely': 4, 'almost-never': 5, 'never': 6 }
+  const FREQ_TAG = { 'daily': 'EATEN DAILY', '3-5x': '3–5X / WEEK', '1-2x': '1–2X / WEEK', 'rarely': 'RARELY', 'almost-never': 'ALMOST NEVER', 'never': 'NEVER' }
   const isCommonTrack = profile?.protocol_track === 'common'
   const qualifying = (level) => {
     if (!labResult?.foods) return []
