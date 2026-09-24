@@ -83,6 +83,7 @@ const css = `
   .snfy-layout { padding: 24px 20px 40px; max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
   .snfy-layout > div { display: contents; }
   .snfy-avoiding { order: 1; }
+  .snfy-garden { order: 1; }
   .snfy-guide-slot { order: 2; }
   .snfy-insight { order: 3; }
   .snfy-weekly-card { order: 4; }
@@ -1733,81 +1734,6 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
-            {/* THE LEARNING GARDEN — the intelligence growing from seed to bloom over 28 days */}
-            {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 42) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
-              const preP = !profile?.protocol_start_date
-              const gDay = preP ? 0 : Math.min(recordStats.days, 28)
-              const stage = preP || gDay < 1 ? 0 : gDay <= 3 ? 1 : gDay <= 7 ? 2 : gDay <= 14 ? 3 : gDay <= 21 ? 4 : gDay < 28 ? 5 : 6
-              const watch = (() => {
-                const sym = profile?.symptoms || []
-                const w = []
-                if (sym.includes('Digestive')) w.push('bloating', 'gas')
-                if (sym.includes('Energy')) w.push('brain fog', 'fatigue')
-                if (sym.includes('General wellness')) w.push('headaches', 'feeling off')
-                return w.slice(0, 3)
-              })()
-              return (
-                <div style={{ background: '#22301F', borderRadius: 20, padding: 22, marginTop: 14, position: 'relative', overflow: 'hidden' }}>
-                  <style>{`
-                    @keyframes glDrift1 { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-25px,18px) } }
-                    @keyframes glDrift2 { 0%,100% { transform: translate(0,0) } 50% { transform: translate(22px,-15px) } }
-                    @keyframes glSway { 0%,100% { transform: rotate(-2.5deg) } 50% { transform: rotate(2.5deg) } }
-                    @keyframes glFadeIn { from { opacity: 0; transform: translateY(5px) } to { opacity: 1; transform: none } }
-                    @keyframes glBloom { 0%,100% { opacity: 0.75 } 50% { opacity: 1 } }
-                    @keyframes glUnfurlL { from { transform: rotate(-55deg) scale(0.3); opacity: 0 } to { transform: none; opacity: 1 } }
-                    @keyframes glUnfurlR { from { transform: rotate(55deg) scale(0.3); opacity: 0 } to { transform: none; opacity: 1 } }
-                  `}</style>
-                  <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%', filter: 'blur(30px)', opacity: 0.5, background: 'radial-gradient(circle, #3D5C3C, transparent 70%)', top: -60, right: -40, animation: 'glDrift1 9s ease-in-out infinite' }} />
-                  <div style={{ position: 'absolute', width: 150, height: 150, borderRadius: '50%', filter: 'blur(30px)', opacity: 0.5, background: 'radial-gradient(circle, rgba(44,157,138,0.55), transparent 70%)', bottom: -50, left: -30, animation: 'glDrift2 11s ease-in-out infinite' }} />
-                  <div style={{ position: 'relative', display: 'flex', gap: 16 }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontFamily: 'Fraunces, serif', fontSize: 21, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.25, marginBottom: 11, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{stage === 6 ? <>Sensify <span style={{ color: '#8BAE8A' }}>knows your rhythm.</span></> : <>Sensify is <span style={{ color: '#8BAE8A' }}>learning you.</span></>}</div>
-                      {preP ? (
-                        <>
-                          <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease both' }}>A seed, waiting on your lab results.</div>
-                          <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease 0.6s both' }}>From day 1, every check-in feeds it: sleep, stress, symptoms, cross-referenced into an understanding no lab report has.</div>
-                        </>
-                      ) : (
-                        <>
-                          <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease both' }}><b style={{ color: '#FAF8F4', fontWeight: 600 }}>{recordStats.days}</b> day{recordStats.days === 1 ? '' : 's'} absorbed{recordStats.events > 0 ? <>, <b style={{ color: '#FAF8F4', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'} on the record</> : ', clean so far'}.</div>
-                          {watch.length > 0 && <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease 0.7s both' }}>Watching for <b style={{ color: '#FAF8F4', fontWeight: 600 }}>{watch.join(', ')}</b>, because that's what you told us matters.</div>}
-                          <div style={{ fontSize: 11, color: 'rgba(250,248,244,0.5)', marginTop: 12, lineHeight: 1.6, animation: 'glFadeIn 1s ease 1.4s both' }}>{stage === 6 ? <span style={{ color: '#8BAE8A' }}>The pattern engine is awake. It speaks when your data says something real.</span> : <>Every day you log, this grows. <span style={{ color: '#8BAE8A' }}>It blooms at 28 days, when pattern detection wakes.</span></>}</div>
-                        </>
-                      )}
-                    </div>
-                    <div style={{ width: 74, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
-                      <svg width="70" height="118" viewBox="0 0 70 120" style={{ animation: stage >= 2 ? 'glSway 5s ease-in-out infinite' : 'none', transformOrigin: 'bottom center', overflow: 'visible' }}>
-                        <line x1="12" y1="118" x2="58" y2="118" stroke="rgba(139,174,138,0.35)" strokeWidth="1.5" strokeLinecap="round" />
-                        {stage === 0 && <ellipse cx="35" cy="112" rx="5.5" ry="7" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1.2" />}
-                        {stage === 1 && (<>
-                          <ellipse cx="35" cy="113" rx="5" ry="6" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1.2" />
-                          <path d="M35 107 C35 101 34 96 35 90" stroke="#8BAE8A" strokeWidth="2.2" fill="none" strokeLinecap="round" />
-                          <path d="M35 92 C31 90 29 86 30 82 C33 84 34 88 35 92" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="0.9" />
-                          <path d="M35 92 C39 90 41 86 40 82 C37 84 36 88 35 92" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="0.9" />
-                        </>)}
-                        {stage === 2 && (<>
-                          <path d="M35 118 C35 105 34 92 35 80" stroke="#8BAE8A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                          <g style={{ transformOrigin: '35px 96px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 96 C26 93 21 86 22 79 C30 82 34 88 35 96" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
-                          <g style={{ transformOrigin: '35px 88px', animation: 'glUnfurlR 1.4s ease 0.5s both' }}><path d="M35 88 C44 85 49 78 48 71 C40 74 36 80 35 88" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
-                        </>)}
-                        {stage >= 3 && (<>
-                          <path d="M35 118 C35 95 34 70 35 48" stroke="#8BAE8A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                          <g style={{ transformOrigin: '35px 85px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 85 C20 80 12 68 14 56 C28 60 34 70 35 85" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
-                          {stage >= 4 && <g style={{ transformOrigin: '35px 68px', animation: 'glUnfurlR 1.4s ease 0.4s both' }}><path d="M35 68 C50 63 58 51 56 39 C42 43 36 53 35 68" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>}
-                          {stage === 5 && <g style={{ transformOrigin: '35px 48px', animation: 'glUnfurlL 1.4s ease 0.8s both' }}><path d="M35 48 C26 38 26 26 33 18 C41 26 42 38 35 48" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>}
-                          {stage >= 6 && (<>
-                            <g style={{ transformOrigin: '35px 48px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 48 C26 38 26 26 33 18 C41 26 42 38 35 48" fill="#2C9D8A" opacity="0.85" stroke="#8BAE8A" strokeWidth="1" /></g>
-                            <g style={{ animation: 'glBloom 3s ease-in-out infinite' }}><circle cx="35" cy="12" r="3.2" fill="#2C9D8A" /><path d="M35 4 C37.5 6.5 37.5 9.5 35 12 C32.5 9.5 32.5 6.5 35 4" fill="#2C9D8A" /><path d="M27 12 C29.5 9.5 32.5 9.5 35 12 C32.5 14.5 29.5 14.5 27 12" fill="#2C9D8A" opacity="0.85" /><path d="M43 12 C40.5 9.5 37.5 9.5 35 12 C37.5 14.5 40.5 14.5 43 12" fill="#2C9D8A" opacity="0.85" /></g>
-                          </>)}
-                        </>)}
-                      </svg>
-                      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.2px', color: 'rgba(139,174,138,0.55)', marginTop: 6, whiteSpace: 'nowrap' }}>{preP ? 'PLANTS WITH DAY 1' : stage === 6 ? 'IN BLOOM' : `DAY ${gDay} OF 28`}</div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })()}
-
             {/* THE PROTOCOL — designed explainer for the common track (week 1 + eve). Static copy, deliberately not the AI voice. */}
             {profile?.protocol_track === 'common' && currentDay <= 7 && (
               <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '20px', marginTop: 14 }}>
@@ -2103,6 +2029,82 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               )}
 
             </div>
+
+            {/* THE LEARNING GARDEN — the intelligence growing from seed to bloom over 28 days */}
+            {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 42) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
+              const preP = !profile?.protocol_start_date
+              const gDay = preP ? 0 : Math.min(recordStats.days, 28)
+              const stage = preP || gDay < 1 ? 0 : gDay <= 3 ? 1 : gDay <= 7 ? 2 : gDay <= 14 ? 3 : gDay <= 21 ? 4 : gDay < 28 ? 5 : 6
+              const watch = (() => {
+                const sym = profile?.symptoms || []
+                const w = []
+                if (sym.includes('Digestive')) w.push('bloating', 'gas')
+                if (sym.includes('Energy')) w.push('brain fog', 'fatigue')
+                if (sym.includes('General wellness')) w.push('headaches', 'feeling off')
+                return w.slice(0, 3)
+              })()
+              return (
+                <div className="snfy-garden" style={{ background: '#22301F', borderRadius: 20, padding: 22, marginTop: 14, position: 'relative', overflow: 'hidden' }}>
+                  <style>{`
+                    @keyframes glDrift1 { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-25px,18px) } }
+                    @keyframes glDrift2 { 0%,100% { transform: translate(0,0) } 50% { transform: translate(22px,-15px) } }
+                    @keyframes glSway { 0%,100% { transform: rotate(-2.5deg) } 50% { transform: rotate(2.5deg) } }
+                    @keyframes glFadeIn { from { opacity: 0; transform: translateY(5px) } to { opacity: 1; transform: none } }
+                    @keyframes glBloom { 0%,100% { opacity: 0.75 } 50% { opacity: 1 } }
+                    @keyframes glUnfurlL { from { transform: rotate(-55deg) scale(0.3); opacity: 0 } to { transform: none; opacity: 1 } }
+                    @keyframes glUnfurlR { from { transform: rotate(55deg) scale(0.3); opacity: 0 } to { transform: none; opacity: 1 } }
+                  `}</style>
+                  <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%', filter: 'blur(30px)', opacity: 0.5, background: 'radial-gradient(circle, #3D5C3C, transparent 70%)', top: -60, right: -40, animation: 'glDrift1 9s ease-in-out infinite' }} />
+                  <div style={{ position: 'absolute', width: 150, height: 150, borderRadius: '50%', filter: 'blur(30px)', opacity: 0.5, background: 'radial-gradient(circle, rgba(44,157,138,0.55), transparent 70%)', bottom: -50, left: -30, animation: 'glDrift2 11s ease-in-out infinite' }} />
+                  <div style={{ position: 'relative', display: 'flex', gap: 16 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontFamily: 'Fraunces, serif', fontSize: 21, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.25, marginBottom: 11, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{stage === 6 ? <>Sensify <span style={{ color: '#8BAE8A' }}>knows your rhythm.</span></> : <>Sensify is <span style={{ color: '#8BAE8A' }}>learning you.</span></>}</div>
+                      {preP ? (
+                        <>
+                          <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease both' }}>A seed, waiting on your lab results.</div>
+                          <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease 0.6s both' }}>From day 1, every check-in feeds it: sleep, stress, symptoms, cross-referenced into an understanding no lab report has.</div>
+                        </>
+                      ) : (
+                        <>
+                          <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease both' }}><b style={{ color: '#FAF8F4', fontWeight: 600 }}>{recordStats.days}</b> day{recordStats.days === 1 ? '' : 's'} absorbed{recordStats.events > 0 ? <>, <b style={{ color: '#FAF8F4', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'} on the record</> : ', clean so far'}.</div>
+                          {watch.length > 0 && <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.75)', lineHeight: 1.7, animation: 'glFadeIn 1s ease 0.7s both' }}>Watching for <b style={{ color: '#FAF8F4', fontWeight: 600 }}>{watch.join(', ')}</b>, because that's what you told us matters.</div>}
+                          <div style={{ fontSize: 11, color: 'rgba(250,248,244,0.5)', marginTop: 12, lineHeight: 1.6, animation: 'glFadeIn 1s ease 1.4s both' }}>{stage === 6 ? <span style={{ color: '#8BAE8A' }}>The pattern engine is awake. It speaks when your data says something real.</span> : <>Every day you log, this grows. <span style={{ color: '#8BAE8A' }}>It blooms at 28 days, when pattern detection wakes.</span></>}</div>
+                        </>
+                      )}
+                    </div>
+                    <div style={{ width: 74, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
+                      <svg width="70" height="118" viewBox="0 0 70 120" style={{ animation: stage >= 2 ? 'glSway 5s ease-in-out infinite' : 'none', transformOrigin: 'bottom center', overflow: 'visible' }}>
+                        <line x1="12" y1="118" x2="58" y2="118" stroke="rgba(139,174,138,0.35)" strokeWidth="1.5" strokeLinecap="round" />
+                        {stage === 0 && <ellipse cx="35" cy="112" rx="5.5" ry="7" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1.2" />}
+                        {stage === 1 && (<>
+                          <ellipse cx="35" cy="113" rx="5" ry="6" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1.2" />
+                          <path d="M35 107 C35 101 34 96 35 90" stroke="#8BAE8A" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+                          <path d="M35 92 C31 90 29 86 30 82 C33 84 34 88 35 92" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="0.9" />
+                          <path d="M35 92 C39 90 41 86 40 82 C37 84 36 88 35 92" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="0.9" />
+                        </>)}
+                        {stage === 2 && (<>
+                          <path d="M35 118 C35 105 34 92 35 80" stroke="#8BAE8A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                          <g style={{ transformOrigin: '35px 96px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 96 C26 93 21 86 22 79 C30 82 34 88 35 96" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
+                          <g style={{ transformOrigin: '35px 88px', animation: 'glUnfurlR 1.4s ease 0.5s both' }}><path d="M35 88 C44 85 49 78 48 71 C40 74 36 80 35 88" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
+                        </>)}
+                        {stage >= 3 && (<>
+                          <path d="M35 118 C35 95 34 70 35 48" stroke="#8BAE8A" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                          <g style={{ transformOrigin: '35px 85px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 85 C20 80 12 68 14 56 C28 60 34 70 35 85" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>
+                          {stage >= 4 && <g style={{ transformOrigin: '35px 68px', animation: 'glUnfurlR 1.4s ease 0.4s both' }}><path d="M35 68 C50 63 58 51 56 39 C42 43 36 53 35 68" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>}
+                          {stage === 5 && <g style={{ transformOrigin: '35px 48px', animation: 'glUnfurlL 1.4s ease 0.8s both' }}><path d="M35 48 C26 38 26 26 33 18 C41 26 42 38 35 48" fill="#3D5C3C" stroke="#8BAE8A" strokeWidth="1" /></g>}
+                          {stage >= 6 && (<>
+                            <g style={{ transformOrigin: '35px 48px', animation: 'glUnfurlL 1.4s ease both' }}><path d="M35 48 C26 38 26 26 33 18 C41 26 42 38 35 48" fill="#2C9D8A" opacity="0.85" stroke="#8BAE8A" strokeWidth="1" /></g>
+                            <g style={{ animation: 'glBloom 3s ease-in-out infinite' }}><circle cx="35" cy="12" r="3.2" fill="#2C9D8A" /><path d="M35 4 C37.5 6.5 37.5 9.5 35 12 C32.5 9.5 32.5 6.5 35 4" fill="#2C9D8A" /><path d="M27 12 C29.5 9.5 32.5 9.5 35 12 C32.5 14.5 29.5 14.5 27 12" fill="#2C9D8A" opacity="0.85" /><path d="M43 12 C40.5 9.5 37.5 9.5 35 12 C37.5 14.5 40.5 14.5 43 12" fill="#2C9D8A" opacity="0.85" /></g>
+                          </>)}
+                        </>)}
+                      </svg>
+                      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.2px', color: 'rgba(139,174,138,0.55)', marginTop: 6, whiteSpace: 'nowrap' }}>{preP ? 'PLANTS WITH DAY 1' : stage === 6 ? 'IN BLOOM' : `DAY ${gDay} OF 28`}</div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
+
 
             {/* SYMPTOM TRENDS — ambient monitor */}
             <div className="snfy-trends">
