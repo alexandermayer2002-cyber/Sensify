@@ -29,11 +29,12 @@ export const generateDay1Message = async ({ name, profile, labResult }) => {
   const totalFoods = labResult?.foods?.length || 0
   const symptoms = formatSymptoms(profile?.symptoms)
 
-  const prompt = `You are the analysis engine inside Sensify, a food sensitivity wellness program. Write a Day 1 activation message for a new program participant.
+  const prompt = `You are the analysis engine inside Sensify, a food sensitivity wellness program. Write a Day 1 activation message for a new program participant. If the eliminated foods are Common trigger foods, this person is on the common-triggers protocol: they are eliminating those CHOSEN foods, not their lab-flagged foods. Never describe a lab food as being eliminated unless it appears in an eliminate list.
 
 USER:
 - Name: ${name}
 - Symptom focus: ${symptoms}
+- Common trigger foods to eliminate (chosen protocol, not lab-flagged): ${formatFoods(labResult?.foods, 'Common')}
 - High sensitivity foods to eliminate: ${highFoods}
 - Moderate sensitivity foods to eliminate: ${moderateFoods}
 - Low sensitivity foods to eliminate: ${lowFoods}
