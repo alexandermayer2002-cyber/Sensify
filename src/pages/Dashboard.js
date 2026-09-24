@@ -843,8 +843,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       // The Record stats (weeks 1-4 card)
       try {
         if (p?.protocol_start_date) {
-          const { count: dCount } = await supabase.from('daily_factors').select('id', { count: 'exact', head: true }).eq('user_id', session.user.id)
-          const { count: eCount } = await supabase.from('symptom_logs').select('id', { count: 'exact', head: true }).eq('user_id', session.user.id)
+          const pStart = String(p.protocol_start_date).split('T')[0]
+          const { count: dCount } = await supabase.from('daily_factors').select('id', { count: 'exact', head: true }).eq('user_id', session.user.id).gte('log_date', pStart)
+          const { count: eCount } = await supabase.from('symptom_logs').select('id', { count: 'exact', head: true }).eq('user_id', session.user.id).gte('logged_at', pStart)
           setRecordStats({ days: dCount || 0, events: eCount || 0 })
         }
       } catch (e) {}
@@ -2049,17 +2050,17 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               const present = new Set(order.slice(0, starCount))
               const P = A.map(([x, y, r], i) => [x + jit[i][0], y + jit[i][1], r])
               return (
-                <div className="snfy-garden" style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: 18, marginTop: 14 }}>
+                <div className="snfy-garden" style={{ background: '#EDF3ED', border: '1px solid rgba(61,92,60,0.14)', borderRadius: 18, padding: 18, marginTop: 14 }}>
                   <style>{`
                     @keyframes lcTw { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }
                     @keyframes lcGp { 0%,100% { opacity: 1 } 50% { opacity: 0.7 } }
                   `}</style>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.3px', color: '#7A7A72', textTransform: 'uppercase', marginBottom: 8 }}>{preP ? 'Sensify · Awaiting day 1' : complete ? 'Sensify · Pattern engine live' : 'Sensify · Charting you'}</div>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.3px', color: '#7A7A72', textTransform: 'uppercase', marginBottom: 8 }}>{preP ? 'Your sky · Awaiting day 1' : complete ? 'Your sky · Pattern engine live' : `Your sky · Night ${starCount} of 28`}</div>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 19, fontWeight: 400, color: '#1C1C1C', lineHeight: 1.25, marginBottom: 7, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>
-                    {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#2C9D8A' }}>took shape.</span></> : starCount < 8 ? <>Sensify is <span style={{ color: '#3D5C3C' }}>charting you.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
+                    {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#2C9D8A' }}>took shape.</span></> : starCount < 8 ? <>Every check-in <span style={{ color: '#3D5C3C' }}>hangs a star.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
                   </div>
                   <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginBottom: 10 }}>
-                    {preP ? <>Every day you log becomes a star. 28 nights make a shape. Your first check-in hangs the first one.</> : complete ? <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>28</b> days charted. The engine is awake, reading your sky.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> day{starCount === 1 ? '' : 's'} on the record{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. {starCount < 8 ? 'Each one, a star. No two skies alike.' : 'Something is forming in there.'}</>}
+                    {preP ? <>Every day you log becomes a star. At 28 nights they form a constellation, and pattern detection unlocks. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <span style={{ color: '#2C9D8A', fontWeight: 600 }}>Pattern detection is live</span>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <span style={{ color: '#2C9D8A', fontWeight: 600 }}>pattern detection unlocks</span>: sleep, stress, and symptoms, cross-referenced for connections.</>}
                   </div>
                   <svg width="100%" viewBox="0 0 280 195" style={{ display: 'block', borderRadius: 14 }}>
                     <defs>
@@ -2103,7 +2104,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                       <circle cx="246" cy="30" r="1" fill="#FAF8F4" opacity="0.4" style={{ animation: 'lcTw 3.4s ease-in-out 2.5s infinite' }} />
                     </g>
                   </svg>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.3px', color: complete ? 'rgba(44,157,138,0.75)' : '#9A927E', marginTop: 9, textTransform: 'uppercase' }}>{preP ? 'OPENS WITH DAY 1' : complete ? 'DAY 28 · YOUR LEAF, COMPLETE' : `DAY ${starCount} OF 28 · ${starCount < 8 ? starCount + ' STARS' : 'CONNECTING'}`}</div>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.3px', color: complete ? 'rgba(44,157,138,0.75)' : '#9A927E', marginTop: 9, textTransform: 'uppercase' }}>{preP ? 'OPENS WITH DAY 1' : complete ? 'NIGHT 28 · CONSTELLATION COMPLETE' : `NIGHT ${starCount} OF 28 · ${28 - starCount} STAR${28 - starCount === 1 ? '' : 'S'} TO GO`}</div>
                 </div>
               )
             })()}
