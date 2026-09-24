@@ -1856,11 +1856,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                         <div style={{ display: 'flex', gap: 12, marginBottom: 15 }}>
                           <div style={{ width: 25, height: 25, borderRadius: '50%', background: '#3D5C3C', color: '#fff', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</div>
                           <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 6 }}>Stop eating your flagged foods</div>
+                            <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 6 }}>{profile?.protocol_track === 'common' ? 'Stop eating your trigger foods' : 'Stop eating your flagged foods'}</div>
                             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
                               {flagged.map(f => <span key={f.name} style={{ background: '#EFEDE6', color: '#5A5A52', borderRadius: 14, padding: '3px 9px', fontSize: 11 }}>{f.name}</span>)}
                             </div>
-                            <button onClick={() => goto('food-map', 'food-map')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#3D5C3C', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>See sensitivity levels →</button>
+                            <button onClick={() => goto('food-map', 'food-map')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#3D5C3C', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{profile?.protocol_track === 'common' ? 'See your foods \u2192' : 'See sensitivity levels \u2192'}</button>
                           </div>
                         </div>
 
@@ -1888,8 +1888,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           {[
                             ['Ask Sensify', 'Can I eat this? What can I eat at an Italian restaurant? Ask anything, starting now.', 'ask-sensify', 'ask-sensify'],
                             ['History', 'Every check-in logged, and your symptoms graphed against your baseline so you can see yourself getting better.', 'history', 'checkin-history'],
-                            ['Reintro', 'From day 57, you eat your flagged foods again one at a time to find out which ones actually cause problems.', 'reintro', 'reintro-tab'],
-                            ['Food Map', "Where it all ends up. Your flagged foods today, turning into answers you've earned along the way.", 'food-map', 'food-map'],
+                            ['Reintro', `From day 57, you eat ${profile?.protocol_track === 'common' ? 'each food' : 'your flagged foods'} again one at a time to find out which ones actually cause problems.`, 'reintro', 'reintro-tab'],
+                            ['Food Map', `Where it all ends up. ${profile?.protocol_track === 'common' ? 'The foods you are testing' : 'Your flagged foods'} today, turning into answers you've earned along the way.`, 'food-map', 'food-map'],
                           ].map(([nm, desc, t, scr], i, arr) => (
                             <button key={nm} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '10px 11px', borderRadius: 11, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.05)', marginBottom: i < arr.length - 1 ? 7 : 0, width: '100%', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif' }}>
                               <span style={{ background: '#EDF3ED', borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 600, color: '#3D5C3C', flexShrink: 0 }}>{nm}</span>

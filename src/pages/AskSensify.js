@@ -28,7 +28,13 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
       // Load lab results so the assistant knows flagged vs clean foods
       try {
         const { data: lab } = await supabase.from('lab_results').select('foods').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).single()
-        if (lab?.foods) setLabFoods(lab.foods)
+        // Track seam: common-track users' protocol foods are the chosen tier's, not the raw lab's
+        const { data: prof } = await supabase.from('profiles').select('protocol_track, track_decision, protocol_tier, track_foods').eq('id', session.user.id).single()
+        if (prof?.protocol_track === 'common' && prof?.track_decision === 'active') {
+          const { getProtocolFoods } = await import('../utils/protocolEngine')
+          const resolved = getProtocolFoods(prof, lab)
+          setLabFoods(resolved.foods || [])
+        } else if (lab?.foods) setLabFoods(lab.foods)
       } catch (e) {}
       // Detect observation mode: a user who declined the protocol and is
       // self-tracking has no Food Map and should get observation-only behavior.

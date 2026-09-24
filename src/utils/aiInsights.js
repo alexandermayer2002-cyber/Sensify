@@ -175,7 +175,7 @@ export const generateSlipupMessage = async ({ name, food, sensitivityLevel, curr
 USER:
 - Name: ${name}
 - Food they slipped on: ${food}
-- Sensitivity level of that food: ${sensitivityLevel || 'flagged'}
+- Sensitivity level of that food: ${sensitivityLevel === 'Common' ? 'a common trigger food from their chosen protocol, not lab-flagged' : (sensitivityLevel || 'flagged')}
 - Current day of program: ${currentDay}
 
 Write 2-3 sentences. Rules:
