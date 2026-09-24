@@ -33,6 +33,9 @@ import {
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
 
+  @keyframes obsType { from { max-width: 0; } to { max-width: 100%; } }
+  @keyframes obsEye { 0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(44,157,138,0.8); } 50% { opacity: 0.45; box-shadow: 0 0 3px rgba(44,157,138,0.4); } }
+  .obs-line { overflow: hidden; white-space: nowrap; max-width: 0; animation: obsType 0.9s steps(34, end) forwards; }
   .snfy-app { min-height: 100vh; background: #F6F3EC; color: #1C1C1C; font-family: 'DM Sans', sans-serif; }
 
   .snfy-nav {
@@ -1730,32 +1733,39 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
-            {/* THE RECORD — the intelligence visibly assembling. Three eras: pre-protocol promise, day-1 opening, days 2-28 assembly. */}
-            {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 28) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (
-              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '18px 20px', marginTop: 14 }}>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#7A7A72', marginBottom: 10 }}>Your record</div>
-                <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
-                  {!profile?.protocol_start_date ? (<>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>OPENS WITH DAY 1</div>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#9A6212', background: '#FBEFD8', borderRadius: 9, padding: '5px 10px' }}>PATTERN DETECTION AT WEEK 4</div>
-                  </>) : currentDay === 1 && recordStats.days === 0 ? (<>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>0 DAYS LOGGED</div>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#9A6212', background: '#FBEFD8', borderRadius: 9, padding: '5px 10px' }}>OPENS TONIGHT</div>
-                  </>) : (<>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>{recordStats.days} DAY{recordStats.days === 1 ? '' : 'S'} LOGGED</div>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>{recordStats.events} SYMPTOM EVENT{recordStats.events === 1 ? '' : 'S'} CAPTURED</div>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#9A6212', background: '#FBEFD8', borderRadius: 9, padding: '5px 10px' }}>PATTERN DETECTION {currentDay >= 28 ? 'ACTIVE' : `IN ${Math.ceil((28 - currentDay) / 7)} WEEK${Math.ceil((28 - currentDay) / 7) === 1 ? '' : 'S'}`}</div>
-                  </>)}
+            {/* THE OBSERVER — the one dark instrument among the paper cards. A live readout: the system reporting what it knows about YOU, typing itself in. */}
+            {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 28) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
+              const preP = !profile?.protocol_start_date
+              const dayOne = !preP && currentDay === 1 && recordStats.days === 0
+              const lines = preP ? [
+                '> record opens with your day 1',
+                '> will watch: sleep \u00b7 stress \u00b7 hydration \u00b7 symptoms',
+                '> pattern detection arms at week 4',
+              ] : dayOne ? [
+                '> record opens tonight',
+                '> watching: sleep \u00b7 stress \u00b7 hydration \u00b7 symptoms',
+                `> pattern detection arms in ${28 - currentDay} days`,
+              ] : [
+                `> ${recordStats.days} day${recordStats.days === 1 ? '' : 's'} on record`,
+                `> ${recordStats.events} symptom event${recordStats.events === 1 ? '' : 's'} filed`,
+                '> watching: sleep \u00b7 stress \u00b7 hydration \u00b7 symptoms',
+                currentDay >= 28 ? '> pattern detection: ARMED' : `> pattern detection arms in ${28 - currentDay} days`,
+              ]
+              return (
+                <div style={{ background: '#22301F', borderRadius: 18, padding: '18px 20px', marginTop: 14 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#2C9D8A', animation: 'obsEye 2.4s ease-in-out infinite' }}></span>
+                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.4px', color: '#8BAE8A' }}>Sensify Observer · {preP ? 'Standby' : 'Active'}</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {lines.map((ln, i) => (
+                      <div key={ln} className="obs-line" style={{ fontFamily: 'DM Mono, monospace', fontSize: 11.5, letterSpacing: '0.3px', color: 'rgba(250,248,244,0.85)', animationDelay: `${0.15 + i * 0.55}s` }}>{ln}</div>
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 11.5, color: 'rgba(250,248,244,0.45)', lineHeight: 1.6, marginTop: 12 }}>{preP ? 'Your sleep, stress, and symptoms, cross-referenced against each other. No lab report can do that.' : 'Everything it learns is measured against your own record. Nothing else.'}</div>
                 </div>
-                <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.6 }}>
-                  {!profile?.protocol_start_date
-                    ? 'Once your protocol starts, every day you log builds a private record: your sleep, stress, and symptoms, cross-referenced. By week 4, Sensify starts spotting patterns in it. No lab report can do that.'
-                    : currentDay === 1 && recordStats.days === 0
-                    ? "Tonight's check-in writes the first entry. Everything Sensify learns about you gets measured against what starts here."
-                    : 'Every day you log builds the baseline your verdicts get measured against. Once four weeks are on the record, Sensify starts cross-referencing sleep, stress, and hydration against how you feel.'}
-                </div>
-              </div>
-            )}
+              )
+            })()}
 
             {/* THE PROTOCOL — designed explainer for the common track (week 1 + eve). Static copy, deliberately not the AI voice. */}
             {profile?.protocol_track === 'common' && currentDay <= 7 && (
