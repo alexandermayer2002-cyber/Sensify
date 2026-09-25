@@ -11,7 +11,8 @@ const css = `
   }
   body { font-family: 'DM Sans', sans-serif; color: #1C1C1C; background: #F6F3EC; }
 
-  @keyframes mkFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes mkPulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+        @keyframes mkFade { from { opacity: 0; } to { opacity: 1; } }
   .mk-nav {
     background: rgba(255,255,255,0.92);
     backdrop-filter: blur(12px);
@@ -291,7 +292,7 @@ const FAQ_GROUPS = [
     group: 'Getting started',
     items: [
       { q: 'Do I need to already have a lab test?', a: 'No. Your test kit is included in the program and ships to your door after you purchase. There is no separate lab bill and nothing to order yourself. We walk you through completing it at home and sending it back.' },
-      { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your completed Food Map. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
+      { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your completed verdicts. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
       { q: 'How much time does it take each week?', a: 'The daily check-in takes a second. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
     ],
   },
@@ -301,8 +302,8 @@ const FAQ_GROUPS = [
       { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
       { q: 'How do the daily check-ins work?', a: 'Each day you confirm whether you stayed on plan. Staying on plan builds your streak. A slip-up opens a quick log where you note what happened, and that data feeds your weekly insights. It takes a second a day.' },
       { q: "What if I don't see improvement during elimination?", a: 'Your symptom trends are monitored every week and flagged when improvement is not occurring. We look at compliance, hidden ingredients, and stress, and our team reviews the situation personally before any plan changes are suggested.' },
-      { q: 'Do I have to finish the whole protocol?', a: 'The full value comes from completing the protocol, since the reintroduction phase is where your verdicts are earned. You can stop anytime, but your Food Map is only complete once each food has been tested. We designed the program to keep each step light so finishing feels doable.' },
-      { q: 'What happens when I finish?', a: 'You receive your completed Food Map, yours to keep. You can also continue with Maintain, an optional monthly plan that keeps your Food Map working for you every day, with Ask Sensify on hand to check any food, menu, or meal against your results whenever you need it. Maintain pricing is on the Pricing page.' },
+      { q: 'Do I have to finish the whole protocol?', a: 'The full value comes from completing the protocol, since the reintroduction phase is where your verdicts are earned. You can stop anytime, but your verdicts are only complete once each food has been tested. We designed the program to keep each step light so finishing feels doable.' },
+      { q: 'What happens when I finish?', a: 'You receive your completed verdicts, yours to keep. You can also continue with Maintain, an optional monthly plan that keeps your verdicts working for you every day, with Ask Sensify on hand to check any food, menu, or meal against your results whenever you need it. Maintain pricing is on the Pricing page.' },
     ],
   },
   {
@@ -361,7 +362,7 @@ const SHOWCASE_CAPTIONS = {
   'Dashboard': 'The day, the phase, the streak, your symptoms against baseline, and this week\u2019s insight. One glance and you\u2019re oriented.',
   'History': 'Every week on the record, measured against your own baseline.',
   'Reintro': 'Three days eating it, eleven days watching clean. Then the verdict.',
-  'Food Map': 'Safe, Limit, Avoid. Every placement earned by your own tested evidence.',
+  'Verdicts': 'Safe. Limit. Avoid. Each one a card you earned, with the 14-day trial that proves it.',
   'Ask Sensify': 'Knows your map, your lab results, and where you are in testing. Ask anything.',
 }
 
@@ -507,53 +508,59 @@ function ShowcaseScreen({ tab }) {
         ))}
       </div>
       <div style={{ background: '#EDF3ED', borderRadius: 11, padding: '10px 12px' }}>
-        <div style={{ fontSize: 8.5, color: '#3D5C3C', lineHeight: 1.55 }}><span style={{ fontWeight: 700 }}>3 verdicts earned so far</span> · Gluten, Wheat, and Oats are already on your Food Map.</div>
+        <div style={{ fontSize: 8.5, color: '#3D5C3C', lineHeight: 1.55 }}><span style={{ fontWeight: 700 }}>3 verdicts earned so far</span> · Gluten, Wheat, and Oats are already ruled in your verdicts.</div>
       </div>
     </>
   )
-  if (tab === 'Food Map') return (
+  if (tab === 'Verdicts') return (
     <>
       <TopBar />
-      <div style={{ position: 'relative', background: 'linear-gradient(180deg, #FDFBF6, #F8F4EA)', border: '1px solid rgba(0,0,0,0.11)', borderRadius: 5, padding: '18px 15px 13px', boxShadow: '0 10px 26px rgba(60,50,30,0.16), inset 0 0 40px rgba(201,162,39,0.035)' }}>
-        <div style={{ position: 'absolute', inset: 5, border: '1px solid rgba(160,140,90,0.22)', borderRadius: 3, pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: 8, right: 10, fontFamily: mono, fontSize: 5.5, letterSpacing: '1px', color: '#B8B0A0' }}>NO. 0001</div>
-
-        <div style={{ textAlign: 'center', marginBottom: 4 }}>
-          <div style={{ fontFamily: mono, fontSize: 6, letterSpacing: '1.8px', color: '#9A927E', marginBottom: 5, textTransform: 'uppercase' }}>SENSIFY · VERIFIED RESULT</div>
-          <div style={{ fontFamily: serif, fontSize: 17, fontWeight: 380, color: '#2A2620', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Sarah's Food Map</div>
-          <div style={{ width: 30, height: 1.5, background: '#C9A227', opacity: 0.5, margin: '6px auto 7px' }} />
-          <div style={{ fontFamily: mono, fontSize: 5.5, letterSpacing: '0.7px', color: '#9A927E', marginBottom: 11 }}>12 OF 12 FOODS TESTED · COMPLETED DAY 184</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 10, padding: '0 2px' }}>
+        <div>
+          <div style={{ fontFamily: mono, fontSize: 5.5, letterSpacing: '1.6px', color: '#9A927E', marginBottom: 4 }}>SENSIFY · THE VERDICTS</div>
+          <div style={{ fontFamily: serif, fontSize: 16, fontWeight: 400, color: '#1C1C1C', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Sarah's <span style={{ color: '#3D5C3C' }}>verdicts.</span></div>
         </div>
-
-        {[
-          ['Safe', '#137663', '#2C9D8A', 'EAT FREELY · 3', [['Wheat', 'DAY 71 · NO REACTION'], ['Oats', 'DAY 99 · NO REACTION'], ['Almond', 'DAY 127 · NO REACTION']]],
-          ['Limit', '#9A5E0B', '#E8941F', 'SMALL AMOUNTS · 2', [['Coffee', 'DAY 113 · MILD, DOSE-LINKED'], ['Soy', 'DAY 141 · MILD, DOSE-LINKED']]],
-          ['Avoid', '#B03434', '#D64545', 'CONFIRMED · 2', [['Gluten', 'DAY 85 · SYMPTOMS CONFIRMED'], ['Dairy', 'DAY 155 · SYMPTOMS CONFIRMED']]],
-        ].map(([tname, tcolor, mark, sub, foods]) => (
-          <div key={tname} style={{ marginBottom: 9, position: 'relative' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 3 }}>
-              <span style={{ fontFamily: serif, fontSize: 12, color: tcolor }}>{tname}</span>
-              <span style={{ flex: 1, borderBottom: '1px dotted rgba(0,0,0,0.15)', alignSelf: 'center' }} />
-              <span style={{ fontFamily: mono, fontSize: 5.5, letterSpacing: '0.6px', color: '#9A927E' }}>{sub}</span>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontFamily: serif, fontSize: 15, color: '#3D5C3C', lineHeight: 1 }}>5<span style={{ color: 'rgba(28,28,28,0.25)', fontSize: 11 }}> / 8</span></div>
+          <div style={{ fontFamily: mono, fontSize: 4.5, letterSpacing: '1px', color: '#9A927E', marginTop: 2 }}>RULED · EARNED</div>
+        </div>
+      </div>
+      {(() => {
+        const SQ = (bad, i) => <span key={i} style={{ width: 5.5, height: 5.5, borderRadius: 1.5, background: bad ? '#D64545' : '#4C7A4A', flexShrink: 0, ...(bad ? { width: 7, height: 7 } : {}) }} />
+        const CI = (bad, i) => <span key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: bad ? '#D64545' : '#9DBD9C', flexShrink: 0, ...(bad ? { width: 6, height: 6 } : {}) }} />
+        const SP = (i) => <span key={i} style={{ width: 2.5, height: 2.5, borderRadius: '50%', background: 'rgba(0,0,0,0.12)', margin: '0 1.25px', flexShrink: 0 }} />
+        const TD = (i) => <span key={i} style={{ width: 6.5, height: 6.5, borderRadius: 1.5, background: '#2C9D8A', boxShadow: '0 0 5px rgba(44,157,138,0.5)', flexShrink: 0, animation: 'mkPulse 1.6s infinite' }} />
+        const strip = (marks) => <div style={{ display: 'flex', gap: 2.5, alignItems: 'center', marginTop: 8 }}>{marks}</div>
+        const card = (name, word, color, bg, bd, marks, stamp, ghost, live) => (
+          <div key={name} style={{ borderRadius: 11, padding: '10px 10px 9px', background: bg, border: `1px ${ghost ? 'dashed' : 'solid'} ${bd}`, position: 'relative', minHeight: 68, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            {stamp && <div style={{ position: 'absolute', top: 7, right: 8, fontFamily: mono, fontSize: 4.2, letterSpacing: '0.8px', color: '#9A927E' }}>{stamp}</div>}
+            <div>
+              <div style={{ fontFamily: mono, fontSize: 5, letterSpacing: '1.2px', color: ghost ? 'rgba(122,122,114,0.5)' : '#7A7A72' }}>{name}</div>
+              <div style={{ fontFamily: serif, fontSize: ghost ? 12 : 17, color, lineHeight: 1, marginTop: 4, fontVariationSettings: "'SOFT' 60, 'WONK' 1", animation: live ? 'mkPulse 2s infinite' : 'none' }}>{word}</div>
             </div>
-            {foods.map(([f, ev], fi) => (
-              <div key={f} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4.5px 2px', borderBottom: fi < foods.length - 1 ? '1px solid rgba(0,0,0,0.045)' : 'none' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: 1.5, background: mark, flexShrink: 0 }} />
-                  <span style={{ fontSize: 10, fontWeight: 600, color: '#1C1C1C' }}>{f}</span>
-                </div>
-                <span style={{ fontFamily: mono, fontSize: 5, letterSpacing: '0.4px', color: '#8A8474' }}>{ev}</span>
-              </div>
-            ))}
+            {strip(marks)}
           </div>
+        )
+        return (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
+            {card('DAIRY', 'On trial.', '#2C9D8A', '#E7F3F0', 'rgba(44,157,138,0.22)', [SQ(false, 0), TD(1), SP(2), SP(3), SP(4), SP(5), SP(6), SP(7), SP(8), SP(9)], 'DAY 2 OF 14', false, true)}
+            {card('WHEAT', 'Safe.', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.14)', [SQ(false, 0), SQ(false, 1), SQ(false, 2), CI(false, 3), CI(false, 4), CI(false, 5), CI(false, 6), CI(false, 7), CI(false, 8), CI(false, 9)], 'DAY 71')}
+            {card('OATS', 'Safe.', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.14)', [SQ(false, 0), SQ(false, 1), SQ(false, 2), CI(false, 3), CI(false, 4), CI(false, 5), CI(false, 6), CI(false, 7), CI(false, 8), CI(false, 9)], 'DAY 99')}
+            {card('COFFEE', 'Limit.', '#C07A28', '#FBF3E4', 'rgba(192,122,40,0.16)', [SQ(false, 0), SQ(false, 1), SQ(true, 2), CI(false, 3), CI(false, 4), CI(false, 5), CI(false, 6), CI(false, 7), CI(false, 8), CI(false, 9)], 'DAY 113')}
+            {card('GLUTEN', 'Avoid.', '#C0392B', '#F9EAE8', 'rgba(192,57,43,0.14)', [SQ(true, 0), SQ(false, 1), SQ(true, 2), CI(true, 3), CI(false, 4), CI(false, 5), CI(false, 6), CI(false, 7), CI(false, 8), CI(false, 9)], 'DAY 85')}
+            {card('DAIRY KEFIR', 'Avoid.', '#C0392B', '#F9EAE8', 'rgba(192,57,43,0.14)', [SQ(true, 0), SQ(true, 1), SP(2), CI(true, 3), CI(false, 4), CI(false, 5), CI(false, 6), CI(false, 7), CI(false, 8), CI(false, 9)], 'DAY 155')}
+            {card('SOY', 'Next.', 'rgba(28,28,28,0.2)', 'transparent', 'rgba(0,0,0,0.13)', [SP(0), SP(1), SP(2), SP(3), SP(4), SP(5), SP(6), SP(7), SP(8), SP(9)], null, true)}
+            {card('ALMOND', 'Awaiting.', 'rgba(28,28,28,0.2)', 'transparent', 'rgba(0,0,0,0.13)', [SP(0), SP(1), SP(2), SP(3), SP(4), SP(5), SP(6), SP(7), SP(8), SP(9)], null, true)}
+          </div>
+        )
+      })()}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 10, padding: '0 2px', flexWrap: 'wrap' }}>
+        {[['sq', 'rgba(34,48,31,0.35)', 'ATE IT'], ['ci', 'rgba(34,48,31,0.35)', 'WASHOUT'], ['sq', '#4C7A4A', 'CLEAN'], ['sq', '#D64545', 'SYMPTOMS']].map(([shape, bgc, label]) => (
+          <span key={label} style={{ display: 'flex', gap: 3, alignItems: 'center', fontFamily: mono, fontSize: 4.5, letterSpacing: '0.7px', color: '#9A927E' }}>
+            <span style={{ width: 5.5, height: 5.5, borderRadius: shape === 'ci' ? '50%' : 1.5, background: bgc, display: 'inline-block' }} />{label}
+          </span>
         ))}
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(0,0,0,0.08)', position: 'relative' }}>
-          <div style={{ fontFamily: mono, fontSize: 5, letterSpacing: '0.8px', color: '#9A927E' }}>EVERY VERDICT EARNED ON YOUR BODY</div>
-          <div style={{ width: 40, height: 40, border: '1.5px solid rgba(61,92,60,0.45)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'rotate(-8deg)', flexShrink: 0 }}>
-            <div style={{ fontFamily: mono, fontSize: 4.2, letterSpacing: '0.5px', color: '#3D5C3C', lineHeight: 1.5, textAlign: 'center' }}>SENSIFY<br />VERIFIED<br />·</div>
-          </div>
-        </div>
+        <span style={{ marginLeft: 'auto', fontFamily: mono, fontSize: 4.2, letterSpacing: '0.7px', color: '#B5AF9F' }}>EVERY CARD EARNED</span>
       </div>
     </>
   )
@@ -637,17 +644,17 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           </div>
           <div className="mk-hero-eyebrow" style={{ position: 'relative' }}>Test. Eliminate. Reintroduce. Know.</div>
           <div className="mk-h1 centered">Stop guessing what your body <em>can't handle.</em></div>
-          <div className="mk-sub centered">Lab testing, a structured elimination and reintroduction protocol, and daily guidance that shows you how individual foods actually affect you. You end with a personal Food Map of exactly where you stand.</div>
+          <div className="mk-sub centered">Lab testing, a structured elimination and reintroduction protocol, and daily guidance that shows you how individual foods actually affect you. You end with a full set of verdicts: exactly where you stand with every tested food.</div>
           <div className="mk-actions centered">
             <button className="btn-p" onClick={onGetStarted} style={{ background: '#8BAE8A', color: '#22301F', fontWeight: 600 }}>Start your program</button>
             <button className="btn-g" onClick={() => setTab('how')} style={{ borderColor: 'rgba(250,248,244,0.25)', color: '#FAF8F4' }}>See how it works</button>
           </div>
           <div className="mk-price-line">$399 · lab test included · one payment</div>
-          <div style={{ fontSize: '11.5px', color: 'rgba(250,248,244,0.38)', marginTop: '7px', lineHeight: 1.6, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>Lab test, elimination protocol, daily and weekly check-ins, personalized insights, guided reintroductions, Ask Sensify, and your final Food Map.</div>
+          <div style={{ fontSize: '11.5px', color: 'rgba(250,248,244,0.38)', marginTop: '7px', lineHeight: 1.6, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>Lab test, elimination protocol, daily and weekly check-ins, personalized insights, guided reintroductions, Ask Sensify, and your final verdicts.</div>
         </div>
       </div>
 
-      {/* The Food Map — its own showcase section */}
+      {/* The Verdicts — its own showcase section */}
       <div className="mk-section cream">
         <div className="mk-section-inner">
           <div className="ey">The problem</div>
@@ -670,7 +677,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               { n: '01', t: 'Test', d: 'Complete your intake and at-home lab test. Your results become the starting hypothesis: the suspects, not the verdict.' },
               { n: '02', t: 'Eliminate', d: 'Eight weeks without your flagged foods, with 30-second daily check-ins. Your symptoms settle into a clean baseline.' },
               { n: '03', t: 'Reintroduce', d: 'Each food returns one at a time in a controlled cycle while we track your response. Your body gives the real answer.' },
-              { n: '04', t: 'Know', d: 'Every food lands where it belongs: Safe, Limit, or Avoid. Your Food Map is earned and yours to keep.' },
+              { n: '04', t: 'Know', d: 'Every food lands where it belongs: Safe, Limit, or Avoid. Every verdict is earned and yours to keep.' },
             ].map((s, i) => (
               <div key={i} style={{ background: '#FAF8F4', border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '20px 18px' }}>
                 <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: '#8BAE8A', letterSpacing: '1px', marginBottom: '10px' }}>{s.n}</div>
@@ -694,7 +701,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div style={{ fontSize: '12px', color: '#A8A69E', marginBottom: '14px' }}>Tap through the screens below.</div>
 
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 26, flexWrap: 'wrap' }}>
-            {['Dashboard', 'History', 'Reintro', 'Food Map', 'Ask Sensify'].map(t => (
+            {['Dashboard', 'History', 'Reintro', 'Verdicts', 'Ask Sensify'].map(t => (
               <button key={t} onClick={() => setShowcaseTab(t)} style={{ background: showcaseTab === t ? '#22301F' : '#FFFFFF', color: showcaseTab === t ? '#FAF8F4' : '#5A5A52', border: showcaseTab === t ? '1px solid #22301F' : '1px solid rgba(0,0,0,0.14)', borderRadius: 20, padding: '9px 17px', fontSize: 13, fontWeight: showcaseTab === t ? 600 : 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.15s', boxShadow: showcaseTab === t ? 'none' : '0 1px 3px rgba(0,0,0,0.04)' }}>{t}</button>
             ))}
           </div>
@@ -719,7 +726,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="fmshow">
             <div className="fmshow-copy">
               <div className="ey">The outcome</div>
-              <div className="sh" style={{ fontSize: '32px', marginBottom: '18px' }}>A Food Map that's actually earned.</div>
+              <div className="sh" style={{ fontSize: '32px', marginBottom: '18px' }}>Verdicts that are actually earned.</div>
               <div className="ss" style={{ marginBottom: '22px' }}>No food gets labeled Safe without being tested. No food gets labeled Avoid without structured evidence. Everything you eat, sorted into three honest categories by your own body, and yours to keep.</div>
               <div>
                 {[
@@ -739,7 +746,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="fmcard-orb" />
               <div className="fmcard-orb2" />
               <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Sensify · Verified result</div>
-              <div className="fmcard-title">Sarah's <em>Food Map.</em></div>
+              <div className="fmcard-title">Sarah's <span style={{ color: '#8BAE8A' }}>verdicts.</span></div>
               <div className="fmcard-cat" style={{ color: '#A8C5A7' }}><span className="fmcard-catdot" style={{ background: '#8BAE8A' }}></span>Safe. Eat freely</div>
               <div className="fmcard-row">
                 {['Chicken', 'Rice', 'Salmon', 'Oats', 'Almonds'].map((f, i) => (
@@ -771,7 +778,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="sh">The questions everyone asks.</div>
           <div className="faq-list" style={{ maxWidth: '660px', marginTop: '26px' }}>
             {[
-              { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your completed Food Map. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
+              { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your completed verdicts. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
               { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
               { q: 'How much time does it take each week?', a: 'The daily check-in takes 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
               { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people finish the protocol and find their body tolerates everything well, which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. A clean result is still an answer you can trust.' },
@@ -809,7 +816,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>The complete program</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>How Sensify works.</div>
-          <div className="mk-sub" style={{ marginBottom: 0 }}>A structured system that takes you from suspecting a food trigger to having a personal, evidence-based Food Map.</div>
+          <div className="mk-sub" style={{ marginBottom: 0 }}>A structured system that takes you from suspecting a food trigger to having your verdicts: a personal, evidence-based ruling on every tested food.</div>
         </div>
       </div>
 
@@ -906,13 +913,13 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="spine-dot"></div>
               <div className="spine-tag">Day 14</div>
               <div className="spine-title">Get your verdict</div>
-              <div className="spine-desc">Your daily logs across the cycle produce a verdict: Safe, Limit, or Avoid. Each verdict updates your Food Map. No food gets labeled without real evidence from your own body.</div>
+              <div className="spine-desc">Your daily logs across the cycle produce a verdict: Safe, Limit, or Avoid. Each one is entered in your verdicts. No food gets labeled without real evidence from your own body.</div>
             </div>
             <div className="spine-step">
               <div className="spine-dot"></div>
               <div className="spine-tag">End of program</div>
-              <div className="spine-title">Receive your personal Food Map</div>
-              <div className="spine-desc">By the end, every tested food is categorized by real symptom evidence. Safe, Limit, Avoid, all earned. Your Food Map is personal and yours to keep. You can continue with Maintain, which keeps your Food Map working for you every day with Ask Sensify always on hand.</div>
+              <div className="spine-title">Receive your verdicts</div>
+              <div className="spine-desc">By the end, every tested food is categorized by real symptom evidence. Safe, Limit, Avoid, all earned. Your verdicts are personal and yours to keep. You can continue with Maintain, which keeps your Food Map working for you every day with Ask Sensify always on hand.</div>
             </div>
           </div>
         </div>
@@ -1068,7 +1075,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 '14-day reintroduction cycles with clear verdicts',
                 'Weekly symptom insights from your check-ins',
                 'Compliance audit system with human review',
-                'Personal Food Map at program completion',
+                'Every food ruled: your verdicts at completion',
                 'Structured protocol built on the clinical standard',
               ].map((item, i) => (
                 <div key={i} className="price-item">
@@ -1076,7 +1083,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                   {item}
                 </div>
               ))}
-              <div className="price-note">Everything included: your lab test, the full protocol, AI guidance, and your completed Food Map. No hidden costs, no separate lab bill.</div>
+              <div className="price-note">Everything included: your lab test, the full protocol, AI guidance, and your completed verdicts. No hidden costs, no separate lab bill.</div>
             </div>
           </div>
         </div>
@@ -1181,7 +1188,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             {[
               ['The lab finds suspects. Your body gives the verdict.', 'A flagged food is a question, not a conviction. Nothing gets labeled without being tested.'],
               ['Honesty over hype.', 'We show you what the data says, including when it is inconclusive. No miracle claims, no guesswork dressed up as certainty.'],
-              ["The answer is earned, and it's yours.", "Every verdict on your Food Map comes from your own body's evidence, so you can shop, order, and eat without second-guessing what you already proved."],
+              ["The answer is earned, and it's yours.", "Every one of your verdicts comes from your own body's evidence, so you can shop, order, and eat without second-guessing what you already proved."],
             ].map(([h, d], i) => (
               <div key={i} style={{ borderTop: '1px solid rgba(0,0,0,0.08)', paddingTop: '16px' }}>
                 <div style={{ fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 300, color: '#1C1C1C', marginBottom: '6px' }}>{h}</div>
