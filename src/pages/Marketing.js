@@ -919,7 +919,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="spine-dot"></div>
               <div className="spine-tag">End of program</div>
               <div className="spine-title">Receive your verdicts</div>
-              <div className="spine-desc">By the end, every tested food is categorized by real symptom evidence. Safe, Limit, Avoid, all earned. Your verdicts are personal and yours to keep. You can continue with Maintain, which keeps your Food Map working for you every day with Ask Sensify always on hand.</div>
+              <div className="spine-desc">By the end, every tested food is categorized by real symptom evidence. Safe, Limit, Avoid, all earned. Your verdicts are personal and yours to keep. You can continue with Maintain, which keeps your verdicts working for you every day with Ask Sensify always on hand.</div>
             </div>
           </div>
         </div>
