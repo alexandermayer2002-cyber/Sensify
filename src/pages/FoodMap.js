@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { protocolDay } from '../utils/protocolDay'
-import { getProtocolFoods } from '../utils/protocolEngine'
+import { getProtocolFoods, getTestingOrder } from '../utils/protocolEngine'
 
 // THE FOOD MAP — the trial-strip ledger. Every food is one row: its name, its real
 // 14-day trial rendered mark by mark from reintro_daily_logs, and the verdict it
@@ -64,10 +64,16 @@ export default function FoodMap({ session, profile, labResult }) {
   }
   const logsFor = (cycle) => logs.filter(l => (l.food || '').toLowerCase() === (cycle.food || '').toLowerCase())
 
+  const V_ORDER = { Safe: 1, Limit: 2, Avoid: 3 }
   const ruled = universe.filter(f => byFood[f.name.toLowerCase()]?.verdict)
+    .sort((a, b) => {
+      const ca = byFood[a.name.toLowerCase()], cb = byFood[b.name.toLowerCase()]
+      const va = V_ORDER[ca.verdict] || 9, vb = V_ORDER[cb.verdict] || 9
+      if (va !== vb) return va - vb
+      return String(ca.started_at) < String(cb.started_at) ? -1 : 1
+    })
   const testing = universe.filter(f => { const c = byFood[f.name.toLowerCase()]; return c && !c.verdict })
-  const queue = universe.filter(f => !byFood[f.name.toLowerCase()])
-    .sort((a, b) => (FREQ_RANK[profile?.food_frequency?.[a.name]] || 9) - (FREQ_RANK[profile?.food_frequency?.[b.name]] || 9))
+  const queue = getTestingOrder(universe.filter(f => !byFood[f.name.toLowerCase()]), profile?.food_frequency)
   const total = universe.length
   const ruledCount = ruled.length
   const complete = total > 0 && ruledCount === total
@@ -128,21 +134,35 @@ export default function FoodMap({ session, profile, labResult }) {
     )
   }
 
-  const Row = ({ food, cycle, ghost, tag, verdictEl }) => {
+  const wash = { Safe: ['#EDF3ED', 'rgba(61,92,60,0.14)'], Limit: ['#FBF3E4', 'rgba(192,122,40,0.16)'], Avoid: ['#F9EAE8', 'rgba(192,57,43,0.14)'] }
+  const Card = ({ food, cycle, ghost, tag, live }) => {
     const k = food.name.toLowerCase()
     const canOpen = cycle && !ghost
     const trials = trialCount[k] || 0
+    const open = openRow === k
+    const [bg, bd] = ghost ? ['transparent', 'rgba(0,0,0,0.13)'] : live ? ['#E7F3F0', 'rgba(44,157,138,0.22)'] : (wash[cycle?.verdict] || ['#FFFFFF', 'rgba(0,0,0,0.08)'])
+    const dayOf = (iso) => {
+      if (!profile?.protocol_start_date || !iso) return null
+      const a = new Date(String(profile.protocol_start_date).split('T')[0] + 'T12:00:00')
+      const b = new Date(String(iso).split('T')[0] + 'T12:00:00')
+      return Math.max(1, Math.round((b - a) / 86400000) + 1)
+    }
+    const ruledDay = cycle?.verdict ? dayOf(addDays(String(cycle.started_at).split('T')[0], 13)) : null
+    const dayStamp = cycle?.verdict
+      ? (ruledDay ? `DAY ${ruledDay}` : null)
+      : live && cycle ? `DAY ${Math.min(14, Math.max(1, Math.round((new Date(today + 'T12:00:00') - new Date(String(cycle.started_at).split('T')[0] + 'T12:00:00')) / 86400000) + 1))} OF 14` : null
     return (
-      <div style={{ borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-        <div style={{ ...s.row, cursor: canOpen ? 'pointer' : 'default' }} onClick={() => canOpen && setOpenRow(openRow === k ? null : k)}>
-          <div style={{ ...s.food, color: ghost ? 'rgba(28,28,28,0.32)' : '#1C1C1C' }}>
-            {food.name}
-            {trials > 1 && <span style={s.trialTag}>{trials === 2 ? '2ND' : trials + 'TH'} TRIAL</span>}
+      <div style={{ ...s.card, background: bg, border: `1${ghost ? '.5' : ''}px ${ghost ? 'dashed' : 'solid'} ${bd}`, cursor: canOpen ? 'pointer' : 'default', gridColumn: open ? '1 / -1' : 'auto' }} onClick={() => canOpen && setOpenRow(open ? null : k)}>
+        {dayStamp && <div style={s.dayStamp}>{dayStamp}</div>}
+        <div>
+          <div style={{ ...s.fname, color: ghost ? 'rgba(122,122,114,0.5)' : '#7A7A72' }}>{food.name}{trials > 1 && <span style={{ marginLeft: 6, opacity: 0.7 }}>{trials === 2 ? '2ND' : trials + 'TH'} TRIAL</span>}</div>
+          <div style={{ ...s.vword, ...(ghost ? s.vGhost : {}), color: ghost ? 'rgba(28,28,28,0.2)' : live ? '#2C9D8A' : (V_COLOR[cycle?.verdict] || '#1C1C1C'), animation: live ? 'fmPl 2s infinite' : 'none' }}>
+            {ghost ? (tag === 'NEXT' || tag === 'DAY 57' ? 'Next.' : 'Awaiting.') : live ? 'On trial.' : `${cycle.verdict}.`}
           </div>
-          <Strip cycle={cycle} ghost={ghost} />
-          <div style={s.verdict}>{verdictEl || (tag ? <span style={s.ghostTag}>{tag}</span> : null)}</div>
         </div>
-        {openRow === k && <Record cycle={cycle} />}
+        <Strip cycle={ghost ? null : cycle} ghost={ghost} />
+        {ghost && tag && <div style={s.ghostCorner}>{tag}</div>}
+        {open && <Record cycle={cycle} />}
       </div>
     )
   }
@@ -153,7 +173,7 @@ export default function FoodMap({ session, profile, labResult }) {
       <div style={s.doc}>
         <div style={s.dochead}>
           <div>
-            <div style={s.kicker}>SENSIFY · FOOD MAP{complete ? ' · VERIFIED' : ''}</div>
+            <div style={s.kicker}>SENSIFY · THE VERDICTS{complete ? ' · VERIFIED' : ''}</div>
             <div style={s.title}>
               {!labResult ? <>A document, <span style={{ color: '#3D5C3C' }}>waiting.</span></>
                 : complete ? <>Every verdict, <span style={{ color: '#3D5C3C' }}>earned.</span></>
@@ -167,27 +187,23 @@ export default function FoodMap({ session, profile, labResult }) {
           </div>
         </div>
 
-        <div style={s.ledger}>
+        <div style={s.grid}>
           {!labResult && (
-            <>
-              {[{ name: 'Almond' }, { name: 'Coffee' }, { name: 'Dairy' }].map(f => (
-                <Row key={f.name} food={f} ghost tag="EXAMPLE" />
-              ))}
-              <div style={s.awaitNote}>Your lab results choose the foods. Your body rules on each one, day by day, on this document.</div>
-            </>
+            [{ name: 'Almond' }, { name: 'Coffee' }, { name: 'Dairy' }].map(f => (
+              <Card key={f.name} food={f} ghost tag="EXAMPLE" />
+            ))
           )}
-          {labResult && ruled.map(f => {
-            const c = byFood[f.name.toLowerCase()]
-            return <Row key={f.name} food={f} cycle={c} verdictEl={<span style={{ ...s.verdictWord, color: V_COLOR[c.verdict] || '#3D5C3C' }}>{c.verdict}</span>} />
-          })}
           {labResult && testing.map(f => (
-            <Row key={f.name} food={f} cycle={byFood[f.name.toLowerCase()]} verdictEl={<span style={{ ...s.verdictWord, color: '#2C9D8A', animation: 'fmPl 2s infinite' }}>Testing</span>} />
+            <Card key={f.name} food={f} cycle={byFood[f.name.toLowerCase()]} live />
+          ))}
+          {labResult && ruled.map(f => (
+            <Card key={f.name} food={f} cycle={byFood[f.name.toLowerCase()]} />
           ))}
           {labResult && queue.map((f, i) => (
-            <Row key={f.name} food={f} ghost tag={i === 0 ? (preReintro ? 'DAY 57' : 'NEXT') : ''} />
+            <Card key={f.name} food={f} ghost tag={i === 0 ? (preReintro ? 'DAY 57' : 'NEXT') : ''} />
           ))}
         </div>
-
+        {!labResult && <div style={s.awaitNote}>Your lab results choose the foods. Your body rules on each one, day by day. Every card here gets earned.</div>}
         <div style={s.docfoot}>
           <div style={s.legend}>
             <span style={s.li}><span style={{ ...s.swSq, background: 'rgba(34,48,31,0.35)' }} />ATE THE FOOD</span>
@@ -217,20 +233,26 @@ const s = {
   bignum: { fontFamily: 'Fraunces, serif', fontSize: 27, color: '#3D5C3C', lineHeight: 1 },
   bigden: { color: 'rgba(28,28,28,0.25)', fontSize: 18 },
   countLabel: { fontFamily: 'DM Mono, monospace', fontSize: 7.5, letterSpacing: '1.4px', color: '#9A927E', marginTop: 3 },
-  ledger: { padding: '2px 26px 4px' },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 12, padding: '6px 26px 10px' },
+  card: { borderRadius: 16, padding: '15px 15px 13px', minHeight: 116, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', gap: 10 },
+  dayStamp: { position: 'absolute', top: 12, right: 13, fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.1px', color: '#9A927E' },
+  fname: { fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1.6px', textTransform: 'uppercase' },
+  vword: { fontFamily: 'Fraunces, serif', fontSize: 28, lineHeight: 1, marginTop: 7, fontWeight: 400, fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
+  vGhost: { fontSize: 19 },
+  ghostCorner: { position: 'absolute', top: 12, right: 13, fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.1px', color: 'rgba(122,122,114,0.55)' },
   row: { display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0' },
   food: { fontFamily: 'Fraunces, serif', fontSize: 16, width: 86, flexShrink: 0, lineHeight: 1.25 },
   trialTag: { display: 'block', fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1px', color: '#9A927E', marginTop: 2 },
   strip: { display: 'flex', gap: 4, alignItems: 'center', flex: 1, flexWrap: 'wrap' },
-  sq: { width: 10, height: 10, borderRadius: 2.5, flexShrink: 0 },
-  ci: { width: 9, height: 9, borderRadius: '50%', flexShrink: 0 },
-  symSize: { width: 12, height: 12 },
-  todayMark: { background: '#2C9D8A', animation: 'fmPl 1.6s infinite', boxShadow: '0 0 8px rgba(44,157,138,0.5)', width: 11, height: 11 },
-  speck: { width: 4, height: 4, borderRadius: '50%', background: 'rgba(0,0,0,0.13)', margin: '0 2.5px', flexShrink: 0 },
+  sq: { width: 8, height: 8, borderRadius: 2, flexShrink: 0 },
+  ci: { width: 7, height: 7, borderRadius: '50%', flexShrink: 0 },
+  symSize: { width: 10, height: 10 },
+  todayMark: { background: '#2C9D8A', animation: 'fmPl 1.6s infinite', boxShadow: '0 0 7px rgba(44,157,138,0.5)', width: 9, height: 9 },
+  speck: { width: 3.5, height: 3.5, borderRadius: '50%', background: 'rgba(0,0,0,0.12)', margin: '0 2px', flexShrink: 0 },
   verdict: { width: 68, textAlign: 'right', flexShrink: 0 },
   verdictWord: { fontFamily: 'Fraunces, serif', fontSize: 17, fontWeight: 400 },
   ghostTag: { fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.2px', color: 'rgba(28,28,28,0.25)' },
-  record: { padding: '2px 0 14px', borderTop: '1px dashed rgba(0,0,0,0.07)', marginTop: -1 },
+  record: { padding: '10px 0 2px', borderTop: '1px dashed rgba(0,0,0,0.12)', marginTop: 2 },
   recNote: { fontSize: 11, color: '#9A927E', lineHeight: 1.6, padding: '10px 0 8px' },
   recLine: { fontSize: 12, color: '#1C1C1C', lineHeight: 2 },
   awaitNote: { fontSize: 11.5, color: '#9A927E', lineHeight: 1.65, padding: '14px 0 16px' },

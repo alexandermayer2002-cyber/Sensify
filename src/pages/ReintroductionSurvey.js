@@ -265,7 +265,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
           </div>
 
           <div style={{ background: 'linear-gradient(180deg, #FDFBF6, #F8F4EA)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '6px', padding: '13px 16px', marginBottom: '14px', boxShadow: '0 6px 18px rgba(60,50,30,0.09), inset 0 0 30px rgba(201,162,39,0.03)' }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '1.2px', color: '#9A927E', marginBottom: 8 }}>ENTERED ON YOUR FOOD MAP</div>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '1.2px', color: '#9A927E', marginBottom: 8 }}>ENTERED IN YOUR VERDICTS</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                 <span style={{ width: 8, height: 8, borderRadius: 2, background: verdict === 'Safe' ? '#2C9D8A' : verdict === 'Limit' ? '#E8941F' : '#D64545', flexShrink: 0 }}></span>

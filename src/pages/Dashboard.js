@@ -1264,7 +1264,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       <nav className="snfy-nav">
         <div className="snfy-logo">Sensify<span style={{ color: '#8BAE8A', fontStyle: 'normal' }}>.</span></div>
         <div className="snfy-nav-tabs">
-          {['Home', 'Reintro', 'History', 'Food Map', 'Ask Sensify', 'Maintain'].filter(t => {
+          {['Home', 'Reintro', 'History', 'Verdicts', 'Ask Sensify', 'Maintain'].filter(t => {
             if (t !== 'Maintain') return true
             if (isAdmin) return true  // admins always see Maintain (dev eyes)
             if (!profile?.protocol_start_date) return false  // pre-results: hidden
@@ -1273,7 +1273,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             const pDay = Math.round((todayLocal - sd) / (1000 * 60 * 60 * 24)) + 1
             return pDay >= 57  // appears the day reintroduction unlocks
           }).map(t => (
-            <button key={t} className={`snfy-tab${tab === t.toLowerCase().replace(' ', '-') ? ' active' : ''}`} onClick={() => { window.scrollTo(0, 0); setTab(t.toLowerCase().replace(' ', '-')); if (t === 'History') setScreen('checkin-history'); else if (t === 'Food Map') setScreen('food-map'); else if (t === 'Reintro') setScreen('reintro-tab'); else if (t === 'Ask Sensify') setScreen('ask-sensify'); else if (t === 'Maintain') setScreen('maintain'); else setScreen('dashboard') }}>{t}</button>
+            <button key={t} className={`snfy-tab${tab === t.toLowerCase().replace(' ', '-') ? ' active' : ''}`} onClick={() => { window.scrollTo(0, 0); setTab(t.toLowerCase().replace(' ', '-')); if (t === 'History') setScreen('checkin-history'); else if (t === 'Verdicts') setScreen('food-map'); else if (t === 'Reintro') setScreen('reintro-tab'); else if (t === 'Ask Sensify') setScreen('ask-sensify'); else if (t === 'Maintain') setScreen('maintain'); else setScreen('dashboard') }}>{t}</button>
           ))}
         </div>
         <div className="snfy-nav-right">
@@ -1928,7 +1928,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
                               {flagged.map(f => <span key={f.name} style={{ background: '#EDF3ED', color: '#3D5C3C', borderRadius: 9, padding: '4px 11px', fontSize: 11.5, fontWeight: 600 }}>{f.name}</span>)}
                             </div>
-                            <button onClick={() => goto('food-map', 'food-map')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#3D5C3C', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{profile?.protocol_track === 'common' ? 'See your foods \u2192' : 'See sensitivity levels \u2192'}</button>
+                            <button onClick={() => goto('verdicts', 'food-map')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#3D5C3C', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{profile?.protocol_track === 'common' ? 'See your foods \u2192' : 'See sensitivity levels \u2192'}</button>
                           </div>
                         </div>
 
@@ -1957,7 +1957,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             ['Ask Sensify', 'Can I eat this? What can I eat at an Italian restaurant? Ask anything, starting now.', 'ask-sensify', 'ask-sensify'],
                             ['History', 'Every check-in logged, and your symptoms graphed against your baseline so you can see yourself getting better.', 'history', 'checkin-history'],
                             ['Reintro', `From day 57, you eat ${profile?.protocol_track === 'common' ? 'each food' : 'your flagged foods'} again one at a time to find out which ones actually cause problems.`, 'reintro', 'reintro-tab'],
-                            ['Food Map', `Where it all ends up. ${profile?.protocol_track === 'common' ? 'The foods you are testing' : 'Your flagged foods'} today, turning into answers you've earned along the way.`, 'food-map', 'food-map'],
+                            ['Verdicts', `Where it all ends up. ${profile?.protocol_track === 'common' ? 'The foods you are testing' : 'Your flagged foods'} today, turning into answers you've earned along the way.`, 'verdicts', 'food-map'],
                           ].map(([nm, desc, t, scr], i, arr) => (
                             <button key={nm} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '11px 13px', borderRadius: 12, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', marginBottom: i < arr.length - 1 ? 7 : 0, width: '100%', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif', transition: 'border-color 0.15s, box-shadow 0.15s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(61,92,60,0.3)'; e.currentTarget.style.boxShadow = '0 3px 12px rgba(34,48,31,0.06)' }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.07)'; e.currentTarget.style.boxShadow = 'none' }}>
                               <span style={{ background: '#EDF3ED', borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 600, color: '#3D5C3C', flexShrink: 0 }}>{nm}</span>

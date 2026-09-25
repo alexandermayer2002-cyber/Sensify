@@ -61,6 +61,35 @@ export const COMMON_TIER_2 = [
 ]
 
 // User-facing labels for the two tiers (plain language, the user sees these).
+
+// =============================================================================
+// TESTING ORDER DOCTRINE (Alex-approved; FLAGGED FOR PHYSICIAN REVIEW)
+// The deterministic process that decides which food gets tested next:
+//   1. EATING FREQUENCY first (daily -> 3-5x -> 1-2x -> rarely -> almost-never).
+//      The foods someone eats most are the biggest daily-life unlocks and the
+//      likeliest contributors to their baseline symptoms. 'never' foods are
+//      excluded from the protocol entirely upstream.
+//   2. SENSITIVITY LEVEL as tiebreak (High -> Moderate -> Low -> Common).
+//      Among equally-eaten foods, resolve the strongest lab suspects first.
+//   3. NAME alphabetical as final tiebreak, so the order is fully deterministic
+//      and two sessions never disagree.
+// Users may override by picking any food manually; this order is the default
+// queue shown everywhere (gallery frames, reintro picker, briefings).
+// =============================================================================
+const ORDER_FREQ_RANK = { 'daily': 1, '3-5x': 2, '1-2x': 3, 'rarely': 4, 'almost-never': 5, 'never': 6 }
+const ORDER_LEVEL_RANK = { 'High': 1, 'Moderate': 2, 'Low': 3, 'Common': 4 }
+export function getTestingOrder(foods, foodFrequency) {
+  return [...(foods || [])].sort((a, b) => {
+    const fa = ORDER_FREQ_RANK[foodFrequency?.[a.name]] || 9
+    const fb = ORDER_FREQ_RANK[foodFrequency?.[b.name]] || 9
+    if (fa !== fb) return fa - fb
+    const la = ORDER_LEVEL_RANK[a.level] || 9
+    const lb = ORDER_LEVEL_RANK[b.level] || 9
+    if (la !== lb) return la - lb
+    return (a.name || '').localeCompare(b.name || '')
+  })
+}
+
 export const TIER_META = {
   1: { key: 1, label: 'Test 2 Foods', sub: 'The essentials', foods: COMMON_TIER_1 },
   2: { key: 2, label: 'Test 8 Foods', sub: 'The full panel', foods: COMMON_TIER_2 },

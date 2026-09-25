@@ -127,7 +127,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
       <style>{css}</style>
       <div style={s.header}>
         <div style={s.headerTitle}>Ask <em style={s.em}>Sensify</em></div>
-        <div style={s.headerStatus}><span style={s.statusDot}></span><span style={s.statusText}>READING YOUR FOOD MAP · LIVE</span></div>
+        <div style={s.headerStatus}><span style={s.statusDot}></span><span style={s.statusText}>READING YOUR VERDICTS · LIVE</span></div>
       </div>
 
       <div style={s.thread} ref={scrollRef}>
@@ -257,7 +257,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
-      <div style={s.disclaimer}>Ask Sensify uses your Food Map for guidance. It is not medical advice. When unsure about an ingredient, double-check.</div>
+      <div style={s.disclaimer}>Ask Sensify uses your verdicts for guidance. It is not medical advice. When unsure about an ingredient, double-check.</div>
     </div>
   )
 }
