@@ -2034,7 +2034,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {/* THE LEAF CONSTELLATION — 28 nights, one star per logged day, randomized per user; the leaf reveals at 28 */}
             {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 42) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
               const preP = !profile?.protocol_start_date
-              const starCount = preP ? 0 : Math.min(recordStats.days, 28)
+              const starCount = preP ? 0 : Math.max(0, Math.min(recordStats.days, currentDay, 28))
               const complete = starCount >= 28
               // 28 fixed anchors of the leaf (x, y, r)
               const A = [[140,186,2],[140,177,1.5],[140,168,2.2],[106,146,1.7],[174,146,1.7],[86,116,1.7],[194,116,1.7],[81,86,1.7],[199,86,1.7],[92,52,1.7],[188,52,1.7],[112,26,1.7],[168,26,1.7],[126,14,1.5],[154,14,1.5],[140,8,2.2],[140,140,1.6],[140,108,1.6],[140,76,1.6],[100,106,1.4],[180,106,1.4],[106,74,1.4],[174,74,1.4],[118,42,1.4],[162,42,1.4],[122,122,1.3],[158,122,1.3],[140,58,1.3]]
@@ -2050,12 +2050,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               const present = new Set(order.slice(0, starCount))
               const P = A.map(([x, y, r], i) => [x + jit[i][0], y + jit[i][1], r])
               return (
-                <div className="snfy-garden" style={{ background: '#EDF3ED', border: '1px solid rgba(61,92,60,0.14)', borderRadius: 18, padding: 18, marginTop: 14 }}>
+                <div className="snfy-garden" style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: 18, marginTop: 14 }}>
                   <style>{`
                     @keyframes lcTw { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }
                     @keyframes lcGp { 0%,100% { opacity: 1 } 50% { opacity: 0.7 } }
                   `}</style>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.3px', color: '#7A7A72', textTransform: 'uppercase', marginBottom: 8 }}>{preP ? 'Your sky · Awaiting day 1' : complete ? 'Your sky · Pattern engine live' : `Your sky · Night ${starCount} of 28`}</div>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 19, fontWeight: 400, color: '#1C1C1C', lineHeight: 1.25, marginBottom: 7, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>
                     {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#2C9D8A' }}>took shape.</span></> : starCount < 8 ? <>Every check-in <span style={{ color: '#3D5C3C' }}>hangs a star.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
                   </div>
