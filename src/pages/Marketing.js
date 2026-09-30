@@ -515,53 +515,38 @@ function ShowcaseScreen({ tab }) {
   if (tab === 'Verdicts') return (
     <>
       <TopBar />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 10, padding: '0 2px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12, padding: '0 2px' }}>
         <div>
           <div style={{ fontFamily: mono, fontSize: 5.5, letterSpacing: '1.6px', color: '#9A927E', marginBottom: 4 }}>SENSIFY · THE VERDICTS</div>
           <div style={{ fontFamily: serif, fontSize: 16, fontWeight: 400, color: '#1C1C1C', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Sarah's <span style={{ color: '#3D5C3C' }}>verdicts.</span></div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontFamily: serif, fontSize: 15, color: '#3D5C3C', lineHeight: 1 }}>5<span style={{ color: 'rgba(28,28,28,0.25)', fontSize: 11 }}> / 8</span></div>
-          <div style={{ fontFamily: mono, fontSize: 4.5, letterSpacing: '1px', color: '#9A927E', marginTop: 2 }}>RULED · EARNED</div>
+          <div style={{ fontFamily: serif, fontSize: 15, color: '#3D5C3C', lineHeight: 1 }}>4<span style={{ color: 'rgba(28,28,28,0.25)', fontSize: 11 }}> / 6</span></div>
+          <div style={{ fontFamily: mono, fontSize: 4.5, letterSpacing: '1px', color: '#9A927E', marginTop: 2 }}>FOODS RULED</div>
         </div>
       </div>
       {(() => {
-        const SQ = (bad, i) => <span key={i} style={{ width: 5.5, height: 5.5, borderRadius: 1.5, background: bad ? '#D64545' : '#4C7A4A', flexShrink: 0, ...(bad ? { width: 7, height: 7 } : {}) }} />
-        const CI = (bad, i) => <span key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: bad ? '#D64545' : '#9DBD9C', flexShrink: 0, ...(bad ? { width: 6, height: 6 } : {}) }} />
-        const SP = (i) => <span key={i} style={{ width: 2.5, height: 2.5, borderRadius: '50%', background: 'rgba(0,0,0,0.12)', margin: '0 1.25px', flexShrink: 0 }} />
-        const TD = (i) => <span key={i} style={{ width: 6.5, height: 6.5, borderRadius: 1.5, background: '#2C9D8A', boxShadow: '0 0 5px rgba(44,157,138,0.5)', flexShrink: 0, animation: 'mkPulse 1.6s infinite' }} />
-        const strip = (marks) => <div style={{ display: 'flex', gap: 2.5, alignItems: 'center', marginTop: 8 }}>{marks}</div>
-        const card = (name, word, color, bg, bd, marks, stamp, ghost, live) => (
-          <div key={name} style={{ borderRadius: 11, padding: '10px 10px 9px', background: bg, border: `1px ${ghost ? 'dashed' : 'solid'} ${bd}`, position: 'relative', minHeight: 68, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            {stamp && <div style={{ position: 'absolute', top: 7, right: 8, fontFamily: mono, fontSize: 4.2, letterSpacing: '0.8px', color: '#9A927E' }}>{stamp}</div>}
+        const card = (name, word, sub, color, bg, bd, ghost, live) => (
+          <div key={name} style={{ borderRadius: 12, padding: '12px 12px 11px', background: bg, border: `1px ${ghost ? 'dashed' : 'solid'} ${bd}`, minHeight: 74, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontFamily: mono, fontSize: 5, letterSpacing: '1.2px', color: ghost ? 'rgba(122,122,114,0.5)' : '#7A7A72' }}>{name}</div>
-              <div style={{ fontFamily: serif, fontSize: ghost ? 12 : 17, color, lineHeight: 1, marginTop: 4, fontVariationSettings: "'SOFT' 60, 'WONK' 1", animation: live ? 'mkPulse 2s infinite' : 'none' }}>{word}</div>
+              <div style={{ fontFamily: mono, fontSize: 5.5, letterSpacing: '1.3px', color: ghost ? 'rgba(122,122,114,0.5)' : '#7A7A72' }}>{name}</div>
+              <div style={{ fontFamily: serif, fontSize: ghost ? 13 : 19, color, lineHeight: 1, marginTop: 5, fontVariationSettings: "'SOFT' 60, 'WONK' 1", animation: live ? 'mkPulse 2s infinite' : 'none' }}>{word}</div>
             </div>
-            {strip(marks)}
+            {sub && <div style={{ fontSize: 7.5, color: ghost ? 'rgba(122,122,114,0.45)' : '#7A7A72', lineHeight: 1.45, marginTop: 8 }}>{sub}</div>}
           </div>
         )
         return (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
-            {card('DAIRY', 'On trial.', '#2C9D8A', '#E7F3F0', 'rgba(44,157,138,0.22)', [SQ(false, 0), TD(1), SP(2), SP(3), SP(4), SP(5), SP(6), SP(7), SP(8), SP(9)], 'DAY 2 OF 14', false, true)}
-            {card('WHEAT', 'Safe.', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.14)', [SQ(false, 0), SQ(false, 1), SQ(false, 2), CI(false, 3), CI(false, 4), CI(false, 5), CI(false, 6), CI(false, 7), CI(false, 8), CI(false, 9)], 'DAY 71')}
-            {card('OATS', 'Safe.', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.14)', [SQ(false, 0), SQ(false, 1), SQ(false, 2), CI(false, 3), CI(false, 4), CI(false, 5), CI(false, 6), CI(false, 7), CI(false, 8), CI(false, 9)], 'DAY 99')}
-            {card('COFFEE', 'Limit.', '#C07A28', '#FBF3E4', 'rgba(192,122,40,0.16)', [SQ(false, 0), SQ(false, 1), SQ(true, 2), CI(false, 3), CI(false, 4), CI(false, 5), CI(false, 6), CI(false, 7), CI(false, 8), CI(false, 9)], 'DAY 113')}
-            {card('GLUTEN', 'Avoid.', '#C0392B', '#F9EAE8', 'rgba(192,57,43,0.14)', [SQ(true, 0), SQ(false, 1), SQ(true, 2), CI(true, 3), CI(false, 4), CI(false, 5), CI(false, 6), CI(false, 7), CI(false, 8), CI(false, 9)], 'DAY 85')}
-            {card('DAIRY KEFIR', 'Avoid.', '#C0392B', '#F9EAE8', 'rgba(192,57,43,0.14)', [SQ(true, 0), SQ(true, 1), SP(2), CI(true, 3), CI(false, 4), CI(false, 5), CI(false, 6), CI(false, 7), CI(false, 8), CI(false, 9)], 'DAY 155')}
-            {card('SOY', 'Next.', 'rgba(28,28,28,0.2)', 'transparent', 'rgba(0,0,0,0.13)', [SP(0), SP(1), SP(2), SP(3), SP(4), SP(5), SP(6), SP(7), SP(8), SP(9)], null, true)}
-            {card('ALMOND', 'Awaiting.', 'rgba(28,28,28,0.2)', 'transparent', 'rgba(0,0,0,0.13)', [SP(0), SP(1), SP(2), SP(3), SP(4), SP(5), SP(6), SP(7), SP(8), SP(9)], null, true)}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {card('DAIRY', 'On trial.', 'Day 2 of a 14 day test', '#2C9D8A', '#E7F3F0', 'rgba(44,157,138,0.22)', false, true)}
+            {card('WHEAT', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.14)')}
+            {card('OATS', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.14)')}
+            {card('COFFEE', 'Limit.', 'Mild reaction at full servings', '#C07A28', '#FBF3E4', 'rgba(192,122,40,0.16)')}
+            {card('GLUTEN', 'Avoid.', 'Reacted on 2 of 3 test days', '#C0392B', '#F9EAE8', 'rgba(192,57,43,0.14)')}
+            {card('SOY', 'Up next.', 'Tested after dairy', 'rgba(28,28,28,0.25)', 'transparent', 'rgba(0,0,0,0.13)', true)}
           </div>
         )
       })()}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 10, padding: '0 2px', flexWrap: 'wrap' }}>
-        {[['sq', 'rgba(34,48,31,0.35)', 'ATE IT'], ['ci', 'rgba(34,48,31,0.35)', 'WASHOUT'], ['sq', '#4C7A4A', 'CLEAN'], ['sq', '#D64545', 'SYMPTOMS']].map(([shape, bgc, label]) => (
-          <span key={label} style={{ display: 'flex', gap: 3, alignItems: 'center', fontFamily: mono, fontSize: 4.5, letterSpacing: '0.7px', color: '#9A927E' }}>
-            <span style={{ width: 5.5, height: 5.5, borderRadius: shape === 'ci' ? '50%' : 1.5, background: bgc, display: 'inline-block' }} />{label}
-          </span>
-        ))}
-        <span style={{ marginLeft: 'auto', fontFamily: mono, fontSize: 4.2, letterSpacing: '0.7px', color: '#B5AF9F' }}>EVERY CARD EARNED</span>
-      </div>
+      <div style={{ marginTop: 12, padding: '0 2px', fontSize: 8, color: '#9A927E', lineHeight: 1.5, textAlign: 'center' }}>Every verdict comes from testing the food on your own body. Nothing is assumed.</div>
     </>
   )
   return (

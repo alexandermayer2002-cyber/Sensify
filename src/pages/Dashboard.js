@@ -161,6 +161,9 @@ const css = `
   .snfy-dot.empty { background: #F4F2EC; border: 1px solid rgba(0,0,0,0.05); }
   .snfy-dot.future { background: #FAF8F4; border: 1px dashed rgba(0,0,0,0.1); }
   .snfy-dot.missed { background: #DDDAD1; border: 1px solid #C9C6BC; }
+  .snfy-dot.away { background: transparent; border: 1.5px solid #8BAE8A; }
+  .snfy-dot.away .snfy-dot-day { color: #3D5C3C; }
+  .snfy-dot.away .snfy-dot-mark { color: #8BAE8A; }
   .snfy-dot.logged { background: #C9D8C4; }
   .snfy-dot.logged .snfy-dot-day { color: #3D5C3C; }
   .snfy-dot.logged .snfy-dot-mark { color: #3D5C3C; }
@@ -776,6 +779,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [awayGap, setAwayGap] = useState(null)
   const [recordStats, setRecordStats] = useState({ days: 0, events: 0 })  // { days, hard } when the away-gate should show
   const [complianceData, setComplianceData] = useState([])
+  const [awayDates, setAwayDates] = useState(new Set())
   const [weekFactors, setWeekFactors] = useState([])
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
   const [pendingAudit, setPendingAudit] = useState(false)
@@ -877,6 +881,23 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       }
 
       const { data: comp } = await supabase.from('daily_compliance').select('*').eq('user_id', session.user.id).gte('date', localDateOffset(-10)).order('date', { ascending: false })
+      // Away-on-plan days (user's word, counted): build the date set from away_gap_attested audits
+      try {
+        const { data: aways } = await supabase.from('compliance_audit').select('triggered_at, admin_note').eq('user_id', session.user.id).eq('trigger_type', 'away_gap_attested')
+        const dates = new Set()
+        for (const a of (aways || [])) {
+          const m = /^(\d+) silent days/.exec(a.admin_note || '')
+          const n = m ? parseInt(m[1], 10) : 0
+          if (n > 0 && a.triggered_at) {
+            const end = new Date(String(a.triggered_at).split('T')[0] + 'T12:00:00')
+            for (let i = 1; i <= n; i++) {
+              const d = new Date(end); d.setDate(end.getDate() - i)
+              dates.add(localDateString(d))
+            }
+          }
+        }
+        setAwayDates(dates)
+      } catch (e) {}
 
       // Last-10-days factor logs for the "your week" strip (descriptive mirror only)
       try {
@@ -1131,7 +1152,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     if (!logged.has(localDateString(start))) start.setDate(start.getDate() - 1)  // today pending ≠ broken
     for (let i = 0; i < 365; i++) {
       const d = new Date(start); d.setDate(start.getDate() - i)
-      if (logged.has(localDateString(d))) count++
+      const ds = localDateString(d)
+      if (logged.has(ds)) count++
+      else if (awayDates.has(ds)) continue  // away, on plan: pauses the streak, never resets it
       else break
     }
     return count
@@ -1829,6 +1852,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     else if (isFuture) { cls = 'future'; mark = '' }
                     else if (profile?.protocol_start_date && dateStr < String(profile.protocol_start_date).split('T')[0]) { cls = 'future'; mark = '' }  // pre-protocol days: blank, never 'missed' (finding #8)
                     else if (isToday) { cls = 'empty'; mark = '\u00b7' }                   // today, pending - not missed yet
+                    else if (awayDates.has(dateStr)) { cls = 'away'; mark = '\u25cb' }     // away, on plan (user's word): pauses, never resets
                     else { cls = 'missed'; mark = '\u2013' }  // forgot — the only streak-breaker
                     return { day, cls: cls + (isToday ? ' today' : ''), mark, dateStr, isFuture }
                   })
@@ -1871,9 +1895,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             { bg: '#3D5C3C', fg: 'white', m: '\u2713', title: 'On plan', text: 'You checked in and stayed on your plan. A clean day. Builds your streak.' },
                             { bg: '#C95B5B', fg: 'white', m: '\u2717', title: 'Slipped', text: 'You checked in and honestly logged eating something off-plan. Your streak keeps going. An honest slip is real data, and it never counts against you.' },
                             { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', title: 'No check-in', text: 'The day went unlogged, so there is no data at all. This is the one that resets your streak. A slip we can work with. A blank we cannot.' },
+                            { bg: 'transparent', bd: '1.5px solid #8BAE8A', fg: '#3D5C3C', m: '\u25cb', title: 'Away, on plan', text: 'You were away and told us you stayed on your plan. Your word counts: these days pause your streak instead of resetting it. They are not logged data, so the analysis leaves them out.' },
                           ].map((l, i) => (
                             <div key={i} style={{ display: 'flex', gap: '10px', background: '#FAF9F5', borderRadius: '10px', padding: '10px 12px' }}>
-                              <span style={{ width: '18px', height: '18px', borderRadius: '5px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0, marginTop: '1px' }}>{l.m}</span>
+                              <span style={{ width: '18px', height: '18px', borderRadius: '5px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0, marginTop: '1px' , border: l.bd || 'none' }}>{l.m}</span>
                               <div>
                                 <div style={{ fontSize: '12px', fontWeight: 600, color: '#1C1C1C', marginBottom: '2px' }}>{l.title}</div>
                                 <div style={{ fontSize: '11.5px', color: '#7A7A72', lineHeight: 1.55 }}>{l.text}</div>
@@ -2034,7 +2059,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {/* THE LEAF CONSTELLATION — 28 nights, one star per logged day, randomized per user; the leaf reveals at 28 */}
             {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 42) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
               const preP = !profile?.protocol_start_date
-              const starCount = preP ? 0 : Math.max(0, Math.min(recordStats.days, currentDay, 28))
+              const pStartIso = preP ? null : String(profile.protocol_start_date).split('T')[0]
+              const todayIso = localDateString(new Date())
+              const awayN = preP ? 0 : [...awayDates].filter(d => d >= pStartIso && d <= todayIso).length
+              // Away-on-plan nights hang stars too (Alex's ruling): your word counts in the sky.
+              // They render as hollow rings — same ○ language as the week calendar — so the
+              // record stays legible: filled = logged, ring = on your word.
+              const starCount = preP ? 0 : Math.max(0, Math.min(recordStats.days + awayN, currentDay, 28))
+              const ringCount = Math.min(awayN, starCount)
               const complete = starCount >= 28
               // 28 fixed anchors of the leaf (x, y, r)
               const A = [[140,186,2],[140,177,1.5],[140,168,2.2],[106,146,1.7],[174,146,1.7],[86,116,1.7],[194,116,1.7],[81,86,1.7],[199,86,1.7],[92,52,1.7],[188,52,1.7],[112,26,1.7],[168,26,1.7],[126,14,1.5],[154,14,1.5],[140,8,2.2],[140,140,1.6],[140,108,1.6],[140,76,1.6],[100,106,1.4],[180,106,1.4],[106,74,1.4],[174,74,1.4],[118,42,1.4],[162,42,1.4],[122,122,1.3],[158,122,1.3],[140,58,1.3]]
@@ -2059,7 +2091,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#2C9D8A' }}>took shape.</span></> : starCount < 8 ? <>Every check-in <span style={{ color: '#3D5C3C' }}>hangs a star.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
                   </div>
                   <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginBottom: 10 }}>
-                    {preP ? <>Every day you log becomes a star. At 28 nights they form a constellation, and pattern detection unlocks. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <span style={{ color: '#2C9D8A', fontWeight: 600 }}>Pattern detection is live</span>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <span style={{ color: '#2C9D8A', fontWeight: 600 }}>pattern detection unlocks</span>: sleep, stress, and symptoms, cross-referenced for connections.</>}
+                    {preP ? <>Every day you log becomes a star. At 28 nights they form a constellation, and pattern detection unlocks. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <span style={{ color: '#2C9D8A', fontWeight: 600 }}>Pattern detection is live</span>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{ringCount > 0 ? <> ({ringCount} on your word while away)</> : ''}{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <span style={{ color: '#2C9D8A', fontWeight: 600 }}>pattern detection unlocks</span>: sleep, stress, and symptoms, cross-referenced for connections.</>}
                   </div>
                   <svg width="100%" viewBox="0 0 280 195" style={{ display: 'block', borderRadius: 14 }}>
                     <defs>
@@ -2079,8 +2111,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           <path d="M140 108 C156 100 168 88 174 74" strokeWidth="0.65" opacity="0.42" />
                           <path d="M140 76 C152 66 160 54 162 42" strokeWidth="0.65" opacity="0.42" />
                         </g>
-                        <g filter="url(#lcGlow)" fill="#2C9D8A">
-                          {P.map(([x, y, r], i) => <circle key={i} cx={x} cy={y} r={r} />)}
+                        <g filter="url(#lcGlow)">
+                          {(() => {
+                            const ringSet = new Set(order.slice(Math.max(0, 28 - ringCount), 28))
+                            return P.map(([x, y, r], i) => ringSet.has(i)
+                              ? <circle key={i} cx={x} cy={y} r={r} fill="none" stroke="#2C9D8A" strokeWidth="1.1" />
+                              : <circle key={i} cx={x} cy={y} r={r} fill="#2C9D8A" />)
+                          })()}
                         </g>
                       </g>
                     ) : (
@@ -2092,16 +2129,18 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             ))}
                           </g>
                         )}
-                        <g filter="url(#lcGlow)" fill="#FAF8F4">
-                          {P.map(([x, y, r], i) => present.has(i) ? <circle key={i} cx={x} cy={y} r={r} style={{ animation: `lcTw 3.4s ease-in-out ${(i % 3) * 1.1}s infinite` }} /> : null)}
+                        <g filter="url(#lcGlow)">
+                          {(() => {
+                            const ringSet = new Set(order.slice(Math.max(0, starCount - ringCount), starCount))
+                            return P.map(([x, y, r], i) => present.has(i)
+                              ? (ringSet.has(i)
+                                ? <circle key={i} cx={x} cy={y} r={r} fill="none" stroke="#FAF8F4" strokeWidth="1" opacity="0.85" style={{ animation: `lcTw 3.4s ease-in-out ${(i % 3) * 1.1}s infinite` }} />
+                                : <circle key={i} cx={x} cy={y} r={r} fill="#FAF8F4" style={{ animation: `lcTw 3.4s ease-in-out ${(i % 3) * 1.1}s infinite` }} />)
+                              : null)
+                          })()}
                         </g>
                       </>
                     )}
-                    <g filter="url(#lcGlow)">
-                      <circle cx="34" cy="40" r="1" fill="#FAF8F4" opacity="0.45" style={{ animation: 'lcTw 3.4s ease-in-out 0.6s infinite' }} />
-                      <circle cx="250" cy="150" r="1.1" fill="#FAF8F4" opacity="0.5" style={{ animation: 'lcTw 3.4s ease-in-out 1.7s infinite' }} />
-                      <circle cx="246" cy="30" r="1" fill="#FAF8F4" opacity="0.4" style={{ animation: 'lcTw 3.4s ease-in-out 2.5s infinite' }} />
-                    </g>
                   </svg>
                   <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.3px', color: complete ? 'rgba(44,157,138,0.75)' : '#9A927E', marginTop: 9, textTransform: 'uppercase' }}>{preP ? 'OPENS WITH DAY 1' : complete ? 'NIGHT 28 · CONSTELLATION COMPLETE' : `NIGHT ${starCount} OF 28 · ${28 - starCount} STAR${28 - starCount === 1 ? '' : 'S'} TO GO`}</div>
                 </div>

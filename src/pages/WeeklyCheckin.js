@@ -515,11 +515,6 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
                 <button key={n} style={answers[scale.id] === n ? s.sbtOn : s.sbt} onClick={() => setAnswer(scale.id, n)}>{n}</button>
               ))}
             </div>
-            {scale.baseline && (
-              <div style={{ position: 'relative', height: '14px', marginTop: '4px' }}>
-                <div style={{ position: 'absolute', left: `${((scale.baseline - 0.5) / 10) * 100}%`, transform: 'translateX(-50%)', fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#A8A69E', whiteSpace: 'nowrap' }}>↑ your baseline</div>
-              </div>
-            )}
           </div>
         ))}
 
