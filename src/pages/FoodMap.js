@@ -167,6 +167,65 @@ export default function FoodMap({ session, profile, labResult }) {
     )
   }
 
+  // THE COVER — elimination era: the finished example wall + the countdown that unlocks theirs.
+  if (labResult && preReintro && loaded) {
+    const daysLeft = Math.max(1, 57 - currentDay)
+    const pct = Math.max(2, Math.min(100, (currentDay / 56) * 100))
+    const exCard = (nm, wd, sub, color, bg, bd) => (
+      <div key={nm} style={{ borderRadius: 12, padding: '11px 11px 10px', minHeight: 64, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: bg, border: `1px solid ${bd}` }}>
+        <div>
+          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.3px', color: '#7A7A72' }}>{nm}</div>
+          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 19, lineHeight: 1, marginTop: 4, color, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{wd}</div>
+        </div>
+        <div style={{ fontSize: 8.5, color: '#7A7A72', lineHeight: 1.4, marginTop: 7 }}>{sub}</div>
+      </div>
+    )
+    return (
+      <div style={s.page}>
+        <div style={{ ...s.doc, padding: '24px 24px 20px' }}>
+          <div style={s.kicker}>SENSIFY · THE VERDICTS</div>
+          <div style={{ ...s.title, fontSize: 25 }}>This is what you're <span style={{ color: '#3D5C3C' }}>working toward.</span></div>
+          <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginTop: 8 }}>A finished wall, shown as an example: every food ruled by a real 14 day trial on a real body. Yours gets earned the same way, one trial at a time.</div>
+
+          <div style={{ marginTop: 18 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <span style={{ flex: 1, height: 1, background: 'rgba(0,0,0,0.08)' }} />
+              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.6px', color: '#9A927E' }}>AN EXAMPLE WALL · NOT YOURS YET</span>
+              <span style={{ flex: 1, height: 1, background: 'rgba(0,0,0,0.08)' }} />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, opacity: 0.82 }}>
+              {exCard('WHEAT', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.13)')}
+              {exCard('OATS', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.13)')}
+              {exCard('COFFEE', 'Limit.', 'Mild reaction at full servings', '#C07A28', '#FBF3E4', 'rgba(192,122,40,0.15)')}
+              {exCard('GLUTEN', 'Avoid.', 'Reacted on 2 of 3 test days', '#C0392B', '#F9EAE8', 'rgba(192,57,43,0.13)')}
+              {exCard('DAIRY', 'Avoid.', 'Reacted, then echoed after', '#C0392B', '#F9EAE8', 'rgba(192,57,43,0.13)')}
+              {exCard('EGGS', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.13)')}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 11 }}>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 6, letterSpacing: '1.2px', color: '#9A927E' }}>EXAMPLE · YOURS IS EARNED FROM YOUR OWN TRIALS</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'DM Mono, monospace', fontSize: 6.5, color: '#FAF8F4' }}>6/6</div>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 6, letterSpacing: '1px', color: '#3D5C3C', lineHeight: 1.6 }}>SENSIFY<br />VERIFIED</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 16, background: '#22301F', borderRadius: 12, padding: '13px 15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+            <div style={{ fontSize: 11.5, color: 'rgba(250,248,244,0.85)', lineHeight: 1.5 }}><b style={{ color: '#FAF8F4', fontWeight: 600 }}>Yours unlocks in</b><br />Day {currentDay} of 56 · every clean day counts</div>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, color: '#8BAE8A', whiteSpace: 'nowrap', lineHeight: 1 }}>{daysLeft} day{daysLeft === 1 ? '' : 's'}</div>
+          </div>
+          <div style={{ margin: '14px 0 5px', position: 'relative', height: 4, borderRadius: 3, background: 'rgba(61,92,60,0.1)' }}>
+            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${pct}%`, borderRadius: 3, background: 'linear-gradient(90deg, #3D5C3C, #8BAE8A)' }} />
+            <div style={{ position: 'absolute', left: `${pct}%`, top: -3, width: 10, height: 10, borderRadius: '50%', background: '#3D5C3C', border: '2px solid #FFF', boxShadow: '0 1px 4px rgba(0,0,0,0.2)', transform: 'translateX(-50%)' }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'DM Mono, monospace', fontSize: 6, letterSpacing: '1px', color: '#9A927E', marginTop: 7 }}>
+            <span>DAY 1</span><span>TRIALS BEGIN · DAY 57</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={s.page}>
       <style>{`@keyframes fmPl { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }`}</style>
