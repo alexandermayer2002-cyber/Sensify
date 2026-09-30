@@ -189,7 +189,7 @@ const css = `
   .sci-answer-p { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.72); max-width: 620px; }
   .sci-paths { margin-top: 40px; }
   .sci-paths-tag { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #8BAE8A; margin-bottom: 10px; }
-  .sci-paths-h { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; color: #1C1C1C; margin-bottom: 22px; max-width: 560px; }
+  .sci-paths-h { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 400; color: #1C1C1C; margin-bottom: 22px; max-width: 560px; }
   .sci-paths-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .sci-path { background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 14px; padding: 20px; }
   .sci-path-num { width: 28px; height: 28px; border-radius: 50%; background: #EDF3ED; color: #3D5C3C; font-family: 'DM Mono', monospace; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
@@ -292,15 +292,16 @@ const FAQ_GROUPS = [
     group: 'Getting started',
     items: [
       { q: 'Do I need to already have a lab test?', a: 'No. Your test kit is included in the program and ships to your door after you purchase. There is no separate lab bill and nothing to order yourself. We walk you through completing it at home and sending it back.' },
-      { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your completed verdicts. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
-      { q: 'How much time does it take each week?', a: 'The daily check-in takes a second. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
+      { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, pattern detection that learns your baseline, personalized insights, and your completed verdicts. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
+      { q: 'How much time does it take each week?', a: 'The daily check-in takes about 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
     ],
   },
   {
     group: 'The program',
     items: [
       { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
-      { q: 'How do the daily check-ins work?', a: 'Each day you confirm whether you stayed on plan. Staying on plan builds your streak. A slip-up opens a quick log where you note what happened, and that data feeds your weekly insights. It takes a second a day.' },
+      { q: 'How do the daily check-ins work?', a: 'Each day you log a quick snapshot: sleep, stress, hydration, whether you stayed on plan, and anything your body did that day. About 30 seconds. Every entry feeds a system that learns your patterns, cross-references your symptoms against your sleep and stress, and weighs all of it when your verdicts are decided.' },
+      { q: 'Does Sensify actually analyze my data?', a: 'Yes, and it shows its work. Sensify learns your personal baseline during elimination, spots when a bad week lines up with bad sleep or high stress rather than food, and brings that context into every verdict, so a food never gets blamed for what your sleep did. No standalone lab test can do any of that.' },
       { q: "What if I don't see improvement during elimination?", a: 'Your symptom trends are monitored every week and flagged when improvement is not occurring. We look at compliance, hidden ingredients, and stress, and our team reviews the situation personally before any plan changes are suggested.' },
       { q: 'Do I have to finish the whole protocol?', a: 'The full value comes from completing the protocol, since the reintroduction phase is where your verdicts are earned. You can stop anytime, but your verdicts are only complete once each food has been tested. We designed the program to keep each step light so finishing feels doable.' },
       { q: 'What happens when I finish?', a: 'You receive your completed verdicts, yours to keep. You can also continue with Maintain, an optional monthly plan that keeps your verdicts working for you every day, with Ask Sensify on hand to check any food, menu, or meal against your results whenever you need it. Maintain pricing is on the Pricing page.' },
@@ -312,7 +313,6 @@ const FAQ_GROUPS = [
       { q: 'Is this a medical diagnosis?', a: 'No. Sensify is a wellness and educational program. It does not diagnose, treat, or cure any medical condition. If you have serious symptoms, always consult a licensed healthcare provider.' },
       { q: 'How accurate are IgG food sensitivity tests?', a: 'IgG tests measure immune reactivity, not confirmed intolerance. We treat your results as a starting hypothesis. The real evidence comes from the elimination and reintroduction protocol, which is why the protocol is the product, not the test.' },
       { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people go through the protocol and find their body tolerates everything well. That means food sensitivity is unlikely to be driving what you feel, which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. We would rather give you the honest truth than invent a problem that is not there. A clean result is still an answer you can trust and act on.' },
-      { q: 'Is the protocol reviewed by a professional?', a: 'The protocol is built on the clinical elimination diet standard, the same structured method dietitians and allergists have used for decades. Formal review by a physician advisor is in progress. Any recommendation to change your protocol is reviewed by our team before it reaches you.' },
     ],
   },
 ]
@@ -660,7 +660,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '14px', marginTop: '28px' }}>
             {[
               { n: '01', t: 'Test', d: 'Complete your intake and at-home lab test. Your results become the starting hypothesis: the suspects, not the verdict.' },
-              { n: '02', t: 'Eliminate', d: 'Eight weeks without your flagged foods, with 30-second daily check-ins. Your symptoms settle into a clean baseline.' },
+              { n: '02', t: 'Eliminate', d: 'Eight weeks without your target foods, with 30-second daily check-ins. Your symptoms settle into a clean baseline.' },
               { n: '03', t: 'Reintroduce', d: 'Each food returns one at a time in a controlled cycle while we track your response. Your body gives the real answer.' },
               { n: '04', t: 'Know', d: 'Every food lands where it belongs: Safe, Limit, or Avoid. Every verdict is earned and yours to keep.' },
             ].map((s, i) => (
@@ -732,22 +732,19 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="fmcard-orb2" />
               <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Sensify · Verified result</div>
               <div className="fmcard-title">Sarah's <span style={{ color: '#8BAE8A' }}>verdicts.</span></div>
-              <div className="fmcard-cat" style={{ color: '#A8C5A7' }}><span className="fmcard-catdot" style={{ background: '#8BAE8A' }}></span>Safe. Eat freely</div>
-              <div className="fmcard-row">
-                {['Chicken', 'Rice', 'Salmon', 'Oats', 'Almonds'].map((f, i) => (
-                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(44,157,138,0.14)', color: '#5FD4BC', borderColor: 'rgba(44,157,138,0.4)', boxShadow: '0 0 12px rgba(44,157,138,0.18)', animationDelay: `${0.3 + i * 0.09}s` }}>{f}</span>
-                ))}
-              </div>
-              <div className="fmcard-cat" style={{ color: '#E0A977' }}><span className="fmcard-catdot" style={{ background: '#E8941F' }}></span>Limit. Small amounts</div>
-              <div className="fmcard-row">
-                {['Wheat', 'Corn', 'Tomato'].map((f, i) => (
-                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(232,148,31,0.14)', color: '#F2C078', borderColor: 'rgba(232,148,31,0.4)', boxShadow: '0 0 12px rgba(232,148,31,0.16)', animationDelay: `${0.8 + i * 0.09}s` }}>{f}</span>
-                ))}
-              </div>
-              <div className="fmcard-cat" style={{ color: '#E89090' }}><span className="fmcard-catdot" style={{ background: '#D64545' }}></span>Avoid. Clear triggers</div>
-              <div className="fmcard-row">
-                {['Dairy', 'Eggs', 'Gluten'].map((f, i) => (
-                  <span key={f} className="fmcard-chip" style={{ background: 'rgba(214,69,69,0.13)', color: '#F2A0A0', borderColor: 'rgba(214,69,69,0.4)', boxShadow: '0 0 12px rgba(214,69,69,0.16)', animationDelay: `${1.15 + i * 0.09}s` }}>{f}</span>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 7, marginBottom: 16, position: 'relative' }}>
+                {[
+                  ['WHEAT', 'Safe.', '#5FD4BC', 'rgba(44,157,138,0.12)', 'rgba(44,157,138,0.3)'],
+                  ['OATS', 'Safe.', '#5FD4BC', 'rgba(44,157,138,0.12)', 'rgba(44,157,138,0.3)'],
+                  ['COFFEE', 'Limit.', '#F2C078', 'rgba(232,148,31,0.12)', 'rgba(232,148,31,0.35)'],
+                  ['SOY', 'Limit.', '#F2C078', 'rgba(232,148,31,0.12)', 'rgba(232,148,31,0.35)'],
+                  ['GLUTEN', 'Avoid.', '#F2A0A0', 'rgba(214,69,69,0.12)', 'rgba(214,69,69,0.35)'],
+                  ['DAIRY', 'Avoid.', '#F2A0A0', 'rgba(214,69,69,0.12)', 'rgba(214,69,69,0.35)'],
+                ].map(([nm, wd, fg, bg, bd]) => (
+                  <div key={nm} style={{ background: bg, border: `1px solid ${bd}`, borderRadius: 10, padding: '9px 10px' }}>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 6, letterSpacing: '1.2px', color: 'rgba(250,248,244,0.5)' }}>{nm}</div>
+                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: 15, color: fg, marginTop: 3, lineHeight: 1, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{wd}</div>
+                  </div>
                 ))}
               </div>
               <div className="fmcard-foot">
@@ -763,9 +760,9 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="sh">The questions everyone asks.</div>
           <div className="faq-list" style={{ maxWidth: '660px', marginTop: '26px' }}>
             {[
-              { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, personalized insights, and your completed verdicts. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
+              { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, pattern detection that learns your baseline, personalized insights, and your completed verdicts. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
               { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
-              { q: 'How much time does it take each week?', a: 'The daily check-in takes 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
+              { q: 'How much time does it take each week?', a: 'The daily check-in takes about 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
               { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people finish the protocol and find their body tolerates everything well, which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. A clean result is still an answer you can trust.' },
               { q: 'Do I need to already have a lab test?', a: 'No. When you purchase the program we guide you through ordering your food sensitivity test during onboarding. We tell you exactly which test to get and how to complete it from home.' },
             ].map((f, i) => {
@@ -822,7 +819,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="spine-step">
               <div className="spine-dot"></div>
               <div className="spine-tag">Step 2</div>
-              <div className="spine-title">Order your lab test, we guide you to the right one</div>
+              <div className="spine-title">Your lab test ships to your door</div>
               <div className="spine-desc">Your test kit is part of the $399, so there is no separate lab bill. It ships to your door from our certified lab partner, you complete it at home, and send it back. Results arrive in about a week. No clinic visits.</div>
             </div>
             <div className="spine-step">
@@ -846,14 +843,20 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="spine-step">
               <div className="spine-dot"></div>
               <div className="spine-tag">Daily</div>
-              <div className="spine-title">Daily compliance check-in</div>
-              <div className="spine-desc">A quick daily check to confirm you stayed on plan. One second, every day. Staying on plan builds your streak. A slip-up triggers a short log where you tell us what happened, and that data feeds your weekly insights.</div>
+              <div className="spine-title">Daily check-in, about 30 seconds</div>
+              <div className="spine-desc">Each day you log sleep, stress, hydration, whether you stayed on plan, and anything your body did. Staying on plan builds your streak, and an honest slip never counts against you. Every entry feeds a system that is learning your patterns.</div>
             </div>
             <div className="spine-step">
               <div className="spine-dot"></div>
               <div className="spine-tag">Weekly</div>
               <div className="spine-title">Weekly symptom check-in</div>
               <div className="spine-desc">Every 7 days a check-in appears on your dashboard. Takes about 2 minutes. Rate your symptoms on a 1 to 10 scale, with questions personalized to your intake. Submit and a personalized insight is generated from your symptom trend, compliance, and baseline, and it sharpens every week.</div>
+            </div>
+            <div className="spine-step">
+              <div className="spine-dot"></div>
+              <div className="spine-tag">Always on</div>
+              <div className="spine-title">Sensify learns you</div>
+              <div className="spine-desc">Behind the check-ins, a pattern engine is building your personal baseline: how often symptoms show up on clean weeks, how your sleep and stress move with how you feel. By week 4 it starts cross-referencing, and everything it learns is weighed when your verdicts are decided, so a food never gets blamed for what your sleep did.</div>
             </div>
             <div className="spine-step">
               <div className="spine-dot"></div>
@@ -875,9 +878,9 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="spine">
             <div className="spine-step">
               <div className="spine-dot"></div>
-              <div className="spine-tag">Staggered</div>
-              <div className="spine-title">Foods unlock by tier</div>
-              <div className="spine-desc">Low sensitivity foods unlock first, Moderate at month 4, High at month 6. This staggered approach lets you build a clear symptom baseline before testing your most reactive foods.</div>
+              <div className="spine-tag">Ordered</div>
+              <div className="spine-title">Your testing order is decided, not random</div>
+              <div className="spine-desc">The foods you eat most often are tested first, because they matter most to your daily life. Among equals, your strongest lab suspects go ahead. You can always override the order and pick any food yourself.</div>
             </div>
             <div className="spine-step">
               <div className="spine-dot"></div>
@@ -957,7 +960,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               { title: 'Elimination & reintroduction', desc: 'The standard clinical approach for identifying food triggers, used by gastroenterologists and dietitians to separate real reactions from suspicion.', badge: null },
               { title: '14-day reintroduction cycles', desc: 'Each food is reintroduced for 3 days then removed for 11. This exposure-washout pattern isolates symptom responses with enough signal to draw reliable conclusions.', badge: null },
               { title: 'Daily compliance tracking', desc: 'Daily check-ins give seven data points per week instead of one. That resolution makes it possible to spot patterns, like symptoms spiking the day after a slip-up, that weekly surveys miss entirely.', badge: null },
-              { title: 'Built on the clinical standard', desc: 'Our elimination timelines and reintroduction structure follow the clinical elimination diet method. Formal physician review of the full protocol is in progress.', badge: 'Review pending' },
+              { title: 'Built on the clinical standard', desc: 'Our elimination timelines and reintroduction structure follow the clinical elimination diet method: the same structured approach dietitians have used for decades.', badge: 'Established method' },
             ].map((item, i) => (
               <div key={i} className="sci-card">
                 <div className="sci-icon">
@@ -1104,90 +1107,41 @@ export default function Marketing({ onGetStarted, onSignIn }) {
     <div>
       <style>{css}</style>
       <Nav />
-      <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
+      <div className="mk-hero" style={{ padding: '64px 64px 48px' }}>
         <div className="mk-hero-inner">
           <div className="mk-tag"><div className="mk-tag-dot"></div>Our story</div>
-          <div className="mk-h1" style={{ fontSize: '46px' }}>Why we built Sensify.</div>
-          <div className="mk-sub" style={{ marginBottom: 0 }}>The short version of a longer story about guessing, testing, and finally knowing.</div>
+          <div className="mk-h1" style={{ fontSize: '46px' }}>We spent years guessing.<br />Sensify exists so <span style={{ color: '#3D5C3C' }}>you don't have to.</span></div>
+          <div className="mk-sub" style={{ marginBottom: 0 }}>Years of feeling off, a drawer of half-read lab reports, and nobody who could say which food was actually the problem. This company started as a stubborn refusal to keep guessing.</div>
         </div>
       </div>
-
       <div className="mk-section alt">
-        <div className="mk-section-inner" style={{ maxWidth: '720px' }}>
-          {/* ===== FOUNDER STORY (Alex's real story, shaped) ===== */}
-          <div style={{ fontSize: '12px', color: '#7A7A72', marginBottom: '14px' }}>The beginning</div>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: '25px', fontWeight: 400, lineHeight: 1.35, color: '#1C1C1C', marginBottom: '24px' }}>
-            Sensify started with a stomach that wouldn't cooperate and a stack of tests that couldn't explain why.
-          </div>
-
-          {/* The journey line (option A) */}
-          <div style={{ marginBottom: '26px' }}>
+        <div className="mk-section-inner">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '36px' }}>
             {[
-              ['#C8C6BE', '#7A7A72', 400, 'Years of bloating and pain nobody could explain'],
-              ['#C8C6BE', '#7A7A72', 400, "Doctors and classic treatments that didn't work"],
-              ['#8BAE8A', '#4A4A45', 400, 'A sensitivity test, an elimination, and real relief'],
-              ['#3D5C3C', '#1C1C1C', 600, 'And no good way to do any of it. So I built one.'],
-            ].map(([dot, color, weight, text], i, arr) => (
-              <React.Fragment key={i}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: dot, flexShrink: 0 }} />
-                  <div style={{ fontSize: '14px', color, fontWeight: weight }}>{text}</div>
-                </div>
-                {i < arr.length - 1 && <div style={{ width: '1.5px', height: '14px', background: '#E0DED6', marginLeft: '4px' }} />}
-              </React.Fragment>
-            ))}
-          </div>
-
-          <div style={{ fontSize: '15.5px', color: '#4A4A45', lineHeight: 1.8, marginBottom: '18px' }}>
-            The test came back with a long list of foods my body supposedly couldn't handle. So I cut them all out. And for the first time in years, the bloating and the pain actually subsided.
-          </div>
-
-          {/* The turning point (option B anchor) */}
-          <div style={{ position: 'relative', background: '#22301F', borderRadius: '16px', padding: '24px 22px', margin: '24px 0', overflow: 'hidden', boxShadow: '0 14px 36px rgba(34,48,31,0.22)' }}>
-            <div style={{ position: 'absolute', top: -50, right: -50, width: 160, height: 160, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
-            <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 400, color: '#FAF8F4', lineHeight: 1.45 }}>
-              The relief was real. But I was left holding a list of forbidden foods with no idea which ones actually mattered.
-            </div>
-          </div>
-
-          <div style={{ fontSize: '15.5px', color: '#4A4A45', lineHeight: 1.8, marginBottom: '18px' }}>
-            Running the elimination on my own meant tracking symptoms in my head, guessing when to test a food back in, and never knowing if I was doing any of it right. The method worked. The experience of following it was broken.
-          </div>
-          <div style={{ fontSize: '15.5px', color: '#4A4A45', lineHeight: 1.8, marginBottom: '22px' }}>
-            That gap is Sensify. The test tells you where to look. Only your body can tell you what's true, one food at a time, tracked carefully enough to trust the answer. I built the platform I needed and couldn't find.
-          </div>
-
-          {/* The closing rule (option B anchor) */}
-          <div style={{ borderLeft: '3px solid #3D5C3C', padding: '2px 0 2px 16px' }}>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '16.5px', color: '#1C1C1C', lineHeight: 1.5 }}>
-              Nothing gets labeled safe or unsafe until your body has earned the answer. That rule comes from experience.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="mk-section">
-        <div className="mk-section-inner" style={{ maxWidth: '720px' }}>
-          <div style={{ fontSize: '12.5px', color: '#7A7A72', marginBottom: '18px' }}>What we believe</div>
-          <div style={{ display: 'grid', gap: '16px' }}>
-            {[
-              ['The lab finds suspects. Your body gives the verdict.', 'A flagged food is a question, not a conviction. Nothing gets labeled without being tested.'],
-              ['Honesty over hype.', 'We show you what the data says, including when it is inconclusive. No miracle claims, no guesswork dressed up as certainty.'],
-              ["The answer is earned, and it's yours.", "Every one of your verdicts comes from your own body's evidence, so you can shop, order, and eat without second-guessing what you already proved."],
-            ].map(([h, d], i) => (
-              <div key={i} style={{ borderTop: '1px solid rgba(0,0,0,0.08)', paddingTop: '16px' }}>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 300, color: '#1C1C1C', marginBottom: '6px' }}>{h}</div>
-                <div style={{ fontSize: '14.5px', color: '#7A7A72', lineHeight: 1.65 }}>{d}</div>
+              ['01 · THE GUESSING', 'Cutting foods at random', 'Dropping dairy one month, gluten the next. Feeling slightly better, never knowing why, always drifting back. No structure, no signal, no answer.'],
+              ['02 · THE TEST', 'A list, then silence', 'The lab flagged a page of foods and handed over nothing else. No protocol, no guidance, no way to know which flags were real. A list is not an answer.'],
+              ['03 · THE SYSTEM', 'Running it properly', 'A real elimination. Foods tested back one at a time, logged daily, judged on evidence. It worked, and it was brutal to run alone. That became the product.'],
+            ].map(([n, t, d]) => (
+              <div key={n} style={{ borderTop: '2.5px solid #3D5C3C', paddingTop: '18px' }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', letterSpacing: '1.6px', color: '#8BAE8A', marginBottom: '10px' }}>{n}</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '21px', color: '#1C1C1C', marginBottom: '10px', lineHeight: 1.2, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{t}</div>
+                <div style={{ fontSize: '13.5px', color: '#7A7A72', lineHeight: 1.75 }}>{d}</div>
               </div>
             ))}
           </div>
         </div>
       </div>
-
-      <div className="cta-section">
-        <h2>Stop guessing.<br />Start knowing.</h2>
-        <p>The platform I needed and couldn't find. Now it's here.</p>
-        <button className="btn-p" onClick={onGetStarted}>Start your program</button>
+      <div style={{ background: '#22301F', padding: '56px 64px', textAlign: 'center' }}>
+        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '29px', fontWeight: 400, color: '#FAF8F4', lineHeight: 1.35, maxWidth: '620px', margin: '0 auto', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>The test was easy to buy. The answer took a system. <span style={{ color: '#8BAE8A' }}>So we built the system.</span></div>
+      </div>
+      <div className="mk-section cream">
+        <div className="mk-section-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '30px', flexWrap: 'wrap' }}>
+          <div style={{ maxWidth: '460px' }}>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', color: '#1C1C1C', lineHeight: 1.25, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Every verdict we issue is the one <span style={{ color: '#3D5C3C' }}>we never got.</span></div>
+            <div style={{ fontSize: '13.5px', color: '#7A7A72', lineHeight: 1.7, marginTop: '10px' }}>Sensify exists to turn a suspicion into a ruling: Safe, Limit, or Avoid, earned from your own body's evidence. No guessing. No drifting back.</div>
+          </div>
+          <button className="mk-cta" onClick={onGetStarted} style={{ padding: '14px 26px', fontSize: '14px', borderRadius: '12px' }}>Start your program</button>
+        </div>
       </div>
       <Footer />
     </div>

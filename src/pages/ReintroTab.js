@@ -813,19 +813,34 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                       strokeDasharray={CIRC} strokeDashoffset={offset} transform="rotate(-90 55 55)" style={{ filter: 'drop-shadow(0 0 8px rgba(139,174,138,0.5))' }} />
                   </svg>
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: 27, fontWeight: 300, color: '#FAF8F4' }}>{pct}%</div>
+                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: 27, fontWeight: 400, color: '#FAF8F4' }}>{pct}%</div>
                     <div style={{ fontSize: 8, color: 'rgba(250,248,244,0.55)', fontFamily: 'DM Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Day {dayCapped} of {elimDays}</div>
                   </div>
                 </div>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 300, color: '#FAF8F4', position: 'relative' }}>Your first tests unlock in <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>{daysUntilLow} {daysUntilLow === 1 ? 'day' : 'days'}.</em></div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 400, color: '#FAF8F4', position: 'relative', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Your first tests unlock in <span style={{ color: '#8BAE8A' }}>{daysUntilLow} {daysUntilLow === 1 ? 'day' : 'days'}.</span></div>
                 <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65, maxWidth: 310, margin: '8px auto 0', position: 'relative', fontWeight: 300 }}>Every clean elimination day makes your reintroduction results sharper. You're building the baseline that makes testing work.</div>
               </div>
 
+              {(() => {
+                const firstFood = (tiers.find(t => t.next)?.foods || [])[0]
+                return (
+                  <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '18px 20px', margin: '16px 0 18px', animation: 'rtNodeIn 0.5s ease 0.35s both' }}>
+                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, letterSpacing: '1.4px', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: 12 }}>How a trial works</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
+                      {[0, 1, 2].map(i => <span key={'q' + i} style={{ width: 11, height: 11, borderRadius: 3, background: '#4C7A4A', flexShrink: 0 }} />)}
+                      <span style={{ width: 6 }} />
+                      {Array.from({ length: 11 }).map((_, i) => <span key={'w' + i} style={{ width: 9, height: 9, borderRadius: '50%', background: '#9DBD9C', flexShrink: 0 }} />)}
+                      <span style={{ fontFamily: 'Fraunces, serif', fontSize: 16, color: '#3D5C3C', marginLeft: 8, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Verdict.</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.65, marginTop: 11 }}>Three days eating it, then eleven clean days, watching for anything delayed. One food at a time, so the answer can only belong to that food.{firstFood ? <> First up: <b style={{ fontWeight: 600, color: '#1C1C1C' }}>{firstFood}</b>, chosen because it ranks highest in how often you eat it.</> : ''}</div>
+                  </div>
+                )
+              })()}
               <div className="rt-section-label" style={{ animation: 'rtNodeIn 0.5s ease 0.5s both' }}>Your testing roadmap</div>
               {(() => {
                 const nsCount = (labResult?.foods || []).filter(f => foodFrequency[f.name] === 'never' && f.level !== 'No sensitivity').length
                 return nsCount > 0 ? (
-                  <div style={{ fontSize: '11px', color: '#8A8A82', margin: '2px 0 8px', lineHeight: 1.55, animation: 'rtNodeIn 0.5s ease 0.55s both' }}>{nsCount} flagged food{nsCount !== 1 ? 's aren\'t' : ' isn\'t'} scheduled because you never eat {nsCount !== 1 ? 'them' : 'it'}. You can add {nsCount !== 1 ? 'them' : 'it'} from your Food Map.</div>
+                  <div style={{ fontSize: '11px', color: '#8A8A82', margin: '2px 0 8px', lineHeight: 1.55, animation: 'rtNodeIn 0.5s ease 0.55s both' }}>{nsCount} flagged food{nsCount !== 1 ? 's aren\'t' : ' isn\'t'} scheduled because you never eat {nsCount !== 1 ? 'them' : 'it'}. You can add {nsCount !== 1 ? 'them' : 'it'} from your Verdicts.</div>
                 ) : null
               })()}
               <div className="rt-lk-timeline">

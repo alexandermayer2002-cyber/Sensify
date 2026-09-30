@@ -188,10 +188,9 @@ export default function FoodMap({ session, profile, labResult }) {
           <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginTop: 8 }}>A finished wall, shown as an example: every food ruled by a real 14 day trial on a real body. Yours gets earned the same way, one trial at a time.</div>
 
           <div style={{ marginTop: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-              <span style={{ flex: 1, height: 1, background: 'rgba(0,0,0,0.08)' }} />
-              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.6px', color: '#9A927E' }}>AN EXAMPLE WALL · NOT YOURS YET</span>
-              <span style={{ flex: 1, height: 1, background: 'rgba(0,0,0,0.08)' }} />
+            <style>{`@keyframes fmExGlow { 0%,100% { box-shadow: 0 0 0 3px rgba(139,174,138,0.18), 0 0 18px rgba(139,174,138,0.35) } 50% { box-shadow: 0 0 0 3px rgba(139,174,138,0.08), 0 0 7px rgba(139,174,138,0.15) } }`}</style>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+              <div style={{ background: '#EDF3ED', border: '1.5px solid #8BAE8A', borderRadius: 999, padding: '8px 18px', fontFamily: 'DM Mono, monospace', fontSize: 10, fontWeight: 500, letterSpacing: '2.2px', color: '#3D5C3C', animation: 'fmExGlow 2.8s ease-in-out infinite' }}>EXAMPLE · NOT YOURS YET</div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, opacity: 0.82 }}>
               {exCard('WHEAT', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.13)')}
