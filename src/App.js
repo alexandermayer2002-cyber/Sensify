@@ -58,7 +58,7 @@ export default function App() {
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session)
+      if (event !== 'SIGNED_OUT') setSession(session)  // a SIGNED_OUT only lands after verification below
       if (event === 'PASSWORD_RECOVERY') {
         // User arrived from a reset-password email — show the set-new-password
         // screen instead of dropping them straight into the dashboard.
@@ -66,7 +66,15 @@ export default function App() {
       } else if (session) {
         // Don't yank them off the reset screen if they're mid-reset.
         setPage(prev => prev === 'reset-password' ? prev : 'dashboard')
-      } else { setPage('marketing'); setIsAdmin(false) }
+      } else if (event === 'SIGNED_OUT') {
+        // A SIGNED_OUT can be a lie: a stale tab's doomed background token-refresh
+        // (from a weeks-old expired session) can report sign-out AFTER the user has
+        // just successfully signed in, steamrolling the fresh login back to marketing.
+        // So sign-out must verify: only route away if no live session actually exists.
+        supabase.auth.getSession().then(({ data: { session: live } }) => {
+          if (!live) { setSession(null); setPage('marketing'); setIsAdmin(false) }
+        })
+      }
     })
 
     return () => subscription.unsubscribe()

@@ -27,7 +27,7 @@ const s = {
   stackBtns: { display: 'flex', flexDirection: 'column', gap: '8px' },
   stackBtn: { textAlign: 'left', padding: '14px 16px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.09)', background: '#FAF8F4', fontSize: '13.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1C1C1C', transition: 'all 0.12s' },
   stackBtnOn: { textAlign: 'left', padding: '14px 16px', borderRadius: '12px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '13.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#2D6B42' },
-  textarea: { width: '100%', boxSizing: 'border-box', padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.09)', background: '#FAF8F4', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', resize: 'vertical', lineHeight: 1.5 },
+  textarea: { width: '100%', boxSizing: 'border-box', padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.09)', background: '#FAF8F4', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', resize: 'vertical', lineHeight: 1.5 },
   questionLabel: { fontSize: '14px', fontWeight: 500, marginBottom: '10px', lineHeight: 1.5 },
   scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#7A7A72', marginBottom: '7px' },
   scaleRow: { display: 'flex', gap: '5px' },

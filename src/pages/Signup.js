@@ -10,7 +10,7 @@ const s = {
   titleEm: { color: '#3D5C3C' },
   sub: { fontSize: '14px', color: '#7A7A72', marginBottom: '24px' },
   label: { fontSize: '13px', fontWeight: 500, color: '#1C1C1C', marginBottom: '6px', display: 'block' },
-  input: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '13px 14px', fontSize: '14px', background: '#FFFFFF', color: '#1C1C1C', marginBottom: '14px', outline: 'none' },
+  input: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '13px 14px', fontSize: '16px', background: '#FFFFFF', color: '#1C1C1C', marginBottom: '14px', outline: 'none' },
   btn: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', marginTop: '4px' },
   btnGoogle: { background: 'none', color: '#1C1C1C', border: '1.5px solid rgba(0,0,0,0.12)', borderRadius: '12px', padding: '13px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
   divider: { display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0' },

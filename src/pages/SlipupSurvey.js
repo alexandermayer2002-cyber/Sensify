@@ -15,7 +15,7 @@ const s = {
   titleEm: { fontStyle: 'italic', color: '#3D5C3C' },
   hint: { fontSize: '13px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.65 },
   label: { fontSize: '14px', fontWeight: 500, marginBottom: '12px', lineHeight: 1.5 },
-  searchInput: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '11px', padding: '13px 16px', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FFFFFF', outline: 'none', marginBottom: '10px' },
+  searchInput: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '11px', padding: '13px 16px', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FFFFFF', outline: 'none', marginBottom: '10px' },
   foodList: { maxHeight: '200px', overflowY: 'auto', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '11px', background: '#FFFFFF', marginBottom: '20px' },
   foodItem: { padding: '11px 14px', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: '14px', cursor: 'pointer', color: '#1C1C1C', transition: 'background 0.1s' },
   foodItemSelected: { padding: '11px 14px', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: '14px', cursor: 'pointer', color: '#3D5C3C', background: '#EDF3ED', fontWeight: 500 },

@@ -477,7 +477,7 @@ const s = {
   sevRow: { display: 'flex', gap: '8px' },
   sev: { flex: 1, padding: '11px', borderRadius: '10px', border: '1.5px solid rgba(0,0,0,0.1)', background: 'white', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1C1C1C', textTransform: 'capitalize' },
   sevOn: { flex: 1, padding: '11px', borderRadius: '10px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#2D6B42', textTransform: 'capitalize' },
-  textarea: { width: '100%', boxSizing: 'border-box', padding: '13px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.1)', background: 'white', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', resize: 'vertical', lineHeight: 1.5 },
+  textarea: { width: '100%', boxSizing: 'border-box', padding: '13px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.1)', background: 'white', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', resize: 'vertical', lineHeight: 1.5 },
   cta: { width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', border: 'none', background: '#3D5C3C', color: 'white', fontSize: '14px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
   ctaOff: { width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', border: 'none', background: '#C8C6BE', color: 'white', fontSize: '14px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'not-allowed' },
   disclaimer: { fontSize: '11px', color: '#A8A69E', textAlign: 'center', marginTop: '14px', lineHeight: 1.5 },

@@ -94,7 +94,7 @@ const s = {
   scaleRow: { display: 'flex', gap: '5px' },
   sbt: { flex: 1, height: '44px', borderRadius: '9px', border: 'none', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', fontWeight: 400, color: '#5A5A52', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s' },
   sbtOn: { flex: 1, height: '44px', borderRadius: '9px', border: 'none', background: '#3D5C3C', fontSize: '18px', cursor: 'pointer', fontWeight: 400, color: 'white', fontFamily: 'Fraunces, serif', boxShadow: '0 2px 8px rgba(61,92,60,0.3)' },
-  textarea: { width: '100%', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '14px 15px', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FAF8F4', resize: 'none', height: '96px', outline: 'none', lineHeight: 1.5 },
+  textarea: { width: '100%', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '14px 15px', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FAF8F4', resize: 'none', height: '96px', outline: 'none', lineHeight: 1.5 },
   categoryTitle2: { fontFamily: 'Fraunces, serif', fontSize: '15px', fontWeight: 400, color: '#3D5C3C', margin: '22px 0 12px', letterSpacing: '-0.2px' },
   freqBtns: { display: 'flex', gap: '4px' },
   freqBtn: { padding: '7px 11px', borderRadius: '8px', border: 'none', background: '#EDF3ED', fontSize: '12px', cursor: 'pointer', color: '#5A5A52', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s', whiteSpace: 'nowrap' },

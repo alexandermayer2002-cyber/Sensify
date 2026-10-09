@@ -13,7 +13,7 @@ const s = {
   titleEm: { color: '#3D5C3C' },
   hint: { fontSize: '13px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.7 },
   label: { fontSize: '14px', fontWeight: 500, marginBottom: '8px', color: '#1C1C1C' },
-  input: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '14px 16px', fontSize: '15px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FFFFFF', outline: 'none', marginBottom: '20px', transition: 'border-color 0.15s' },
+  input: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '14px 16px', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FFFFFF', outline: 'none', marginBottom: '20px', transition: 'border-color 0.15s' },
   timeGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' },
   timeBtn: { padding: '14px', borderRadius: '12px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '14px', cursor: 'pointer', color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, textAlign: 'center', transition: 'all 0.12s' },
   timeBtnOn: { padding: '14px', borderRadius: '12px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: 'white', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, textAlign: 'center' },

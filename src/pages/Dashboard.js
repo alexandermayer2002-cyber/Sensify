@@ -834,7 +834,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           const phaseNow = protocolDay(p.protocol_start_date) <= 56 ? 'elimination' : 'reintroduction'
           if (phaseNow === 'elimination' && protocolDay(p.protocol_start_date) > 1) {
             const { data: lastLog } = await supabase.from('daily_factors').select('log_date').eq('user_id', session.user.id).order('log_date', { ascending: false }).limit(1).maybeSingle()
-            const anchor = lastLog?.log_date || String(p.protocol_start_date).split('T')[0]
+            // A resolved gap stays resolved: the resume attestation is an anchor too, so the
+            // modal never re-asks about days the user already vouched for. A NEW 4+ day gap
+            // after the attestation re-triggers naturally, measured from the attestation.
+            const { data: lastAway } = await supabase.from('compliance_audit').select('triggered_at').eq('user_id', session.user.id).eq('trigger_type', 'away_gap_attested').order('triggered_at', { ascending: false }).limit(1).maybeSingle()
+            const candidates = [lastLog?.log_date, lastAway ? String(lastAway.triggered_at).split('T')[0] : null, String(p.protocol_start_date).split('T')[0]].filter(Boolean)
+            const anchor = candidates.sort().reverse()[0]
             const [ay, am, ad] = anchor.split('-').map(Number)
             const anchorD = new Date(ay, am - 1, ad)
             const nowD = new Date(); const todayD = new Date(nowD.getFullYear(), nowD.getMonth(), nowD.getDate())

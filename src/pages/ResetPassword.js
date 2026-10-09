@@ -14,7 +14,7 @@ const s = {
   titleEm: { fontStyle: 'italic', color: '#3D5C3C' },
   sub: { fontSize: '14px', color: '#7A7A72', marginBottom: '24px' },
   label: { fontSize: '13px', fontWeight: 500, color: '#1C1C1C', marginBottom: '6px', display: 'block' },
-  input: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '13px 14px', fontSize: '14px', background: '#FFFFFF', color: '#1C1C1C', marginBottom: '14px', outline: 'none', boxSizing: 'border-box' },
+  input: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '13px 14px', fontSize: '16px', background: '#FFFFFF', color: '#1C1C1C', marginBottom: '14px', outline: 'none', boxSizing: 'border-box' },
   btn: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '10px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', marginTop: '4px' },
   error: { background: '#FAEAEA', color: '#C95B5B', borderRadius: '8px', padding: '10px 12px', fontSize: '13px', marginBottom: '14px' },
 }
