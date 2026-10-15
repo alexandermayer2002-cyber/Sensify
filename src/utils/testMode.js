@@ -73,14 +73,17 @@ export async function testSkipDays(supabase, userId, days) {
     await supabase.from('symptom_logs').update({ logged_at: t.toISOString() }).eq('id', e.id)
   }
 
-  // Backfill the skipped days as clean, on-plan days (yesterday back n days).
-  const facts = [], comps = []
+  // Backfill the skipped days as clean, on-plan days (yesterday back n days),
+  // one row at a time in the exact shape the app itself writes (proven RLS-safe),
+  // each wrapped so one bad day can never silently void the rest.
   for (let i = 1; i <= n; i++) {
     const d = new Date(); d.setDate(d.getDate() - i)
     const ds = localDateString(d)
-    facts.push({ user_id: userId, log_date: ds, sleep: '7-8', stress: 'low', hydration: 'good', followed_protocol: true })
-    comps.push({ user_id: userId, date: ds, response: 'YES', logged_at: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 20).toISOString() })
+    try {
+      await supabase.from('daily_factors').upsert({ user_id: userId, log_date: ds, sleep: '7-8', stress: 'low', hydration: '6', followed_protocol: true }, { onConflict: 'user_id,log_date' })
+    } catch (e) { console.log('[testMode] factors fill fail', ds, e?.message) }
+    try {
+      await supabase.from('daily_compliance').upsert({ user_id: userId, date: ds, response: 'YES', logged_at: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 20).toISOString() }, { onConflict: 'user_id,date' })
+    } catch (e) { console.log('[testMode] compliance fill fail', ds, e?.message) }
   }
-  if (facts.length) await supabase.from('daily_factors').upsert(facts, { onConflict: 'user_id,log_date', ignoreDuplicates: true })
-  if (comps.length) await supabase.from('daily_compliance').upsert(comps, { onConflict: 'user_id,date', ignoreDuplicates: true })
 }

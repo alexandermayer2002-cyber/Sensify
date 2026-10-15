@@ -1,0 +1,17 @@
+{
+ "findings": [
+  "[P1d] cta /weekly/: no button matches weekly"
+ ],
+ "console": [
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)"
+ ],
+ "screens": {
+  "day8_home": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nSign out\nGood morning, Fable\nDay 16 of elimination.\nToday's check-in\n\u2192\n0 day streak\n41 days to reintroduction\nWELCOME BACK \u00b7 7 DAYS AWAY\nWere you on your plan?\nIt has been 7 days since your last check-in. The days themselves are fine. What matters is whether the elimination held while you were away.\nYes, I stayed on my plan\nNot really, restart my clock\nPROTOCOL \u00b7 DAY 16\n\nYou're on day 16 of your elimination phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.\n\nWeekly check-in\nCatch up \u2014 your data still matters\nStart \u2192\nDAYS 15\u201321\n0\nDAY STREAK\nWe\n\u2713\nTh\n\u00b7\nFr\nSa\nSu\nMo\nTu\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nCURRENTLY AVOIDING\n4 foods total\nHIGH SENSITIVITY\n2\nBeef\nAvocado\nMODERATE SENSITIVITY\n1\nEgg Yolk\nLOW SENSITIVITY\n1\nCrab\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nEvery check-in hangs a star.\n7 nights on the record, 1 symptom event. At 28, your stars form a constellation, and pattern detection unlocks: sleep, stress, and symptoms, cross-referenced for connections.\nNIGHT 7 OF 28 \u00b7 21 STARS TO GO\nSYMPTOM TRENDS\nYour symptom trends will appear here after your first weekly check-in.",
+  "weekly_form": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nSign out\nGood morning, Fable\nDay 16 of elimination.\nToday's check-in\n\u2192\n0 day streak\n41 days to reintroduction\nWELCOME BACK \u00b7 7 DAYS AWAY\nWere you on your plan?\nIt has been 7 days since your last check-in. The days themselves are fine. What matters is whether the elimination held while you were away.\nYes, I stayed on my plan\nNot really, restart my clock\nPROTOCOL \u00b7 DAY 16\n\nYou're on day 16 of your elimination phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.\n\nWeekly check-in\nCatch up \u2014 your data still matters\nStart \u2192\nDAYS 15\u201321\n0\nDAY STREAK\nWe\n\u2713\nTh\n\u00b7\nFr\nSa\nSu\nMo\nTu\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nCURRENTLY AVOIDING\n4 foods total\nHIGH SENSITIVITY\n2\nBeef\nAvocado\nMODERATE SENSITIVITY\n1\nEgg Yolk\nLOW SENSITIVITY\n1\nCrab\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nEvery check-in hangs a star.\n7 nights on the record, 1 symptom event. At 28, your stars form a constellation, and pattern detection unlocks: sleep, stress, and symptoms, cross-referenced for connections.\nNIGHT 7 OF 28 \u00b7 21 STARS TO GO\nSYMPTOM TRENDS\nYour symptom trends will appear here after your first weekly check-in."
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1d_01_day8_home.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1d_02_weekly_form.png"
+ ]
+}
