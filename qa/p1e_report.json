@@ -1,0 +1,24 @@
+{
+ "findings": [
+  "[P1e] cta /\\+43d/: no button matches \\+43d"
+ ],
+ "console": [
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)"
+ ],
+ "screens": {
+  "weekly_filled": "\u2190 Back\nsensify\nWeek 2\nWEEK 2 CHECK-IN\nHow was your\nweek?\nHonest answers only, good or bad. This is how we track what's actually working.\nYOUR SYMPTOMS\nHow was your bloating this week?\nNone at all\nSevere\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nHow was your gas or cramping this week?\nNone at all\nSevere\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nHow was your reflux or heartburn this week?\nNone at all\nSevere\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nHow was your overall digestive comfort this week?\nVery uncomfortable\nVery comfortable\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nOVERALL\nHow do you feel overall compared to last week?\nBetter\nAbout the same\nWorse\nWhat changed this week? (select all that apply)\nI traveled or was away from home\nI ate out more than usual\nI had a stressful week\nI wasn't feeling well this week\nI tried a new safe food\nI had a social event with limited food options\nMy sleep was off\nNothing unusual, a normal week\nCOMPLIANCE\nHow closely did you follow the elimination plan this week?\nFully\nMostly\nSome slip-ups\nNot at all\nAnything else worth noting? (optional)\nSubmit check-in \u2192",
+  "weekly_insight": "sensify\nWeek 2\nSENSIFY \u00b7 RECORD\nWEEK 2 LOGGED\nThis week is on the record.\nEvery honest week makes your map sharper.\n5\nBLOATING \u00b7 WAS 7\n5\nGAS \u00b7 WAS 6\nYOUR WEEK 2 INSIGHT\nBloating dropped from 7 to 5, a 29% improvement and the strongest signal this week. All four digestive scores moved in the right direction despite a stressful week, which makes the consistency of those shifts notable. Full elimination compliance gives the data a clean read, so if this trajectory continues, the next phase will have a solid baseline to work from.\nBack to dashboard \u2192",
+  "day_post43_home": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nSign out\nYour history.\nWeekly symptom scores, insights, and compliance trends over time.\nSENSIFY \u00b7 RECORD\nT-MINUS 7D\n7\nDAYS TO GO\nWEEKLY CYCLE \u00b7 DAY 0 OF 7\nNext check-in coming soon.\nWeekly check-ins unlock every 7 days to keep your symptom data consistent and your insights accurate.\nYOUR PROGRESS\n+13%\nbetter than baseline\naveraged across all 1 week\nWhere you started\nYour average\nBloating\navg 5 \u00b7 down 29%\nGas / cramping\navg 5 \u00b7 down 17%\nReflux / heartburn\navg 3 \u00b7 down 25%\nDigestive comfort\navg 5 \u00b7 down 17%\n0\n5\n10\nPROGRAM MILESTONES\nIntake survey complete.\nOct 14, 2026\nView all responses\nPAST ENTRIES\nAll\nElimination\nReintro\nWeek 2\nOct 15, 2026\nMore\nBLOATING\n5\n-29%\nGAS\n5\n-17%\nREFLUX\n3\n-25%\nDIGESTIVE\n5\n-17%\nFully compliant\nWEEKLY INSIGHT\nBloating dropped from 7 to 5, a 29% improvement and the strongest signal this week. All four digestive scores moved in the right direction despite a stressful week, which makes the consistency of those shifts notable. Full elimination compliance gives the data a clean read, so if this trajectory continues, the next phase will have a solid baseline to work from.",
+  "reintro_picker": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nSign out\nReintroduction.\nFoods are reintroduced one at a time after your elimination phase is complete.\nSENSIFY \u00b7 REINTRODUCTION\nT-MINUS 41D\n29%\nDAY 16 OF 56\nYour first tests unlock in 41 days.\nEvery clean elimination day makes your reintroduction results sharper. You're building the baseline that makes testing work.\nHOW A TRIAL WORKS\nVerdict.\nThree days eating it, then eleven clean days, watching for anything delayed. One food at a time, so the answer can only belong to that food. First up: Crab, chosen because it ranks highest in how often you eat it.\nYOUR TESTING ROADMAP\nLow sensitivity\nUP NEXT \u00b7 DAY 57\nCrab\nModerate sensitivity\nDay 113 \u00b7 in 97 days\nEgg Yolk\nHigh sensitivity\nDay 169 \u00b7 in 153 days\nBeef\nAvocado"
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1e_01_weekly_filled.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1e_02_weekly_insight.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1e_03_day_post43_home.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1e_04_reintro_picker.png"
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "findings": [
+  "[P1f] cta /start|begin|confirm/: no button matches start|begin|confirm"
+ ],
+ "console": [
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)"
+ ],
+ "screens": {
+  "day59_home": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nGood morning, Fable\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 3 OF 112 \u00b7 CYCLE COMPLETE\nPick your next food\n\u2192\nor log today\u2019s check-in\n5 day streak, unbroken\nTesting foods, one at a time\nWEEKLY INSIGHT \u00b7 WEEK 2\n\nBloating dropped from 7 to 5, a 29% improvement and the strongest signal this week. All four digestive scores moved in the right direction despite a stressful week, which makes the consistency of those shifts notable. Full elimination compliance gives the data a clean read, so if this trajectory continues, the next phase will have a solid baseline to work from.\n\nGENERATED FROM YOUR CHECK-IN DATA\nWeekly check-in\nCatch up \u2014 your data still matters\nStart \u2192\nDAYS 57\u201363\n5\nDAY STREAK\nTu\n\u2713\nWe\n\u2713\nTh\n\u00b7\nFr\nSa\nSu\nMo\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nCURRENTLY AVOIDING\n4 foods total\nHIGH SENSITIVITY\n2\nBeef\nAvocado\nMODERATE SENSITIVITY\n1\nEgg Yolk\nLOW SENSITIVITY\n1\nCrab\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nSYMPTOM TRENDS\n-29% avg vs baseline\nBloating\nGas\n5\nBaseline\nWeek 2\nBaseline\n7\nLatest\n5\nCheck-ins\n1",
+  "reintro_unlocked": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nLOW SENSITIVITY \u00b7 UNLOCKED\n1\nCrabRECOMMENDED\nRarely\nStart cycle \u2192\nMODERATE SENSITIVITY FOODS\nUnlocks in 54 days",
+  "start_choice": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nCRAB CYCLE\nWhen should day 1 begin?\nOnly crab comes back during this cycle. Everything else on your list stays eliminated. Day 1 is an exposure day, you'll want a real chance to eat crab that day.\nStart tomorrow, day 1 is Friday\nStart today\nLOW SENSITIVITY \u00b7 UNLOCKED\n1\nCrabRECOMMENDED\nRarely\nStart cycle \u2192\nMODERATE SENSITIVITY FOODS\nUnlocks in 54 days",
+  "briefing": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nCURRENTLY TESTING\nCrab\n14-day reintroduction cycle \u00b7 Day 1 of 14\nExposure phase: eat this food\nONLY CRAB COMES BACK \u00b7 EVERY OTHER FOOD ON YOUR LIST STAYS ELIMINATED\nExposure (days 1 to 3)\nWashout (days 4 to 14)\nTODAY'S INSTRUCTION\nEat Crab today as you normally would. You're on exposure day 1 of 3. Every other food on your elimination list stays off the plate.\nLog today\u2019s check-in \u2192\nGetting your personalized briefing...\nYOUR CYCLE SO FAR\nNo days logged yet. Your daily check-ins will build a record here as you go."
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1f_01_day59_home.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1f_02_reintro_unlocked.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1f_03_start_choice.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1f_04_briefing.png"
+ ]
+}

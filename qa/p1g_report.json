@@ -1,0 +1,34 @@
+{
+ "findings": [
+  "[P1g] cta /Done for today/: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_",
+  "[P1g] cta /done|Done/: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_",
+  "[P1g] cta /Done for today/: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_",
+  "[P1g] cta /done|Done/: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_",
+  "[P1g] cta /Done for today/: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_",
+  "[P1g] cta /done|Done/: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_"
+ ],
+ "console": [
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)"
+ ],
+ "screens": {
+  "expo1_filled": "\u2190 Back\nSensify.\nDAILY CHECK-IN\nHow's today?\nA few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.\nREINTRODUCTION \u00b7 CRAB\nDid you eat crab today?\nYes\nNot today\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\n7 hours\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\n6 cups\nWhere are you in your cycle?\nOn my period\nNot on it\nNot sure\nDone for today \u2192",
+  "expo2_after_yes": "\u2190 Back\nSensify.\nDAILY CHECK-IN\nHow's today?\nA few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.\nREINTRODUCTION \u00b7 CRAB\nDid you eat crab today?\nYes\nNot today\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\nTap to enter\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\nTap to enter\nWhere are you in your cycle?\nOn my period\nNot on it\nNot sure\nDone for today \u2192",
+  "expo2_filled": "\u2190 Back\nSensify.\nDAILY CHECK-IN\nHow's today?\nA few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.\nREINTRODUCTION \u00b7 CRAB\nDid you eat crab today?\nYes\nNot today\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\n7 hours\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\n6 cups\nWhere are you in your cycle?\nOn my period\nNot on it\nNot sure\nDone for today \u2192",
+  "expo3_filled": "\u2190 Back\nSensify.\nDAILY CHECK-IN\nHow's today?\nA few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.\nREINTRODUCTION \u00b7 CRAB\nDid you eat crab today?\nYes\nNot today\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\n7 hours\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\n6 cups\nWhere are you in your cycle?\nOn my period\nNot on it\nNot sure\nDone for today \u2192",
+  "verdict_ready_home": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nGood morning, Fable\nDay 16 of reintroduction.\nCRAB CYCLE \u00b7 NEEDS A RESTART \u00b7 SEE THE REINTRO TAB\nRestart the crab cycle\n\u2192\nor log today\u2019s check-in\n0 day streak\nTesting foods, one at a time\nWEEKLY INSIGHT \u00b7 WEEK 2\n\nBloating dropped from 7 to 5, a 29% improvement and the strongest signal this week. All four digestive scores moved in the right direction despite a stressful week, which makes the consistency of those shifts notable. Full elimination compliance gives the data a clean read, so if this trajectory continues, the next phase will have a solid baseline to work from.\n\nGENERATED FROM YOUR CHECK-IN DATA\nWeekly check-in\nCatch up \u2014 your data still matters\nStart \u2192\nDAYS 71\u201377\n0\nDAY STREAK\nWe\n\u25cb\nTh\n\u00b7\nFr\nSa\nSu\nMo\nTu\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nCURRENTLY AVOIDING\n4 foods total\nHIGH SENSITIVITY\n2\nBeef\nAvocado\nMODERATE SENSITIVITY\n1\nEgg Yolk\nLOW SENSITIVITY\n1\nCrab\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nSYMPTOM TRENDS\n-29% avg vs baseline\nBloating\nGas\n5\nBaseline\nWeek 2\nBaseline\n7\nLatest\n5\nCheck-ins\n1"
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1g_01_expo1_filled.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1g_02_expo2_after_yes.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1g_03_expo2_filled.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1g_04_expo3_filled.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1g_05_verdict_ready_home.png"
+ ]
+}
