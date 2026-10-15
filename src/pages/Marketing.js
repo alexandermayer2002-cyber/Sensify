@@ -599,7 +599,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <div className="mk-tabs">
         {tabs.map(t => (
           <button key={t} className={`mk-tab${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>
-            {t === 'home' ? 'Home' : t === 'how' ? 'How it works' : t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === 'home' ? 'Home' : t === 'how' ? 'How it works' : t === 'faq' ? 'FAQ' : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
@@ -682,7 +682,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-section-inner" style={{ textAlign: 'center' }}>
           <div className="ey">Inside the program</div>
           <div className="sh">A look at what you're getting.</div>
-          <div style={{ fontSize: '15px', color: '#7A7A72', lineHeight: 1.65, maxWidth: 520, margin: '10px auto 18px' }}>Ten seconds a day. One real check-in a week. And every so often, a verdict you earned.</div>
+          <div style={{ fontSize: '15px', color: '#7A7A72', lineHeight: 1.65, maxWidth: 520, margin: '10px auto 18px' }}>Thirty seconds a day. One real check-in a week. And every so often, a verdict you earned.</div>
           <div style={{ fontSize: '12px', color: '#A8A69E', marginBottom: '14px' }}>Tap through the screens below.</div>
 
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 26, flexWrap: 'wrap' }}>
