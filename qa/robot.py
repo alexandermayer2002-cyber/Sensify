@@ -69,8 +69,13 @@ class Robot:
         self.sleep(1.0)
         self.click("Continue here", required=False)
         self.sleep(1.2)
-        self.fill_ph("Sarah Chen", name)
+        # The robot door: test email into the paid-resume box skips payment check
         self.fill_ph("you@email.com", email)
+        self.click_btn("Continue")
+        self.sleep(1.8)
+        self.fill_ph("Sarah Chen", name)
+        try: self.page.get_by_placeholder("you@email.com").first.fill(email, timeout=2500)
+        except Exception: pass  # prefilled + locked by the robot door — correct
         self.fill_ph("At least 8 characters", pw)
         self.fill_ph("Re-enter your password", pw)
         self.shot("signup_filled")
@@ -114,6 +119,35 @@ class Robot:
             self.click(ch, exact=True, required=False)
         for done in ["Done", "Set", "OK", "✓"]:
             if self.click(done, exact=True, required=False): break
+
+
+
+    def answer(self, question_sub, option):
+        """Click `option` within the question whose label contains question_sub."""
+        try:
+            x = f"xpath=//*[contains(normalize-space(.), {question_sub!r}) and not(.//*[contains(normalize-space(.), {question_sub!r})])]/following::*[normalize-space(text())={option!r}][1]"
+            self.page.locator(x).first.click(timeout=4000)
+            self.sleep(0.25)
+            return True
+        except Exception as e:
+            self.find(f"[{self.tag}] answer fail {question_sub!r} -> {option!r}: {str(e)[:70]}")
+            return False
+
+    def consent(self, full_name):
+        """The pre-intake 'Before you begin' gate: typed-name signature + agree."""
+        if "Before you begin" not in self.text():
+            return False
+        try:
+            self.page.get_by_placeholder("Your full name").first.fill(full_name); self.sleep(0.3)
+        except Exception:
+            self.find(f"[{self.tag}] consent signature input not fillable")
+        # the custom checkbox row: click its statement text to toggle agreed
+        self.click("I understand that Sensify is a wellness program", exact=False, required=False)
+        self.sleep(0.4)
+        self.shot("consent_signed")
+        self.click("I agree, start my intake", required=False) or self.click_btn("I agree", required=False) or self.find(f"[{self.tag}] consent agree unclickable")
+        self.sleep(1.5)
+        return True
 
     def close(self):
         try: self.browser.close()
