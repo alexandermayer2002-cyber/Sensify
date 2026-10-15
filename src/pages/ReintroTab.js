@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
+import { getTestingOrder } from '../utils/protocolEngine'
 import ReintroDailyCheckin from './ReintroDailyCheckin'
 import { computeProvisionalVerdict } from '../utils/verdictEngine'
 import { todayLocal, localDateString } from '../utils/dateUtils'
@@ -593,8 +594,14 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
   // Get foods from lab results — filter out never/rarely eaten
   const foodFrequency = profile?.food_frequency || {}
-  const completedFoods = foodMap.filter(f => f.verdict)
-  const completedFoodNames = completedFoods.map(f => f.food)
+  // A verdicted food is complete whether the legacy food_map row landed or not:
+  // reintroduction_results is the source of truth the Tested ledger and the
+  // gallery already use, so the picker excludes from BOTH (the silent-upsert
+  // bug that left Dairy offered after its own Avoid verdict dies here).
+  const fmVerdicts = foodMap.filter(f => f.verdict)
+  const fmNameSet = new Set(fmVerdicts.map(f => (f.food || '').toLowerCase()))
+  const completedFoods = [...fmVerdicts, ...completedCycles.filter(cy => cy.verdict && !fmNameSet.has((cy.food || '').toLowerCase())).map(cy => ({ food: cy.food, verdict: cy.verdict }))]
+  const completedFoodNames = completedFoods.map(f => (f.food || '').toLowerCase())
 
   // Common track: foods have no lab severity, so they don't tier into
   // Low/Moderate/High. Treat them as a single group that all unlocks at day 57
@@ -620,15 +627,17 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   }
 
   const getRemainingFoods = (level) => {
-    return getAllQualifyingFoods(level)
-      .filter(f => !completedFoodNames.includes(f.name))
-      .filter(f => !activeReintro || activeReintro.food !== f.name)
-      .sort((a, b) => (FREQ_RANK[foodFrequency[a.name]] || 99) - (FREQ_RANK[foodFrequency[b.name]] || 99))
+    return getTestingOrder(
+      getAllQualifyingFoods(level)
+        .filter(f => !completedFoodNames.includes((f.name || '').toLowerCase()))
+        .filter(f => !activeReintro || activeReintro.food !== f.name),
+      foodFrequency
+    )
   }
 
   // Tier unlocks when: day requirement met AND all previous tier qualifying foods are tested
-  const allLowTested = getAllQualifyingFoods('Low').every(f => completedFoodNames.includes(f.name))
-  const allModerateTested = getAllQualifyingFoods('Moderate').every(f => completedFoodNames.includes(f.name))
+  const allLowTested = getAllQualifyingFoods('Low').every(f => completedFoodNames.includes((f.name || '').toLowerCase()))
+  const allModerateTested = getAllQualifyingFoods('Moderate').every(f => completedFoodNames.includes((f.name || '').toLowerCase()))
 
   const lowUnlocked = currentDay >= 57
   const moderateUnlocked = currentDay >= 113 && allLowTested
@@ -878,7 +887,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
       <div className="rt-content">
         <div className="rt-header">
           <div className="rt-title">Reintro<em>duction.</em></div>
-          <div className="rt-sub">One food at a time. 14 days per cycle. Your answers build your Food Map.</div>
+          <div className="rt-sub">One food at a time. 14 days per cycle. Every answer earns a verdict.</div>
         </div>
 
         {/* ACTIVE REINTRODUCTION */}
@@ -1036,7 +1045,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: '18px', padding: '20px', marginBottom: '16px' }}>
                 <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: '8px' }}>Cycle complete · {completedCycles.length} verdict{completedCycles.length !== 1 ? 's' : ''} earned</div>
                 <div style={{ fontFamily: 'Fraunces, serif', fontSize: '21px', fontWeight: 400, color: '#1C1C1C', marginBottom: '4px' }}>Choose your next food.</div>
-                <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.55 }}>Your {completedCycles[completedCycles.length - 1].food.toLowerCase()} verdict is on the map. Pick the next food below to start a fresh 14-day cycle, day 1 starts when you do.</div>
+                <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.55 }}>Your {completedCycles[completedCycles.length - 1].food.toLowerCase()} verdict is entered in your verdicts. Pick the next food below to start a fresh 14-day cycle, day 1 starts when you do.</div>
               </div>
             )}
             {lowUnlocked && (
