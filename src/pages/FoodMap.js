@@ -126,7 +126,7 @@ export default function FoodMap({ session, profile, labResult }) {
             <span style={{ margin: '0 8px', color: '#C9C5B8' }}>·</span>
             {l.ate_food === true ? 'Ate it' : 'Washout'}
             <span style={{ margin: '0 8px', color: '#C9C5B8' }}>·</span>
-            {(l.symptoms || []).length > 0 ? <span style={{ color: '#C0392B' }}>{l.symptoms.join(', ')}</span> : <span style={{ color: '#4C7A4A' }}>Clean</span>}
+            {(l.symptoms || []).length > 0 ? <span style={{ color: '#C0392B' }}>{(l.symptoms || []).map(s => typeof s === 'string' ? s : s?.name).filter(Boolean).join(', ')}</span> : <span style={{ color: '#4C7A4A' }}>Clean</span>}
           </div>
         ))}
         {cycle.verdict_reason && <div style={{ ...s.recLine, marginTop: 8, color: '#5A5A52' }}>{cycle.verdict_reason}</div>}

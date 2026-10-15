@@ -411,11 +411,11 @@ export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
 export const generateReintroVerdict = async ({ name, food, provisionalVerdict, signals, dailyLogs = [], surveyAnswers = {}, accuracyNote, contextNote, dayGrainContext }) => {
   const exposureSummary = dailyLogs
     .filter(l => l.phase === 'exposure')
-    .map(l => `Day(ate:${l.ate_food ? 'yes' : 'no'}, symptoms:${(l.symptoms || []).map(s => `${s.name}/${s.intensity}`).join(',') || 'none'})`)
+    .map(l => `Day(ate:${l.ate_food ? 'yes' : 'no'}, symptoms:${(l.symptoms || []).map(s => typeof s === 'string' ? s : `${s?.name || 'symptom'}/${s?.intensity || 'logged'}`).join(',') || 'none'})`)
     .join(' ')
   const washoutSummary = dailyLogs
     .filter(l => l.phase === 'washout')
-    .map(l => (l.symptoms || []).map(s => `${s.name}/${s.intensity}`).join(',') || 'none')
+    .map(l => (l.symptoms || []).map(s => typeof s === 'string' ? s : `${s?.name || 'symptom'}/${s?.intensity || 'logged'}`).join(',') || 'none')
     .join(' | ')
 
   const prompt = `You are the analysis engine inside Sensify reviewing a completed food reintroduction.

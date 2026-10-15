@@ -91,7 +91,7 @@ function buildSummary(logs, food) {
   const washoutSymptomDays = washout.filter(l => l.had_symptoms)
 
   // Collect the distinct symptoms reported during exposure
-  const symptomNames = [...new Set(exposureSymptomDays.flatMap(l => (l.symptoms || []).map(s => s.name)))]
+  const symptomNames = [...new Set(exposureSymptomDays.flatMap(l => (l.symptoms || []).map(s => typeof s === 'string' ? s : s?.name).filter(Boolean)))]
   const symptomPhrase = symptomNames.length === 0 ? '' :
     symptomNames.length === 1 ? symptomNames[0].toLowerCase() :
     symptomNames.slice(0, -1).map(s => s.toLowerCase()).join(', ') + ' and ' + symptomNames[symptomNames.length - 1].toLowerCase()
