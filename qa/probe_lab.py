@@ -1,0 +1,11 @@
+from robot import Robot
+r = Robot("pl")
+r.login("alexandermayer2002+fable2@gmail.com", "RobotTester!2026"); r.sleep(2); r.wait_ready()
+r.cta(r"upload|enter|results"); r.sleep(1.5); r.wait_ready(10)
+print("A:", "Manual entry" in r.text())
+r.click("Manual entry", exact=True, required=False); r.sleep(1.2)
+t = r.text()
+print("after manual click:", t[:420].replace("\n"," | "))
+print("has Search foods:", "Search foods" in t)
+r.shot("manual_mode")
+r.close()

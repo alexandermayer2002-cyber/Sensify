@@ -24,7 +24,12 @@ const shiftDate = (iso, days) => {
 export async function autoApproveTestLab(supabase, userId, foods) {
   const flagged = (foods || []).filter(f => f.level && f.level !== 'No sensitivity')
   const common = flagged.length === 0 || (flagged.length <= 2 && flagged.every(f => f.level === 'Low'))
-  await supabase.from('lab_results').update({ status: 'approved' }).eq('user_id', userId)
+  // RLS rightly blocks a user approving their own lab row; the TEST-ONLY
+  // serverless function (pattern-checked server-side) flips the status.
+  try {
+    const { data: u } = await supabase.auth.getUser()
+    await fetch('/.netlify/functions/test-approve-lab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: u?.user?.email }) })
+  } catch (e) {}
   const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1)
   const profileUpdate = common
     ? { program_phase: 'awaiting_decision', protocol_track: 'common', track_decision: 'pending', track_assigned_at: new Date().toISOString(), track_note: 'TEST AUTO-APPROVE' }

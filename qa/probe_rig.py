@@ -1,0 +1,17 @@
+from robot import Robot
+r = Robot("rig")
+r.login("alexandermayer2002+fable2@gmail.com", "RobotTester!2026"); r.sleep(2); r.wait_ready()
+r.cta(r"upload|enter|results"); r.sleep(1.5); r.wait_ready(10)
+r.click("Manual entry", exact=True); r.sleep(1.0)
+r.fill_ph("Search foods", "Beef"); r.sleep(1.0)
+t = r.text()
+i = t.find("Beef")
+print("after search:", t[max(0,i-40):i+160].replace("\n"," | "))
+# click High near Beef
+ok = r.xclick("Beef", "High", required=False)
+print("xclick ok:", ok)
+r.sleep(0.6)
+t2 = r.text(); j = t2.find("Beef")
+print("after High:", t2[max(0,j-40):j+180].replace("\n"," | "))
+r.shot("rig_state")
+r.close()

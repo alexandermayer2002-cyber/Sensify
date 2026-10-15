@@ -133,6 +133,58 @@ class Robot:
             self.find(f"[{self.tag}] answer fail {question_sub!r} -> {option!r}: {str(e)[:70]}")
             return False
 
+
+
+    def wait_ready(self, timeout_s=25):
+        """Poll until the app's loading states clear."""
+        import time as _t
+        end = _t.time() + timeout_s
+        while _t.time() < end:
+            t = self.text()
+            if t and "Loading your program" not in t and "Loading..." not in t and len(t) > 60:
+                return True
+            self.sleep(0.8)
+        self.find(f"[{self.tag}] still loading after {timeout_s}s")
+        return False
+
+    def note(self, s):
+        self.findings.append("NOTE: " + s); print("NOTE:", s)
+
+    def snap(self, tag, n=900):
+        t = self.text()
+        print(f"==[{tag}]==\n{t[:n]}\n==end {tag}==")
+        return t
+
+    def xclick(self, anchor, target, required=True):
+        """Click `target` as the first match AFTER `anchor` in document order."""
+        try:
+            x = f"xpath=//*[contains(normalize-space(text()), {anchor!r})]/following::*[normalize-space(text())={target!r}][1]"
+            self.page.locator(x).first.click(timeout=4000); self.sleep(0.25); return True
+        except Exception as e:
+            if required: self.find(f"[{self.tag}] xclick {anchor!r}->{target!r}: {str(e)[:60]}")
+            return False
+
+    def lifestyle_autofill(self, hours="6.5"):
+        for _ in range(5):
+            if not self.click("Tap to enter", required=False): break
+            val = hours if "sleep" in self.text().lower()[: self.text().lower().find("tap to enter") + 40] else "5"
+            self.numpad(val if _ == 0 else "5"); self.sleep(0.5)
+        for band in ["Moderate", "Most days", "Some days", "About right", "Could drink more",
+                     "Female", "Male", "Prefer not to say", "1\u20132 per week", "Rarely", "None", "Occasionally"]:
+            self.click(band, exact=True, required=False)
+
+
+    def cta(self, pattern):
+        """Click the last visible BUTTON whose text matches pattern (regex, i)."""
+        import re as _re
+        try:
+            btns = self.page.get_by_role("button")
+            idxs = [i for i in range(btns.count()) if _re.search(pattern, btns.nth(i).inner_text() or "", _re.I)]
+            if not idxs: raise RuntimeError("no button matches " + pattern)
+            btns.nth(idxs[-1]).click(timeout=5000); self.sleep(1.0); return True
+        except Exception as e:
+            self.find(f"[{self.tag}] cta /{pattern}/: {str(e)[:70]}"); return False
+
     def consent(self, full_name):
         """The pre-intake 'Before you begin' gate: typed-name signature + agree."""
         if "Before you begin" not in self.text():
