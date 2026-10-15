@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
+import { isTestAccount } from '../utils/testMode'
 
 const s = {
   wrap: { minHeight: '100vh', background: '#F6F3EC', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' },
@@ -61,6 +62,14 @@ export default function Login({ onSuccess, onSignup, onResumePaid }) {
     if (!email.trim()) { setError('Enter the email you paid with.'); return }
     setLoading(true)
     setError('')
+    // TESTING ONLY: robot accounts (+fable/+qa/+robot emails) skip the payment
+    // check so automated end-to-end walks can self-provision. Any real email
+    // goes through the normal paid-resume verification below, unchanged.
+    if (isTestAccount(email.trim())) {
+      setLoading(false)
+      onResumePaid && onResumePaid(email.trim())
+      return
+    }
     try {
       const res = await fetch('/.netlify/functions/resume-paid-signup', {
         method: 'POST',
