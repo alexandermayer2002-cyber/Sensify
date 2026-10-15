@@ -66,6 +66,11 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
   const [expanded, setExpanded] = useState(false)
   const [tier, setTier] = useState(null)
   const [labFoods, setLabFoods] = useState([])
+  const [tierFreq, setTierFreq] = useState({})   // { foodName: freqValue } — measured, not assumed
+  const FREQ_OPTS = [
+    ['daily', 'Daily'], ['3-5x', '3\u20135x/week'], ['1-2x', '1\u20132x/week'],
+    ['rarely', 'Rarely'], ['almost-never', 'Almost never'], ['never', 'Never'],
+  ]
   useEffect(() => {
     (async () => {
       try {
@@ -90,8 +95,10 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
     if (!tier) return
     setSaving(true)
     const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1)
+    const mergedFreq = { ...(profile?.food_frequency || {}), ...tierFreq }
     const { error } = await supabase.from('profiles').update({
       protocol_tier: tier,
+      food_frequency: mergedFreq,
       track_decision: 'active',
       program_phase: 'elimination',
       protocol_start_date: localDateString(tomorrow),
@@ -170,7 +177,34 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
           </div>
         )}
 
-        <button className="ctd-btn primary" disabled={!tier || saving} onClick={startProtocol}>
+        {tier && (
+          <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '16px', marginBottom: '14px' }}>
+            <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C', marginBottom: '4px' }}>How often do you eat these?</div>
+            <div style={{ fontSize: '12px', color: '#7A7A72', lineHeight: 1.55, marginBottom: '12px' }}>Your testing order is built from how you actually eat. The foods in your life most get answered first.</div>
+            {TIER_META[tier].foods.map(f => (
+              <div key={f.name} style={{ marginBottom: '12px' }}>
+                <div style={{ fontSize: '12.5px', fontWeight: 600, color: '#3D5C3C', marginBottom: '6px' }}>{f.name}</div>
+                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                  {FREQ_OPTS.map(([v, l]) => (
+                    <button key={v} onClick={() => setTierFreq(prev => ({ ...prev, [f.name]: v }))} style={{
+                      padding: '7px 11px', borderRadius: '9px', fontSize: '11.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+                      border: tierFreq[f.name] === v ? '1px solid #3D5C3C' : '1px solid rgba(0,0,0,0.08)',
+                      background: tierFreq[f.name] === v ? '#3D5C3C' : '#FAF8F4',
+                      color: tierFreq[f.name] === v ? '#FAF8F4' : '#5A5A52',
+                    }}>{l}</button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {TIER_META[tier].foods.some(f => tierFreq[f.name] === 'never') && (
+              <div style={{ fontSize: '11.5px', color: '#9A6212', background: '#FBF0DF', borderRadius: '9px', padding: '9px 12px', lineHeight: 1.55 }}>
+                Foods you never eat are not tested, since there is nothing to learn from removing them. If these foods are not part of your diet, the other path may fit you better.
+              </div>
+            )}
+          </div>
+        )}
+
+        <button className="ctd-btn primary" disabled={!tier || saving || !TIER_META[tier].foods.every(f => tierFreq[f.name])} onClick={startProtocol}>
           {saving ? 'Starting...' : 'Start my protocol'}
         </button>
         <button className="ctd-btn ghost" disabled={saving} onClick={declineToTrack}>
