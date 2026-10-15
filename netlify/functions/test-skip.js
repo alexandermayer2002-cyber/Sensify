@@ -30,8 +30,12 @@ exports.handler = async (event) => {
     const { data: rows, error: se } = await sb.from(table).select(`${key}, ${col}`).eq('user_id', uid)
     if (se) { out.errors.push(`${table} select: ` + se.message); return }
     let n = 0
-    for (const r of (rows || [])) {
-      if (r[col] == null) continue
+    // Oldest first: shifting back by N days, each row moves onto a date its
+    // predecessor has already vacated, so dense histories never collide with
+    // the unique (user_id, date) constraints.
+    const sorted = (rows || []).filter(r => r[col] != null)
+      .sort((a, b) => String(a[col]).localeCompare(String(b[col])))
+    for (const r of sorted) {
       const { error } = await sb.from(table).update({ [col]: shiftDate(r[col], days) }).eq(key, r[key])
       if (error) out.errors.push(`${table}: ` + error.message); else n++
     }
