@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { supabase } from '../supabase'
+import { isTestAccount, autoApproveTestLab } from '../utils/testMode'
 import { aiCall } from '../utils/aiClient'
 
 const s = {
@@ -238,6 +239,13 @@ Rules:
     await supabase.from('profiles').update({
       program_phase: 'pending_review',
     }).eq('id', session.user.id)
+
+    // TESTING ONLY: robot accounts (+fable/+qa/+robot emails) skip the human
+    // admin gate so automated end-to-end walks can run. Real customers always
+    // wait for admin review, exactly as above.
+    if (isTestAccount(session.user.email)) {
+      try { await autoApproveTestLab(supabase, session.user.id, foods) } catch (e) {}
+    }
 
     setSaving(false)
     onComplete()

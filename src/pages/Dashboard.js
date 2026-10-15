@@ -8,6 +8,7 @@ import SlipupSurvey from './SlipupSurvey'
 import ComplianceAudit from './ComplianceAudit'
 import CheckinHistory from './CheckinHistory'
 import FoodMap from './FoodMap'
+import { isTestAccount, testSkipDays } from '../utils/testMode'
 import ReintroTab from './ReintroTab'
 import AskSensify from './AskSensify'
 import MaintainHub from './MaintainHub'
@@ -2061,6 +2062,16 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             </div>
 
+            {isTestAccount(session?.user?.email) && (
+              <div style={{ position: 'fixed', bottom: 14, right: 14, zIndex: 9999, background: '#FFFFFF', border: '1.5px dashed #C07A28', borderRadius: 12, padding: '10px 12px', boxShadow: '0 6px 20px rgba(0,0,0,0.12)', fontFamily: 'DM Mono, monospace' }}>
+                <div style={{ fontSize: 8, letterSpacing: '1.4px', color: '#C07A28', marginBottom: 7 }}>TEST MODE · TIME MACHINE</div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {[1, 7, 11, 43].map(d => (
+                    <button key={d} onClick={async (ev) => { ev.currentTarget.disabled = true; await testSkipDays(supabase, session.user.id, d); window.location.reload() }} style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(192,122,40,0.4)', background: '#FBF0DF', color: '#9A6212', cursor: 'pointer' }}>+{d}d</button>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* THE LEAF CONSTELLATION — 28 nights, one star per logged day, randomized per user; the leaf reveals at 28 */}
             {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 42) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
               const preP = !profile?.protocol_start_date
