@@ -1,0 +1,16 @@
+{
+ "findings": [],
+ "console": [
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)"
+ ],
+ "screens": {
+  "p2_survey_confirm": "\u2190 Back\nSensify.\nDay 14\nDairy\nYour dairy results.\nOne last step before we map Dairy on your Food Map. Confirm what you logged, and tell us if anything unusual happened.\nWHAT YOU LOGGED\nYou ate dairy on 3 days. On 1 of those day you noted bloating.\nDoes that sound right?\nThis is what you told us day by day. If anything looks off, let us know and we'll factor it in.\nYes, that's accurate\nNot quite, it felt worse than that\nNot quite, it felt milder than that\nWas anything else going on? (optional)\nThings outside of dairy can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.\nGet my verdict \u2192",
+  "P2_THE_RULING": "Sensify.\nVERDICT ENTERED \u00b7 DAY 14 OF 14\nDairy\nLimit.\nMild or dose-dependent symptoms detected. Dairy has been added to your Limit list.\nENTERED IN YOUR VERDICTS\nDairy\nMILD, DOSE-LINKED\nTHE ANALYSIS\nYour elimination baseline was clean with zero symptom days, so even one mild symptom day during exposure stands out against that background. The bloating on the third exposure day was mild and resolved overnight, with no washout flare and no moderate or severe reactions logged across the full reintroduction. The data pattern as a whole points to a low level of reactivity, which supports the Limit verdict rather than moving it in either direction.\nWORTH KNOWING\nThis isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food in your Avoid list.\nView updated Food Map \u2192"
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P2I_01_p2_survey_confirm.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P2I_02_P2_THE_RULING.png"
+ ]
+}

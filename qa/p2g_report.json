@@ -1,0 +1,18 @@
+{
+ "findings": [],
+ "console": [
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)"
+ ],
+ "screens": {
+  "p2g_stale_home": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nGood morning, Fable\nDay 5 of reintroduction.\nDAIRY CYCLE \u00b7 DAY 5 OF 14 \u00b7 EXPOSURE\nToday's check-in\n\u2192\n54 day streak, unbroken\nTesting foods, one at a time\nWEEKLY INSIGHT \u00b7 WEEK 8\n\nBloating dropped 33% this week, from a baseline of 6 down to 4, and that lines up with what you noted about feeling steadier and having fewer afternoon crashes. Sleep, energy, and afternoon scores each came in 20% below baseline, which is worth watching, though a single check-in against baseline leaves too many variables open to read that pattern clearly yet. You followed the plan on all 6 logged days, so that picture should sharpen considerably as reintroduction data accumulates over the coming weeks.\n\nGENERATED FROM YOUR CHECK-IN DATA\nWeekly check-in\nDone \u2014 next one opens at week\u2019s end\n\u2713\nDAYS 57\u201363\n54\nDAY STREAK\nSu\n\u2713\nMo\n\u2713\nTu\n\u2713\nWe\n\u2713\nTh\n\u00b7\nFr\nSa\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nSleep\nnorm 7 hrs \u00b7 this week 7 hrs\nStress\nnorm moderate \u00b7 this week low\nWater\nnorm 6 cups \u00b7 this week 6 cups\nCURRENTLY AVOIDING\n2 foods total\nCOMMON TRIGGERS \u00b7 NOT LAB-FLAGGED\n2\nDairy\nGluten / wheat\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nSYMPTOM TRENDS\n-33% avg vs baseline\nBloating\nEnergy\nClarity\nSleep\nGas\nREINTRO\n4\nBaseline\nWeek 8\nBaseline\n6\nLatest\n4\nCheck-ins\n1",
+  "p2g_expo1_filled": "\u2190 Back\nSensify.\nDAILY CHECK-IN\nHow's today?\nA few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.\nREINTRODUCTION \u00b7 DAIRY\nDid you eat dairy today?\nYes\nNot today\nAny symptoms today?\nYes\nNo, felt fine\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\n7 hours\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\n6 cups\nDone for today \u2192"
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P2G_01_p2g_stale_home.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P2G_02_p2g_expo1_filled.png"
+ ]
+}

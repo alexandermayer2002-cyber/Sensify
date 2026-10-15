@@ -1,0 +1,24 @@
+{
+ "findings": [
+  "[P2D] cta /Start the dairy/: no button matches Start the dairy"
+ ],
+ "console": [
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)"
+ ],
+ "screens": {
+  "p2_elim_complete_home": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nGood morning, Fable\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 1 OF 112 \u00b7 CYCLE COMPLETE\nPick your next food\n\u2192\nor log today\u2019s check-in\n60 day streak, unbroken\nTesting foods, one at a time\nPROTOCOL \u00b7 DAY 57\n\nYou're on day 57 of your reintroduction phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.\n\nWeekly check-in\nDue now \u00b7 takes 2 minutes\nStart \u2192\nDAYS 57\u201363\n60\nDAY STREAK\nTh\n\u00b7\nFr\nSa\nSu\nMo\nTu\nWe\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nCURRENTLY AVOIDING\n2 foods total\nCOMMON TRIGGERS \u00b7 NOT LAB-FLAGGED\n2\nDairy\nGluten / wheat\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nSYMPTOM TRENDS\nYour symptom trends will appear here after your first weekly check-in.",
+  "p2_reintro_unlocked": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nYOUR FOODS \u00b7 UNLOCKED\n1\nDairyRECOMMENDED\nDaily\nStart cycle \u2192\n2\nGluten / wheat\n3\u20135x per week\nStart cycle \u2192",
+  "p2_trial_start_sheet": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nYOUR FOODS \u00b7 UNLOCKED\n1\nDairyRECOMMENDED\nDaily\nStart cycle \u2192\n2\nGluten / wheat\n3\u20135x per week\nStart cycle \u2192",
+  "p2_trial_day1_home": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nYOUR FOODS \u00b7 UNLOCKED\n1\nDairyRECOMMENDED\nDaily\nStart cycle \u2192\n2\nGluten / wheat\n3\u20135x per week\nStart cycle \u2192"
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P2D_01_p2_elim_complete_home.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P2D_02_p2_reintro_unlocked.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P2D_03_p2_trial_start_sheet.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P2D_04_p2_trial_day1_home.png"
+ ]
+}

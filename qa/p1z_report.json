@@ -1,0 +1,24 @@
+{
+ "findings": [
+  "[P1z] cta /done|continue|map|verdicts|home/: no button matches done|continue|map|verdicts|home"
+ ],
+ "console": [
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)"
+ ],
+ "screens": {
+  "survey_readback": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nCURRENTLY TESTING\nCrab\n14-day reintroduction cycle \u00b7 Day 14 of 14\nCycle complete\nDAY 14 \u00b7 VERDICT READY\nCrab reintroduction complete.\nOne last survey. Your answers and fourteen days of logs decide the verdict: Safe, Limit, or Avoid.\nGet my verdict \u2192\nExposure (days 1 to 3)\nWashout (days 4 to 14)\nYOUR CYCLE SO FAR\nView daily log\nExposure complete. Symptoms noted on 1 of 3.",
+  "survey_answered": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nCURRENTLY TESTING\nCrab\n14-day reintroduction cycle \u00b7 Day 14 of 14\nCycle complete\nDAY 14 \u00b7 VERDICT READY\nCrab reintroduction complete.\nOne last survey. Your answers and fourteen days of logs decide the verdict: Safe, Limit, or Avoid.\nGet my verdict \u2192\nExposure (days 1 to 3)\nWashout (days 4 to 14)\nYOUR CYCLE SO FAR\nView daily log\nExposure complete. Symptoms noted on 1 of 3.",
+  "THE_RULING": "\u2190 Back\nSensify.\nDay 14\nCrab\nYour crab results.\nOne last step before we map Crab on your Food Map. Confirm what you logged, and tell us if anything unusual happened.\nWHAT YOU LOGGED\nYou ate crab on 3 days. On 1 of those day you noted bloating.\nWORTH WEIGHING\nDuring clean elimination weeks you logged symptoms about 0.3 days a week. That background is part of how this cycle gets read.\nDoes that sound right?\nThis is what you told us day by day. If anything looks off, let us know and we'll factor it in.\nYes, that's accurate\nNot quite, it felt worse than that\nNot quite, it felt milder than that\nWas anything else going on? (optional)\nThings outside of crab can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.\nGet my verdict \u2192",
+  "gallery": "\u2190 Back\nSensify.\nDay 14\nCrab\nYour crab results.\nOne last step before we map Crab on your Food Map. Confirm what you logged, and tell us if anything unusual happened.\nWHAT YOU LOGGED\nYou ate crab on 3 days. On 1 of those day you noted bloating.\nWORTH WEIGHING\nDuring clean elimination weeks you logged symptoms about 0.3 days a week. That background is part of how this cycle gets read.\nDoes that sound right?\nThis is what you told us day by day. If anything looks off, let us know and we'll factor it in.\nYes, that's accurate\nNot quite, it felt worse than that\nNot quite, it felt milder than that\nWas anything else going on? (optional)\nThings outside of crab can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.\nGet my verdict \u2192",
+  "gallery_record_open": "\u2190 Back\nSensify.\nDay 14\nCrab\nYour crab results.\nOne last step before we map Crab on your Food Map. Confirm what you logged, and tell us if anything unusual happened.\nWHAT YOU LOGGED\nYou ate crab on 3 days. On 1 of those day you noted bloating.\nWORTH WEIGHING\nDuring clean elimination weeks you logged symptoms about 0.3 days a week. That background is part of how this cycle gets read.\nDoes that sound right?\nThis is what you told us day by day. If anything looks off, let us know and we'll factor it in.\nYes, that's accurate\nNot quite, it felt worse than that\nNot quite, it felt milder than that\nWas anything else going on? (optional)\nThings outside of crab can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.\nGet my verdict \u2192"
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1z_01_survey_readback.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1z_02_survey_answered.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1z_03_THE_RULING.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1z_04_gallery.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/P1z_05_gallery_record_open.png"
+ ]
+}

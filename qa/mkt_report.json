@@ -1,0 +1,49 @@
+{
+ "screens": {
+  "mkt_full": "Sensify.\nHome\nHow it works\nScience\nPricing\nFAQ\nAbout\nSign in\nGet started\nSensify\nTEST. ELIMINATE. REINTRODUCE. KNOW.\nStop guessing what your body can't handle.\nLab testing, a structured elimination and reintroduction protocol, and daily guidance that shows you how individual foods actually affect you. You end with a full set of verdicts: exactly where you stand with every tested food.\nStart your program\nSee how it works\n$399 \u00b7 lab test included \u00b7 one payment\nLab test, elimination protocol, daily and weekly check-ins, personalized insights, guided reintroductions, Ask Sensify, and your final verdicts.\nTHE PROBLEM\nMost people suspect food.\nAlmost none ever confirm it.\nFood sensitivity tests are more accessible than ever. But buying a test is easy. Knowing what to do with it isn't. Without a structured process, most people eliminate a few things, feel slightly better, give up, and never get real answers.\nTests are easy to buy\nBut most people who buy a food sensitivity test never follow a proper elimination protocol.\nGuessing doesn't work\nRandomly cutting foods with no structure gives you no signal. You don't know what's helping.\nNo accountability\nNo daily check-ins, no AI tracking your symptoms, no verdicts at the end. Just a list and good luck.\nHOW IT WORKS\nFour steps to certainty.\n01\nTest\nComplete your intake and at-home lab test. Your results become the starting hypothesis: the suspects, not the verdict.\n02\nEliminate\nEight weeks without your target foods, with 30-second daily check-ins. Your symptoms settle into a clean baseline.\n03\nReintroduce\nEach food returns one at a time in a controlled cycle while we track your response. Your body gives the real answer.\n04\nKnow\nEvery food lands where it belongs: Safe, Limit, or Avoid. Every verdict is earned and yours to keep.\nSee the full program \u2192\nINSIDE THE PROGRAM\nA look at what you're getting.\nThirty seconds a day. One real check-in a week. And every so often, a verdict you earned.\nTap through the screens below.\nDashboard\nHistory\nReintro\nVerdicts\nAsk Sensify\nSensify.\nELIMINATION PHASE\n42\nof 56 days\n42\nDAY STREAK\nDay 1\n14 days to reintroduction\nCurrently avoiding \u00b7 8 foods\nGluten\nChicken\nDairy\nEggs\nSoy\nAlmond\n+ 2 more\n\u25cf High\n\u25cf Moderate\n\u25cf Low\nWEEK 6 INSIGHT\nYour bloating score has dropped for the third straight week, and your energy is holding above baseline. Six clean weeks is exactly the signal we need before testing begins.\nSymptom trends\nBloating\nEnergy\nWeek 1\n- - baseline\nWeek 6\n-38% avg vs baseline\nThe day, the phase, the streak, your symptoms against baseline, and this week\u2019s insight. One glance and you\u2019re oriented.\nTHE OUTCOME\nVerdicts that are actually earned.\nNo food gets labeled Safe without being tested. No food gets labeled Avoid without structured evidence. Everything you eat, sorted into three honest categories by your own body, and yours to keep.\nSafe\nTested, tolerated, eat freely.\nLimit\nFine in small amounts.\nAvoid\nA confirmed trigger.\nAnd sometimes the answer is that food was never the problem. That is a real result too, and knowing it saves you from years of cutting things out for nothing.\nSENSIFY \u00b7 VERIFIED RESULT\nSarah's verdicts.\nWHEAT\nSafe.\nOATS\nSafe.\nCOFFEE\nLimit.\nSOY\nLimit.\nGLUTEN\nAvoid.\nDAIRY\nAvoid.\nSENSIFY VERIFIED \u00b7 TESTED OVER 184 DAYS\nBEFORE YOU START\nThe questions everyone asks.\nWhat's included in the price?\n+\nWhat makes Sensify different from just buying a test?\n+\nHow much time does it take each week?\n+\nWhat if it turns out food is not my problem?\n+\nDo I need to already have a lab test?\n+\nRead all FAQs \u2192\nStop guessing.\nStart knowing.\n\nA lab test alone costs $150 to $300 and hands you a guess. Sensify includes the lab and the months of structure that turn it into an answer. One price, nothing else to buy.\n\nStart your program\nSensify.\nWellness program only. Not medical advice.\nPrivacy\nTerms\nContact"
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/MKT_01_mkt_top.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/MKT_02_mkt_scroll0.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/MKT_03_mkt_scroll1.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/MKT_04_mkt_scroll2.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/MKT_05_mkt_scroll3.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/MKT_06_mkt_desktop_top.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/MKT_07_mkt_desktop_mid.png"
+ ],
+ "links": [
+  {
+   "t": "Privacy",
+   "h": "/privacy.html"
+  },
+  {
+   "t": "Terms",
+   "h": "/terms.html"
+  },
+  {
+   "t": "Contact",
+   "h": "mailto:alex@sensifyhealth.com"
+  }
+ ],
+ "console": [],
+ "buttons": [
+  "Home",
+  "How it works",
+  "Science",
+  "Pricing",
+  "FAQ",
+  "About",
+  "Sign in",
+  "Get started",
+  "Start your program",
+  "See how it works",
+  "See the full program \u2192",
+  "Dashboard",
+  "History",
+  "Reintro",
+  "Verdicts",
+  "Ask Sensify",
+  "Read all FAQs \u2192",
+  "Start your program"
+ ]
+}
