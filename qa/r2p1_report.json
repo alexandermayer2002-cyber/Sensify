@@ -1,0 +1,19 @@
+{
+ "findings": [],
+ "console": [
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)"
+ ],
+ "screens": {
+  "r1_readback": "\u2190 Back\nSensify.\nYOUR LAB RESULTS\nAdd your test results.\nEnter only the foods that showed a reaction. Anything you leave out is treated as clear.\nUpload PDF\nTake photo\nManual entry\nAdd each food your lab report flags, one at a time. Most reports list 3 to 12 foods. Search below and pick the sensitivity level shown on your report.\nSearch for each food on your results, then tap its level. Only what you flag gets saved.\n4 foods flagged so far\nCrab\nHigh\nModerate\nLow\nMy report shows no sensitivities\nThat's a real result. We'll review it and recommend the right path, often testing common trigger foods instead.\nREVIEW BEFORE SUBMITTING\nBeef (High) \u00b7 Egg Yolk (Moderate) \u00b7 Avocado (High) \u00b7 Crab (Low)\nGo back and edit\nLooks right, submit for review \u2192",
+  "r1_home_flagged": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nSign out\nGood afternoon,\nFable.\n\nYou're making real progress. Keep going.\n\nELIMINATION PHASE\nStarts tomorrow.\nYour elimination phase begins tomorrow.\nDay 1\n56 days total\nGETTING STARTED\n\nYou are set. Elimination begins tomorrow. Your day 1 briefing will meet you here.\n\nWeekly check-in\nOpens at the end of week 1\nLocked\nDAYS 1\u20137\n0\nDAY STREAK\nSa\nSu\nMo\nTu\nWe\nTh\nFr\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nCURRENTLY AVOIDING\n4 foods total\nHIGH SENSITIVITY\n2\nBeef\nAvocado\nMODERATE SENSITIVITY\n1\nEgg Yolk\nLOW SENSITIVITY\n1\nCrab\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nSYMPTOM TRENDS\nYour symptom trends will appear here after your first weekly check-in.",
+  "r1_unlock_hero": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nGood afternoon, Fable\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 1 OF 56 \u00b7 TESTING OPEN\nPick your next food\n\u2192\nor log today\u2019s check-in\n56 day streak, unbroken\nTesting foods, one at a time\nPROTOCOL \u00b7 DAY 57\n\nYou're on day 57 of your reintroduction phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.\n\nWeekly check-in\nDue now \u00b7 takes 2 minutes\nStart \u2192\nDAYS 57\u201363\n56\nDAY STREAK\nFr\n\u00b7\nSa\nSu\nMo\nTu\nWe\nTh\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nCURRENTLY AVOIDING\n4 foods total\nHIGH SENSITIVITY\n2\nBeef\nAvocado\nMODERATE SENSITIVITY\n1\nEgg Yolk\nLOW SENSITIVITY\n1\nCrab\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nSYMPTOM TRENDS\nYour symptom trends will appear here after your first weekly check-in.",
+  "r1_picker": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nYOUR FOODS \u00b7 UNLOCKED\n1\nCrabRECOMMENDED\nDaily\nStart cycle \u2192\n2\nEgg Yolk\n3\u20135x per week\nStart cycle \u2192\n3\nBeef\n1\u20132x per week\nStart cycle \u2192\n4\nAvocado\nRarely\nStart cycle \u2192"
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/R2P1_02_r1_readback.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/R2P1_03_r1_home_flagged.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/R2P1_04_r1_unlock_hero.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/R2P1_05_r1_picker.png"
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "findings": [
+  "[CXS] cta /or log today/: no button matches or log today",
+  "[CXS] answer fail 'stress' -> 'Low': Locator.click: Timeout 4000ms exceeded.\nCall log:\n  - waiting for loca",
+  "[CXS] cta /Done for today/: no button matches Done for today",
+  "[CXS] cta /Done/: no button matches Done",
+  "[CXS] cta /or log today/: no button matches or log today",
+  "[CXS] answer fail 'stress' -> 'High': Locator.click: Timeout 4000ms exceeded.\nCall log:\n  - waiting for loca",
+  "[CXS] cta /Done for today/: no button matches Done for today",
+  "[CXS] cta /Done/: no button matches Done",
+  "[CXS] cta /or log today/: no button matches or log today",
+  "[CXS] answer fail 'stress' -> 'Low': Locator.click: Timeout 4000ms exceeded.\nCall log:\n  - waiting for loca",
+  "[CXS] cta /Done for today/: no button matches Done for today",
+  "[CXS] cta /Done/: no button matches Done",
+  "[CXS] cta /or log today/: no button matches or log today",
+  "[CXS] answer fail 'stress' -> 'Low': Locator.click: Timeout 4000ms exceeded.\nCall log:\n  - waiting for loca",
+  "[CXS] cta /Done for today/: no button matches Done for today",
+  "[CXS] cta /Done/: no button matches Done",
+  "[CXS] cta /or log today/: no button matches or log today",
+  "[CXS] answer fail 'stress' -> 'High': Locator.click: Timeout 4000ms exceeded.\nCall log:\n  - waiting for loca",
+  "[CXS] cta /Done for today/: no button matches Done for today",
+  "[CXS] cta /Done/: no button matches Done",
+  "[CXS] cta /or log today/: no button matches or log today",
+  "[CXS] answer fail 'stress' -> 'Low': Locator.click: Timeout 4000ms exceeded.\nCall log:\n  - waiting for loca",
+  "[CXS] cta /Done for today/: no button matches Done for today",
+  "[CXS] cta /Done/: no button matches Done"
+ ],
+ "console": [
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+ ],
+ "screens": {
+  "cx_symptom_picker": "\u2190 Back\nSensify.\nDAILY CHECK-IN\nHow's today?\nA few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\n7 hours\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\n6 cups\nAnything off today? optional\nFelt fine\nSomething mild\nSomething notable\nWhat was it?\nBloating\nGas\nCramping\nReflux\nLoose stools\nFatigue\nAfternoon crash\nBrain fog\nOther\nWhen did it hit?\nMorning\nAfter a meal\nEvening\nAll day\nDone for today \u2192",
+  "first_symptom": "\u2190 Back\nSensify.\nDAILY CHECK-IN\nHow's today?\nA few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\n7 hours\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\n6 cups\nAnything off today? optional\nFelt fine\nSomething mild\nSomething notable\nWhat was it?\nBloating\nGas\nCramping\nReflux\nLoose stools\nFatigue\nAfternoon crash\nBrain fog\nOther\nWhen did it hit?\nMorning\nAfter a meal\nEvening\nAll day\nDone for today \u2192",
+  "cx_payoff_memory": "Sensify.\n\u2713\nToday, logged.\n31 DAY STREAK, UNBROKEN\n\u2713\nFr\nSa\nSu\nMo\nTu\nWe\nTh\n31 days in a row. You're building a really clear picture of your body.\nON THE RECORD\nBloating \u00b7 first of its kind on your record\nDone \u2192",
+  "cx_weekly_open": "\u2190 Back\nsensify\nWeek 8\nWEEK 8 CHECK-IN\nHow was your\nweek?\nHonest answers only, good or bad. This is how we track what's actually working.\nYOUR SYMPTOMS\nHow was your bloating this week?\nNone at all\nSevere\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nHow was your gas or cramping this week?\nNone at all\nSevere\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nHow was your reflux or heartburn this week?\nNone at all\nSevere\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nHow was your overall digestive comfort this week?\nVery uncomfortable\nVery comfortable\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nHow were your energy levels this week?\nExhausted\nFull energy\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nHow was your mental clarity this week?\nVery foggy\nCrystal clear\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nHow were your afternoon energy levels this week?\nSevere crash\nSustained energy\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nHow was your sleep this week?\nVery poor\nExcellent\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nOVERALL\nHow do you feel overall compared to last week?\nBetter\nAbout the same\nWorse\nWhat changed this week? (select all that apply)\nI traveled or was away from home\nI ate out more than usual\nI had a stressful week\nI wasn't feeling well this week\nI tried a new safe food\nI had a social event with limited food options\nMy sleep was off\nNothing unusual, a normal week\nCOMPLIANCE\nHow closely did you follow the elimination plan this week?\nFully\nMostly\nSome slip-ups\nNot at all\nAnything else worth noting? (optional)\nSubmit check-in \u2192",
+  "cx_weekly_payoff": "sensify\nWeek 9\nSENSIFY \u00b7 RECORD\nWEEK 9 LOGGED\nThis week is on the record.\nEvery honest week makes your map sharper.\n5\nBLOATING \u00b7 WAS 6\n5\nGAS \u00b7 WAS 5\nWriting your insight\u2026\nBack to dashboard \u2192",
+  "cx_INSIGHT": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nGood afternoon, Fable\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 7 OF 28 \u00b7 TESTING OPEN\nPick your next food\n\u2192\nor log today\u2019s check-in\n62 day streak, unbroken\nTesting foods, one at a time\nREINTRODUCTION BEGINS\n\nEight weeks of elimination, Fable, that takes real commitment and you followed through. There are no Low sensitivity foods unlocked in this tier, so your reintroduction will begin with the next tier as your starting point, head to the Reintro tab to see what's available and choose your first food when you're ready. The process moves one food at a time, with 14 days per food, so your body has a clear window to respond and you get reliable answers. Take a look at your options and go at a pace that feels right for you.\n\n\u00d7\nPROTOCOL \u00b7 DAY 63\n\nYou're on day 63 of your reintroduction phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.\n\nWeekly check-in\nDue now \u00b7 takes 2 minutes\nStart \u2192\nDAYS 57\u201363\n62\nDAY STREAK\nSa\n\u2713\nSu\n\u2713\nMo\n\u2713\nTu\n\u2713\nWe\n\u2713\nTh\n\u2713\nFr\n\u00b7\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nSleep\nnorm 7 hrs \u00b7 this week 7 hrs\nStress\nnorm moderate \u00b7 this week low\nWater\nnorm 6 cups \u00b7 this week 6 cups\nCURRENTLY AVOIDING\n2 foods total\nCOMMON TRIGGERS \u00b7 NOT LAB-FLAGGED\n2\nDairy\nGluten / wheat\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nSYMPTOM TRENDS\nYour symptom trends will appear here after your first weekly check-in."
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/CXS_01_cx_symptom_picker.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/CXS_02_first_symptom.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/CXS_03_cx_payoff_memory.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/CXS_04_cx_weekly_open.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/CXS_05_cx_weekly_payoff.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/CXS_06_cx_INSIGHT.png"
+ ]
+}

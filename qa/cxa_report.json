@@ -1,0 +1,23 @@
+{
+ "findings": [],
+ "console": [
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+ ],
+ "screens": {
+  "cxa_verdict_ready": "Sensify.\nHome\nReintro\nHistory\nVerdicts\nAsk Sensify\nMaintain\nSign out\nGood evening, Fable\nDay 27 of reintroduction.\nDAIRY CYCLE \u00b7 DAY 14 OF 14 \u00b7 WASHOUT\nYour Dairy verdict is ready\n\u2192\n82 day streak, unbroken\nTesting foods, one at a time\nWEEKLY INSIGHT \u00b7 WEEK 10\n\nClarity rose 25% above baseline this week, the strongest positive shift across all your tracked metrics, and digestive comfort moved 25% in the other direction on what you noted were the exact days stress peaked. Bloating improved 17% from baseline and held steady week over week, which is a meaningful signal in the right direction. You logged 6 of 7 days and followed the plan on every logged day, so the protocol stayed consistent even through a demanding stretch.\n\nGENERATED FROM YOUR CHECK-IN DATA\nWeekly check-in\nCatch up, your data still matters\nStart \u2192\nDAYS 78\u201384\n82\nDAY STREAK\nSu\n\u2713\nMo\n\u2713\nTu\n\u2713\nWe\n\u2713\nTh\n\u2713\nFr\n\u00b7\nSa\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nSleep\nnorm 7 hrs \u00b7 this week 7 hrs\nStress\nnorm moderate \u00b7 this week low\nWater\nnorm 6 cups \u00b7 this week 6 cups\nCURRENTLY AVOIDING\n2 foods total\nCOMMON TRIGGERS \u00b7 NOT LAB-FLAGGED\n2\nDairy\nGluten / wheat\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nSYMPTOM TRENDS\n-17% avg vs baseline\nLatest week\nOverall average\nBoth phases\nElimination\nReintro\nBloating\nEnergy\nClarity\nSleep\nGas\nREINTRO\n5\nBaseline\nWeek 9\nWeek 10\nBaseline\n6\nLatest\n5\nCheck-ins\n2",
+  "cxa_survey": "\u2190 Back\nSensify.\nDay 14\nDairy\nYour dairy results.\nOne last step before we map Dairy on your Food Map. Confirm what you logged, and tell us if anything unusual happened.\nWHAT YOU LOGGED\nYou ate dairy on 3 days. On 3 of those days you noted bloating.\nWORTH WEIGHING\nDuring clean elimination weeks you logged symptoms about 1 day a week. That background is part of how this cycle gets read.\n2 of your 3 symptom days were also among your worst sleep nights this cycle. The analysis weighs that too.\nDoes that sound right?\nThis is what you told us day by day. If anything looks off, let us know and we'll factor it in.\nYes, that's accurate\nNot quite, it felt worse than that\nNot quite, it felt milder than that\nWas anything else going on? (optional)\nThings outside of dairy can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.\nGet my verdict \u2192",
+  "CXA_RULING": "Sensify.\nVERDICT ENTERED \u00b7 DAY 14 OF 14\nDairy\nAvoid.\nA clear, repeatable symptom pattern was detected. Dairy has been added to your Avoid list.\nENTERED IN YOUR VERDICTS\nDairy\nSYMPTOMS CONFIRMED\nTHE ANALYSIS\nYour logged data showed mild bloating on all three exposure days, which is above your elimination baseline of roughly one symptom day per week, and the timing pattern you described (consistent bloating a few hours after each meal) aligns with that signal. Two of those three symptom days also overlapped with your worst sleep nights, which is worth noting as something that may have amplified how symptoms felt, though the consistent daily pattern makes it harder to attribute the bloating to sleep alone. The data as logged supports the Avoid verdict.\nWORTH KNOWING\nThis isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food and update its verdict.\nView your verdicts \u2192"
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/CXA_01_cxa_verdict_ready.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/CXA_02_cxa_survey.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/CXA_03_CXA_RULING.png"
+ ]
+}
