@@ -81,8 +81,8 @@ RULES:
 - Never clinical or judgmental
 - Never diagnose or make medical claims
 - Sound like a warm, smart health coach
-- Reference what they actually said — don't be generic
-- Do NOT give a plan recommendation — end by saying guidance is coming within 24 hours
+- Reference what they actually said, never generic
+- Do NOT give a plan recommendation. End by saying guidance is coming within 24 hours
 - Do not start with "Great" or "Well done"
 
 Write only the message text, no labels or formatting.`
@@ -180,7 +180,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
           Three days is hard.<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>Let's not treat it as failure.</em>
         </div>
         <div style={{ fontSize: '15px', color: '#7A7A72', lineHeight: 1.8, marginBottom: '24px' }}>
-          What we know from experience is that most elimination slip-ups aren't about willpower — they're about friction. Something in your environment or routine is making it hard to follow the plan.
+          What we know from experience is that most elimination slip-ups aren't about willpower. They're about friction. Something in your environment or routine is making it hard to follow the plan.
         </div>
         <div style={{ fontSize: '15px', color: '#1C1C1C', lineHeight: 1.8, fontWeight: 500 }}>
           Let's find it.
@@ -265,7 +265,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             <div style={s.infoLabel}>Worth knowing</div>
             <div style={s.infoText}>
               {craving
-                ? `Missing ${craving} is completely normal. Most cravings peak around week 2 and then fade. The good news — you're getting closer to finding out if it's actually causing your symptoms. That answer is worth the craving.`
+                ? `Missing ${craving} is completely normal. Most cravings peak around week 2 and then fade. The good news: you're getting closer to finding out if it's actually causing your symptoms. That answer is worth the craving.`
                 : `Most cravings during elimination peak around week 2 and then fade. What feels intense right now usually becomes much easier to manage. You're doing the hard part.`}
             </div>
           </div>
@@ -307,10 +307,10 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             <div style={s.infoCard}>
               <div style={s.infoLabel}>What helps</div>
               <div style={s.infoText}>
-                {socialWhen === 'weekends' && "Weekends are the most common slip-up time. One thing that helps — decide before Saturday what you'll do when your eliminated foods come up. A plan made in advance is much easier than a decision made in the moment."}
-                {socialWhen === 'evenings' && "Evening slip-ups usually happen when you're tired and haven't planned ahead. A simple fix — make sure you have something you can eat ready before 6pm so you're not making food decisions when your willpower is lowest."}
+                {socialWhen === 'weekends' && "Weekends are the most common slip-up time. One thing that helps: decide before Saturday what you'll do when your eliminated foods come up. A plan made in advance is much easier than a decision made in the moment."}
+                {socialWhen === 'evenings' && "Evening slip-ups usually happen when you're tired and haven't planned ahead. A simple fix: make sure you have something you can eat ready before 6pm so you're not making food decisions when your willpower is lowest."}
                 {socialWhen === 'work' && "Work situations are tough because you often can't control what's available. The most practical approach is bringing your own food on days you know it'll be an issue. It feels awkward once and then becomes normal."}
-                {socialWhen === 'family' && "Family meals are hard because there's emotional pressure on top of food pressure. You don't have to explain the whole protocol — most people accept 'I'm doing an elimination diet for a few weeks' without needing more detail."}
+                {socialWhen === 'family' && "Family meals are hard because there's emotional pressure on top of food pressure. You don't have to explain the whole protocol. Most people accept 'I'm doing an elimination diet for a few weeks' without needing more detail."}
                 {socialWhen === 'varies' && "When it happens everywhere, the issue is usually planning. Pick one thing you can always eat at any restaurant or gathering before you arrive. Having that decided in advance removes the in-the-moment pressure."}
               </div>
             </div>
@@ -339,16 +339,16 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         <div style={s.content}>
           <div style={s.eyebrow}>Hidden ingredients</div>
           <div style={s.title}>This is more<br /><em style={s.titleEm}>common than you think.</em></div>
-          <div style={s.hint}>Hidden ingredients are one of the most common reasons people don't see improvement — and it's almost never the person's fault. Labels are confusing by design.</div>
+          <div style={s.hint}>Hidden ingredients are one of the most common reasons people don't see improvement, and it's almost never the person's fault. Labels are confusing by design.</div>
 
           <div style={s.infoCard}>
             <div style={s.infoLabel}>Where your foods hide</div>
             <div style={s.infoText}>
-              <strong>Dairy</strong> — salad dressings, protein bars, some breads, anything labeled 'non-dairy' that contains casein or whey.<br /><br />
-              <strong>Gluten</strong> — soy sauce, most condiments, soups, processed meats, some medications.<br /><br />
-              <strong>Eggs</strong> — mayonnaise, most baked goods, pasta, glazed or brushed foods.<br /><br />
-              <strong>Soy</strong> — vegetable broth, canned tuna, most Asian sauces, protein bars.<br /><br />
-              <strong>Corn</strong> — dextrose, maltodextrin, citric acid, xanthan gum, modified food starch.
+              <strong>Dairy</strong>: salad dressings, protein bars, some breads, anything labeled 'non-dairy' that contains casein or whey.<br /><br />
+              <strong>Gluten</strong>: soy sauce, most condiments, soups, processed meats, some medications.<br /><br />
+              <strong>Eggs</strong>: mayonnaise, most baked goods, pasta, glazed or brushed foods.<br /><br />
+              <strong>Soy</strong>: vegetable broth, canned tuna, most Asian sauces, protein bars.<br /><br />
+              <strong>Corn</strong>: dextrose, maltodextrin, citric acid, xanthan gum, modified food starch.
             </div>
           </div>
 
@@ -359,7 +359,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         </div>
         <div style={s.footer}>
           <button style={s.cta} onClick={() => advanceBranch({ hidden_reviewed: true })}>
-            {hasMoreBranches || hasOther ? 'Got it — continue →' : 'Got it — submit →'}
+            {hasMoreBranches || hasOther ? 'Got it, continue →' : 'Got it, submit →'}
           </button>
         </div>
       </div>
@@ -376,7 +376,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         <div style={s.content}>
           <div style={s.eyebrow}>Let's check in on you</div>
           <div style={s.title}>How stressed have<br />you been <em style={s.titleEm}>this week?</em></div>
-          <div style={s.hint}>Stress genuinely affects digestion and food choices. This isn't an excuse — it's important context.</div>
+          <div style={s.hint}>Stress genuinely affects digestion and food choices. This isn't an excuse. It's important context.</div>
           <div style={s.scaleWrap}>
             <div style={s.scaleLabels}><span>Completely fine</span><span>Extremely stressed</span></div>
             <div style={s.scaleRow}>
@@ -392,9 +392,9 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
               </div>
               <div style={{ fontSize: '13px', color: '#1C1C1C', lineHeight: 1.7 }}>
                 {stressScore >= 8
-                  ? "When stress is this high, following any protocol becomes genuinely hard. We're not going to pretend otherwise. Your guidance will account for this — and give you options."
+                  ? "When stress is this high, following any protocol becomes genuinely hard. We're not going to pretend otherwise. Your guidance will account for this, and give you options."
                   : stressScore >= 5
-                  ? "Moderate stress is one of the most common reasons people slip during elimination. Not because of willpower, but because stress affects food choices and digestion in real ways. This isn't an excuse — it's data."
+                  ? "Moderate stress is one of the most common reasons people slip during elimination. Not because of willpower, but because stress affects food choices and digestion in real ways. This isn't an excuse. It's data."
                   : "Even when life feels manageable, disruptions to routine can knock the plan sideways. The protocol works best when it's built into your routine rather than worked around it."}
               </div>
             </div>
@@ -426,9 +426,9 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
           <div style={s.hint}>Cooking for others while on an elimination protocol is genuinely one of the hardest situations.</div>
           <div style={s.optionGrid}>
             {[
-              { id: 'yes', label: 'Yes — I do most of the cooking' },
-              { id: 'no', label: 'No — someone else usually cooks' },
-              { id: 'sometimes', label: 'Sometimes — it varies' },
+              { id: 'yes', label: 'Yes, I do most of the cooking' },
+              { id: 'no', label: 'No, someone else usually cooks' },
+              { id: 'sometimes', label: 'Sometimes, it varies' },
             ].map(opt => (
               <button key={opt.id} style={cookingRole === opt.id ? s.optionOn : s.option} onClick={() => setCookingRole(opt.id)}>
                 {opt.label}
@@ -440,8 +440,8 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
               <div style={s.infoLabel}>What helps</div>
               <div style={s.infoText}>
                 {cookingRole === 'yes' && "Batch cook your own food separately at the start of the week so it's always ready. Find 2-3 meals that work for everyone so you're not always making two separate things."}
-                {cookingRole === 'no' && "When someone else is cooking, communication is everything. You don't need to explain the whole protocol — just the specific foods to avoid. A simple list on the fridge or a quick text goes a long way."}
-                {cookingRole === 'sometimes' && "The days you cook are your easiest days — you control everything. Focus your energy on planning for the days you don't cook. What does that situation usually look like?"}
+                {cookingRole === 'no' && "When someone else is cooking, communication is everything. You don't need to explain the whole protocol, just the specific foods to avoid. A simple list on the fridge or a quick text goes a long way."}
+                {cookingRole === 'sometimes' && "The days you cook are your easiest days, since you control everything. Focus your energy on planning for the days you don't cook. What does that situation usually look like?"}
               </div>
             </div>
           )}
@@ -479,7 +479,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
           <div style={s.infoCard}>
             <div style={s.infoLabel}>The bigger picture</div>
             <div style={s.infoText}>
-              This is temporary. You're not building a permanent expensive diet — you're doing this for a limited time to get answers that will inform how you eat for years. The cost-per-day math looks very different when framed that way.
+              This is temporary. You're not building a permanent expensive diet. You're doing this for a limited time to get answers that will inform how you eat for years. The cost-per-day math looks very different when framed that way.
             </div>
           </div>
         </div>

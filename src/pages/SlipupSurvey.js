@@ -53,9 +53,9 @@ const COMMON_FOODS = [
 ]
 
 const REASONS = [
-  { id: 'intentional', label: 'Intentional — I chose to eat it' },
-  { id: 'accidental', label: 'Accidental — I didn\'t realize it wasn\'t on my plan' },
-  { id: 'hidden', label: 'Hidden ingredient — I thought the food was safe' },
+  { id: 'intentional', label: 'Intentional. I chose to eat it' },
+  { id: 'accidental', label: 'Accidental. I didn\'t realize it wasn\'t on my plan' },
+  { id: 'hidden', label: 'Hidden ingredient. I thought the food was safe' },
   { id: 'unsure', label: 'I\'m not sure' },
 ]
 
@@ -136,7 +136,7 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
           </div>
         ) : (
           <div style={{ ...s.successMsg }}>
-            One slip-up doesn't undo your progress — it's one data point. Your clean days are still there. Tomorrow is a fresh start.
+            One slip-up doesn't undo your progress. It's one data point. Your clean days are still there. Tomorrow is a fresh start.
           </div>
         )}
 
@@ -162,7 +162,7 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
       <div style={s.content}>
         <div style={s.eyebrow}>Slip-up logged</div>
         <div style={s.title}>What <em style={s.titleEm}>happened today?</em></div>
-        <div style={s.hint}>No judgment — this is just data. The more we know, the better your weekly insights become.</div>
+        <div style={s.hint}>No judgment, this is just data. The more we know, the better your weekly insights become.</div>
 
         <div style={s.label}>What did you eat that wasn't on your plan?</div>
         <input

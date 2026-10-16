@@ -1652,7 +1652,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="snfy-action">
                 <div className="snfy-action-tag"><div className="snfy-action-dot"></div>Action needed</div>
                 <h2>Upload your <em>lab results.</em></h2>
-                <p>PDF, photo, or manual entry — the AI reads your results and builds your elimination list in seconds.</p>
+                <p>PDF, photo, or manual entry. The AI reads your results and builds your elimination list in seconds.</p>
                 <button className="snfy-btn" onClick={() => setScreen('labresults')}>Upload results →</button>
               </div>
             )}
@@ -1694,7 +1694,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="snfy-action red">
                 <div className="snfy-action-tag red">Slip-up logged today</div>
                 <h2>What <em className="red">happened today?</em></h2>
-                <p>Takes 60 seconds. No judgment — just data that makes your weekly insights more accurate.</p>
+                <p>Takes 60 seconds. No judgment, just data that makes your weekly insights more accurate.</p>
                 <button className="snfy-btn red" onClick={() => setScreen('slipup')}>Tell us what happened →</button>
               </div>
             )}
@@ -1702,9 +1702,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             {showReintroCard && (
               <div className="snfy-action">
-                <div className="snfy-action-tag">Day 14 — verdict ready</div>
+                <div className="snfy-action-tag">Day 14 · verdict ready</div>
                 <h2><em>{profile?.current_reintro_food}</em> reintroduction complete.</h2>
-                <p>Complete your survey and get your AI verdict — Safe, Limit, or Avoid.</p>
+                <p>Complete your survey and get your AI verdict: Safe, Limit, or Avoid.</p>
                 <button className="snfy-btn" onClick={() => setScreen('reintro-survey')}>Get my verdict →</button>
               </div>
             )}
@@ -1799,7 +1799,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: checkinLate ? '#FDF2EA' : '#EDF3ED', border: checkinLate ? '1px solid rgba(212,137,74,0.25)' : '1px solid rgba(61,92,60,0.18)', borderRadius: 12, padding: '12px 14px', marginTop: 14 }}>
                 <div>
                   <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1C1C1C' }}>Weekly check-in</div>
-                  <div style={{ fontSize: 10.5, color: checkinLate ? '#8A5410' : '#3D5C3C', marginTop: 1 }}>{checkinLate ? "Catch up — your data still matters" : 'Due now · takes 2 minutes'}</div>
+                  <div style={{ fontSize: 10.5, color: checkinLate ? '#8A5410' : '#3D5C3C', marginTop: 1 }}>{checkinLate ? "Catch up, your data still matters" : 'Due now · takes 2 minutes'}</div>
                 </div>
                 <button className={`snfy-btn${checkinLate ? ' amber' : ''}`} style={{ padding: '9px 15px', fontSize: 12.5 }} onClick={() => setScreen('checkin')}>Start →</button>
               </div>
@@ -1807,7 +1807,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FAF8F4', borderRadius: 12, padding: '12px 14px', marginTop: 14 }}>
                 <div>
                   <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1C1C1C' }}>Weekly check-in</div>
-                  <div style={{ fontSize: 10.5, color: '#8A8A82', marginTop: 1 }}>{checkins.length === 0 ? 'Opens at the end of week 1' : 'Done — next one opens at week\u2019s end'}</div>
+                  <div style={{ fontSize: 10.5, color: '#8A8A82', marginTop: 1 }}>{checkins.length === 0 ? 'Opens at the end of week 1' : 'Done. Next one opens at week\u2019s end'}</div>
                 </div>
                 <span style={{ fontSize: 11, color: '#B8B6AE' }}>{checkins.length === 0 ? 'Locked' : '\u2713'}</span>
               </div>

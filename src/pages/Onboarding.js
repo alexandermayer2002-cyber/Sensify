@@ -46,15 +46,15 @@ export default function Onboarding({ onComplete, session }) {
 
         <div style={s.focusTag}>
           <div style={s.focusLabel}>Why it matters</div>
-          <div style={s.focusValue}>Symptoms move with sleep, stress, and hydration — not just food. Logging both is how we tell a real trigger from an ordinary rough day.</div>
+          <div style={s.focusValue}>Symptoms move with sleep, stress, and hydration, not just food. Logging both is how we tell a real trigger from an ordinary rough day.</div>
         </div>
         <div style={s.focusTag}>
           <div style={s.focusLabel}>When to do it</div>
-          <div style={s.focusValue}>Each evening works best — the day is fresh in your mind. You'll see your streak and your week build on the dashboard.</div>
+          <div style={s.focusValue}>Each evening works best, while the day is fresh in your mind. You'll see your streak and your week build on the dashboard.</div>
         </div>
 
         <div style={s.infoBox}>
-          Miss a day? No guilt — it just shows as a gap. Consistency beats perfection.
+          Miss a day? No guilt. It just shows as a gap. Consistency beats perfection.
         </div>
       </div>
       <div style={s.footer}>

@@ -241,7 +241,7 @@ function CheckinCard({ checkin: c, index: i, profile, formatDate, complianceColo
   const weekNum = c.week_number || i + 1
 
   const scores = SCORE_METRICS.filter(m => c.answers?.[m.id] !== undefined)
-  const contextChanges = c.answers?.context_changes?.filter(ch => ch !== 'Nothing unusual — normal week') || []
+  const contextChanges = c.answers?.context_changes?.filter(ch => ch !== 'Nothing unusual — normal week' && ch !== 'Nothing unusual, a normal week') || []
   const overallFeeling = c.answers?.overall_feeling
   const notes = c.answers?.notes
 

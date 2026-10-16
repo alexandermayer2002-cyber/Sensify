@@ -565,7 +565,7 @@ function ShowcaseScreen({ tab }) {
               <div style={{ fontSize: 9.5, color: '#4A4A45', lineHeight: 1.55 }}>{text}</div>
             </div>
           ))}
-          <div style={{ fontSize: 9.5, color: '#4A4A45', lineHeight: 1.55, marginTop: 8 }}>If you want pasta specifically, most spots will do gluten-free penne with pomodoro or arrabbiata — both clean for your list.</div>
+          <div style={{ fontSize: 9.5, color: '#4A4A45', lineHeight: 1.55, marginTop: 8 }}>If you want pasta specifically, most spots will do gluten-free penne with pomodoro or arrabbiata, both clean for your list.</div>
         </div>
       </div>
       <div style={{ display: 'flex', gap: 6, alignItems: 'center', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 11, padding: '6px 6px 6px 12px' }}>

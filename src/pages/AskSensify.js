@@ -237,7 +237,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
             <img src={image.preview} alt="upload preview" style={s.previewImg} />
             <button style={s.previewRemove} onClick={() => setImage(null)}>×</button>
           </div>
-          <div style={s.previewLabel}>Photo attached — I'll read it. Add a note or just send.</div>
+          <div style={s.previewLabel}>Photo attached. I'll read it. Add a note or just send.</div>
         </div>
       )}
       <div style={s.inputBar}>
@@ -266,7 +266,7 @@ function GuideRow({ dot, label, items }) {
   return (
     <div style={s.guideRow}>
       <span style={{ ...s.guideDot, background: dot }} />
-      <span style={s.guideText}><b style={{ fontWeight: 600 }}>{label}</b> — {items.join(', ')}</span>
+      <span style={s.guideText}><b style={{ fontWeight: 600 }}>{label}</b>: {items.join(', ')}</span>
     </div>
   )
 }

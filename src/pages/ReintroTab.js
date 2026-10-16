@@ -53,7 +53,7 @@ function TestedLedger({ cycles, protocolStartDate }) {
 
   return (
     <>
-      <div className="rt-section-label" style={{ marginTop: '20px' }}>Tested — {cycles.length} food{cycles.length !== 1 ? 's' : ''}</div>
+      <div className="rt-section-label" style={{ marginTop: '20px' }}>Tested · {cycles.length} food{cycles.length !== 1 ? 's' : ''}</div>
       {cycles.map((cyc) => {
         const open = expandedId === cyc.id
         const startDay = protoDay(cyc.started_at)
@@ -879,7 +879,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                           {tier.foods.map((f, j) => <span key={j} className="rt-lk-pill">{f}</span>)}
                         </div>
                       ) : (
-                        <div className="rt-lk-nofoods">{commonNoFoodsYet ? "You'll choose your test foods when this unlocks." : 'No foods in this tier — one less thing to test.'}</div>
+                        <div className="rt-lk-nofoods">{commonNoFoodsYet ? "You'll choose your test foods when this unlocks." : 'No foods in this tier, one less thing to test.'}</div>
                       )}
                     </div>
                   </div>
