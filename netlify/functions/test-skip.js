@@ -60,9 +60,12 @@ exports.handler = async (event) => {
   for (let i = 1; i <= days; i++) {
     const d = new Date(); d.setUTCDate(d.getUTCDate() - i)
     const ds = d.toISOString().split('T')[0]
-    const { error: fe } = await sb.from('daily_factors').upsert({ user_id: uid, log_date: ds, sleep: '7-8', stress: 'low', hydration: '6', followed_protocol: true }, { onConflict: 'user_id,log_date' })
+    // ignoreDuplicates: fills are for MISSING days only. A day the robot
+    // actually logged (an engineered stress day, a symptom day) must survive
+    // the skip, or no data pattern can ever be built for the AI to read.
+    const { error: fe } = await sb.from('daily_factors').upsert({ user_id: uid, log_date: ds, sleep: '7-8', stress: 'low', hydration: '6', followed_protocol: true }, { onConflict: 'user_id,log_date', ignoreDuplicates: true })
     if (fe) out.errors.push('fill factors ' + ds + ': ' + fe.message)
-    const { error: ce } = await sb.from('daily_compliance').upsert({ user_id: uid, date: ds, response: 'YES', logged_at: ds + 'T20:00:00Z' }, { onConflict: 'user_id,date' })
+    const { error: ce } = await sb.from('daily_compliance').upsert({ user_id: uid, date: ds, response: 'YES', logged_at: ds + 'T20:00:00Z' }, { onConflict: 'user_id,date', ignoreDuplicates: true })
     if (ce) out.errors.push('fill compliance ' + ds + ': ' + ce.message)
     if (!fe) out.fills++
   }
