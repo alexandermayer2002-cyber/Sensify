@@ -1,4 +1,5 @@
 import { aiPrompt } from './aiClient'
+import { getTestingOrder } from './protocolEngine'
 
 const stripDashes = (text = '') => text
   // Numeric ranges like "1-3" or "4 – 14" become "1 to 3" (not a comma)
@@ -193,36 +194,35 @@ Write only the message. No labels.`
 
 // DAY 57 — Reintroduction unlocks
 export const generateDay57Message = async ({ name, profile, labResult }) => {
-  const lowFoods = labResult?.foods
-    ?.filter(f => f.level === 'Low')
-    ?.filter(f => {
+  // ONE frequency-ordered queue (the doctrine): every non-never food unlocks
+  // at day 57, ordered by how often the user eats it. No tier language.
+  const queue = getTestingOrder(
+    (labResult?.foods || []).filter(f => {
       const freq = profile?.food_frequency?.[f.name]
-      return freq && freq !== 'never' && freq !== 'rarely'
-    })
-    ?.map(f => f.name) || []
+      return freq !== 'never'
+    }),
+    profile?.food_frequency
+  ).map(f => f.name)
 
   const symptoms = formatSymptoms(profile?.symptoms)
-  const bloatingImprovement = profile?.baseline_bloating
-    ? 'tracked throughout elimination'
-    : 'not yet recorded'
 
   const prompt = `You are the analysis engine inside Sensify. Write a Day 57 reintroduction unlock message.
 
 USER:
 - Name: ${name}
 - Symptom focus: ${symptoms}
-- Low sensitivity foods now available to test: ${lowFoods.join(', ') || 'none in this tier'}
+- All their foods are now available to test, in this order (ranked by how often they eat each one, most-eaten first): ${queue.join(', ') || 'none recorded'}
 - They just completed 8 weeks of elimination
 
 Write 3-4 sentences. Rules:
-- Celebrate completing 8 weeks — this is a real milestone
-- Name their specific Low sensitivity foods that are now available
-- Explain the reintroduction cycle briefly — one food at a time, 14 days per food
+- Celebrate completing 8 weeks, this is a real milestone
+- Explain the reintroduction cycle briefly: one food at a time, 14 days per food
 - Tell them to go to the Reintro tab to choose their first food
-- If there are Low sensitivity foods, name the top recommended first food (first in the list) and say "we suggest starting with [food]" or similar — make it feel like a real recommendation, not just a list
-- You can choose to test on their own or they can follow the recommended order
+- Name the first food in the list and say "we suggest starting with [food]" or similar, and say WHY: it ranks highest in how often they eat it
+- They can follow the suggested order or pick any food themselves
+- NEVER mention sensitivity tiers, Low/Moderate/High groups, or anything unlocking later. Everything is available now.
 - Confident and celebratory but not over the top
-- Do NOT use markdown formatting like **bold** or *italic* — plain text only
+- Do NOT use markdown formatting like **bold** or *italic*, plain text only
 - Do NOT mention texts or SMS
 - Do NOT say "Congratulations" as the opening word
 
