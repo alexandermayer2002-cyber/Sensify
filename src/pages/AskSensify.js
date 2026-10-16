@@ -27,7 +27,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
       }
       // Load lab results so the assistant knows flagged vs clean foods
       try {
-        const { data: lab } = await supabase.from('lab_results').select('foods').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).single()
+        const { data: lab } = await supabase.from('lab_results').select('foods').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).maybeSingle()
         // Track seam: common-track users' protocol foods are the chosen tier's, not the raw lab's
         const { data: prof } = await supabase.from('profiles').select('protocol_track, track_decision, protocol_tier, track_foods').eq('id', session.user.id).single()
         if (prof?.protocol_track === 'common' && prof?.track_decision === 'active') {

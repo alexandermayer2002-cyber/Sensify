@@ -25,10 +25,9 @@ import {
   generateDay14Message,
   generateDay28Message,
   generateDay57Message,
-  generateModerateUnlockMessage,
-  generateHighUnlockMessage,
   checkMilestoneShown,
   markMilestoneShown,
+  normalizeMilestones,
 } from '../utils/aiInsights'
 
 const css = `
@@ -812,7 +811,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       const { data: p } = await supabase.from('profiles').select('*').eq('id', session.user.id).single()
       setProfile(p)
 
-      const { data: l } = await supabase.from('lab_results').select('*').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).single()
+      const { data: l } = await supabase.from('lab_results').select('*').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).maybeSingle()
 
       // Protocol track seam: the resolver decides which foods drive the protocol.
       // - flagged track  -> the real lab foods, untouched (zero change to today's flow)
@@ -924,7 +923,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         setConsecutiveNOs(nos)
       }
 
-      const { data: audit } = await supabase.from('compliance_audit').select('*').eq('user_id', session.user.id).eq('status', 'pending_admin_review').single()
+      const { data: audit } = await supabase.from('compliance_audit').select('*').eq('user_id', session.user.id).eq('status', 'pending_admin_review').maybeSingle()
       setPendingAudit(!!audit)
 
       if (p?.program_phase === 'elimination' || p?.program_phase === 'reintroduction') {
@@ -1060,7 +1059,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     // but the confetti celebration only fires the first time.
     if (day === 1) {
       try {
-        const msg = await generateDay1Message({ name, profile: p, labResult: lab })
+        // Generate ONCE and persist the text: regenerating on every load
+        // produced a different briefing each render (finding 8, round 1).
+        const sm = normalizeMilestones(p.shown_milestones)
+        let msg = sm.day1_text
+        if (!msg) {
+          msg = await generateDay1Message({ name, profile: p, labResult: lab })
+          try { await supabase.from('profiles').update({ shown_milestones: { ...sm, day1_text: msg } }).eq('id', session.user.id) } catch (e) {}
+        }
         setMilestoneMessage(msg)
         setMilestoneKey('day1')
         const shown = await checkMilestoneShown(supabase, session.user.id, 'day1')
@@ -1121,30 +1127,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         } catch (e) {}
       }
     }
-    // Day 113 — moderate unlocks
-    else if (day >= 113 && day < 169) {
-      const shown = await checkMilestoneShown(supabase, session.user.id, 'day113')
-      if (!shown) {
-        try {
-          const msg = await generateModerateUnlockMessage({ name, profile: p, labResult: lab })
-          setMilestoneMessage(msg)
-          setMilestoneKey('day113')
-          await markMilestoneShown(supabase, session.user.id, 'day113')
-        } catch (e) {}
-      }
-    }
-    // Day 169 — high unlocks
-    else if (day >= 169) {
-      const shown = await checkMilestoneShown(supabase, session.user.id, 'day169')
-      if (!shown) {
-        try {
-          const msg = await generateHighUnlockMessage({ name, profile: p, labResult: lab })
-          setMilestoneMessage(msg)
-          setMilestoneKey('day169')
-          await markMilestoneShown(supabase, session.user.id, 'day169')
-        } catch (e) {}
-      }
-    }
+    // Day 113 / day 169 tier-unlock milestones are RETIRED: every track now
+    // runs one frequency-ordered queue that unlocks whole at day 57, so a
+    // "Moderate tier unlocked" message would announce a system that no
+    // longer exists. (generateModerateUnlockMessage / generateHighUnlockMessage
+    // kept in aiInsights for history; no caller.)
   }
 
   // Streak = consecutive calendar days with a completed daily check-in.
@@ -1156,9 +1143,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     let count = 0
     const start = new Date()
     if (!logged.has(localDateString(start))) start.setDate(start.getDate() - 1)  // today pending ≠ broken
+    // The streak begins with the protocol: check-ins logged before day 1
+    // (setup week, pre-decision) never inflate it (finding 9).
+    const streakFloor = profile?.protocol_start_date ? String(profile.protocol_start_date).split('T')[0] : null
     for (let i = 0; i < 365; i++) {
       const d = new Date(start); d.setDate(start.getDate() - i)
       const ds = localDateString(d)
+      if (streakFloor && ds < streakFloor) break
       if (logged.has(ds)) count++
       else if (awayDates.has(ds)) continue  // away, on plan: pauses the streak, never resets it
       else break
@@ -1280,7 +1271,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
   if (screen === 'intake') return <IntakeSurvey session={session} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'labresults') return <LabResults session={session} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
-  if (screen === 'checkin') return <WeeklyCheckin session={session} weekNumber={activeCheckinWeek || currentWeek || 1} profile={profile} currentFoods={labResult?.foods?.map(f => f.name) || []} phase={calculatedPhase || 'elimination'} onBack={() => { setTab('history'); setScreen('checkin-history') }} onComplete={() => { setWeeklyDue(false); setTab('history'); setScreen('checkin-history') }} />
+  if (screen === 'checkin') return <WeeklyCheckin session={session} weekNumber={activeCheckinWeek || currentWeek || 1} profile={profile} currentFoods={labResult?.foods?.map(f => f.name) || []} phase={calculatedPhase || 'elimination'} onBack={() => { setTab('history'); setScreen('checkin-history') }} onComplete={() => { setWeeklyDue(false); setTab('home'); setScreen('dashboard') }} />
   if (screen === 'daily-checkin') return <DailyCheckin session={session} profile={profile} onBack={() => setScreen('dashboard')} onComplete={() => { setDailyDone(true); setScreen('dashboard') }} />
   if (screen === 'slipup') return <SlipupSurvey session={session} profile={profile} labResult={labResult} currentDay={currentDay} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'audit') return <ComplianceAudit session={session} eliminatedFoods={labResult?.foods?.map(f => f.name) || []} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
@@ -1442,7 +1433,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.5)', marginBottom: 3 }}>{getGreeting()}, {name}</div>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.1 }}>{betweenCycles ? 'Choose your next food.' : `Day ${calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.`}</div>
                   {cycleLine && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>{cycleLine}</div>}
-                  {betweenCycles && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>REINTRODUCTION · DAY {currentDay - 56} OF 112 · CYCLE COMPLETE</div>}
+                  {betweenCycles && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>REINTRODUCTION · DAY {currentDay - 56} OF {(labResult?.foods?.length || 8) * 14} · {reintroRows.some(r => r.verdict) ? 'CYCLE COMPLETE' : 'TESTING OPEN'}</div>}
                 </div>
                 {verdictReadyFood ? (
                   <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#C9A227', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 0 22px rgba(201,162,39,0.35)' }}>
@@ -1485,7 +1476,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 )}
               </div>
               <div style={{ position: 'relative', height: 5, background: 'rgba(255,255,255,0.09)', borderRadius: 3, marginBottom: 7 }}>
-                <div style={{ width: `${Math.min(100, Math.max(2, Math.round((calculatedPhase === 'reintroduction' ? ((currentDay - 56) / 112) : (currentDay / 56)) * 100)))}%`, height: 5, background: '#8BAE8A', borderRadius: 3, boxShadow: '0 0 10px rgba(139,174,138,0.5)' }} />
+                <div style={{ width: `${Math.min(100, Math.max(2, Math.round((calculatedPhase === 'reintroduction' ? ((currentDay - 56) / ((labResult?.foods?.length || 8) * 14)) : (currentDay / 56)) * 100)))}%`, height: 5, background: '#8BAE8A', borderRadius: 3, boxShadow: '0 0 10px rgba(139,174,138,0.5)' }} />
               </div>
               <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'rgba(250,248,244,0.45)' }}>
                 <span>{cleanDays} day streak{cleanDays > 0 ? ', unbroken' : ''}</span>
@@ -1528,6 +1519,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 session={session}
                 profile={profile}
                 onReverted={loadData}
+                onOpenDaily={() => setScreen('daily-checkin')}
+                onOpenAsk={() => { window.scrollTo(0, 0); setTab('ask-sensify'); setScreen('ask-sensify') }}
               />
             )}
 
@@ -1760,12 +1753,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: 6 }}>Your lab kit</div>
                   <div style={{ fontSize: 13.5, color: '#3A3A35', lineHeight: 1.55 }}>Done with your test? Tell us so we know your results are on the way.</div>
                 </div>
-                <button onClick={async () => { const sm = { ...(profile?.shown_milestones || {}), test_taken: true }; await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '11px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 }}>I took my test</button>
+                <button onClick={async () => { const sm = { ...normalizeMilestones(profile?.shown_milestones), test_taken: true }; await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '11px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 }}>I took my test</button>
               </div>
             )}
 
-            {/* THE PROTOCOL — designed explainer for the common track (week 1 + eve). Static copy, deliberately not the AI voice. */}
-            {profile?.protocol_track === 'common' && currentDay <= 7 && (
+            {/* THE PROTOCOL — designed explainer for the common track (week 1 + eve). Static copy, deliberately not the AI voice.
+                Gated on an ACTIVE choice: during awaiting_decision there is no protocol to explain (finding 10). */}
+            {profile?.protocol_track === 'common' && profile?.track_decision === 'active' && currentDay <= 7 && (
               <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '20px', marginTop: 14 }}>
                 <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#7A7A72', marginBottom: 10 }}>How your protocol works</div>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>

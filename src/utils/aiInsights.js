@@ -381,10 +381,22 @@ export const checkMilestoneShown = async (supabase, userId, milestoneKey) => {
       .select('shown_milestones')
       .eq('id', userId)
       .single()
-    return data?.shown_milestones?.includes(milestoneKey) || false
+    const v = data?.shown_milestones
+    // Object is the canonical shape ({ day1: true, day1_text: '...' });
+    // arrays are legacy rows from before the formats were unified.
+    return Array.isArray(v) ? v.includes(milestoneKey) : !!(v && v[milestoneKey])
   } catch (e) {
     return false
   }
+}
+
+// Canonical shape for profiles.shown_milestones: an OBJECT whose keys are
+// milestone flags (true) or stored values (day1_text). Legacy array rows
+// are converted on first write. Two writers previously used two shapes
+// (array here, object on the test-taken card), each clobbering the other.
+export const normalizeMilestones = (v) => {
+  if (Array.isArray(v)) return Object.fromEntries(v.map(k => [k, true]))
+  return v || {}
 }
 
 export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
@@ -394,10 +406,10 @@ export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
       .select('shown_milestones')
       .eq('id', userId)
       .single()
-    const current = data?.shown_milestones || []
-    if (!current.includes(milestoneKey)) {
+    const current = normalizeMilestones(data?.shown_milestones)
+    if (!current[milestoneKey]) {
       await supabase.from('profiles').update({
-        shown_milestones: [...current, milestoneKey]
+        shown_milestones: { ...current, [milestoneKey]: true }
       }).eq('id', userId)
     }
   } catch (e) {}

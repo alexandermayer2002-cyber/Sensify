@@ -389,12 +389,12 @@ function ShowcaseScreen({ tab }) {
           </div>
         </div>
         <div style={{ position: 'relative', height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 3, margin: '9px 0 5px' }}><div style={{ width: '75%', height: 4, background: '#8BAE8A', borderRadius: 3 }} /></div>
-        <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', fontSize: 7.5, color: 'rgba(250,248,244,0.45)' }}><span>Day 1</span><span>14 days to reintroduction</span></div>
+        <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', fontSize: 7.5, color: 'rgba(250,248,244,0.45)' }}><span>Day 42</span><span>14 days to reintroduction</span></div>
       </div>
       <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 11, padding: 11, marginBottom: 9 }}>
         <div style={{ fontSize: 8.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 6 }}>Currently avoiding <span style={{ fontWeight: 400, color: '#A8A69E' }}>· 8 foods</span></div>
         <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-          {[['Gluten', '#C95B5B', '#FAEAEA'], ['Chicken', '#C95B5B', '#FAEAEA'], ['Dairy', '#D4894A', '#FDF2EA'], ['Eggs', '#D4894A', '#FDF2EA'], ['Soy', '#3D5C3C', '#EDF3ED'], ['Almond', '#3D5C3C', '#EDF3ED']].map(([f, fg, bg]) => <span key={f} style={{ background: bg, color: fg, borderRadius: 12, padding: '3px 8px', fontSize: 8.5, fontWeight: 600 }}>{f}</span>)}
+          {[['Gluten', '#C95B5B', '#FAEAEA'], ['Corn', '#C95B5B', '#FAEAEA'], ['Dairy', '#D4894A', '#FDF2EA'], ['Eggs', '#D4894A', '#FDF2EA'], ['Soy', '#3D5C3C', '#EDF3ED'], ['Almond', '#3D5C3C', '#EDF3ED']].map(([f, fg, bg]) => <span key={f} style={{ background: bg, color: fg, borderRadius: 12, padding: '3px 8px', fontSize: 8.5, fontWeight: 600 }}>{f}</span>)}
           <span style={{ background: '#F4F2EC', color: '#A8A69E', borderRadius: 12, padding: '3px 8px', fontSize: 8.5 }}>+ 2 more</span>
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
@@ -730,8 +730,8 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className={`fmcard${mapInView ? ' inview' : ''}`} ref={fmcardRef}>
               <div className="fmcard-orb" />
               <div className="fmcard-orb2" />
-              <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Sensify · Verified result</div>
-              <div className="fmcard-title">Sarah's <span style={{ color: '#8BAE8A' }}>verdicts.</span></div>
+              <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Example · A finished program</div>
+              <div className="fmcard-title">A finished <span style={{ color: '#8BAE8A' }}>map.</span></div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 7, marginBottom: 16, position: 'relative' }}>
                 {[
                   ['WHEAT', 'Safe.', '#5FD4BC', 'rgba(44,157,138,0.12)', 'rgba(44,157,138,0.3)'],
@@ -748,7 +748,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 ))}
               </div>
               <div className="fmcard-foot">
-                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 5, height: 5, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.8)' }} />SENSIFY VERIFIED · TESTED OVER 184 DAYS</div>
+                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>EXAMPLE · WHAT 184 DAYS OF TESTING PRODUCES</div>
               </div>
             </div>
           </div>

@@ -102,7 +102,7 @@ function buildSummary(logs, food) {
   } else if (exposureSymptomDays.length === 0) {
     part1 = `You ate ${f} on ${exposure.length} day${exposure.length !== 1 ? 's' : ''} and noted no symptoms on any of them.`
   } else {
-    part1 = `You ate ${f} on ${exposure.length} day${exposure.length !== 1 ? 's' : ''}. On ${exposureSymptomDays.length} of those day${exposureSymptomDays.length !== 1 ? 's' : ''} you noted ${symptomPhrase || 'symptoms'}.`
+    part1 = `You ate ${f} on ${exposure.length} day${exposure.length !== 1 ? 's' : ''}. On ${exposureSymptomDays.length} of those ${exposure.length !== 1 ? 'days' : 'day'} you noted ${symptomPhrase || 'symptoms'}.`
   }
 
   let part2 = ''
@@ -285,11 +285,11 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
 
           <div style={{ padding: '14px 16px', marginBottom: '12px' }}>
             <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 7 }}>Worth knowing</div>
-            <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>This isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food in your Avoid list.</div>
+            <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>This isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food and update its verdict.</div>
           </div>
         </div>
         <div style={s.footer}>
-          <button style={{ ...s.cta, opacity: allAnswered() ? 1 : 0.45, cursor: allAnswered() ? 'pointer' : 'not-allowed' }} onClick={onComplete}>View updated Food Map →</button>
+          <button style={{ ...s.cta, opacity: allAnswered() ? 1 : 0.45, cursor: allAnswered() ? 'pointer' : 'not-allowed' }} onClick={onComplete}>View your verdicts →</button>
         </div>
       </div>
     )

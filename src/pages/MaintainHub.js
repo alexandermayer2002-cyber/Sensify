@@ -30,8 +30,8 @@ function MaintainPreview({ profile, session }) {
       })
       const data = await res.json()
       if (data.url) { window.location.href = data.url; return }
-      setErr(data.error || 'Could not start — try again.')
-    } catch (e) { setErr('Could not start — try again.') }
+      setErr(data.error || 'Could not start. Try again.')
+    } catch (e) { setErr('Could not start. Try again.') }
     setBusy(false)
   }
 
@@ -42,7 +42,7 @@ function MaintainPreview({ profile, session }) {
   }
 
   const features = [
-    { t: 'Ask Sensify \u2014 unlimited', d: 'Any food, menu, label, or photo, checked against your map.' },
+    { t: 'Ask Sensify, unlimited', d: 'Any food, menu, label, or photo, checked against your map.' },
     { t: 'Continuous logging', d: 'Meals and symptoms tracked, so the map stays honest.' },
     { t: 'Drift detection', d: 'Old symptoms creeping back get flagged before they take over.' },
     { t: 'Re-testing cycles', d: 'Bodies change. Re-run any food and update its verdict.' },
@@ -97,7 +97,7 @@ function MaintainPreview({ profile, session }) {
           <button onClick={startOptIn} disabled={busy} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: 500, cursor: 'pointer', opacity: busy ? 0.6 : 1, fontFamily: 'DM Sans, sans-serif' }}>
             {busy ? 'Opening secure checkout\u2026' : 'Reserve Maintain \u2014 $0 today'}
           </button>
-          <div style={{ fontSize: '11px', color: '#A0A096', textAlign: 'center', marginTop: '8px', lineHeight: 1.55 }}>Saves your card securely with Stripe. Nothing is charged until your protocol completes \u2014 cancel anytime before then.</div>
+          <div style={{ fontSize: '11px', color: '#A0A096', textAlign: 'center', marginTop: '8px', lineHeight: 1.55 }}>Saves your card securely with Stripe. Nothing is charged until your protocol completes, and you can cancel anytime before then.</div>
           {err && <div style={{ fontSize: '12px', color: '#D64545', textAlign: 'center', marginTop: '6px' }}>{err}</div>}
         </div>
       )}

@@ -38,6 +38,19 @@ const CYCLE_PHASES = [
   { label: 'Not sure', value: 'unsure' },
 ]
 
+// Range validation for numpad entries. Keeps impossible values (e.g. 75 hours
+// of sleep) out of the daily_factors math the AI insights compute against.
+const PAD_LIMITS = {
+  sleep: { min: 0, max: 14, warn: 'Between 0 and 14 hours.' },
+  hydration: { min: 0, max: 20, warn: 'Between 0 and 20 cups.' },
+  drinks: { min: 0, max: 30, warn: 'Between 0 and 30 drinks.' },
+}
+const padInRange = (field, v) => {
+  if (v === '') return true
+  const n = parseFloat(v)
+  return !isNaN(n) && n >= PAD_LIMITS[field].min && n <= PAD_LIMITS[field].max
+}
+
 const s = {
   wrap: { minHeight: '100vh', background: 'transparent', fontFamily: 'DM Sans, sans-serif', display: 'flex', flexDirection: 'column' },
   topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 10 },
@@ -64,12 +77,14 @@ const s = {
   footer: { position: 'sticky', bottom: 0, background: '#F6F3EC', borderTop: '1px solid rgba(0,0,0,0.06)', padding: '16px 24px', maxWidth: '560px', width: '100%', margin: '0 auto' },
   cta: { width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: '#3D5C3C', color: 'white', fontSize: '15px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
   ctaOff: { width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: '#C3CDBF', color: 'white', fontSize: '15px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'not-allowed' },
+  padWarn: { marginTop: 8, padding: '8px 11px', background: '#FBF0DF', color: '#9A6212', borderRadius: 9, fontSize: '11.5px', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.5 },
 }
 
 export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   const [followed, setFollowed] = useState(null)
   const [sleep, setSleep] = useState('')
   const [openPad, setOpenPad] = useState(null)
+  const [padWarning, setPadWarning] = useState(null)
   const [stress, setStress] = useState(null)
   const [hydration, setHydration] = useState('')
   const [cyclePhase, setCyclePhase] = useState(null)
@@ -167,7 +182,16 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
     (hadSymptoms !== null) &&
     (hadSymptoms === false || Object.keys(symptomIntensities).length > 0)
   )
-  const complete = sleep && stress && hydration && (!onProtocol || followed !== null) && reintroComplete
+  const complete = sleep && stress && hydration
+    && padInRange('sleep', sleep) && padInRange('hydration', hydration) && padInRange('drinks', drinks)
+    && (!onProtocol || followed !== null) && reintroComplete
+
+  // Out-of-range entries never close the pad; the warning stays until corrected.
+  const confirmPad = (field, v) => {
+    if (!padInRange(field, v)) { setPadWarning(field); return }
+    setPadWarning(null)
+    setOpenPad(null)
+  }
 
   const submit = async () => {
     if (!complete || saving) return
@@ -437,12 +461,13 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
 
         <div style={s.block}>
           <div style={s.label}>How many hours did you sleep last night? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>to the half hour is fine</span></div>
-          <button type="button" onClick={() => setOpenPad(openPad === 'sleep' ? null : 'sleep')} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: sleep === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+          <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'sleep' ? null : 'sleep') }} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: sleep === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
             {sleep === '' ? 'Tap to enter' : `${sleep} hours`}
           </button>
           {openPad === 'sleep' && (
             <div style={{ marginTop: 10 }}>
-              <NumPad value={sleep} onChange={setSleep} decimals maxDigits={2} unit="hours" onSubmit={() => setOpenPad(null)} />
+              <NumPad value={sleep} onChange={v => { setPadWarning(null); setSleep(v) }} decimals maxDigits={2} unit="hours" onSubmit={() => confirmPad('sleep', sleep)} />
+              {padWarning === 'sleep' && <div style={s.padWarn}>{PAD_LIMITS.sleep.warn}</div>}
             </div>
           )}
         </div>
@@ -454,12 +479,13 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
 
         <div style={s.block}>
           <div style={s.label}>How many cups of water today?</div>
-          <button type="button" onClick={() => setOpenPad(openPad === 'hydration' ? null : 'hydration')} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: hydration === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+          <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'hydration' ? null : 'hydration') }} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: hydration === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
             {hydration === '' ? 'Tap to enter' : `${hydration} cups`}
           </button>
           {openPad === 'hydration' && (
             <div style={{ marginTop: 10 }}>
-              <NumPad value={hydration} onChange={setHydration} maxDigits={2} unit="cups" onSubmit={() => setOpenPad(null)} />
+              <NumPad value={hydration} onChange={v => { setPadWarning(null); setHydration(v) }} maxDigits={2} unit="cups" onSubmit={() => confirmPad('hydration', hydration)} />
+              {padWarning === 'hydration' && <div style={s.padWarn}>{PAD_LIMITS.hydration.warn}</div>}
             </div>
           )}
         </div>
@@ -474,12 +500,13 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         {isDrinker && (
           <div style={s.block}>
             <div style={s.label}>How many drinks today?</div>
-            <button type="button" onClick={() => setOpenPad(openPad === 'drinks' ? null : 'drinks')} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: drinks === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+            <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'drinks' ? null : 'drinks') }} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: drinks === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
               {drinks === '' ? 'Tap to enter' : `${drinks} ${drinks === '1' ? 'drink' : 'drinks'}`}
             </button>
             {openPad === 'drinks' && (
               <div style={{ marginTop: 10 }}>
-                <NumPad value={drinks} onChange={setDrinks} maxDigits={2} unit="drinks" onSubmit={() => setOpenPad(null)} />
+                <NumPad value={drinks} onChange={v => { setPadWarning(null); setDrinks(v) }} maxDigits={2} unit="drinks" onSubmit={() => confirmPad('drinks', drinks)} />
+                {padWarning === 'drinks' && <div style={s.padWarn}>{PAD_LIMITS.drinks.warn}</div>}
               </div>
             )}
           </div>

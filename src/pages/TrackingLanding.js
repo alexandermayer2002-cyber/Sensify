@@ -19,6 +19,9 @@ const css = `
   .trk-tools { background: #F2F5EF; border-radius: 12px; padding: 16px; margin: 16px 0; }
   .trk-tools-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #3D5C3C; margin-bottom: 10px; }
   .trk-tool-row { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #2A2A28; padding: 6px 0; }
+  .trk-tool-btn { width: 100%; background: transparent; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; text-align: left; padding: 9px 2px; border-radius: 8px; }
+  .trk-tool-btn:hover { background: rgba(61,92,60,0.06); }
+  .trk-tool-go { margin-left: auto; color: #3D5C3C; font-size: 14px; }
   .trk-tool-dot { width: 6px; height: 6px; border-radius: 50%; background: #3D5C3C; flex-shrink: 0; }
   .trk-revert { background: #1C1C1C; border-radius: 14px; padding: 18px; margin-bottom: 14px; }
   .trk-revert-title { font-size: 14px; font-weight: 600; color: white; margin-bottom: 4px; }
@@ -27,7 +30,7 @@ const css = `
   .trk-revert-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 `
 
-export default function TrackingLanding({ session, profile, onReverted }) {
+export default function TrackingLanding({ session, profile, onReverted, onOpenDaily, onOpenAsk }) {
   const [reverting, setReverting] = useState(false)
 
   const revertToProtocol = async () => {
@@ -59,9 +62,15 @@ export default function TrackingLanding({ session, profile, onReverted }) {
 
         <div className="trk-tools">
           <div className="trk-tools-label">What you can do</div>
-          <div className="trk-tool-row"><span className="trk-tool-dot" />Log your symptoms day to day</div>
-          <div className="trk-tool-row"><span className="trk-tool-dot" />Log your meals and what you eat</div>
-          <div className="trk-tool-row"><span className="trk-tool-dot" />Ask Sensify to help spot patterns over time</div>
+          <button type="button" className="trk-tool-row trk-tool-btn" onClick={() => onOpenDaily && onOpenDaily()}>
+            <span className="trk-tool-dot" />Log how today went<span className="trk-tool-go">→</span>
+          </button>
+          <button type="button" className="trk-tool-row trk-tool-btn" onClick={() => onOpenAsk && onOpenAsk()}>
+            <span className="trk-tool-dot" />Log a meal with Ask Sensify<span className="trk-tool-go">→</span>
+          </button>
+          <button type="button" className="trk-tool-row trk-tool-btn" onClick={() => onOpenAsk && onOpenAsk()}>
+            <span className="trk-tool-dot" />Ask Sensify to help spot patterns<span className="trk-tool-go">→</span>
+          </button>
         </div>
       </div>
 

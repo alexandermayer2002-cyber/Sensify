@@ -257,6 +257,14 @@ Rules:
     ? COMMON_FOODS.filter(f => f.toLowerCase().includes(search.toLowerCase()))
     : COMMON_FOODS.filter(f => manualFoods[f])
 
+  // Rendered in manual entry and in the upload path when extraction finds zero foods.
+  const noSensitivitiesToggle = (
+    <button onClick={() => { setNoSensitivities(v => !v); setError('') }} style={{ width: '100%', textAlign: 'left', background: noSensitivities ? '#EDF3ED' : '#FAF8F4', border: noSensitivities ? '1.5px solid #3D5C3C' : '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', padding: '13px 15px', fontSize: '13.5px', color: '#1C1C1C', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px', fontWeight: noSensitivities ? 600 : 400 }}>
+      My report shows no sensitivities
+      <div style={{ fontSize: '12px', color: '#7A7A72', fontWeight: 400, marginTop: '3px', lineHeight: 1.5 }}>That's a real result. We'll review it and recommend the right path, often testing common trigger foods instead.</div>
+    </button>
+  )
+
   return (
     <div style={s.wrap}>
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
@@ -392,31 +400,10 @@ Rules:
               )
             })}
 
-            {method === 'manual' && (
+            {extractedFoods.length === 0 && noSensitivitiesToggle}
 
-              <button onClick={() => { setNoSensitivities(v => !v); setError('') }} style={{ width: '100%', textAlign: 'left', background: noSensitivities ? '#EDF3ED' : '#FAF8F4', border: noSensitivities ? '1.5px solid #3D5C3C' : '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', padding: '13px 15px', fontSize: '13.5px', color: '#1C1C1C', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px', fontWeight: noSensitivities ? 600 : 400 }}>
-
-                My report shows no sensitivities
-
-                <div style={{ fontSize: '12px', color: '#7A7A72', fontWeight: 400, marginTop: '3px', lineHeight: 1.5 }}>That's a real result. We'll review it and recommend the right path, often testing common trigger foods instead.</div>
-
-              </button>
-
-            )}
-
-            {reviewing && method === 'manual' && (
-              <div style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 8 }}>Review before submitting</div>
-                <div style={{ fontSize: 13, color: '#1C1C1C', lineHeight: 1.7 }}>
-                  {noSensitivities && getManualFoodsAsArray().length === 0
-                    ? 'Your report shows no sensitivities. We will review this and recommend your path.'
-                    : getManualFoodsAsArray().map(f => `${f.name} (${f.level})`).join(' \u00b7 ')}
-                </div>
-                <button onClick={() => setReviewing(false)} style={{ background: 'transparent', border: 'none', padding: 0, marginTop: 8, fontSize: 12, color: '#3D5C3C', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Go back and edit</button>
-              </div>
-            )}
             <button style={s.cta} onClick={handleSave} disabled={saving}>
-              {saving ? 'Submitting...' : (method === 'manual' && !reviewing) ? 'Review my entry \u2192' : 'Looks right, submit for review →'}
+              {saving ? 'Submitting...' : 'Looks right, submit for review →'}
             </button>
             <button style={s.secBtn} onClick={() => setExtractedFoods(null)}>Re-analyze</button>
           </>
@@ -467,13 +454,26 @@ Rules:
               })}
             </div>
 
+            {noSensitivitiesToggle}
+
+            {reviewing && (
+              <div style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 8 }}>Review before submitting</div>
+                <div style={{ fontSize: 13, color: '#1C1C1C', lineHeight: 1.7 }}>
+                  {noSensitivities && getManualFoodsAsArray().length === 0
+                    ? 'Your report shows no sensitivities. We will review this and recommend your path.'
+                    : getManualFoodsAsArray().map(f => `${f.name} (${f.level})`).join(' · ')}
+                </div>
+                <button onClick={() => setReviewing(false)} style={{ background: 'transparent', border: 'none', padding: 0, marginTop: 8, fontSize: 12, color: '#3D5C3C', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Go back and edit</button>
+              </div>
+            )}
 
             <button
-              style={Object.keys(manualFoods).length > 0 ? s.cta : s.ctaDisabled}
+              style={saving || (Object.keys(manualFoods).length === 0 && !noSensitivities) ? s.ctaDisabled : s.cta}
               onClick={handleSave}
-              disabled={Object.keys(manualFoods).length === 0 || saving}
+              disabled={saving || (Object.keys(manualFoods).length === 0 && !noSensitivities)}
             >
-              {saving ? 'Submitting...' : 'Submit for review →'}
+              {saving ? 'Submitting...' : !reviewing ? 'Review my entry →' : 'Looks right, submit for review →'}
             </button>
           </>
         )}

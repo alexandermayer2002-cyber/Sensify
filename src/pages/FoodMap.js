@@ -167,6 +167,28 @@ export default function FoodMap({ session, profile, labResult }) {
     )
   }
 
+  // Tracking mode: the user declined the protocol. No queue, no promised
+  // cycles. The example wall stays (clearly labeled) so the tab still
+  // teaches what verdicts are; the door back to the protocol is named.
+  if (profile?.track_decision === 'declined' && loaded) {
+    return (
+      <div style={s.page}>
+        <div style={s.doc}>
+          <div style={s.dochead}>
+            <div>
+              <div style={s.kicker}>SENSIFY · THE VERDICTS</div>
+              <div style={s.title}>Earned by <span style={{ color: '#3D5C3C' }}>testing.</span></div>
+            </div>
+          </div>
+          <div style={{ padding: '0 26px 24px' }}>
+            <div style={{ fontSize: 12.5, color: '#5A5A52', lineHeight: 1.65, marginBottom: 14 }}>Verdicts come from reintroduction trials: a food returns to your plate for a 14 day cycle and your own logs rule it Safe, Limit, or Avoid. You're tracking for now, so no trials are scheduled and nothing here is assumed about your foods.</div>
+            <div style={{ fontSize: 12.5, color: '#5A5A52', lineHeight: 1.65 }}>If your tracking starts pointing at food, start the full protocol from your Home tab and this page becomes yours to earn.</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // THE COVER — elimination era: the finished example wall + the countdown that unlocks theirs.
   if (labResult && preReintro && loaded) {
     const daysLeft = Math.max(1, 57 - currentDay)

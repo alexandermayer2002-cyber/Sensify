@@ -46,6 +46,23 @@ const css = `
 `
 
 function ExplanationBody({ profile, flaggedCount }) {
+  // Two scripts: the clean-panel story, and the low-flag story. Telling a
+  // flagged user their panel came back clean contradicts their own lab.
+  if (flaggedCount > 0) {
+    return (
+      <>
+        <p className="ctd-p">
+          Your lab flagged {flaggedCount === 1 ? 'one food' : `${flaggedCount} foods`}, all at low levels. That's a real finding, and {flaggedCount === 1 ? 'it joins' : 'they join'} your elimination either way. But low-level flags alone rarely explain real symptoms, so the lab is the start of the answer, not the whole of it.
+        </p>
+        <p className="ctd-p">
+          Some of the most common triggers, especially digestive ones like FODMAPs, don't show up on a lab panel at all. The most reliable next step is to test the usual suspects directly, alongside your flagged {flaggedCount === 1 ? 'food' : 'foods'}, through the same structured elimination and reintroduction the protocol is built on.
+        </p>
+        <p className="ctd-p">
+          You choose how thorough to go. And if you'd rather not run the full protocol right now, you can simply track your meals and symptoms instead, and start anytime.
+        </p>
+      </>
+    )
+  }
   return (
     <>
       <p className="ctd-p">
@@ -131,7 +148,9 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
           <div className="ctd-modal" onClick={e => e.stopPropagation()}>
             <button className="ctd-x" onClick={dismissPopup}>✕</button>
             <div className="ctd-eyebrow">Your results are in</div>
-            <div className="ctd-h">A clean panel is <em>still an answer.</em></div>
+            {flaggedCount > 0
+              ? <div className="ctd-h">Your flags are real. <em>So is what labs miss.</em></div>
+              : <div className="ctd-h">A clean panel is <em>still an answer.</em></div>}
             <ExplanationBody profile={profile} flaggedCount={flaggedCount} />
             <button className="ctd-btn primary" onClick={dismissPopup}>Got it</button>
           </div>
@@ -164,6 +183,7 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
                   <span className={`ctd-radio${tier === t ? ' on' : ''}`} />
                   <span className="ctd-tier-name">{meta.label}</span>
                 </div>
+                {recommendedTier === t && <span className="ctd-tier-rec">Suggested from your intake</span>}
               </div>
               <div className="ctd-tier-foods">{meta.foods.map(f => f.name).join(', ')}</div>
               <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6, marginTop: '8px' }}>{impact.what} {impact.arc}</div>

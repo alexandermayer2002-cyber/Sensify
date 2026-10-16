@@ -50,6 +50,19 @@ const GENDER_OPTIONS = [
   { label: 'Prefer not to say', value: 'undisclosed' },
 ]
 
+// Range validation for lifestyle numpad entries. Keeps impossible baselines
+// (e.g. 65 hours of sleep) out of the profile the AI insights compare against.
+const PAD_LIMITS = {
+  avg_sleep: { min: 0, max: 14, warn: 'Between 0 and 14 hours.' },
+  avg_hydration: { min: 0, max: 20, warn: 'Between 0 and 20 cups.' },
+  avg_drinks_week: { min: 0, max: 30, warn: 'Between 0 and 30 drinks.' },
+}
+const padInRange = (field, v) => {
+  if (!v) return true
+  const n = parseFloat(v)
+  return !isNaN(n) && n >= PAD_LIMITS[field].min && n <= PAD_LIMITS[field].max
+}
+
 
 const FREQ_NEVER = ['Never', 'Rarely or never']
 const FREQ_FREQUENT = ['Daily', 'A few times a week', 'Regularly', 'Almost daily', 'Most afternoons', 'Daily and severe', 'Poor. Hard to fall or stay asleep', 'Very poor']
@@ -102,6 +115,7 @@ const s = {
   footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#FAF8F4', borderTop: '1px solid rgba(0,0,0,0.06)' },
   cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
   ctaDisabled: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif', opacity: 0.35 },
+  padWarn: { marginTop: 8, padding: '8px 11px', background: '#FBF0DF', color: '#9A6212', borderRadius: 9, fontSize: '11.5px', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.5 },
 }
 
 export default function IntakeSurvey({ session, onComplete, onBack }) {
@@ -115,6 +129,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   // "normal" that daily check-in factors are compared against for divergence.
   const [lifestyle, setLifestyle] = useState({})
   const [openPad, setOpenPad] = useState(null)
+  const [padWarning, setPadWarning] = useState(null)
   const [saving, setSaving] = useState(false)
 
   const hasDigestive = selectedCategories.includes('digestive')
@@ -574,14 +589,24 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     const lifestyleComplete = lifestyle.avg_sleep && lifestyle.avg_stress && lifestyle.avg_hydration
       && lifestyle.gender && lifestyle.drinks_alcohol
       && (lifestyle.drinks_alcohol === 'no' || lifestyle.avg_drinks_week)
+      && padInRange('avg_sleep', lifestyle.avg_sleep)
+      && padInRange('avg_hydration', lifestyle.avg_hydration)
+      && padInRange('avg_drinks_week', lifestyle.avg_drinks_week)
+    // Out-of-range entries never close the pad; the warning stays until corrected.
+    const confirmPad = (field) => {
+      if (!padInRange(field, lifestyle[field])) { setPadWarning(field); return }
+      setPadWarning(null)
+      setOpenPad(null)
+    }
     const NumField = ({ field, unit, decimals, maxDigits }) => (
       <>
-        <button type="button" onClick={() => setOpenPad(openPad === field ? null : field)} style={{ width: '100%', textAlign: 'left', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: !lifestyle[field] ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+        <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === field ? null : field) }} style={{ width: '100%', textAlign: 'left', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: !lifestyle[field] ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
           {!lifestyle[field] ? 'Tap to enter' : `${lifestyle[field]} ${unit}`}
         </button>
         {openPad === field && (
           <div style={{ marginTop: 10 }}>
-            <NumPad value={lifestyle[field] || ''} onChange={v => setLifestyle({ ...lifestyle, [field]: v })} decimals={decimals} maxDigits={maxDigits} unit={unit} onSubmit={() => setOpenPad(null)} />
+            <NumPad value={lifestyle[field] || ''} onChange={v => { setPadWarning(null); setLifestyle({ ...lifestyle, [field]: v }) }} decimals={decimals} maxDigits={maxDigits} unit={unit} onSubmit={() => confirmPad(field)} />
+            {padWarning === field && <div style={s.padWarn}>{PAD_LIMITS[field].warn}</div>}
           </div>
         )}
       </>
@@ -609,7 +634,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           <div style={s.hint}>Sleep, stress, and a few habits shape how you feel as much as food does. Knowing your usual baseline lets us tell a real change from an ordinary day later on.</div>
 
           <div style={s.questionBlock}>
-            <div style={s.questionLabel}>On a typical night, how many hours do you sleep? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>(7.5 counts)</span></div>
+            <div style={s.questionLabel}>On a typical night, how many hours do you sleep? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>to the half hour is fine</span></div>
             <NumField field="avg_sleep" unit="hours" decimals maxDigits={2} />
           </div>
 

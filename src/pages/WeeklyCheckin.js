@@ -310,7 +310,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
 
   const loadPreviousCheckin = async () => {
     if (weekNumber <= 1) return
-    const { data } = await supabase.from('weekly_checkins').select('answers').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).single()
+    const { data } = await supabase.from('weekly_checkins').select('answers').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).maybeSingle()
     if (data) setPreviousAnswers(data.answers)
   }
 

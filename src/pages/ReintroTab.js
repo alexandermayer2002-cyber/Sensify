@@ -611,16 +611,13 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
   const getAllQualifyingFoods = (level) => {
     if (!labResult?.foods) return []
-    if (isCommonTrack) {
-      // All common-track foods live in the Low bucket; other buckets are empty.
-      if (level !== 'Low') return []
-      return labResult.foods.filter(f => {
-        const freq = foodFrequency[f.name]
-        return freq !== 'never'
-      })
-    }
+    // ONE queue for every track (the frequency doctrine, Alex's ruling):
+    // all foods unlock together at day 57 and are ordered by how often the
+    // user eats them, with lab level only as tiebreak inside getTestingOrder.
+    // The old Low/Moderate/High time gates (day 113/169) are retired; the
+    // 'Low' bucket now carries the whole queue and the others stay empty.
+    if (level !== 'Low') return []
     return labResult.foods.filter(f => {
-      if (f.level !== level) return false
       const freq = foodFrequency[f.name]
       return freq !== 'never'
     })
@@ -697,6 +694,27 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
     </div>
   )
 
+  // Tracking mode: the user declined the protocol, so there is no
+  // reintroduction timeline to promise. State-aware per finding 14.
+  if (profile?.track_decision === 'declined') {
+    return (
+      <div className="rt-wrap">
+        <style>{css}</style>
+        <div className="rt-content">
+          <div className="rt-header">
+            <div className="rt-title">Reintro<em>duction.</em></div>
+            <div className="rt-sub">The testing phase of the structured protocol.</div>
+          </div>
+          <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 16, padding: '20px 18px' }}>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 10 }}>You're tracking, not testing</div>
+            <div style={{ fontSize: 13.5, color: '#4A4A45', lineHeight: 1.65, marginBottom: 10 }}>Reintroduction cycles are how the protocol earns verdicts: one food returns at a time while your logs decide whether it is Safe, Limit, or Avoid. You chose to track for now, so no cycles are scheduled.</div>
+            <div style={{ fontSize: 13.5, color: '#4A4A45', lineHeight: 1.65 }}>If your tracking starts pointing at food, you can begin the full protocol anytime from your Home tab. Your timeline would start the day you choose it.</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // Daily check-in screen for the active cycle
   if (showDailyCheckin && activeReintro) {
     return (
@@ -769,7 +787,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                 {[
                   ['1', '#3D5C3C', 'Your lab results come in and your elimination list is built'],
                   ['2', '#8BAE8A', 'You complete 8 weeks of clean elimination. This is the baseline that makes every test trustworthy'],
-                  ['3', '#E0DED6', 'Testing opens. Your least reactive foods go first, one at a time'],
+                  ['3', '#E0DED6', 'Testing opens. The foods you eat most often go first, one at a time'],
                 ].map(([n, bg, text], i) => (
                   <div key={n} style={{ display: 'flex', gap: 12, marginBottom: i < 2 ? 12 : 0 }}>
                     <div style={{ width: 22, height: 22, borderRadius: '50%', background: bg, color: bg === '#E0DED6' ? '#7A7A72' : '#fff', fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{n}</div>
@@ -786,18 +804,11 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
           const pct = Math.round((dayCapped / elimDays) * 100)
           const R = 48, CIRC = 2 * Math.PI * R
           const offset = CIRC * (1 - dayCapped / elimDays)
-          const tierFoods = (level) => getAllQualifyingFoods(level).map(f => f.name)
+          // One frequency-ordered queue for every track (the doctrine).
+          const tierFoods = (level) => getTestingOrder(getAllQualifyingFoods(level), foodFrequency).map(f => f.name)
           const lowFoods = tierFoods('Low')
-          const modFoods = tierFoods('Moderate')
-          const highFoods = tierFoods('High')
           const commonNoFoodsYet = isCommonTrack && lowFoods.length === 0
-          const tiers = isCommonTrack
-            ? [{ label: 'Your test foods', day: 57, days: daysUntilLow, foods: lowFoods, next: true }]
-            : [
-              { label: 'Low sensitivity', day: 57, days: daysUntilLow, foods: lowFoods, next: true },
-              { label: 'Moderate sensitivity', day: 113, days: daysUntilModerate, foods: modFoods, next: false },
-              { label: 'High sensitivity', day: 169, days: daysUntilHigh, foods: highFoods, next: false },
-            ]
+          const tiers = [{ label: 'Your test foods', day: 57, days: daysUntilLow, foods: lowFoods, next: true }]
           return (
             <>
               <style>{`
@@ -1051,7 +1062,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             {lowUnlocked && (
               <>
                 <div className="rt-section-label">
-                  {isCommonTrack ? 'Your foods · unlocked' : 'Low sensitivity · unlocked'}
+                  Your foods · unlocked
                   {getRemainingFoods('Low').length === 0 && ' · none to test'}
                 </div>
                 {getRemainingFoods('Low').map((food, i) => (
@@ -1074,69 +1085,9 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               </>
             )}
 
-            {moderateUnlocked && (
-              <>
-                <div className="rt-section-label">Moderate sensitivity · unlocked</div>
-                {getRemainingFoods('Moderate').map((food, i) => (
-                  <div key={food.name} className={`rt-food-card${i === 0 ? ' recommended' : ''}`}>
-                    <div className="rt-food-left">
-                      <div className={`rt-food-rank${i === 0 ? ' top' : ''}`}>{i + 1}</div>
-                      <div>
-                        <div className="rt-food-name">
-                          {food.name}
-                          {i === 0 && <span className="rt-rec-badge">Recommended</span>}
-                        </div>
-                        <div className="rt-food-freq">{FREQ_LABEL[foodFrequency[food.name]] || ''}</div>
-                      </div>
-                    </div>
-                    <button className="rt-start-btn" disabled={!!starting} onClick={() => setPendingStart({ food: food.name, level: food.level })}>
-                      {starting === food.name ? 'Starting...' : 'Start cycle →'}
-                    </button>
-                  </div>
-                ))}
-              </>
-            )}
-
-            {!isCommonTrack && !moderateUnlocked && lowUnlocked && (
-              <div className="rt-tier-card" style={{ marginTop: '8px' }}>
-                <div className="rt-tier-header">
-                  <div className="rt-tier-label">Moderate sensitivity foods</div>
-                  <div className="rt-tier-status">Unlocks in {daysUntilModerate} days</div>
-                </div>
-              </div>
-            )}
-
-            {highUnlocked && (
-              <>
-                <div className="rt-section-label">High sensitivity · unlocked</div>
-                {getRemainingFoods('High').map((food, i) => (
-                  <div key={food.name} className={`rt-food-card${i === 0 ? ' recommended' : ''}`}>
-                    <div className="rt-food-left">
-                      <div className={`rt-food-rank${i === 0 ? ' top' : ''}`}>{i + 1}</div>
-                      <div>
-                        <div className="rt-food-name">
-                          {food.name}
-                          {i === 0 && <span className="rt-rec-badge">Recommended</span>}
-                        </div>
-                        <div className="rt-food-freq">{FREQ_LABEL[foodFrequency[food.name]] || ''}</div>
-                      </div>
-                    </div>
-                    <button className="rt-start-btn" disabled={!!starting} onClick={() => setPendingStart({ food: food.name, level: food.level })}>
-                      {starting === food.name ? 'Starting...' : 'Start cycle →'}
-                    </button>
-                  </div>
-                ))}
-              </>
-            )}
-
-            {!highUnlocked && moderateUnlocked && (
-              <div className="rt-tier-card" style={{ marginTop: '8px' }}>
-                <div className="rt-tier-header">
-                  <div className="rt-tier-label">High sensitivity foods</div>
-                  <div className="rt-tier-status">Unlocks in {daysUntilHigh} days</div>
-                </div>
-              </div>
-            )}
+            {/* The Moderate/High tier sections and their unlock teasers are
+                retired: every track now runs ONE frequency-ordered queue that
+                unlocks whole at day 57 (the doctrine). */}
           </>
         )}
 
