@@ -112,16 +112,22 @@ export default function HouseholdCard({ token }) {
 // pattern as markMilestoneShown, so other milestone keys are never clobbered).
 // ---------------------------------------------------------------------------
 
+// Compact utility row before minting (one line + button); the link tools only
+// appear after a link exists. Same logic as before, quieter ceremony.
 const sc = {
-  card: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '20px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C' },
-  micro: { fontFamily: 'DM Mono, monospace', fontSize: '9.5px', fontWeight: 500, letterSpacing: '2px', textTransform: 'uppercase', color: '#7A7A72', marginBottom: '10px' },
-  line: { fontSize: '13.5px', lineHeight: 1.55, color: '#1C1C1C', marginBottom: '14px' },
-  btn: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '10px', padding: '11px 16px', fontSize: '13.5px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
-  linkRow: { display: 'flex', gap: '8px', marginBottom: '10px' },
-  linkInput: { flex: 1, minWidth: 0, border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '10px 12px', fontSize: '13px', background: '#FAF8F4', color: '#1C1C1C', outline: 'none', fontFamily: 'DM Mono, monospace', boxSizing: 'border-box' },
+  card: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '18px', padding: '14px 16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C' },
+  row: { display: 'flex', alignItems: 'center', gap: '14px' },
+  micro: { fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#7A7A72', marginBottom: '4px' },
+  line: { fontSize: '12px', lineHeight: 1.5, color: '#8A8A82' },
+  btn: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 15px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', whiteSpace: 'nowrap', flexShrink: 0 },
+  linkRow: { display: 'flex', gap: '8px', marginTop: '12px' },
+  linkInput: { flex: 1, minWidth: 0, border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '10px 12px', fontSize: '12.5px', background: '#FAF8F4', color: '#1C1C1C', outline: 'none', fontFamily: 'DM Mono, monospace', boxSizing: 'border-box' },
   copyBtn: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 14px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif' },
-  off: { background: 'none', border: 'none', padding: 0, fontSize: '12px', color: '#C95B5B', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'DM Sans, sans-serif' },
-  err: { background: '#FAEAEA', color: '#C95B5B', borderRadius: '8px', padding: '9px 12px', fontSize: '12.5px', marginBottom: '10px' },
+  statusRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '10px' },
+  liveNote: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#7A7A72' },
+  liveDot: { width: '6px', height: '6px', borderRadius: '50%', background: '#8BAE8A', flexShrink: 0 },
+  off: { background: 'none', border: 'none', padding: 0, fontSize: '12px', color: '#C95B5B', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 },
+  err: { background: '#FAEAEA', color: '#C95B5B', borderRadius: '8px', padding: '9px 12px', fontSize: '12.5px', marginTop: '10px' },
 }
 
 const mintToken = () =>
@@ -201,14 +207,23 @@ export function HouseholdShareCard({ session, profile }) {
 
   return (
     <div style={sc.card}>
-      <div style={sc.micro}>Household card</div>
-      <div style={sc.line}>A read-only link for whoever cooks: what is off the plate and this week's trial. Nothing else is shared.</div>
+      <div style={sc.row}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={sc.micro}>Household card</div>
+          <div style={sc.line}>
+            {!token
+              ? 'A link for whoever cooks for you: what is off the plate right now, nothing else.'
+              : 'Your card is live. Anyone with this link sees what is off the plate and this week’s trial, nothing else.'}
+          </div>
+        </div>
+        {!token && (
+          <button style={{ ...sc.btn, opacity: busy ? 0.6 : 1 }} onClick={createLink} disabled={busy}>
+            {busy ? 'Creating...' : 'Create link'}
+          </button>
+        )}
+      </div>
       {error && <div style={sc.err}>{error}</div>}
-      {!token ? (
-        <button style={{ ...sc.btn, opacity: busy ? 0.6 : 1 }} onClick={createLink} disabled={busy}>
-          {busy ? 'Creating...' : 'Create the link'}
-        </button>
-      ) : (
+      {token && (
         <>
           <div style={sc.linkRow}>
             <input ref={inputRef} style={sc.linkInput} value={link} readOnly onFocus={e => e.target.select()} />
@@ -216,9 +231,12 @@ export function HouseholdShareCard({ session, profile }) {
               {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
-          <button style={{ ...sc.off, opacity: busy ? 0.6 : 1 }} onClick={turnOff} disabled={busy}>
-            Turn off link
-          </button>
+          <div style={sc.statusRow}>
+            <span style={sc.liveNote}><span style={sc.liveDot} />Updates by itself as your protocol moves</span>
+            <button style={{ ...sc.off, opacity: busy ? 0.6 : 1 }} onClick={turnOff} disabled={busy}>
+              Turn off link
+            </button>
+          </div>
         </>
       )}
     </div>

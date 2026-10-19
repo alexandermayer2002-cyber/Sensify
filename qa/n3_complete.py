@@ -2,7 +2,7 @@
 final food, Gluten / wheat, to a verdict -> program completion surfaces ->
 the tier-1 escalation offer (never before seen live)."""
 from robot import Robot
-from pathkit import srv_skip as _rawskip, signup_or_login
+from pathkit import srv_skip as _rawskip, signup_or_login, nav_tab
 import re, json
 
 r = Robot("N3C")
@@ -63,7 +63,7 @@ try:
     do_weekly_if_due()
     home()
     S("n3c_home_between", 1800)      # second-cycle handoff state
-    r.click("Reintro", exact=True); r.sleep(2.0); r.wait_ready(15)
+    nav_tab(r, "Reintro")
     S("n3c_picker_final_food", 1800) # expect only Gluten / wheat remaining
     r.page.get_by_role("button", name=re.compile(r"Start cycle")).first.click(timeout=6000)
     r.sleep(1.8); r.wait_ready(12)
@@ -88,7 +88,7 @@ try:
     r.shot("n3c_final_ruling")
     r.cta(r"View your verdicts|Done"); r.sleep(2.5); r.wait_ready(15)
     S("n3c_verdicts_wall", 2200)     # the finished 2-food wall
-    r.click("Reintro", exact=True); r.sleep(2.2); r.wait_ready(15)
+    nav_tab(r, "Reintro")
     S("n3c_ALL_DONE", 2800)          # expect TierEscalation (tier 1, not escalated)
     r.shot("n3c_escalation")
     # walk the escalation choice WITHOUT accepting (capture both options)

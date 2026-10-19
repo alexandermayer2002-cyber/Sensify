@@ -1,0 +1,62 @@
+{
+ "findings": [],
+ "console": [
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+ ],
+ "screens": {
+  "n3f_home_products": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening, Fable\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 30 OF 28 \u00b7 CYCLE COMPLETE\nPick your next food\n\u2192\nor log tonight\u2019s check-in\n0 day streak\nTesting foods, one at a time\nWEEKLY INSIGHT \u00b7 WEEK 10\n\nClarity rose 25% above baseline this week, the strongest positive shift across all your tracked metrics, and digestive comfort moved 25% in the other direction on what you noted were the exact days stress peaked. Bloating improved 17% from baseline and held steady week over week, which is a meaningful signal in the right direction. You logged 6 of 7 days and followed the plan on every logged day, so the protocol stayed consistent even through a demanding stretch.\n\nGENERATED FROM YOUR CHECK-IN DATA\nWeekly check-in\nCatch up, your data still matters\nStart \u2192\nTHE SUSPECT BOARD\n0 OF 2 RULED\n1\nDairy\nCommon trigger \u00b7 eaten daily \u00b7 Trial opens ~Oct 19\nSUSPECT\n2\nGluten / wheat\nCommon trigger \u00b7 eaten 3-5x a week \u00b7 Trial opens ~Nov 2\nSUSPECT\nHOUSEHOLD CARD\nA read-only link for whoever cooks: what is off the plate and this week's trial. Nothing else is shared.\nCreate the link\nDAYS 85\u201391\n0\nDAY STREAK\nSu\n\u2013\nMo\n\u00b7\nTu\nWe\nTh\nFr\nSa\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nCURRENTLY AVOIDING\n2 foods total\nCOMMON TRIGGERS \u00b7 NOT LAB-FLAGGED\n2\nDairy\nGluten / wheat\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nSYMPTOM TRENDS\n-17% avg vs baseline\nLatest week\nOverall average\nBoth phases\nElimination\nReintro\nBloating\nEnergy\nClarity\nSleep\nGas\nREINTRO\n5\nBaseline\nWeek 9\nWeek 10\nBaseline\n6\nLatest\n5\nCheck-ins\n2",
+  "n3f_verdicts_tab": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening, Fable\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 30 OF 28 \u00b7 CYCLE COMPLETE\nPick your next food\n\u2192\nor log tonight\u2019s check-in\n0 day streak\nTesting foods, one at a time\nREINTRODUCTION BEGINS\n\nEight weeks of elimination complete, Fable, that is no small thing, and your digestive health and energy levels will be much better for it. Now comes the part where you start getting real answers: reintroduction works by testing one food at a time over 14 days, giving your body enough space to show you clearly how it responds. Head to the Reintro tab to choose your first food, we suggest starting with Dairy, since it's the food you eat most often, making it the most useful place to begin. That said, the full list is yours to work through in whatever order feels right for you.\n\n\u00d7\nWEEKLY INSIGHT \u00b7 WEEK 10\n\nClarity rose 25% above baseline this week, the strongest positive shift across all your tracked metrics, and digestive comfort moved 25% in the other direction on what you noted were the exact days stress peaked. Bloating improved 17% from baseline and held steady week over week, which is a meaningful signal in the right direction. You logged 6 of 7 days and followed the plan on every logged day, so the protocol stayed consistent even through a demanding stretch.\n\nGENERATED FROM YOUR CHECK-IN DATA\nWeekly check-in\nCatch up, your data still matters\nStart \u2192\nBASELINE SHARPNESS\n6.0\n\u00b10.4\nbloating baseline\nWas \u00b12.2 on day 3. Every consistent day tightens it, and a tighter baseline makes every verdict sharper. 82 days logged so far.\ngas 5.0 \u00b10.4\nreflux 5.0 \u00b10.4\ndigestive comfort 4.0 \u00b10.4\nTHE SUSPECT BOARD\n1 OF 2 RULED\n1\nDairy\nCommon trigger \u00b7 eaten daily \u00b7 Trial complete\nAVOID\n2\nGluten / wheat\nCommon trigger \u00b7 eaten 3-5x a week \u00b7 Trial opens ~Oct 19\nSUSPECT\nHOUSEHOLD CARD\nA read-only link for whoever cooks: what is off the plate and this week's trial. Nothing else is shared.\nCould not create the link. Please try again.\nCreate the link\nDAYS 85\u201391\n0\nDAY STREAK\nSu\n\u2013\nMo\n\u00b7\nTu\nWe\nTh\nFr\nSa\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nCURRENTLY AVOIDING\n2 foods total\nCOMMON TRIGGERS \u00b7 NOT LAB-FLAGGED\n2\nDairy\nGluten / wheat\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nSYMPTOM TRENDS\n-17% avg vs baseline\nLatest week\nOverall average\nBoth phases\nElimination\nReintro\nBloating\nEnergy\nClarity\nSleep\nGas\nREINTRO\n5\nBaseline\nWeek 9\nWeek 10\nBaseline\n6\nLatest\n5\nCheck-ins\n2"
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/N3F_01_n3f_home_products.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/N3F_03_n3f_verdicts_tab.png"
+ ],
+ "checks": [
+  {
+   "check": "sharpness_card",
+   "ok": false,
+   "detail": ""
+  },
+  {
+   "check": "suspect_board",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "household_card",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "household_minted",
+   "ok": false,
+   "detail": ""
+  },
+  {
+   "check": "foodmap_download_btn",
+   "ok": false,
+   "detail": ""
+  },
+  {
+   "check": "foodmap_print_sheet_dom",
+   "ok": false,
+   "detail": ""
+  },
+  {
+   "check": "bottom_tab_bar",
+   "ok": true,
+   "detail": "{'display': 'flex', 'items': ['Home', 'Reintro', 'Verdicts', 'Ask', 'More']}"
+  }
+ ],
+ "bottombar": {
+  "display": "flex",
+  "items": [
+   "Home",
+   "Reintro",
+   "Verdicts",
+   "Ask",
+   "More"
+  ]
+ }
+}

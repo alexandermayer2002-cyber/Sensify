@@ -1,0 +1,72 @@
+{
+ "date": "261019",
+ "passed": 5,
+ "total": 13,
+ "results": [
+  {
+   "check": "mkt.example_labels",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "mkt.console_clean",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "check": "p1.intake",
+   "ok": false,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening, QA\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 1 OF 28 \u00b7 TESTING OPEN\nPick your next fo"
+  },
+  {
+   "check": "p1.walk",
+   "ok": false,
+   "detail": "one\nplaywright._impl._errors.TimeoutError: Locator.fill: Timeout 9000ms exceeded.\nCall log:\n  - waiting for get_by_placeholder(\"Search foods\").first\n\n"
+  },
+  {
+   "check": "p2.clean_toggle_visible",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "p2.clean_readback",
+   "ok": false,
+   "detail": ""
+  },
+  {
+   "check": "p2.no_premature_protocol",
+   "ok": false,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nELIMINATION PHASE\nStarts tomorrow.\nYour elimination phas"
+  },
+  {
+   "check": "p2.decision_present",
+   "ok": false,
+   "detail": ""
+  },
+  {
+   "check": "p2.walk",
+   "ok": false,
+   "detail": " Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator(\"//*[normalize-space(text())='Dairy']/following::*[normalize-space(text())='Daily'][1]\")\n\n"
+  },
+  {
+   "check": "p3.walk",
+   "ok": false,
+   "detail": "one\nplaywright._impl._errors.TimeoutError: Locator.fill: Timeout 9000ms exceeded.\nCall log:\n  - waiting for get_by_placeholder(\"Search foods\").first\n\n"
+  },
+  {
+   "check": "p4.tracking_landing",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "p4.verdicts_tracking_state",
+   "ok": false,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're tracking. Log how today goes.\n\nYOUR PATH\nYou're tracking, not testing.\n\nYou've chosen"
+  },
+  {
+   "check": "p4.reintro_tracking_state",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

@@ -1492,7 +1492,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.5)', marginBottom: 3 }}>{getGreeting()}, {name}</div>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.1 }}>{betweenCycles ? 'Choose your next food.' : `Day ${calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.`}</div>
                   {cycleLine && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>{cycleLine}</div>}
-                  {betweenCycles && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>REINTRODUCTION · DAY {currentDay - 56} OF {(labResult?.foods?.length || 8) * 14} · {reintroRows.some(r => r.verdict) ? 'CYCLE COMPLETE' : 'TESTING OPEN'}</div>}
+                  {betweenCycles && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>REINTRODUCTION · DAY {currentDay - 56}{(currentDay - 56) <= (labResult?.foods?.length || 8) * 14 ? ` OF ${(labResult?.foods?.length || 8) * 14}` : ''} · {reintroRows.some(r => r.verdict) ? 'CYCLE COMPLETE' : 'TESTING OPEN'}</div>}
                 </div>
                 {verdictReadyFood ? (
                   <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#C9A227', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 0 22px rgba(201,162,39,0.35)' }}>
@@ -1850,6 +1850,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
+            {/* THE SUSPECT BOARD — what happens next, so it outranks the meters */}
+            {labResult && (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
+              <div style={{ marginTop: 14 }}><SuspectBoard session={session} profile={profile} labResult={labResult} onOpenReintro={() => goTab('Reintro')} /></div>
+            )}
+
             {/* AI INSIGHT — the voice card */}
             <div className="snfy-insight" style={{ marginTop: 14 }}>
               <div className="snfy-insight-head">
@@ -1894,16 +1899,6 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {/* BASELINE SHARPNESS — the invisible work of elimination, made visible */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
               <div style={{ marginTop: 14 }}><BaselineSharpness session={session} profile={profile} /></div>
-            )}
-
-            {/* THE SUSPECT BOARD — every food a dossier, SUSPECT to ON TRIAL to verdict */}
-            {labResult && (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
-              <div style={{ marginTop: 14 }}><SuspectBoard session={session} profile={profile} labResult={labResult} /></div>
-            )}
-
-            {/* HOUSEHOLD CARD — read-only share link for whoever cooks */}
-            {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
-              <div style={{ marginTop: 14 }}><HouseholdShareCard session={session} profile={profile} /></div>
             )}
 
             {/* COMPLIANCE DOTS */}
@@ -2149,7 +2144,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             </div>
 
             {isTestAccount(session?.user?.email) && (
-              <div style={{ position: 'fixed', bottom: 14, right: 14, zIndex: 9999, background: '#FFFFFF', border: '1.5px dashed #C07A28', borderRadius: 12, padding: '10px 12px', boxShadow: '0 6px 20px rgba(0,0,0,0.12)', fontFamily: 'DM Mono, monospace' }}>
+              <div style={{ position: 'fixed', bottom: window.innerWidth <= 640 ? 86 : 14, right: 14, zIndex: 70, background: '#FFFFFF', border: '1.5px dashed #C07A28', borderRadius: 12, padding: '10px 12px', boxShadow: '0 6px 20px rgba(0,0,0,0.12)', fontFamily: 'DM Mono, monospace' }}>
                 <div style={{ fontSize: 8, letterSpacing: '1.4px', color: '#C07A28', marginBottom: 7 }}>TEST MODE · TIME MACHINE</div>
                 <div style={{ display: 'flex', gap: 6 }}>
                   {[1, 7, 11, 43].map(d => (
@@ -2158,6 +2153,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
               </div>
             )}
+            {/* HOUSEHOLD CARD — utility row, column footer per the design direction */}
+            {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
+              <div style={{ marginTop: 14 }}><HouseholdShareCard session={session} profile={profile} /></div>
+            )}
+
             {/* THE LEAF CONSTELLATION — 28 nights, one star per logged day, randomized per user; the leaf reveals at 28 */}
             {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 42) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
               const preP = !profile?.protocol_start_date

@@ -2,7 +2,7 @@
 runs a clean Crab cycle, then answers 'Not quite, it felt worse than that'.
 Question: does the AI layer move the provisional verdict one step and say why?"""
 from robot import Robot
-from pathkit import srv_skip as _rawskip, signup_or_login
+from pathkit import srv_skip as _rawskip, signup_or_login, nav_tab
 import re, json
 
 r = Robot("N3D")
@@ -40,7 +40,7 @@ try:
     signup_or_login(r, EMAIL, NAME, PW)
     gate()
     home()
-    r.click("Reintro", exact=True); r.sleep(2.0); r.wait_ready(15)
+    nav_tab(r, "Reintro")
     S("n3d_picker", 1600)
     r.page.get_by_role("button", name=re.compile(r"Start cycle")).first.click(timeout=6000)
     r.sleep(1.8); r.wait_ready(12)

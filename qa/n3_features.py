@@ -2,7 +2,7 @@
 Checks: Baseline Sharpness, Suspect Board, Household card mint + public page,
 Food Map download button + print sheet, bottom tab bar at phone width."""
 from robot import Robot
-from pathkit import signup_or_login
+from pathkit import signup_or_login, nav_tab
 import re, json, urllib.request
 
 r = Robot("N3F")
@@ -28,8 +28,8 @@ try:
     try:
         r.cta(r"Create the link|Create link")
         r.sleep(2.0)
-        t2 = r.text()
-        m = re.search(r"household=([0-9a-f]{24})", t2)
+        vals = r.page.evaluate("() => [...document.querySelectorAll('input')].map(i => i.value).join(' ')")
+        m = re.search(r"household=([0-9a-f]{24})", vals + " " + r.text())
         check("household_minted", bool(m))
         if m:
             token = m.group(1)
@@ -49,7 +49,7 @@ try:
         check("household_flow", False, str(e)[:120])
     # Food Map print
     try:
-        r.click("Verdicts", exact=True); r.sleep(2.0); r.wait_ready(12)
+        nav_tab(r, "Verdicts")
         t3 = r.text()
         check("foodmap_download_btn", "Download your Food Map" in t3)
         S("n3f_verdicts_tab", 1600)

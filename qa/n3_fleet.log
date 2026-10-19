@@ -1,0 +1,42 @@
+=== features ===
+FAIL foodmap_print_sheet_dom
+PASS bottom_tab_bar
+shot: N3F_04_n3f_bottombar.png
+=== pdf ===
+Your symptom trends will appear here after your first weekly check-in.
+==end n3p_home_after==
+shot: N3P_06_n3p_home_after.png
+=== disagree ===
+Call log:
+  - waiting for get_by_role("button", name=re.compile(r"Start cycle")).first
+
+=== messy ===
+1
+==end n3_dirty_INSIGHT==
+shot: N3M_13_n3_dirty_INSIGHT.png
+=== complete ===
+Call log:
+  - waiting for get_by_role("button", name=re.compile(r"Start cycle")).first
+
+=== regress ===
+FINDING: [RG4] could not click 'Verdicts': Locator.click: Timeout 6000ms exceeded.
+Call log:
+  - waiting for get_by_text("Verdicts",  | screen: "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYou're tracking. Log how today goes.\n\nYOUR PATH\nYo"
+FAIL p4.verdicts_tracking_state | Sensify.
+Sign out
+Home
+Reintro
+Verdicts
+Ask
+More
+Good afternoon,
+QA.
+
+You're tra
+FINDING: [RG4] could not click 'Reintro': Locator.click: Timeout 6000ms exceeded.
+Call log:
+  - waiting for get_by_text("Reintro", e | screen: "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYou're tracking. Log how today goes.\n\nYOUR PATH\nYo"
+FAIL p4.reintro_tracking_state | 
+
+REGRESSION: 17/20 checks passed
+=== FLEET DONE ===

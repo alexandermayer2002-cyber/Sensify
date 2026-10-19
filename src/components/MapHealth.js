@@ -186,6 +186,7 @@ function computeMapHealth(verdictRows, symptomRows, factorRows, mealRows, protoc
 
 export default function MapHealth({ session, profile }) {
   const [report, setReport] = useState(null)
+  const [showHow, setShowHow] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -256,6 +257,17 @@ export default function MapHealth({ session, profile }) {
   return (
     <div style={st.card}>
       <div style={st.micro}>MAP HEALTH · LAST 30 DAYS</div>
+      <div style={st.intro}>
+        Whether the foods you cleared are still behaving, checked against your own quiet weeks.{' '}
+        <button type="button" style={st.howBtn} onClick={() => setShowHow(v => !v)}>
+          {showHow ? 'Hide' : 'How this works'}
+        </button>
+      </div>
+      {showHow && (
+        <div style={st.howPanel}>
+          We compare how often symptoms show up in your last 30 days against how often they showed up during your quiet elimination weeks, your noise floor. A cleared food is only flagged when recent symptoms rise clearly above that floor and you actually logged eating it in the window. With fewer than four recent logs the card says so instead of guessing.
+        </div>
+      )}
       <div style={st.summary}>{summary}</div>
       <div style={st.vitality}>
         {checkins} check-in{checkins === 1 ? '' : 's'} and {symptomCount} symptom log{symptomCount === 1 ? '' : 's'} in the last 30 days.
@@ -299,7 +311,17 @@ const st = {
   },
   micro: {
     fontFamily: 'DM Mono, monospace', fontSize: 10, letterSpacing: '0.12em',
-    textTransform: 'uppercase', color: '#8A8A82', marginBottom: 10,
+    textTransform: 'uppercase', color: '#8A8A82', marginBottom: 8,
+  },
+  intro: { fontSize: 12, color: '#8A8A82', lineHeight: 1.55, marginBottom: 12 },
+  howBtn: {
+    background: 'none', border: 'none', padding: 0, fontFamily: 'DM Sans, sans-serif',
+    fontSize: 12, fontWeight: 600, color: '#3D5C3C', cursor: 'pointer',
+    textDecoration: 'underline', textUnderlineOffset: 2,
+  },
+  howPanel: {
+    background: '#FAF8F4', borderRadius: 10, padding: '10px 12px', margin: '-4px 0 12px',
+    fontSize: 11.5, color: '#7A7A72', lineHeight: 1.6,
   },
   summary: {
     fontFamily: 'Fraunces, serif', fontSize: 19, fontWeight: 300,

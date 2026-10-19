@@ -5,7 +5,7 @@ from robot import Robot
 from pathkit import *
 import re, json, datetime, traceback
 
-STAMP = datetime.date.today().strftime("%y%m%d")
+STAMP = datetime.datetime.now().strftime("%y%m%d%H%M")
 PW = "RobotTester!2026"
 RESULTS = []
 
@@ -56,7 +56,7 @@ def run_p1():
         t = r.text()
         check("p1.unlock_hero", "TESTING OPEN" in t and "OF 28" in t, t[:300])
         check("p1.no_false_complete", "CYCLE COMPLETE" not in t)
-        r.click("Reintro", exact=True); r.sleep(2.0); r.wait_ready(15)
+        nav_tab(r, "Reintro")
         t = r.text()
         check("p1.single_queue", "YOUR FOODS" in t.upper() and "Start cycle" in t, t[:300])
         check("p1.freq_order_crab_first", t.find("Crab") < t.find("Beef") if ("Crab" in t and "Beef" in t) else False, t[:300])
@@ -135,12 +135,12 @@ def run_p4():
         r.click_btn("I'd rather just track for now"); r.sleep(2.5); r.wait_ready(20)
         t = r.text()
         check("p4.tracking_landing", "tracking, not testing" in t)
-        r.click("Verdicts", exact=True); r.sleep(1.8); r.wait_ready(12)
+        nav_tab(r, "Verdicts")
         t = r.text()
         check("p4.verdicts_tracking_state", "Earned by" in t and "RULED" not in t, t[:250])
         try: r.page.get_by_text("Home", exact=True).first.click(timeout=3000); r.sleep(1.4)
         except Exception: r.goto(); r.sleep(2.0)
-        r.click("Reintro", exact=True); r.sleep(1.8); r.wait_ready(12)
+        nav_tab(r, "Reintro")
         check("p4.reintro_tracking_state", "no cycles are scheduled" in r.text())
     except Exception as e:
         check("p4.walk", False, traceback.format_exc()[-150:])

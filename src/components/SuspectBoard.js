@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { getTestingOrder } from '../utils/protocolEngine'
 
-// THE SUSPECT BOARD — the case file that stays open during the quiet eight weeks.
+// THE SUSPECT BOARD, the case file that stays open during the quiet eight weeks.
 // Every protocol food is a dossier row whose stamp moves SUSPECT -> ON TRIAL ->
 // its earned verdict. Queued suspects carry an honest (~) estimate of when their
 // trial opens, derived from the protocol clock: elimination runs day 1-56, then
 // 14-day cycles in testing order from day 57.
+//
+// PRESENTATION (redesign): plain-words intro + "How this works" expander, a
+// fixed-width aligned stamp column, consistent row height, and the NEXT queued
+// suspect highlighted since it is the food the user will test first. Rows that
+// are ON TRIAL or UP NEXT become tappable (with a chevron) when the optional
+// onOpenReintro callback prop is passed; with no prop they render exactly as
+// before. All schedule math and data fetching are untouched.
 
 const ELIMINATION_DAYS = 56
 const CYCLE_DAYS = 14
@@ -43,9 +50,10 @@ const addDays = (date, n) => {
 }
 const fmt = (date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
-export default function SuspectBoard({ session, profile, labResult }) {
+export default function SuspectBoard({ session, profile, labResult, onOpenReintro }) {
   const [cycles, setCycles] = useState([])
   const [expanded, setExpanded] = useState(false)
+  const [showHow, setShowHow] = useState(false)
 
   useEffect(() => {
     if (!session?.user?.id) return
@@ -94,10 +102,11 @@ export default function SuspectBoard({ session, profile, labResult }) {
     }
 
     // Build rows in testing order; queued suspects count their own 0-based slot.
+    // The first queued suspect is UP NEXT: it is the food the user tests first.
     let queueIndex = 0
     const rows = boardFoods.map((food, idx) => {
       const cycle = byFood[food.name.toLowerCase()]
-      let stamp, detail, done = false
+      let stamp, detail, done = false, active = false, next = false, queuedFirst = false
       if (cycle?.verdict && STAMP[cycle.verdict]) {
         stamp = STAMP[cycle.verdict]
         detail = 'Trial complete'
@@ -105,19 +114,23 @@ export default function SuspectBoard({ session, profile, labResult }) {
       } else if (cycle) {
         stamp = STAMP.Trial
         detail = cycle.washout_started_at ? 'In washout' : 'In exposure'
+        active = true
       } else {
         stamp = STAMP.Suspect
         detail = queueBase ? `Trial opens ~${fmt(addDays(queueBase, CYCLE_DAYS * queueIndex))}` : 'Awaiting protocol start'
+        queuedFirst = queueIndex === 0
+        next = queuedFirst && !activeCycle // highlight only when it is truly next up
         queueIndex += 1
       }
       const origin = food.level === 'Common'
         ? { text: 'Common trigger', color: '#8A8A82' }
         : { text: `Lab · ${food.level}`, color: LEVEL_COLOR[food.level] || '#8A8A82' }
-      return { rank: idx + 1, name: food.name, origin, freqText: FREQ_TEXT[freq[food.name]] || null, stamp, detail, done }
+      return { rank: idx + 1, name: food.name, origin, freqText: FREQ_TEXT[freq[food.name]] || null, stamp, detail, done, active, next, queuedFirst }
     })
 
     const collapsible = rows.length > 6
     const visible = collapsible && !expanded ? rows.slice(0, 6) : rows
+    const hasOpen = typeof onOpenReintro === 'function'
 
     return (
       <div style={s.card}>
@@ -126,24 +139,62 @@ export default function SuspectBoard({ session, profile, labResult }) {
           <span style={{ ...s.micro, color: '#9A927E' }}>{ruledCount} OF {boardFoods.length} RULED</span>
         </div>
 
-        {visible.map((r) => (
-          <div key={r.name} style={s.row}>
-            <span style={s.rank}>{r.rank}</span>
-            <div style={{ flex: 1, minWidth: 0, opacity: r.done ? 0.62 : 1 }}>
-              <div style={s.name}>{r.name}</div>
-              <div style={s.sub}>
-                <span style={{ color: r.origin.color }}>{r.origin.text}</span>
-                {r.freqText && <span>{' · '}{r.freqText}</span>}
-                <span>{' · '}{r.detail}</span>
-              </div>
-            </div>
-            <span style={{
-              ...s.stamp,
-              color: r.stamp.color,
-              background: `${r.stamp.color}1F`,
-            }}>{r.stamp.label}</span>
+        <div style={s.intro}>
+          Every food your protocol removed and where its case stands: suspect, on trial, or ruled.{' '}
+          <button type="button" style={s.howBtn} onClick={() => setShowHow(v => !v)}>
+            {showHow ? 'Hide' : 'How this works'}
+          </button>
+        </div>
+
+        {showHow && (
+          <div style={s.howPanel}>
+            Each food stays off your plate through elimination, then comes back one at a time for its own 14 day trial: three exposure days, then a washout while your record settles. The ~dates are estimates from your protocol clock (elimination runs 56 days, trials begin day 57, one trial per 14 days) and shift if a trial restarts or runs long. Every verdict is earned from your own check-ins, never assumed.
           </div>
-        ))}
+        )}
+
+        <div style={{ marginTop: 10 }}>
+          {visible.map((r) => {
+            const tappable = hasOpen && (r.active || r.queuedFirst)
+            const rowStyle = {
+              ...s.row,
+              ...(r.next ? s.rowNext : null),
+              ...(tappable ? { cursor: 'pointer' } : null),
+            }
+            return (
+              <div
+                key={r.name}
+                style={rowStyle}
+                onClick={tappable ? () => onOpenReintro(r.name) : undefined}
+                role={tappable ? 'button' : undefined}
+                tabIndex={tappable ? 0 : undefined}
+                onKeyDown={tappable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenReintro(r.name) } } : undefined}
+              >
+                <span style={s.rank}>{r.rank}</span>
+                <div style={{ flex: 1, minWidth: 0, opacity: r.done ? 0.62 : 1 }}>
+                  <div style={s.nameLine}>
+                    <span style={s.name}>{r.name}</span>
+                    {r.next && <span style={s.nextTag}>UP NEXT</span>}
+                  </div>
+                  <div style={s.sub}>
+                    <span style={{ color: r.origin.color }}>{r.origin.text}</span>
+                    {r.freqText && <span>{' · '}{r.freqText}</span>}
+                    <span>{' · '}{r.detail}</span>
+                  </div>
+                </div>
+                <span style={s.stampCol}>
+                  <span style={{
+                    ...s.stamp,
+                    color: r.stamp.color,
+                    background: `${r.stamp.color}1F`,
+                  }}>{r.stamp.label}</span>
+                </span>
+                {hasOpen && (
+                  <span style={{ ...s.chevron, visibility: tappable ? 'visible' : 'hidden' }}>›</span>
+                )}
+              </div>
+            )
+          })}
+        </div>
 
         {collapsible && (
           <button type="button" onClick={() => setExpanded(!expanded)} style={s.toggle}>
@@ -175,7 +226,7 @@ const s = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'baseline',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   micro: {
     fontFamily: 'DM Mono, monospace',
@@ -184,12 +235,30 @@ const s = {
     textTransform: 'uppercase',
     color: '#3D5C3C',
   },
+  intro: { fontSize: 12, color: '#8A8A82', lineHeight: 1.55 },
+  howBtn: {
+    background: 'none', border: 'none', padding: 0, fontFamily: 'DM Sans, sans-serif',
+    fontSize: 12, fontWeight: 600, color: '#3D5C3C', cursor: 'pointer',
+    textDecoration: 'underline', textUnderlineOffset: 2,
+  },
+  howPanel: {
+    background: '#FAF8F4', borderRadius: 10, padding: '10px 12px', marginTop: 8,
+    fontSize: 11.5, color: '#7A7A72', lineHeight: 1.6,
+  },
   row: {
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    padding: '9px 0',
+    minHeight: 52,
+    padding: '8px 8px',
+    boxSizing: 'border-box',
     borderTop: '1px solid rgba(0,0,0,0.05)',
+  },
+  rowNext: {
+    background: '#F4F7F2',
+    border: '1px solid rgba(61,92,60,0.22)',
+    borderRadius: 12,
+    margin: '4px 0',
   },
   rank: {
     fontFamily: 'DM Mono, monospace',
@@ -199,6 +268,7 @@ const s = {
     flexShrink: 0,
     textAlign: 'right',
   },
+  nameLine: { display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 },
   name: {
     fontSize: 14,
     fontWeight: 700,
@@ -208,21 +278,44 @@ const s = {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
+  nextTag: {
+    fontFamily: 'DM Mono, monospace',
+    fontSize: 8,
+    letterSpacing: '0.8px',
+    color: '#3D5C3C',
+    border: '1px solid rgba(61,92,60,0.35)',
+    borderRadius: 4,
+    padding: '1px 5px',
+    flexShrink: 0,
+  },
   sub: {
     fontSize: 11,
     color: '#8A8A82',
     marginTop: 1,
     lineHeight: 1.4,
   },
+  stampCol: {
+    width: 72,
+    flexShrink: 0,
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
   stamp: {
     fontFamily: 'DM Mono, monospace',
     fontSize: 8,
     letterSpacing: '0.8px',
     textTransform: 'uppercase',
-    padding: '2px 7px',
+    padding: '3px 7px',
     borderRadius: 5,
-    flexShrink: 0,
     whiteSpace: 'nowrap',
+  },
+  chevron: {
+    fontSize: 16,
+    color: '#B8B6AE',
+    flexShrink: 0,
+    width: 10,
+    textAlign: 'center',
+    lineHeight: 1,
   },
   toggle: {
     background: 'none',

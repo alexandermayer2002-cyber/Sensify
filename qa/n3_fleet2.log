@@ -1,0 +1,30 @@
+=== features2 ===
+FAIL sharpness_card
+PASS suspect_board
+PASS household_card
+FAIL household_minted
+FAIL foodmap_download_btn
+FAIL foodmap_print_sheet_dom
+PASS bottom_tab_bar
+=== disagree2 ===
+shot: N3D_05_N3D_RULING.png
+shot: N3D_06_n3d_ruling_visual.png
+=== complete2 ===
+  - waiting for get_by_role("button", name=re.compile(r"Start cycle")).first
+
+=== regress2 ===
+PASS mkt.example_labels
+PASS mkt.console_clean
+FAIL p1.intake | Sensify.
+FAIL p1.walk | one
+PASS p2.clean_toggle_visible
+FAIL p2.clean_readback | 
+FAIL p2.no_premature_protocol | Sensify.
+FAIL p2.decision_present | 
+FAIL p2.walk |  Timeout 6000ms exceeded.
+FAIL p3.walk | one
+PASS p4.tracking_landing
+FAIL p4.verdicts_tracking_state | Sensify.
+PASS p4.reintro_tracking_state
+REGRESSION: 5/13 checks passed
+=== FLEET2 DONE ===

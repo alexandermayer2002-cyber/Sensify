@@ -110,3 +110,33 @@ def rig_lab(r, email, foods, profile_patch):
         capture_output=True, text=True).stdout
     print("approve:", approve[:160])
     return out
+
+def nav_tab(r, label):
+    """Navigate via the phone bottom bar (top tabs are hidden under 640px).
+    History/Maintain live behind More."""
+    import re as _re
+    bb = {"Ask Sensify": "Ask"}.get(label, label)
+    if label in ("History", "Maintain", "Support"):
+        try:
+            more = r.page.get_by_role("button", name=_re.compile("^More$"))
+            for i in range(more.count()):
+                if more.nth(i).is_visible(): more.nth(i).click(); break
+            r.sleep(0.6)
+            item = r.page.get_by_role("button", name=_re.compile(f"^{label}$"))
+            for i in range(item.count()):
+                if item.nth(i).is_visible(): item.nth(i).click(); r.sleep(1.8); r.wait_ready(12); return True
+        except Exception: pass
+        return False
+    try:
+        btn = r.page.get_by_role("button", name=_re.compile(f"^{bb}$"))
+        for i in range(btn.count() - 1, -1, -1):
+            b = btn.nth(i)
+            try:
+                if b.is_visible():
+                    # JS click: overlays (the robot-only test panel) intercept
+                    # pointer events; dispatching avoids hit-testing entirely.
+                    b.evaluate("el => el.click()")
+                    r.sleep(1.8); r.wait_ready(12); return True
+            except Exception: continue
+    except Exception: pass
+    return False
