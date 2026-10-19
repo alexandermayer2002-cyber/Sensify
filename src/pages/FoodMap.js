@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { protocolDay } from '../utils/protocolDay'
 import { getProtocolFoods, getTestingOrder } from '../utils/protocolEngine'
+import FoodMapPrint, { printFoodMap } from '../components/FoodMapPrint'
 
 // THE FOOD MAP — the trial-strip ledger. Every food is one row: its name, its real
 // 14-day trial rendered mark by mark from reintro_daily_logs, and the verdict it
@@ -267,6 +268,12 @@ export default function FoodMap({ session, profile, labResult }) {
           </div>
         </div>
 
+        {labResult && ruledCount > 0 && (
+          <div style={s.printRow}>
+            <button type="button" style={s.printBtn} onClick={printFoodMap}>Download your Food Map</button>
+          </div>
+        )}
+
         <div style={s.grid}>
           {!labResult && (
             [{ name: 'Almond' }, { name: 'Coffee' }, { name: 'Dairy' }].map(f => (
@@ -300,6 +307,14 @@ export default function FoodMap({ session, profile, labResult }) {
       {labResult && (ruled.length > 0 || testing.length > 0) && (
         <div style={s.tapNote}>Tap any trial for its full record.</div>
       )}
+      {labResult && ruledCount > 0 && (
+        <FoodMapPrint
+          firstName={name}
+          protocolStart={profile?.protocol_start_date}
+          entries={ruled.map(f => { const c = byFood[f.name.toLowerCase()]; return { name: f.name, cycle: c, logs: logsFor(c) } })}
+          untested={[...testing, ...queue].map(f => f.name)}
+        />
+      )}
     </div>
   )
 }
@@ -313,6 +328,8 @@ const s = {
   bignum: { fontFamily: 'Fraunces, serif', fontSize: 27, color: '#3D5C3C', lineHeight: 1 },
   bigden: { color: 'rgba(28,28,28,0.25)', fontSize: 18 },
   countLabel: { fontFamily: 'DM Mono, monospace', fontSize: 7.5, letterSpacing: '1.4px', color: '#9A927E', marginTop: 3 },
+  printRow: { padding: '0 26px 10px', display: 'flex', justifyContent: 'flex-end' },
+  printBtn: { fontFamily: 'DM Sans, sans-serif', fontSize: 11.5, fontWeight: 500, letterSpacing: '0.2px', color: '#3D5C3C', background: 'transparent', border: '1px solid rgba(61,92,60,0.3)', borderRadius: 999, padding: '6px 14px', cursor: 'pointer' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 12, padding: '6px 26px 10px' },
   card: { borderRadius: 16, padding: '15px 15px 13px', minHeight: 116, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', gap: 10 },
   dayStamp: { position: 'absolute', top: 12, right: 13, fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.1px', color: '#9A927E' },

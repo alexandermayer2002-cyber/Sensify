@@ -40,7 +40,7 @@ const css = `
   .ctd-radio.on::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: #3D5C3C; }
   .ctd-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 8px; }
   .ctd-btn.primary { background: #3D5C3C; color: white; }
-  .ctd-btn.primary:disabled { background: #C3CDBF; cursor: not-allowed; }
+  .ctd-btn.primary:disabled { background: #F4F2EC; color: rgba(28,28,28,0.38); border: 1px solid rgba(0,0,0,0.08); cursor: not-allowed; }
   .ctd-btn.ghost { background: transparent; color: #8A8A82; font-weight: 500; font-size: 13px; }
   .ctd-mascot { width: 40px; height: 40px; margin-bottom: 14px; }
 `

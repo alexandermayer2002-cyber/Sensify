@@ -76,7 +76,7 @@ const s = {
   stepVal: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 400, minWidth: '28px', textAlign: 'center', color: '#1C1C1C' },
   footer: { position: 'sticky', bottom: 0, background: '#F6F3EC', borderTop: '1px solid rgba(0,0,0,0.06)', padding: '16px 24px', maxWidth: '560px', width: '100%', margin: '0 auto' },
   cta: { width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: '#3D5C3C', color: 'white', fontSize: '15px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
-  ctaOff: { width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: '#C3CDBF', color: 'white', fontSize: '15px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'not-allowed' },
+  ctaOff: { width: '100%', padding: '15px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.08)', background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', fontSize: '15px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'not-allowed' },
   padWarn: { marginTop: 8, padding: '8px 11px', background: '#FBF0DF', color: '#9A6212', borderRadius: 9, fontSize: '11.5px', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.5 },
 }
 

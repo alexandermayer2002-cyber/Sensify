@@ -9,34 +9,41 @@ import { supabase } from '../supabase'
 // The key insight: most foods are fine. The lab flags a small suspect list.
 // Of those, some are confirmed via reintroduction (Safe/Limit/Avoid) and some
 // are still being tested. Everything NOT flagged by the lab is fine to eat.
-export function buildFoodMapContext(foodMap, labFoods = []) {
+export function buildFoodMapContext(foodMap, labFoods = [], activeTrial = null) {
   const safe = foodMap.filter(f => f.verdict === 'Safe').map(f => f.food)
   const limit = foodMap.filter(f => f.verdict === 'Limit').map(f => f.food)
   const avoid = foodMap.filter(f => f.verdict === 'Avoid').map(f => f.food)
 
-  // Lab-flagged foods that don't yet have a verdict = still eliminated, treat as AVOID for now
+  // EVERY protocol food without a verdict is still being eliminated: that
+  // includes lab-flagged levels AND 'Common' tier foods (common-track users'
+  // chosen triggers). The old filter dropped 'Common', which let the
+  // assistant call a user's own eliminated wheat "fine" mid-protocol.
   const verdictedNames = new Set(foodMap.map(f => (f.food || '').toLowerCase()))
-  const flagged = labFoods.filter(f => ['High', 'Moderate', 'Low'].includes(f.level))
+  const flagged = labFoods.filter(f => ['High', 'Moderate', 'Low', 'Common'].includes(f.level))
   const notYetTested = flagged
     .filter(f => !verdictedNames.has((f.name || '').toLowerCase()))
     .map(f => f.name)
   const labClean = labFoods.filter(f => f.level === 'No sensitivity').map(f => f.name)
+  const trialName = activeTrial?.food || null
+  const trialPhase = activeTrial?.phase || null
 
   return {
     safe, limit, avoid, notYetTested, labClean,
-    text: `The user is in a food sensitivity protocol. Their lab flagged a specific list of foods as showing some sensitivity. Those flagged foods are eliminated and tested one at a time through reintroduction. Everything the lab did NOT flag was never a concern and is fine to eat.
+    text: `The user is mid-protocol in a food sensitivity program. A specific list of foods is being eliminated (their lab's flagged foods, or the common trigger foods they chose to test). Eliminated foods come back one at a time through 14 day reintroduction trials, each earning a verdict. Everything NOT on their lists was never a concern and is fine to eat.
 
-CONFIRMED SAFE (reintroduced and tolerated, eat freely): ${safe.join(', ') || 'none yet'}
-CONFIRMED LIMIT (reintroduced, fine in small amounts only): ${limit.join(', ') || 'none yet'}
-CONFIRMED AVOID (reintroduced, confirmed trigger, do not eat): ${avoid.join(', ') || 'none yet'}
-FLAGGED BUT NOT YET TESTED (showed sensitivity on the lab, not yet reintroduced): ${notYetTested.join(', ') || 'none'}
+CONFIRMED SAFE (tested and tolerated, eat freely): ${safe.join(', ') || 'none yet'}
+CONFIRMED LIMIT (tested, fine in small amounts only): ${limit.join(', ') || 'none yet'}
+CONFIRMED AVOID (tested, confirmed trigger, do not eat): ${avoid.join(', ') || 'none yet'}
+ELIMINATED, NOT YET TESTED (still off the plate until its trial): ${notYetTested.join(', ') || 'none'}
 LAB CAME BACK CLEAN (never flagged, safe to eat): ${labClean.join(', ') || 'not specified'}
+${trialName ? `\nACTIVE TRIAL RIGHT NOW: ${trialName} (${trialPhase === 'washout' ? 'washout phase: it is OFF the plate again while the record settles' : 'exposure phase: it is deliberately BACK on the plate this week, and only it'}).` : ''}
 
 CRITICAL RULES:
-1. FLAGGED BUT NOT YET TESTED foods must be treated as AVOID for now. They showed sensitivity and have not been cleared through reintroduction, so the user should not eat them yet. Tell them it is still being eliminated and they will test it later in the protocol.
-2. CONFIRMED foods follow their verdict exactly (Safe, Limit, or Avoid).
-3. Any food NOT in the lists above was never flagged by the lab and is fine to eat normally. Do not treat unlisted foods as unknown or risky.
-4. So the only foods that are fine to eat are: the Confirmed Safe list, the Lab Clean list, and anything not mentioned at all. Everything on the Avoid, Limit, and Not Yet Tested lists requires caution, with Avoid and Not Yet Tested meaning do not eat.`,
+1. ELIMINATED, NOT YET TESTED foods are STILL OFF THE USER'S PLATE. Never call them fine, safe, or okay, and never suggest a dish that contains one without flagging it. Say it stays off the plate until its trial, and suggest an alternative. This covers hidden forms too: wheat means bread, pasta, pizza crust, soy sauce; dairy means cheese, butter, cream.
+2. ${trialName ? `The ONLY eliminated food currently allowed back is the active trial food (${trialName}), and only during its exposure phase. Everything else on the eliminated list stays off even then.` : 'There is no active trial right now, so every eliminated food stays off the plate.'}
+3. CONFIRMED foods follow their verdict exactly (Safe, Limit, or Avoid).
+4. Any food NOT in the lists above was never flagged and is fine to eat normally. Do not treat unlisted foods as unknown or risky.
+5. So the only foods that are fine to eat are: the Confirmed Safe list, the Lab Clean list, and anything not mentioned at all. Everything on the Avoid, Limit, and Eliminated lists requires caution, with Avoid and Eliminated meaning do not eat.`,
   }
 }
 
@@ -44,7 +51,7 @@ CRITICAL RULES:
 // a confidently-wrong "you're clear" on an ingredient list could let someone eat
 // their trigger. So labels get conservative discipline; menus are lower-stakes.
 const PHOTO_DISCIPLINE = `[PHOTO ATTACHED — read it and respond using the rules below:]
-- If it is a RESTAURANT MENU: suggest which dishes are likely safe given their food map, and which to ask the server about. Be helpful but note that prep and hidden ingredients vary, so they should confirm with the restaurant.
+- If it is a RESTAURANT MENU: walk the menu against their food map in a few natural sentences (good picks first, then the dishes to skip or modify and why), note that prep and hidden ingredients vary so they should confirm with the restaurant, and END with the [[GUIDE: safe=...; skip=...; ask=...]] tag built from actual dishes you can read on the menu.
 - If it is a FOOD LABEL or INGREDIENT LIST: read the ingredients you can see and flag any that match their Limit/Avoid foods (including common hidden forms — e.g. whey/casein for dairy, semolina for wheat/gluten, lecithin for soy). CRITICAL: never give a confident all-clear. Always tell them to double-check the full label themselves, because lists can be incomplete in a photo, ingredients change, and cross-contamination isn't listed. Say what you SEE, never certify what's absent.
 - If you cannot read the photo clearly, say so and ask them to retake it rather than guessing.
 - Never claim to have read something you can't actually see in the image.`
@@ -138,7 +145,7 @@ LOGGING (for "I ate / I had ___"):
 [[LOG: food1, food2, food3]]
 listing the individual foods. Use this whenever they describe eating something. Never use META or GUIDE verdict tags in this mode, since there are no verdicts.`
 
-export async function askSensify({ userMessage, foodMap, labFoods = [], history = [], observationMode = false, image = null }) {
+export async function askSensify({ userMessage, foodMap, labFoods = [], history = [], observationMode = false, image = null, activeTrial = null }) {
   // When a photo is attached, the user message becomes a content array with an
   // image block. Anthropic reads it natively; the proxy passes it through.
   const buildUserContent = (text) => {
@@ -171,7 +178,7 @@ export async function askSensify({ userMessage, foodMap, labFoods = [], history 
     return { reply, foodsToLog, verdict: null, guide: null }
   }
 
-  const mapContext = buildFoodMapContext(foodMap, labFoods)
+  const mapContext = buildFoodMapContext(foodMap, labFoods, activeTrial)
 
   const messages = [
     { role: 'user', content: `${SYSTEM_PROMPT}\n\nTHE USER'S FOOD MAP:\n${mapContext.text}` },

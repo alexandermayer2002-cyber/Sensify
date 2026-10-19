@@ -19,6 +19,9 @@ import Support from './Support'
 import CommonTrackDecision from './CommonTrackDecision'
 import TrackingLanding from './TrackingLanding'
 import DailyCheckin from './DailyCheckin'
+import BaselineSharpness from '../components/BaselineSharpness'
+import SuspectBoard from '../components/SuspectBoard'
+import { HouseholdShareCard } from './HouseholdCard'
 import {
   generateDay1Message,
   generateDay3Message,
@@ -62,6 +65,20 @@ const css = `
   .snfy-tab { font-size: 13px; font-weight: 400; color: #7A7A72; padding: 6px 12px; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.15s; letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
   .snfy-tab.active { color: #1C1C1C; font-weight: 500; border-bottom: 2px solid #3D5C3C; }
   .snfy-tab:hover:not(.active) { color: #1C1C1C; }
+  .snfy-bottombar { display: none; }
+  .snfy-more-sheet { display: none; }
+  @media (max-width: 640px) {
+    .snfy-nav-tabs { display: none !important; }
+    .snfy-app { padding-bottom: 76px; }
+    .snfy-bottombar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 80; display: flex; background: rgba(250,248,244,0.97); backdrop-filter: blur(10px); border-top: 1px solid rgba(0,0,0,0.08); padding: 5px 4px calc(7px + env(safe-area-inset-bottom)); }
+    .snfy-bb-btn { flex: 1; background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 11px; color: #7A7A72; padding: 7px 2px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .snfy-bb-dot { width: 4px; height: 4px; border-radius: 50%; background: transparent; }
+    .snfy-bb-btn.active { color: #1C1C1C; font-weight: 600; }
+    .snfy-bb-btn.active .snfy-bb-dot { background: #3D5C3C; }
+    .snfy-more-sheet { position: fixed; bottom: 62px; right: 10px; z-index: 81; display: block; background: #FFFFFF; border: 1px solid rgba(0,0,0,0.09); border-radius: 14px; box-shadow: 0 14px 40px rgba(0,0,0,0.16); padding: 6px; min-width: 172px; }
+    .snfy-more-item { display: block; width: 100%; text-align: left; background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: #1C1C1C; padding: 11px 13px; border-radius: 9px; cursor: pointer; }
+    .snfy-more-item:active { background: #F4F2EC; }
+  }
   @media (max-width: 600px) {
     .snfy-nav { padding: 0 14px; gap: 6px; }
     .snfy-logo { font-size: 18px; flex-shrink: 0; }
@@ -757,6 +774,7 @@ function WeekFactorCards({ days, factors, profile }) {
 export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [screen, setScreen] = useState('dashboard')
   const [tab, setTab] = useState('home')
+  const [moreOpen, setMoreOpen] = useState(false)
   const [profile, setProfile] = useState(null)
   const [labResult, setLabResult] = useState(null)
   const [reintroRows, setReintroRows] = useState([])  // live reintro cycles for the projection
@@ -1277,6 +1295,26 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   if (screen === 'audit') return <ComplianceAudit session={session} eliminatedFoods={labResult?.foods?.map(f => f.name) || []} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'reintro-survey') return <ReintroductionSurvey session={session} food={profile?.current_reintro_food || 'Eggs'} cycleNumber={profile?.reintro_cycle || 1} baselineScores={{ bloating: profile?.baseline_bloating, energy: profile?.baseline_energy }} symptoms={profile?.symptoms || []} profile={profile} activeReintroId={activeReintroId} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
 
+  // Shared tab navigation (top tabs on desktop, bottom bar on phones)
+  const goTab = (t) => {
+    window.scrollTo(0, 0)
+    setMoreOpen(false)
+    setTab(t.toLowerCase().replace(' ', '-'))
+    if (t === 'History') setScreen('checkin-history')
+    else if (t === 'Verdicts') setScreen('food-map')
+    else if (t === 'Reintro') setScreen('reintro-tab')
+    else if (t === 'Ask Sensify') setScreen('ask-sensify')
+    else if (t === 'Maintain') setScreen('maintain')
+    else setScreen('dashboard')
+  }
+  const maintainVisible = (() => {
+    if (isAdmin) return true
+    if (!profile?.protocol_start_date) return false
+    const sd = new Date(profile.protocol_start_date + 'T00:00:00')
+    const now = new Date(); const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    return Math.round((todayLocal - sd) / (1000 * 60 * 60 * 24)) + 1 >= 57
+  })()
+
   return (
     <div className="snfy-app">
       <style>{css}</style>
@@ -1293,7 +1331,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             const pDay = Math.round((todayLocal - sd) / (1000 * 60 * 60 * 24)) + 1
             return pDay >= 57  // appears the day reintroduction unlocks
           }).map(t => (
-            <button key={t} className={`snfy-tab${tab === t.toLowerCase().replace(' ', '-') ? ' active' : ''}`} onClick={() => { window.scrollTo(0, 0); setTab(t.toLowerCase().replace(' ', '-')); if (t === 'History') setScreen('checkin-history'); else if (t === 'Verdicts') setScreen('food-map'); else if (t === 'Reintro') setScreen('reintro-tab'); else if (t === 'Ask Sensify') setScreen('ask-sensify'); else if (t === 'Maintain') setScreen('maintain'); else setScreen('dashboard') }}>{t}</button>
+            <button key={t} className={`snfy-tab${tab === t.toLowerCase().replace(' ', '-') ? ' active' : ''}`} onClick={() => goTab(t)}>{t}</button>
           ))}
         </div>
         <div className="snfy-nav-right">
@@ -1308,6 +1346,27 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           <button className="snfy-signout" onClick={onLogout}>Sign out</button>
         </div>
       </nav>
+
+      {/* BOTTOM TAB BAR — phones only (design item 5). Thumb-reach nav;
+          History, Maintain and Sign out live behind More. */}
+      <div className="snfy-bottombar">
+        {[['Home', 'home'], ['Reintro', 'reintro'], ['Verdicts', 'verdicts'], ['Ask Sensify', 'ask-sensify']].map(([t, key]) => (
+          <button key={key} className={`snfy-bb-btn${tab === key && !moreOpen ? ' active' : ''}`} onClick={() => goTab(t)}>
+            <span className="snfy-bb-dot" />{t === 'Ask Sensify' ? 'Ask' : t}
+          </button>
+        ))}
+        <button className={`snfy-bb-btn${moreOpen || tab === 'history' || tab === 'maintain' ? ' active' : ''}`} onClick={() => setMoreOpen(v => !v)}>
+          <span className="snfy-bb-dot" />More
+        </button>
+      </div>
+      {moreOpen && (
+        <div className="snfy-more-sheet">
+          <button className="snfy-more-item" onClick={() => goTab('History')}>History</button>
+          {maintainVisible && <button className="snfy-more-item" onClick={() => goTab('Maintain')}>Maintain</button>}
+          {!isAdmin && <button className="snfy-more-item" onClick={() => { setMoreOpen(false); setTab('messages'); setScreen('messages') }}>Support</button>}
+          <button className="snfy-more-item" onClick={onLogout}>Sign out</button>
+        </div>
+      )}
 
       {screen === 'checkin-history' ? (
         <CheckinHistory
@@ -1498,7 +1557,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   : showSlipupCard ? "We logged a slip-up today. Tell us what happened."
                   : showLabCard ? 'Your intake is complete. Upload your lab results to begin.'
                   : showPendingLabCard ? 'Your results are under review.'
-                  : "You're making real progress. Keep going."}
+                  : needsCommonDecision ? 'Your results are in. Choose your path.'
+                  : isTracking ? "You're tracking. Log how today goes."
+                  : (profile?.protocol_start_date && currentDay < 1) ? "You're set. Day 1 begins tomorrow."
+                  : cleanDays > 0 ? `${cleanDays} clean day${cleanDays !== 1 ? 's' : ''} on the record. Keep going.`
+                  : 'Everything starts from here.'}
               </p>
             </div>
             )}
@@ -1542,7 +1605,27 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.7px', color: 'rgba(255,255,255,0.5)', marginBottom: '10px' }}>
                   {milestoneKey === 'day1' ? 'Day 1' : milestoneKey === 'day3' ? 'Day 3' : milestoneKey === 'day14' ? '2 week milestone' : milestoneKey === 'day28' ? 'One month in' : milestoneKey === 'day57' ? 'Reintroduction begins' : milestoneKey === 'day113' ? 'Moderate tier unlocked' : milestoneKey === 'day169' ? 'Final tier unlocked' : 'Milestone'}
                 </div>
-                <p style={{ color: 'rgba(255,255,255,0.85)', lineHeight: 1.75, marginBottom: 0, fontSize: '14px' }}>{milestoneMessage}</p>
+                {(() => {
+                  // Day-1 briefings arrive in three labeled sections; render
+                  // them as mono-labeled chunks with YOUR ONE JOB dominant.
+                  // Any message without the markers renders as plain prose.
+                  const HEADS = ['WHAT CHANGES TODAY:', 'HOW THIS WEEK MAY FEEL:', 'YOUR ONE JOB:']
+                  if (HEADS.every(h => String(milestoneMessage).includes(h))) {
+                    const txt = String(milestoneMessage)
+                    const chunks = HEADS.map((h, i) => {
+                      const start = txt.indexOf(h) + h.length
+                      const end = i < HEADS.length - 1 ? txt.indexOf(HEADS[i + 1]) : txt.length
+                      return { label: h.replace(':', ''), body: txt.slice(start, end).trim() }
+                    })
+                    return chunks.map((c, i) => (
+                      <div key={c.label} style={{ marginBottom: i < 2 ? 14 : 0 }}>
+                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: i === 2 ? '#8BAE8A' : 'rgba(255,255,255,0.45)', marginBottom: 4 }}>{c.label}</div>
+                        <p style={{ color: i === 2 ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 0, fontSize: i === 2 ? '15px' : '13.5px', fontWeight: i === 2 ? 500 : 400 }}>{c.body}</p>
+                      </div>
+                    ))
+                  }
+                  return <p style={{ color: 'rgba(255,255,255,0.85)', lineHeight: 1.75, marginBottom: 0, fontSize: '14px' }}>{milestoneMessage}</p>
+                })()}
                 <button onClick={() => setMilestoneMessage(null)} style={{ position: 'absolute', top: '14px', right: '14px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '18px', lineHeight: 1, fontFamily: 'DM Sans, sans-serif' }}>×</button>
               </div>
             )}
@@ -1574,46 +1657,40 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                       <div className="snfy-streak-text"><span className="snfy-streak-num">{cleanDays} day</span> check-in streak</div>
                     </div>
                     {(() => {
-                      // Projected Food Map completion — LIVE, synced to the person's
-                      // actual path. Engine rules: each tier begins at the LATER of its
-                      // severity floor (57/113/169) or the prior tier finishing; one
-                      // 14-day cycle per food. Live inputs: completed cycles leave the
-                      // queue; the active cycle's started_at carries restarts; the
-                      // whole thing keys off protocol_start_date so elimination clock
-                      // resets shift it too. "~" because audits can still move it.
+                      // Milestone framing (design item 7): during elimination the
+                      // hero names the NEXT earned milestone, not the far wall.
+                      // In reintroduction, the full projection returns with the
+                      // one-queue math (the retired 113/169 tier floors are gone:
+                      // everything unlocks at 57, one 14-day cycle per food).
                       if (!labResult?.foods || !profile?.protocol_start_date) return null
                       const startDate = new Date(profile.protocol_start_date)
                       const dayOf = (dateStr) => Math.floor((new Date(dateStr) - startDate) / 86400000) + 1
                       const todayDay = dayOf(new Date())
                       const freq = profile?.food_frequency || {}
-                      const isCommon = profile?.protocol_track === 'common'
+                      const dateLabelFor = (dayN) => {
+                        const d = new Date(startDate); d.setDate(d.getDate() + dayN - 1)
+                        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                      }
+                      if (todayDay <= 56) {
+                        // First verdict possible: day 56 elimination + one 14-day cycle.
+                        return (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8BAE8A" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>First verdict possible <span style={{ fontWeight: 500, color: '#8BAE8A' }}>~{dateLabelFor(70)}</span> · Day 70</div>
+                          </div>
+                        )
+                      }
                       const doneOrActive = new Set(reintroRows.map(r => r.food))
                       const active = reintroRows.find(r => r.verdict == null)
-                      const remainingFor = (level) => (isCommon
-                        ? (level === 'Low' ? labResult.foods : [])
-                        : labResult.foods.filter(f => f.level === level)
-                      ).filter(f => {
+                      const remaining = labResult.foods.filter(f => {
                         const q = freq[f.name]
-                        return q && q !== 'never' && !doneOrActive.has(f.name)
+                        return q !== 'never' && !doneOrActive.has(f.name)
                       }).length
-                      const tiers = [
-                        { floor: 57, count: remainingFor('Low') },
-                        { floor: 113, count: remainingFor('Moderate') },
-                        { floor: 169, count: remainingFor('High') },
-                      ]
-                      // Cursor: where the timeline currently stands.
                       let cursor = Math.max(57, todayDay)
                       if (active?.started_at) cursor = Math.max(cursor, dayOf(active.started_at) + 14)
-                      let any = !!active
-                      tiers.forEach(t => {
-                        if (t.count === 0) return
-                        any = true
-                        cursor = Math.max(cursor, t.floor) + 14 * t.count
-                      })
-                      if (!any) return null
-                      const finish = new Date(startDate)
-                      finish.setDate(finish.getDate() + cursor - 1)
-                      const label = finish.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                      if (!active && remaining === 0) return null
+                      cursor += 14 * remaining
+                      const label = dateLabelFor(cursor)
                       return (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8BAE8A" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
@@ -1785,7 +1862,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <p>{
                 profile?.latest_insight
                 || (currentDay >= 1
-                  ? `You're on day ${currentDay} of your ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'} phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.`
+                  ? `You're on day ${calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of your ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'} phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.`
                   : (profile?.protocol_start_date && currentDay < 1)
                   ? 'You are set. Elimination begins tomorrow. Your day 1 briefing will meet you here.'
                   : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
@@ -1813,6 +1890,21 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
             </div>
+
+            {/* BASELINE SHARPNESS — the invisible work of elimination, made visible */}
+            {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
+              <div style={{ marginTop: 14 }}><BaselineSharpness session={session} profile={profile} /></div>
+            )}
+
+            {/* THE SUSPECT BOARD — every food a dossier, SUSPECT to ON TRIAL to verdict */}
+            {labResult && (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
+              <div style={{ marginTop: 14 }}><SuspectBoard session={session} profile={profile} labResult={labResult} /></div>
+            )}
+
+            {/* HOUSEHOLD CARD — read-only share link for whoever cooks */}
+            {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
+              <div style={{ marginTop: 14 }}><HouseholdShareCard session={session} profile={profile} /></div>
+            )}
 
             {/* COMPLIANCE DOTS */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
@@ -2101,7 +2193,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#2C9D8A' }}>took shape.</span></> : starCount < 8 ? <>Every check-in <span style={{ color: '#3D5C3C' }}>hangs a star.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
                   </div>
                   <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginBottom: 10 }}>
-                    {preP ? <>Every day you log becomes a star. At 28 nights they form a constellation, and pattern detection unlocks. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <span style={{ color: '#2C9D8A', fontWeight: 600 }}>Pattern detection is live</span>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{ringCount > 0 ? <> ({ringCount} on your word while away)</> : ''}{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <span style={{ color: '#2C9D8A', fontWeight: 600 }}>pattern detection unlocks</span>: sleep, stress, and symptoms, cross-referenced for connections.</>}
+                    {preP ? <>Every day you log becomes a star. At 28 nights they form a constellation, and pattern detection unlocks. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <b style={{ color: '#1C1C1C', fontWeight: 600 }}>Pattern detection is live</b>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{ringCount > 0 ? <> ({ringCount} on your word while away)</> : ''}{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <b style={{ color: '#1C1C1C', fontWeight: 600 }}>pattern detection unlocks</b>: sleep, stress, and symptoms, cross-referenced for connections.</>}
                   </div>
                   <svg width="100%" viewBox="0 0 280 195" style={{ display: 'block', borderRadius: 14 }}>
                     <defs>

@@ -289,7 +289,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
           </div>
         </div>
         <div style={s.footer}>
-          <button style={{ ...s.cta, opacity: allAnswered() ? 1 : 0.45, cursor: allAnswered() ? 'pointer' : 'not-allowed' }} onClick={onComplete}>View your verdicts →</button>
+          <button style={allAnswered() ? s.cta : { ...s.cta, background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', border: '1px solid rgba(0,0,0,0.08)', cursor: 'not-allowed' }} onClick={onComplete}>View your verdicts →</button>
         </div>
       </div>
     )
@@ -353,7 +353,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
 
       <div style={s.footer}>
         <button
-          style={allAnswered() ? s.cta : { ...s.cta, opacity: 0.35, cursor: 'not-allowed' }}
+          style={allAnswered() ? s.cta : { ...s.cta, background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none', cursor: 'not-allowed' }}
           disabled={!allAnswered()}
           title={!allAnswered() ? 'Answer the accuracy question above first' : undefined}
           onClick={handleSubmit}

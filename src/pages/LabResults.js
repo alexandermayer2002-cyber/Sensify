@@ -53,7 +53,7 @@ const s = {
   checkIcon: { width: '16px', height: '16px', background: '#3D5C3C', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   errorCard: { background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.2)', borderRadius: '12px', padding: '14px', marginBottom: '16px', fontSize: '13px', color: '#C95B5B', lineHeight: 1.6 },
   cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px' },
-  ctaDisabled: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif', opacity: 0.4, marginBottom: '10px' },
+  ctaDisabled: { background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px' },
   secBtn: { background: 'none', color: '#7A7A72', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '13px', width: '100%', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
 }
 

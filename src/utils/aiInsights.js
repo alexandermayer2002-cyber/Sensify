@@ -41,18 +41,24 @@ USER:
 - Low sensitivity foods to eliminate: ${lowFoods}
 - Total foods being eliminated: ${totalFoods}
 
-Write a 3-4 sentence Day 1 message. Rules:
-- Reference their specific flagged foods by name
-- Acknowledge week 1 is an adjustment period — some feel worse before better
-- Tell them what to focus on this week (full compliance, nothing else)
+Write the Day 1 briefing in EXACTLY this structure, three sections, each introduced by its header on its own line, nothing before the first header:
+WHAT CHANGES TODAY:
+(1-2 sentences naming their specific eliminated foods and what leaves the plate today)
+HOW THIS WEEK MAY FEEL:
+(1-2 sentences; week 1 is an adjustment, some feel worse before better, that is normal and informative)
+YOUR ONE JOB:
+(1 sentence; full compliance this week, nothing else matters yet)
+
+Rules:
+- Reference their specific foods by name in the first section
 - Direct, specific, calm. Not a cheerleader, not a coach
 - Do NOT mention texts, replies, or daily check-ins via SMS
 - Do NOT start with "Welcome" or "Congratulations"
 - Voice: a sharp analyst who knows their case. Never use cheerleader phrases like momentum, journey, or wins
 - Never use em dashes or hyphens as punctuation. Use commas or periods instead
-- Maximum 4 sentences
+- Keep the three headers EXACTLY as written above, uppercase with the colon
 
-Write only the message. No labels.`
+Write only the briefing. Nothing outside the three sections.`
 
   return callClaude(prompt, 250)
 }

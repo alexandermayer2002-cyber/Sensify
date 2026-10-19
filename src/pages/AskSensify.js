@@ -6,6 +6,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
   const [foodMap, setFoodMap] = useState(foodMapProp || [])
   const [labFoods, setLabFoods] = useState([])
   const [observationMode, setObservationMode] = useState(false)
+  const [activeTrial, setActiveTrial] = useState(null)
   const [messages, setMessages] = useState([])
   const [priorMessages, setPriorMessages] = useState([])  // past sessions, tucked away
   const [showPrior, setShowPrior] = useState(false)
@@ -42,6 +43,13 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         const { data: prof } = await supabase.from('profiles').select('track_decision').eq('id', session.user.id).single()
         if (prof?.track_decision === 'declined') setObservationMode(true)
       } catch (e) {}
+      // The elimination guard needs to know the one food allowed back right now.
+      try {
+        const { data: ac } = await supabase.from('reintroduction_results')
+          .select('food, washout_started_at').eq('user_id', session.user.id)
+          .is('verdict', null).order('started_at', { ascending: false }).limit(1).maybeSingle()
+        if (ac) setActiveTrial({ food: ac.food, phase: ac.washout_started_at ? 'washout' : 'exposure' })
+      } catch (e) {}
       const history = await loadHistory(session.user.id)
       // Fresh view: past conversation is preserved but tucked away, not shown on
       // open. The session starts clean (premium feel); the user can reveal earlier
@@ -75,6 +83,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         labFoods,
         history: messages.slice(-12),
         observationMode,
+        activeTrial,
         image: sentImage ? { data: sentImage.data, mediaType: sentImage.mediaType } : null,
       })
 
@@ -250,7 +259,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder={image ? "Add a note, or just send the photo..." : "Ask about a food, snap a menu or label..."}
+          placeholder={image ? "Add a note, or just send..." : "Ask about any food..."}
           rows={1}
         />
         <button style={(input.trim() || image) && !sending ? s.send : s.sendOff} onClick={send} disabled={(!input.trim() && !image) || sending}>
@@ -305,7 +314,7 @@ const s = {
   capCard: { textAlign: 'left', padding: '15px 16px', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.09)', background: '#FFFFFF', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'border-color 0.15s' },
   capTitle: { fontSize: '14px', fontWeight: 600, color: '#1C1C1C', marginBottom: '3px' },
   capDesc: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.5, marginBottom: '8px' },
-  capExample: { fontSize: '12.5px', color: '#3D5C3C', fontStyle: 'italic' },
+  capExample: { fontSize: '12.5px', color: '#3D5C3C' },
   emptyFoot: { fontSize: '12px', color: '#A8A69E', marginTop: '18px' },
   chips: { display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '320px', margin: '0 auto' },
   chip: { padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', background: '#FFFFFF', fontSize: '13.5px', color: '#3D5C3C', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500 },

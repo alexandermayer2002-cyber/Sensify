@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import { startCheckout } from './utils/checkout'
 import ResetPassword from './pages/ResetPassword'
+import HouseholdCard from './pages/HouseholdCard'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -125,6 +126,12 @@ export default function App() {
       window.removeEventListener('keydown', updateActivity)
     }
   }, [session])
+
+  // Public household card: ?household=<token> is a read-only share link for
+  // whoever cooks at home. It renders before any auth routing (and before the
+  // loading gate, since it needs no session) and shows nothing else of the app.
+  const householdToken = new URLSearchParams(window.location.search).get('household')
+  if (householdToken) return <HouseholdCard token={householdToken} />
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'DM Sans, sans-serif', color: '#3D5C3C' }}>

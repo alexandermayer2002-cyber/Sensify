@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
+import MapHealth from '../components/MapHealth'
 import AskSensify from './AskSensify'
 
 // ── Tier colors (matches the rest of the app) ──
@@ -56,7 +57,7 @@ function MaintainPreview({ profile, session }) {
         @keyframes mtRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
       `}</style>
       <div style={{ marginBottom: '18px', animation: 'mtRowIn 0.5s ease both' }}>
-        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9.5px', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#8BAE8A', marginBottom: '8px' }}>After month six</div>
+        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9.5px', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#3D5C3C', marginBottom: '8px' }}>After month six</div>
         <div style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, color: '#1C1C1C', lineHeight: 1.15 }}>The map is yours.<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>Keeping it alive is Maintain.</em></div>
       </div>
 
@@ -76,10 +77,10 @@ function MaintainPreview({ profile, session }) {
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', position: 'relative', animation: 'mtRowIn 0.55s ease 1.1s both' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
-            <span style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontStyle: 'italic', color: '#E8941F' }}>$12.99</span>
-            <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', color: 'rgba(250,248,244,0.5)', letterSpacing: '0.5px' }}>/MO</span>
+            <span style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontStyle: 'normal', color: '#FAF8F4' }}>$12.99</span>
+            <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', color: 'rgba(250,248,244,0.7)', letterSpacing: '0.5px' }}>/MO</span>
           </div>
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8.5px', color: 'rgba(250,248,244,0.45)', letterSpacing: '0.5px' }}>CANCEL ANYTIME</div>
+          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8.5px', color: 'rgba(250,248,244,0.7)', letterSpacing: '0.5px' }}>CANCEL ANYTIME</div>
         </div>
       </div>
 
@@ -101,6 +102,13 @@ function MaintainPreview({ profile, session }) {
           {err && <div style={{ fontSize: '12px', color: '#D64545', textAlign: 'center', marginTop: '6px' }}>{err}</div>}
         </div>
       )}
+
+      {/* MAP HEALTH — the drift-detection promise, shown live as a preview
+          of what Maintain's monthly report looks like on the user's own data */}
+      <div style={{ marginTop: 18 }}>
+        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#7A7A72', textTransform: 'uppercase', textAlign: 'center', marginBottom: 8 }}>What drift detection looks like</div>
+        <MapHealth session={session} profile={profile} />
+      </div>
 
       <div style={{ fontSize: '11.5px', color: '#A0A096', textAlign: 'center', marginTop: '16px', lineHeight: 1.6 }}>Your completed Food Map is yours forever, subscription or not.</div>
     </div>

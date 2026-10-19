@@ -44,7 +44,7 @@ const s = {
   textarea: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '12px 14px', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FFFFFF', resize: 'none', height: '80px', outline: 'none' },
   footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#FAF8F4', borderTop: '1px solid rgba(0,0,0,0.06)' },
   cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
-  ctaDisabled: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif', opacity: 0.35 },
+  ctaDisabled: { background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif' },
   successCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '28px 24px', textAlign: 'center', margin: '8px 0 16px' },
   successIcon: { width: '52px', height: '52px', background: '#EDF3ED', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' },
   successTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '6px' },
@@ -90,14 +90,16 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
   // The insight may state these FACTS but never interpret daily factors —
   // causal connections are Layer 2's job, gated behind physician sign-off.
   let adherenceLine = ''
+  let weekFactorRows = []
   if (session?.user?.id) {
     try {
       const since = new Date(); since.setDate(since.getDate() - 6)
       const sinceStr = localDateString(since)
       const { data: week } = await supabase.from('daily_factors')
-        .select('log_date, followed_protocol')
+        .select('log_date, followed_protocol, stress, sleep')
         .eq('user_id', session.user.id)
         .gte('log_date', sinceStr)
+      weekFactorRows = week || []
       const logged = (week || []).length
       const followedDays = (week || []).filter(d => d.followed_protocol === true).length
       const answeredCompliance = (week || []).filter(d => d.followed_protocol !== null).length
@@ -113,10 +115,41 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
   if (session?.user?.id) {
     try {
       const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString()
-      const { data: evs } = await supabase.from('symptom_logs').select('symptom, severity, note').gte('logged_at', weekAgo).eq('user_id', session.user.id)
+      const { data: evs } = await supabase.from('symptom_logs').select('symptom, severity, note, logged_at').gte('logged_at', weekAgo).eq('user_id', session.user.id)
       if (evs && evs.length > 0) {
         const parts = evs.slice(0, 10).map(e => `${e.symptom}${e.note ? ' (' + e.note + ')' : ''}`)
-        eventsLine = `\nTHIS WEEK'S LOGGED SYMPTOM EVENTS: ${parts.join('; ')}. Describe what the record shows (types, timing) in plain terms. Do NOT make causal claims about foods or factors from these; pattern analysis handles that separately once enough weeks exist.`
+        eventsLine = `\nTHIS WEEK'S LOGGED SYMPTOM EVENTS: ${parts.join('; ')}. Describe what the record shows (types, timing) in plain terms. Do NOT make causal claims about foods from these; verdicts are earned by cycles, never by weekly impressions.`
+
+        // ---- Day-grain alignment (the connection layer) ------------------
+        // The verdict survey already cross-references symptom days against
+        // the daily record (noise floor, worst-sleep overlap). This gives
+        // the weekly the same pre-computed overlap so the insight can name
+        // a measured pattern in the user's OWN record without the user
+        // having to say it. Stated as context, never as cause.
+        try {
+          const symptomDates = new Set(evs.map(e => String(e.logged_at).split('T')[0]))
+          const sleepHours = (v) => {
+            const n = parseFloat(v)
+            if (!isNaN(n)) return n
+            return ({ 'under6': 5.5, '6-7': 6.5, '7-8': 7.5, '8+': 8.5 })[v] ?? null
+          }
+          const rows = weekFactorRows.filter(r => r.stress || r.sleep)
+          if (rows.length >= 4 && symptomDates.size > 0) {
+            const isHighStress = (r) => ['high', 'severe'].includes(String(r.stress || '').toLowerCase())
+            const sympRows = rows.filter(r => symptomDates.has(r.log_date))
+            const clearRows = rows.filter(r => !symptomDates.has(r.log_date))
+            const sympHigh = sympRows.filter(isHighStress).length
+            const clearHigh = clearRows.filter(isHighStress).length
+            const avg = (xs) => xs.length ? (xs.reduce((a, b) => a + b, 0) / xs.length) : null
+            const sympSleep = avg(sympRows.map(r => sleepHours(r.sleep)).filter(x => x != null))
+            const clearSleep = avg(clearRows.map(r => sleepHours(r.sleep)).filter(x => x != null))
+            if (sympRows.length > 0) {
+              eventsLine += `\nDAY-GRAIN ALIGNMENT (computed from the daily record, not from what the user said): of ${sympRows.length} symptom day${sympRows.length !== 1 ? 's' : ''} with factors logged, ${sympHigh} ${sympHigh === 1 ? 'was' : 'were'} high-stress; of ${clearRows.length} symptom-free logged day${clearRows.length !== 1 ? 's' : ''}, ${clearHigh} ${clearHigh === 1 ? 'was' : 'were'} high-stress.` +
+                (sympSleep != null && clearSleep != null ? ` Sleep averaged ${sympSleep.toFixed(1)}h on symptom days vs ${clearSleep.toFixed(1)}h on clear days.` : '') +
+                `\nALIGNMENT RULE: if the overlap is strong (most symptom days share a factor that symptom-free days lack), name it plainly as a measured overlap in their own record, as context worth watching, never as the cause. If the overlap is weak or mixed, do not mention factors at all.`
+            }
+          }
+        } catch (e) { /* alignment never blocks the insight */ }
       }
     } catch (e) {}
   }
@@ -479,7 +512,11 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
             )
           })()}
 
-          <button style={{ ...s.cta, marginTop: '8px' }} onClick={onComplete}>Back to dashboard →</button>
+          <button
+            style={{ ...s.cta, marginTop: '8px', ...(generatingInsight ? { background: '#F4F2EC', border: '1px solid rgba(0,0,0,0.08)', color: 'rgba(28,28,28,0.38)', cursor: 'not-allowed', boxShadow: 'none' } : {}) }}
+            disabled={generatingInsight}
+            onClick={onComplete}
+          >{generatingInsight ? 'Saving your insight…' : 'Back to dashboard →'}</button>
         </div>
         {showConfetti && <ConfettiCanvas />}
       </div>

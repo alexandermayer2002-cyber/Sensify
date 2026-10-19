@@ -39,6 +39,8 @@ const css = `
   .mk-signin:hover { color: #3D5C3C; }
   .mk-cta { background: #3D5C3C; color: white; border: none; border-radius: 9px; padding: 9px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; letter-spacing: -0.1px; }
   .mk-cta:hover { opacity: 0.87; }
+  .mk-menu-btn { display: none; font-size: 13px; color: #1C1C1C; background: none; border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; padding: 7px 12px; }
+  .mk-nav-panel { display: none; }
 
   .mk-hero { position: relative; padding: 56px 64px 8px; background: #F6F3EC; overflow: hidden; }
   .mk-hero.dark { padding: 48px 40px; background: #FAF8F4; }
@@ -51,7 +53,7 @@ const css = `
   .mk-wordmark .wdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #8BAE8A; margin-left: 4px; opacity: 0; animation: mkDotStamp 0.42s cubic-bezier(0.34,1.56,0.64,1) forwards; animation-delay: 0.72s; }
   @keyframes mkLetterRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes mkDotStamp { 0% { opacity: 0; transform: scale(0); } 60% { opacity: 1; transform: scale(1.55); } 100% { opacity: 1; transform: scale(1); } }
-  .mk-hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2.5px; color: #C9A227; text-transform: uppercase; margin-bottom: 22px; }
+  .mk-hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 12.5px; letter-spacing: 2.5px; color: #E6C35C; text-transform: uppercase; margin-bottom: 22px; }
   .mk-price-line { font-size: 12.5px; color: rgba(250,248,244,0.5); margin-top: 14px; }
   .mk-hero-inner { max-width: 960px; margin: 0 auto; }
   .mk-hero-split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; max-width: 1080px; margin: 0 auto; }
@@ -280,6 +282,14 @@ const css = `
     .spine { padding-left: 36px; }
     .ph-name { font-size: 22px; }
     .sh { font-size: 26px !important; }
+  }
+  @media (max-width: 500px) {
+    .mk-tabs { display: none; }
+    .mk-menu-btn { display: inline-block; flex-shrink: 0; font-size: 12px; padding: 7px 11px; }
+    .mk-nav-panel { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #FFFFFF; border-bottom: 1px solid rgba(0,0,0,0.07); box-shadow: 0 16px 32px rgba(0,0,0,0.08); padding: 6px 16px 10px; }
+    .mk-menu-link { font-family: 'DM Sans', sans-serif; font-size: 14px; color: #1C1C1C; background: none; border: none; border-bottom: 1px solid rgba(0,0,0,0.05); text-align: left; padding: 13px 4px; cursor: pointer; }
+    .mk-menu-link:last-child { border-bottom: none; }
+    .mk-menu-link.active { color: #3D5C3C; font-weight: 600; }
   }
   @media (max-width: 380px) {
     .mk-h1 { font-size: 31px !important; }
@@ -578,6 +588,7 @@ function ShowcaseScreen({ tab }) {
 
 export default function Marketing({ onGetStarted, onSignIn }) {
   const [tab, setTab] = useState('home')
+  const [menuOpen, setMenuOpen] = useState(false)
   const [homeFaq, setHomeFaq] = useState(null)
   const [mapInView, setMapInView] = useState(false)
   const fmcardRef = React.useRef(null)
@@ -592,6 +603,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
   })
 
   const tabs = ['home', 'how', 'science', 'pricing', 'faq', 'about']
+  const tabLabel = t => t === 'home' ? 'Home' : t === 'how' ? 'How it works' : t === 'faq' ? 'FAQ' : t.charAt(0).toUpperCase() + t.slice(1)
 
   const Nav = () => (
     <nav className="mk-nav">
@@ -599,14 +611,24 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <div className="mk-tabs">
         {tabs.map(t => (
           <button key={t} className={`mk-tab${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>
-            {t === 'home' ? 'Home' : t === 'how' ? 'How it works' : t === 'faq' ? 'FAQ' : t.charAt(0).toUpperCase() + t.slice(1)}
+            {tabLabel(t)}
           </button>
         ))}
       </div>
       <div className="mk-nav-right">
+        <button className="mk-menu-btn" aria-expanded={menuOpen} onClick={() => setMenuOpen(o => !o)}>{menuOpen ? 'Close' : 'Menu'}</button>
         <button className="mk-signin" onClick={onSignIn}>Sign in</button>
         <button className="mk-cta" onClick={onGetStarted}>Get started</button>
       </div>
+      {menuOpen && (
+        <div className="mk-nav-panel">
+          {tabs.map(t => (
+            <button key={t} className={`mk-menu-link${tab === t ? ' active' : ''}`} onClick={() => { setTab(t); setMenuOpen(false) }}>
+              {tabLabel(t)}
+            </button>
+          ))}
+        </div>
+      )}
     </nav>
   )
 
@@ -621,15 +643,9 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-hero-centered" style={{ position: 'relative' }}>
           <div className="mk-hero-orb1"></div>
           <div className="mk-hero-orb2"></div>
-          <div className="mk-wordmark" style={{ position: 'relative' }}>
-            {'Sensify'.split('').map((ch, i) => (
-              <span key={i} className="wl" style={{ animationDelay: `${0.05 + i * 0.09}s` }}>{ch}</span>
-            ))}
-            <span className="wdot"></span>
-          </div>
           <div className="mk-hero-eyebrow" style={{ position: 'relative' }}>Test. Eliminate. Reintroduce. Know.</div>
           <div className="mk-h1 centered">Stop guessing what your body <em>can't handle.</em></div>
-          <div className="mk-sub centered">Lab testing, a structured elimination and reintroduction protocol, and daily guidance that shows you how individual foods actually affect you. You end with a full set of verdicts: exactly where you stand with every tested food.</div>
+          <div className="mk-sub centered">A lab test finds the suspects. Eight structured weeks of real data give the verdicts.</div>
           <div className="mk-actions centered">
             <button className="btn-p" onClick={onGetStarted} style={{ background: '#8BAE8A', color: '#22301F', fontWeight: 600 }}>Start your program</button>
             <button className="btn-g" onClick={() => setTab('how')} style={{ borderColor: 'rgba(250,248,244,0.25)', color: '#FAF8F4' }}>See how it works</button>
@@ -785,6 +801,11 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <h2>Stop guessing.<br />Start knowing.</h2>
         <p>A lab test alone costs $150 to $300 and hands you a guess. Sensify includes the lab <em style={{ fontStyle: 'normal', fontWeight: 600 }}>and</em> the months of structure that turn it into an answer. One price, nothing else to buy.</p>
         <button className="btn-p" onClick={onGetStarted}>Start your program</button>
+        <div style={{ maxWidth: '480px', margin: '44px auto 0', paddingTop: '28px', borderTop: '1px solid rgba(0,0,0,0.07)', textAlign: 'left' }}>
+          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', letterSpacing: '1.6px', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: '10px' }}>A note from the founder</div>
+          <div style={{ fontSize: '13.5px', color: '#4A4A45', lineHeight: 1.75 }}>I built Sensify alone, after years of guessing at my own symptoms and getting nowhere. Every screen in the product shows you the evidence behind every verdict, because that is the standard I wanted for myself. And if the program turns out not to be for you, write to me and we will make it right.</div>
+          <a href="mailto:alex@sensifyhealth.com" style={{ display: 'inline-block', marginTop: '12px', fontSize: '12.5px', color: '#3D5C3C', textDecoration: 'underline', textUnderlineOffset: '3px' }}>alex@sensifyhealth.com</a>
+        </div>
       </div>
       <Footer />
     </div>

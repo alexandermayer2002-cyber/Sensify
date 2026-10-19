@@ -589,6 +589,37 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
             </div>
             <div style={s.emptyTitle}>Your first entry opens on day 7.</div>
             <div style={s.emptySub}>Your intake is on the record above. Weekly check-ins begin at the end of week one, and your scores, compliance, and insights build here from that first entry.</div>
+            {(() => {
+              // Upcoming schedule, computed from protocol_start_date. Week N's
+              // window opens on protocol day 7*N, and day 1 = the start date
+              // itself (same local-date math as utils/protocolDay.js), so
+              // week N lands on start + (7*N - 1) days. If the start date is
+              // missing, fall back to relative labels.
+              let startDate = null
+              if (profile?.protocol_start_date) {
+                const [sy, sm, sd] = String(profile.protocol_start_date).split('T')[0].split('-').map(Number)
+                if (sy && sm && sd) startDate = new Date(sy, sm - 1, sd, 12, 0, 0)
+              }
+              const upcoming = [1, 2, 3, 4].map(n => ({
+                n,
+                when: startDate
+                  ? new Date(startDate.getTime() + (7 * n - 1) * 86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                  : `end of week ${n}`,
+              }))
+              return (
+                <div style={{ width: '100%', maxWidth: '320px', margin: '24px auto 0', textAlign: 'left' }}>
+                  <div style={s.secLabel}>Coming up</div>
+                  <div style={{ background: '#EDF3ED', border: '1px solid rgba(61,92,60,0.15)', borderRadius: '14px', padding: '5px 18px' }}>
+                    {upcoming.map((w, i) => (
+                      <div key={w.n} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '10px', padding: '12px 0', borderBottom: i < upcoming.length - 1 ? '1px solid rgba(61,92,60,0.12)' : 'none' }}>
+                        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '15px', fontWeight: 300, color: '#1C1C1C' }}>Week {w.n} check-in</div>
+                        <div style={{ fontSize: '12px', color: '#3D5C3C', fontWeight: 500 }}>{w.when}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
           </div>
         )}
       </div>

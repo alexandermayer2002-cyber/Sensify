@@ -402,6 +402,110 @@ function CycleSummary({ logs = [], food, exposureDaysCompleted = 0, expanded, on
   )
 }
 
+// ============================================================
+// EvidenceNeedle: the live provisional read during an active
+// cycle. A three-zone track (Safe / Limit / Avoid) with a needle
+// positioned ONLY by what the daily logs actually contain. It is
+// a reading, never a ruling: it is never shown once the verdict
+// survey is available, and the footnote says so in plain words.
+// Position mapping (worst condition wins, checked top down):
+//   3 symptom exposure days incl. moderate+  -> 88% (deep Avoid)
+//   2 moderate+ days, any severe, or a
+//   washout flare                            -> 72% (Limit/Avoid boundary)
+//   1 moderate day or 2 mild days            -> 55% (mid Limit)
+//   1 mild symptom day                       -> 38% (Safe/Limit boundary)
+//   0 symptom exposure days                  -> 12% (deep Safe)
+// ============================================================
+function EvidenceNeedle({ logs = [], cycleStartStr }) {
+  const RANK = { mild: 1, moderate: 2, severe: 3 }
+  const parseL = (str) => { if (!str) return null; const [y, m, d] = String(str).split('T')[0].split('-').map(Number); return new Date(y, m - 1, d) }
+  const start = parseL(cycleStartStr)
+
+  // Shape-tolerant symptom read (same tolerance as TestedLedger):
+  // symptoms may be an array of {name, intensity}, an array of plain
+  // strings, a JSON string of either, or absent with had_symptoms set.
+  const parseSyms = (log) => {
+    let syms = log.symptoms
+    if (typeof syms === 'string') { try { syms = JSON.parse(syms) } catch (e) { syms = null } }
+    return Array.isArray(syms) ? syms : []
+  }
+  const dayIntensity = (log) => {
+    if (!log.had_symptoms) return 0
+    let max = 1 // had_symptoms with no readable intensity counts as mild
+    for (const s of parseSyms(log)) { const r = RANK[s && s.intensity] || 1; if (r > max) max = r }
+    return max
+  }
+
+  const exposureEaten = logs.filter(l => l.phase === 'exposure' && l.ate_food)
+  const washoutLogs = logs.filter(l => l.phase === 'washout')
+  const sympDays = exposureEaten.filter(l => l.had_symptoms)
+  const symptomExposureDays = sympDays.length
+  const moderatePlusDays = sympDays.filter(l => dayIntensity(l) >= 2).length
+  const severeAny = logs.some(l => dayIntensity(l) >= 3)
+  const washoutFlare = washoutLogs.some(l => l.had_symptoms)
+
+  let position
+  if (symptomExposureDays >= 3 && moderatePlusDays >= 1) position = 88
+  else if (moderatePlusDays >= 2 || severeAny || washoutFlare) position = 72
+  else if (moderatePlusDays === 1 || symptomExposureDays >= 2) position = 55
+  else if (symptomExposureDays === 1) position = 38
+  else position = 12
+
+  // Caption: the latest mover, stated factually from the most recent log.
+  const dayNum = (log) => {
+    const d = parseL(log.log_date)
+    return (d && start) ? Math.floor((d - start) / 86400000) + 1 : null
+  }
+  let caption = 'No check-ins logged yet. The needle moves when you log.'
+  if (logs.length > 0) {
+    const last = logs[logs.length - 1]
+    const n = dayNum(last)
+    const dLabel = n ? `Day ${n}` : 'Latest log'
+    if (last.phase === 'exposure' && last.ate_food === false) {
+      caption = `${dLabel}: food skipped, nothing counted.`
+    } else if (!last.had_symptoms) {
+      caption = last.phase === 'washout'
+        ? `${dLabel}: washout clean, holding toward Safe.`
+        : `${dLabel}: exposure clean, holding toward Safe.`
+    } else {
+      let worst = null; let worstRank = 0
+      for (const s of parseSyms(last)) { const r = RANK[s && s.intensity] || 1; if (r > worstRank) { worstRank = r; worst = s } }
+      if (worstRank === 0) worstRank = 1 // had_symptoms with nothing readable: mild
+      const intensity = worstRank >= 3 ? 'severe' : worstRank === 2 ? 'moderate' : 'mild'
+      const nm = worst ? String((worst && worst.name) || worst).toLowerCase() : 'symptoms'
+      const toward = (last.phase === 'washout' || worstRank >= 2) ? 'Avoid' : 'Limit'
+      caption = `${dLabel}: ${intensity} ${nm} logged, moved toward ${toward}.`
+    }
+  }
+
+  const zones = [
+    { label: 'Safe', color: '#2C9D8A', width: 38 },
+    { label: 'Limit', color: '#E8941F', width: 34 },
+    { label: 'Avoid', color: '#D64545', width: 28 },
+  ]
+
+  return (
+    <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '16px', marginBottom: '14px' }}>
+      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase', color: '#7A7A72', marginBottom: '12px' }}>The evidence so far</div>
+      <div style={{ display: 'flex', marginBottom: '5px' }}>
+        {zones.map(z => (
+          <div key={z.label} style={{ width: `${z.width}%`, fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.8px', textTransform: 'uppercase', color: z.color }}>{z.label}</div>
+        ))}
+      </div>
+      <div style={{ position: 'relative', paddingTop: '4px', paddingBottom: '4px' }}>
+        <div style={{ display: 'flex', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+          {zones.map(z => (
+            <div key={z.label} style={{ width: `${z.width}%`, background: z.color + '2E' }} />
+          ))}
+        </div>
+        <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${position}%`, width: '2px', marginLeft: '-1px', background: '#1C1C1C', borderRadius: '1px', transition: 'left 0.4s ease' }} />
+      </div>
+      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9.5px', letterSpacing: '0.4px', color: '#4A4A45', marginTop: '10px' }}>{caption}</div>
+      <div style={{ fontSize: '10.5px', color: '#8A8A82', lineHeight: 1.5, marginTop: '6px' }}>A reading, not a ruling. The verdict is decided by the full 14 days and your survey.</div>
+    </div>
+  )
+}
+
 const cs = {
   wrap: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '16px', marginBottom: '14px' },
   header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' },
@@ -432,6 +536,8 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const [loading, setLoading] = useState(true)
   const [starting, setStarting] = useState(null)
   const [pendingStart, setPendingStart] = useState(null)  // { food, level } awaiting today/tomorrow choice
+  const [showDatePick, setShowDatePick] = useState(false) // trial scheduler: 14-day date strip open in the start sheet
+  const [farPick, setFarPick] = useState(null)            // YYYY-MM-DD of a far-out start (8+ days) awaiting confirm
   const [foodBriefing, setFoodBriefing] = useState('')
   const [loadingBriefing, setLoadingBriefing] = useState(false)
 
@@ -907,7 +1013,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <div className="rt-active-card">
               <div className="rt-active-eyebrow">Currently testing</div>
               <div className="rt-active-food"><em>{activeReintro.food}</em></div>
-              <div className="rt-active-sub">{cycleDay < 1 ? '14-day reintroduction cycle · Starts tomorrow' : `14-day reintroduction cycle · Day ${Math.min(cycleDay, 14)} of 14`}</div>
+              <div className="rt-active-sub">{cycleDay < 1 ? `14-day reintroduction cycle · ${cycleDay === 0 ? 'Starts tomorrow' : `Starts in ${1 - cycleDay} days`}` : `14-day reintroduction cycle · Day ${Math.min(cycleDay, 14)} of 14`}</div>
 
               <div className={`rt-phase-badge ${isVerdictDay ? 'exposure' : isExposure ? 'exposure' : 'washout'}`}>
                 <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isVerdictDay ? '#3D5C3C' : isExposure ? '#6DBF8A' : '#D4894A', flexShrink: 0 }}></div>
@@ -952,7 +1058,9 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                 <div className="rt-instruction-label">Today's instruction</div>
                 <div className="rt-instruction-text">
                   {cycleDay < 1
-                    ? `Nothing to do yet. Day 1 begins tomorrow, eat ${activeReintro.food} as you normally would then. Tonight's check-in is just your usual sleep, water, and stress.`
+                    ? (cycleDay === 0
+                      ? `Nothing to do yet. Day 1 begins tomorrow, eat ${activeReintro.food} as you normally would then. Tonight's check-in is just your usual sleep, water, and stress.`
+                      : `Nothing to do yet. Day 1 begins in ${1 - cycleDay} days, eat ${activeReintro.food} as you normally would then. Until then your elimination holds exactly as it is.`)
                     : isVerdictDay
                     ? `Your ${activeReintro.food} cycle is complete. Complete your verdict survey to get your result.`
                     : isExposure
@@ -1024,27 +1132,72 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               cycleStart={activeReintro.started_at}
             />
 
+            {/* THE EVIDENCE SO FAR: live provisional needle, logs only.
+                Never rendered once the verdict survey is available. */}
+            {!isVerdictDay && cycleDay >= 1 && (
+              <EvidenceNeedle logs={dailyLogs} cycleStartStr={activeReintro.started_at} />
+            )}
 
           </>
         )}
 
         {/* START CHOICE — day 1 begins when the person says so, not when the button was pressed */}
         {pendingStart && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, padding: '20px' }} onClick={() => setPendingStart(null)}>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, padding: '20px' }} onClick={() => { setPendingStart(null); setShowDatePick(false); setFarPick(null) }}>
             <div style={{ background: '#FFFFFF', borderRadius: '18px', padding: '24px', maxWidth: '380px', width: '100%', boxShadow: '0 24px 60px rgba(0,0,0,0.25)' }} onClick={e => e.stopPropagation()}>
               <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: '8px' }}>{pendingStart.food} cycle</div>
               <div style={{ fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 400, color: '#1C1C1C', marginBottom: '6px' }}>When should day 1 begin?</div>
               <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.55, marginBottom: '16px' }}>Only {pendingStart.food.toLowerCase()} comes back during this cycle. Everything else on your list stays eliminated. Day 1 is an exposure day, you'll want a real chance to eat {pendingStart.food.toLowerCase()} that day.{new Date().getHours() >= 17 ? ' It\u2019s getting late, so starting tomorrow is probably the honest choice.' : ''}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <button disabled={!!starting} onClick={() => { const t = new Date(); const tm = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1); const s = `${tm.getFullYear()}-${String(tm.getMonth() + 1).padStart(2, '0')}-${String(tm.getDate()).padStart(2, '0')}`; startReintro(pendingStart.food, pendingStart.level, s); setPendingStart(null) }}
+                <button disabled={!!starting} onClick={() => { const t = new Date(); const tm = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1); const s = `${tm.getFullYear()}-${String(tm.getMonth() + 1).padStart(2, '0')}-${String(tm.getDate()).padStart(2, '0')}`; startReintro(pendingStart.food, pendingStart.level, s); setPendingStart(null); setShowDatePick(false); setFarPick(null) }}
                   style={{ background: new Date().getHours() >= 17 ? '#3D5C3C' : '#FAF8F4', color: new Date().getHours() >= 17 ? '#FFFFFF' : '#1C1C1C', border: new Date().getHours() >= 17 ? 'none' : '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', padding: '13px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                   Start tomorrow, day 1 is {new Date(Date.now() + 86400000).toLocaleDateString('en-US', { weekday: 'long' })}
                 </button>
-                <button disabled={!!starting} onClick={() => { startReintro(pendingStart.food, pendingStart.level, todayLocal()); setPendingStart(null) }}
+                <button disabled={!!starting} onClick={() => { startReintro(pendingStart.food, pendingStart.level, todayLocal()); setPendingStart(null); setShowDatePick(false); setFarPick(null) }}
                   style={{ background: new Date().getHours() >= 17 ? '#FAF8F4' : '#3D5C3C', color: new Date().getHours() >= 17 ? '#1C1C1C' : '#FFFFFF', border: new Date().getHours() >= 17 ? '1px solid rgba(0,0,0,0.09)' : 'none', borderRadius: '12px', padding: '13px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                   Start today
                 </button>
+                {/* THE TRIAL SCHEDULER: pick any of the next 14 days as day 1 */}
+                <button disabled={!!starting} onClick={() => { setShowDatePick(v => !v); setFarPick(null) }}
+                  style={{ background: 'transparent', color: '#3D5C3C', border: '1px dashed rgba(61,92,60,0.4)', borderRadius: '12px', padding: '12px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  Pick a start date
+                </button>
               </div>
+              {showDatePick && (
+                <div style={{ marginTop: '14px' }}>
+                  <div style={{ fontSize: '12px', color: '#7A7A72', lineHeight: 1.55, marginBottom: '10px' }}>Exposure needs 3 days you can really eat {pendingStart.food.toLowerCase()}. Pick a day that clears your calendar.</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {Array.from({ length: 14 }).map((_, di) => {
+                      const t = new Date()
+                      const d = new Date(t.getFullYear(), t.getMonth(), t.getDate() + di)
+                      const ds = localDateString(d)
+                      const far = di > 7
+                      const selected = farPick === ds
+                      return (
+                        <button key={ds} disabled={!!starting}
+                          onClick={() => {
+                            if (far) { setFarPick(ds) }
+                            else { startReintro(pendingStart.food, pendingStart.level, ds); setPendingStart(null); setShowDatePick(false); setFarPick(null) }
+                          }}
+                          style={{ width: 'calc((100% - 36px) / 7)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', background: selected ? '#FDF2EA' : '#FAF8F4', border: selected ? '1.5px solid #E8941F' : '1px solid rgba(0,0,0,0.08)', borderRadius: '9px', padding: '6px 0 5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.5px', color: '#8A8A82' }}>{d.toLocaleDateString('en-US', { weekday: 'narrow' })}</span>
+                          <span style={{ fontSize: '12px', fontWeight: 500, color: '#1C1C1C' }}>{d.getDate()}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {farPick && (
+                    <>
+                      <div style={{ marginTop: '10px', background: '#FDF2EA', border: '1px solid rgba(232,148,31,0.35)', borderRadius: '9px', padding: '8px 11px', fontSize: '11.5px', color: '#9A5F1A', lineHeight: 1.5 }}>That is a while away. Your elimination holds until then.</div>
+                      <button disabled={!!starting}
+                        onClick={() => { startReintro(pendingStart.food, pendingStart.level, farPick); setPendingStart(null); setShowDatePick(false); setFarPick(null) }}
+                        style={{ marginTop: '8px', width: '100%', background: '#3D5C3C', color: '#FFFFFF', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                        Start on {(() => { const [y, m, dd] = farPick.split('-').map(Number); return new Date(y, m - 1, dd).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) })()}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1057,6 +1210,15 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                 <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: '8px' }}>Cycle complete · {completedCycles.length} verdict{completedCycles.length !== 1 ? 's' : ''} earned</div>
                 <div style={{ fontFamily: 'Fraunces, serif', fontSize: '21px', fontWeight: 400, color: '#1C1C1C', marginBottom: '4px' }}>Choose your next food.</div>
                 <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.55 }}>Your {completedCycles[completedCycles.length - 1].food.toLowerCase()} verdict is entered in your verdicts. Pick the next food below to start a fresh 14-day cycle, day 1 starts when you do.</div>
+              </div>
+            )}
+            {/* DAY-57 CEREMONY: first sight of the unlocked picker, before any
+                cycle has run. Disappears the moment the first verdict lands. */}
+            {lowUnlocked && completedCycles.length === 0 && (
+              <div style={{ background: '#22301F', borderRadius: '18px', padding: '22px 22px 24px', marginBottom: '16px', boxShadow: '0 16px 40px rgba(34,48,31,0.25)' }}>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9.5px', letterSpacing: '1.5px', color: '#8BAE8A', textTransform: 'uppercase', marginBottom: '10px' }}>SENSIFY · REINTRODUCTION</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, color: '#FAF8F4', lineHeight: 1.3, marginBottom: '8px' }}>56 clean days on the record. Testing begins.</div>
+                <div style={{ fontSize: '13px', color: 'rgba(250,248,244,0.7)', lineHeight: 1.6 }}>Your foods are ordered by how often you eat them. Each one gets a 14 day trial and earns its verdict.</div>
               </div>
             )}
             {lowUnlocked && (
@@ -1075,9 +1237,14 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                           {i === 0 && <span className="rt-rec-badge">Recommended</span>}
                         </div>
                         <div className="rt-food-freq">{FREQ_LABEL[foodFrequency[food.name]] || ''}</div>
+                        {/* Projected verdict date: queue position i finishes a 14-day
+                            cycle starting today for i=0, today + 14*i for the rest. */}
+                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', letterSpacing: '0.4px', color: '#8A8A82', marginTop: '2px' }}>
+                          Verdict by ~{(() => { const t = new Date(); const d = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 14 * (i + 1)); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) })()}
+                        </div>
                       </div>
                     </div>
-                    <button className="rt-start-btn" disabled={!!starting} onClick={() => setPendingStart({ food: food.name, level: food.level })}>
+                    <button className="rt-start-btn" disabled={!!starting} onClick={() => { setShowDatePick(false); setFarPick(null); setPendingStart({ food: food.name, level: food.level }) }}>
                       {starting === food.name ? 'Starting...' : 'Start cycle →'}
                     </button>
                   </div>
