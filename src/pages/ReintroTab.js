@@ -566,7 +566,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
         .is('verdict', null)
         .order('started_at', { ascending: false })
         .limit(1)
-        .single()
+        .maybeSingle()
       if (active) {
         setActiveReintro(active)
         if (active.food_briefing) {

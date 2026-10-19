@@ -52,6 +52,10 @@ const fmt = (date) => date.toLocaleDateString('en-US', { month: 'short', day: 'n
 
 export default function SuspectBoard({ session, profile, labResult, onOpenReintro }) {
   const [cycles, setCycles] = useState([])
+  // null = fetch in flight, 'ok' = loaded, 'err' = failed. The board renders
+  // nothing until it knows: a half-loaded board reads "0 OF N RULED" with
+  // earned verdicts missing, which is worse than a moment of blank space.
+  const [loadState, setLoadState] = useState(null)
   const [expanded, setExpanded] = useState(false)
   const [showHow, setShowHow] = useState(false)
 
@@ -59,15 +63,20 @@ export default function SuspectBoard({ session, profile, labResult, onOpenReintr
     if (!session?.user?.id) return
     ;(async () => {
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('reintroduction_results')
           .select('food, verdict, started_at, washout_started_at')
           .eq('user_id', session.user.id)
           .order('started_at', { ascending: true })
+        if (error) { setLoadState('err'); return }
         setCycles(data || [])
-      } catch (e) { /* fail silent; board renders as all-suspect */ }
+        setLoadState('ok')
+      } catch (e) { setLoadState('err') }
     })()
   }, [session?.user?.id])
+
+  // In flight or failed: show nothing rather than wrong case statuses.
+  if (loadState !== 'ok') return null
 
   try {
     const allFoods = labResult?.foods || []
