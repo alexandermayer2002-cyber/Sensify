@@ -401,8 +401,31 @@ export const checkMilestoneShown = async (supabase, userId, milestoneKey) => {
 // are converted on first write. Two writers previously used two shapes
 // (array here, object on the test-taken card), each clobbering the other.
 export const normalizeMilestones = (v) => {
-  if (Array.isArray(v)) return Object.fromEntries(v.map(k => [k, true]))
+  // The DB column only accepts JSON ARRAYS (confirmed live: object writes 400
+  // with "expected JSON array"), so the array IS the storage format, encoded
+  // as ["flag", "key:value", ...]. This decodes to an object for reading.
+  if (Array.isArray(v)) {
+    const out = {}
+    for (const item of v) {
+      if (typeof item !== 'string') continue
+      const i = item.indexOf(':')
+      if (i === -1) out[item] = true
+      else out[item.slice(0, i)] = item.slice(i + 1)
+    }
+    return out
+  }
   return v || {}
+}
+
+// The inverse: object -> the array shape the column accepts.
+export const serializeMilestones = (obj) => {
+  const out = []
+  for (const [k, v] of Object.entries(obj || {})) {
+    if (v === true) out.push(k)
+    else if (typeof v === 'string' && v.length > 0) out.push(k + ':' + v)
+    // false/null/undefined are dropped: absence is the off state
+  }
+  return out
 }
 
 export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
@@ -415,7 +438,7 @@ export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
     const current = normalizeMilestones(data?.shown_milestones)
     if (!current[milestoneKey]) {
       await supabase.from('profiles').update({
-        shown_milestones: { ...current, [milestoneKey]: true }
+        shown_milestones: serializeMilestones({ ...current, [milestoneKey]: true })
       }).eq('id', userId)
     }
   } catch (e) {}

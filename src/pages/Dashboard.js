@@ -31,6 +31,7 @@ import {
   checkMilestoneShown,
   markMilestoneShown,
   normalizeMilestones,
+  serializeMilestones,
 } from '../utils/aiInsights'
 
 const css = `
@@ -1083,7 +1084,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         let msg = sm.day1_text
         if (!msg) {
           msg = await generateDay1Message({ name, profile: p, labResult: lab })
-          try { await supabase.from('profiles').update({ shown_milestones: { ...sm, day1_text: msg } }).eq('id', session.user.id) } catch (e) {}
+          try { await supabase.from('profiles').update({ shown_milestones: serializeMilestones({ ...sm, day1_text: msg }) }).eq('id', session.user.id) } catch (e) {}
         }
         setMilestoneMessage(msg)
         setMilestoneKey('day1')
@@ -1824,13 +1825,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
 
             {/* I TOOK THE TEST — persistent pleasant card until clicked (finding #14) */}
-            {!labResult && !profile?.shown_milestones?.test_taken && (showIntakeCard || showLabCard || showPendingLabCard) && (
+            {!labResult && !normalizeMilestones(profile?.shown_milestones).test_taken && (showIntakeCard || showLabCard || showPendingLabCard) && (
               <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: 18, padding: '18px 20px', marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: 6 }}>Your lab kit</div>
                   <div style={{ fontSize: 13.5, color: '#3A3A35', lineHeight: 1.55 }}>Done with your test? Tell us so we know your results are on the way.</div>
                 </div>
-                <button onClick={async () => { const sm = { ...normalizeMilestones(profile?.shown_milestones), test_taken: true }; await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '11px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 }}>I took my test</button>
+                <button onClick={async () => { const sm = serializeMilestones({ ...normalizeMilestones(profile?.shown_milestones), test_taken: true }); await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '11px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 }}>I took my test</button>
               </div>
             )}
 

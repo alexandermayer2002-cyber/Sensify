@@ -68,7 +68,8 @@ exports.handler = async (event) => {
   const { data: prof, error: profErr } = await sb
     .from('profiles')
     .select('id, full_name, program_phase, protocol_track, protocol_tier')
-    .eq('shown_milestones->>household_token', token)
+    // Storage is a JSON ARRAY of strings; the token entry is 'household_token:<hex>'.
+    .contains('shown_milestones', ['household_token:' + token])
     .limit(1)
     .maybeSingle()
   if (profErr || !prof) return reply(404, { error: 'not found' })

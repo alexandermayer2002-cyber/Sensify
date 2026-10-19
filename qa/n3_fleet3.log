@@ -1,0 +1,37 @@
+=== features3 ===
+PASS sharpness_card
+PASS suspect_board
+PASS household_card
+FAIL household_minted
+PASS foodmap_download_btn
+PASS foodmap_print_sheet_dom
+PASS bottom_tab_bar
+=== complete3 ===
+  - waiting for get_by_role("button", name=re.compile(r"Start cycle")).first
+
+=== audit ===
+==end n3a_no_audit_card==
+shot: N3A_01_n3a_no_audit_card.png
+=== regress3 ===
+PASS mkt.example_labels
+PASS mkt.console_clean
+PASS p1.intake
+PASS p1.readback
+PASS p1.flagged_autostart
+PASS p1.unlock_hero
+PASS p1.no_false_complete
+PASS p1.single_queue
+PASS p1.freq_order_crab_first
+PASS p2.clean_toggle_visible
+PASS p2.clean_readback
+PASS p2.popup_clean_script
+PASS p2.no_premature_protocol
+PASS p2.decision_present
+PASS p2.protocol_started
+PASS p3.popup_flagged_script
+PASS p3.union_banner
+PASS p4.tracking_landing
+PASS p4.verdicts_tracking_state
+PASS p4.reintro_tracking_state
+REGRESSION: 20/20 checks passed
+=== FLEET3 DONE ===

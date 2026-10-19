@@ -96,7 +96,7 @@ function MaintainPreview({ profile, session }) {
       ) : (
         <div style={{ marginTop: '14px' }}>
           <button onClick={startOptIn} disabled={busy} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: 500, cursor: 'pointer', opacity: busy ? 0.6 : 1, fontFamily: 'DM Sans, sans-serif' }}>
-            {busy ? 'Opening secure checkout\u2026' : 'Reserve Maintain \u2014 $0 today'}
+            {busy ? 'Opening secure checkout\u2026' : 'Reserve Maintain, $0 today'}
           </button>
           <div style={{ fontSize: '11px', color: '#A0A096', textAlign: 'center', marginTop: '8px', lineHeight: 1.55 }}>Saves your card securely with Stripe. Nothing is charged until your protocol completes, and you can cancel anytime before then.</div>
           {err && <div style={{ fontSize: '12px', color: '#D64545', textAlign: 'center', marginTop: '6px' }}>{err}</div>}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from '../supabase'
-import { normalizeMilestones } from '../utils/aiInsights'
+import { normalizeMilestones, serializeMilestones } from '../utils/aiInsights'
 
 // HOUSEHOLD CARD
 // Two components live here:
@@ -159,7 +159,7 @@ export function HouseholdShareCard({ session, profile }) {
       const t = current.household_token || mintToken()
       if (!current.household_token) {
         const { error: upErr } = await supabase.from('profiles')
-          .update({ shown_milestones: { ...current, household_token: t } })
+          .update({ shown_milestones: serializeMilestones({ ...current, household_token: t }) })
           .eq('id', userId)
         if (upErr) throw upErr
       }
@@ -179,7 +179,7 @@ export function HouseholdShareCard({ session, profile }) {
       const current = normalizeMilestones(data?.shown_milestones)
       delete current.household_token
       const { error: upErr } = await supabase.from('profiles')
-        .update({ shown_milestones: current })
+        .update({ shown_milestones: serializeMilestones(current) })
         .eq('id', userId)
       if (upErr) throw upErr
       setToken(null); setCopied(false)

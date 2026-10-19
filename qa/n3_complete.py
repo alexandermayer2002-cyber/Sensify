@@ -63,9 +63,14 @@ try:
     do_weekly_if_due()
     home()
     S("n3c_home_between", 1800)      # second-cycle handoff state
-    nav_tab(r, "Reintro")
+    try:
+        r.page.get_by_role("button", name=re.compile(r"Pick your next food")).first.evaluate("el => el.click()")
+        r.sleep(2.5); r.wait_ready(12)
+    except Exception:
+        nav_tab(r, "Reintro")
     S("n3c_picker_final_food", 1800) # expect only Gluten / wheat remaining
-    r.page.get_by_role("button", name=re.compile(r"Start cycle")).first.click(timeout=6000)
+    r.page.get_by_role("button", name=re.compile(r"Start cycle")).first.evaluate("el => el.click()")
+    r.sleep(0.2)
     r.sleep(1.8); r.wait_ready(12)
     r.click("Start today", exact=False, required=False)
     r.sleep(5.0); r.wait_ready(25)

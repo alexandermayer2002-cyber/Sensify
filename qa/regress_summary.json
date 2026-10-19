@@ -1,7 +1,7 @@
 {
- "date": "261019",
- "passed": 5,
- "total": 13,
+ "date": "2610191722",
+ "passed": 20,
+ "total": 20,
  "results": [
   {
    "check": "mkt.example_labels",
@@ -15,13 +15,38 @@
   },
   {
    "check": "p1.intake",
-   "ok": false,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening, QA\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 1 OF 28 \u00b7 TESTING OPEN\nPick your next fo"
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour intake is complete. Upload your lab results to begin.\n\nACTION NEEDED\nUpload y"
   },
   {
-   "check": "p1.walk",
-   "ok": false,
-   "detail": "one\nplaywright._impl._errors.TimeoutError: Locator.fill: Timeout 9000ms exceeded.\nCall log:\n  - waiting for get_by_placeholder(\"Search foods\").first\n\n"
+   "check": "p1.readback",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "p1.flagged_autostart",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nELIMINATION PHASE\nStarts tomorrow.\nYour elimination phas"
+  },
+  {
+   "check": "p1.unlock_hero",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening, QA\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 1 OF 28 \u00b7 TESTING OPEN\nPick your next food\n\u2192\nor lo"
+  },
+  {
+   "check": "p1.no_false_complete",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "p1.single_queue",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nSENSIFY \u00b7 REINTRODUCTION\n5"
+  },
+  {
+   "check": "p1.freq_order_crab_first",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nSENSIFY \u00b7 REINTRODUCTION\n5"
   },
   {
    "check": "p2.clean_toggle_visible",
@@ -30,28 +55,38 @@
   },
   {
    "check": "p2.clean_readback",
-   "ok": false,
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "p2.popup_clean_script",
+   "ok": true,
    "detail": ""
   },
   {
    "check": "p2.no_premature_protocol",
-   "ok": false,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nELIMINATION PHASE\nStarts tomorrow.\nYour elimination phas"
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour results are in. Choose your path.\n\nChoose your path\n\u25be\nHow thorough do you want to go?\nT"
   },
   {
    "check": "p2.decision_present",
-   "ok": false,
+   "ok": true,
    "detail": ""
   },
   {
-   "check": "p2.walk",
-   "ok": false,
-   "detail": " Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator(\"//*[normalize-space(text())='Dairy']/following::*[normalize-space(text())='Daily'][1]\")\n\n"
+   "check": "p2.protocol_started",
+   "ok": true,
+   "detail": ""
   },
   {
-   "check": "p3.walk",
-   "ok": false,
-   "detail": "one\nplaywright._impl._errors.TimeoutError: Locator.fill: Timeout 9000ms exceeded.\nCall log:\n  - waiting for get_by_placeholder(\"Search foods\").first\n\n"
+   "check": "p3.popup_flagged_script",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour results are in. Choose your path.\n\n\u2715\nYOUR RESULTS ARE IN\nYour flags are real. So is wha"
+  },
+  {
+   "check": "p3.union_banner",
+   "ok": true,
+   "detail": ""
   },
   {
    "check": "p4.tracking_landing",
@@ -60,8 +95,8 @@
   },
   {
    "check": "p4.verdicts_tracking_state",
-   "ok": false,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're tracking. Log how today goes.\n\nYOUR PATH\nYou're tracking, not testing.\n\nYou've chosen"
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nSENSIFY \u00b7 THE VERDICTS\nEarned by testing.\nVerdicts come from reintroduction trials: a food returns to your plat"
   },
   {
    "check": "p4.reintro_tracking_state",

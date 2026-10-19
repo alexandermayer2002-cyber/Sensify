@@ -253,8 +253,8 @@ export default function Support({ session, onUnreadChange }) {
           const resolved = tickets.filter(t => t.status === 'resolved')
           const card = (t, hot) => {
             const sl = statusLabel(t, 'user')
-            const statusLine = hot ? `${sl.text.toUpperCase()} \u2014 TAP TO READ & REPLY`
-              : sl.tone === 'waiting' ? `${sl.text.toUpperCase()} \u2014 NOTHING NEEDED FROM YOU`
+            const statusLine = hot ? `${sl.text.toUpperCase()} \u00b7 TAP TO READ & REPLY`
+              : sl.tone === 'waiting' ? `${sl.text.toUpperCase()} \u00b7 NOTHING NEEDED FROM YOU`
               : sl.text.toUpperCase()
             return (
               <div key={t.id} onClick={() => openTicket(t)} style={{ borderTop: '1px solid rgba(0,0,0,0.07)', padding: '13px 0', cursor: 'pointer' }}>
