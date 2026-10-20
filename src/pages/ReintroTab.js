@@ -1238,7 +1238,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               </div>
               {showDatePick && (
                 <div style={{ marginTop: '14px' }}>
-                  <div style={{ fontSize: '12px', color: '#7A7A72', lineHeight: 1.55, marginBottom: '10px' }}>Exposure needs 3 days you can really eat {pendingStart.food.toLowerCase()}. Pick a day that clears your calendar.</div>
+                  <div style={{ fontSize: '12px', color: 'var(--gray)', lineHeight: 1.55, marginBottom: '10px' }}>Exposure needs 3 days you can really eat {pendingStart.food.toLowerCase()}. Pick a day that clears your calendar.</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {Array.from({ length: 14 }).map((_, di) => {
                       const t = new Date()
@@ -1252,19 +1252,19 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                             if (far) { setFarPick(ds) }
                             else { startReintro(pendingStart.food, pendingStart.level, ds); setPendingStart(null); setShowDatePick(false); setFarPick(null) }
                           }}
-                          style={{ width: 'calc((100% - 36px) / 7)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', background: selected ? '#FDF2EA' : '#FAF8F4', border: selected ? '1.5px solid #E8941F' : '1px solid rgba(0,0,0,0.08)', borderRadius: '9px', padding: '6px 0 5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
-                          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.5px', color: '#8A8A82' }}>{d.toLocaleDateString('en-US', { weekday: 'narrow' })}</span>
-                          <span style={{ fontSize: '12px', fontWeight: 500, color: '#1C1C1C' }}>{d.getDate()}</span>
+                          style={{ width: 'calc((100% - 36px) / 7)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', background: selected ? 'var(--forest-500)' : 'var(--paper)', border: 'none', borderRadius: '999px', padding: '8px 0 7px', cursor: 'pointer', boxShadow: selected ? 'var(--shadow-pill)' : 'var(--shadow-1)', transition: 'all 0.16s' }}>
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.5px', color: selected ? 'rgba(255,255,255,0.75)' : '#8A8A82' }}>{d.toLocaleDateString('en-US', { weekday: 'narrow' })}</span>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: selected ? '#FFFFFF' : 'var(--ink)' }}>{d.getDate()}</span>
                         </button>
                       )
                     })}
                   </div>
                   {farPick && (
                     <>
-                      <div style={{ marginTop: '10px', background: '#FDF2EA', border: '1px solid rgba(232,148,31,0.35)', borderRadius: '9px', padding: '8px 11px', fontSize: '11.5px', color: '#9A5F1A', lineHeight: 1.5 }}>That is a while away. Your elimination holds until then.</div>
+                      <div style={{ marginTop: '10px', background: 'var(--tint-warm)', border: 'none', borderRadius: 'var(--r-sm)', padding: '9px 11px', fontSize: '11.5px', color: 'var(--ink-soft)', lineHeight: 1.5 }}>That is a while away. Your elimination holds until then.</div>
                       <button disabled={!!starting}
                         onClick={() => { startReintro(pendingStart.food, pendingStart.level, farPick); setPendingStart(null); setShowDatePick(false); setFarPick(null) }}
-                        style={{ marginTop: '8px', width: '100%', background: '#3D5C3C', color: '#FFFFFF', border: 'none', borderRadius: '12px', padding: '12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                        style={{ marginTop: '8px', width: '100%', background: 'var(--forest-500)', color: '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '12px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)' }}>
                         Start on {(() => { const [y, m, dd] = farPick.split('-').map(Number); return new Date(y, m - 1, dd).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) })()}
                       </button>
                     </>
@@ -1279,18 +1279,18 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
         {!activeReintro && (
           <>
             {completedCycles.length > 0 && (
-              <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: '18px', padding: '20px', marginBottom: '16px' }}>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: '8px' }}>Cycle complete · {completedCycles.length} verdict{completedCycles.length !== 1 ? 's' : ''} earned</div>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '21px', fontWeight: 400, color: '#1C1C1C', marginBottom: '4px' }}>Choose your next food.</div>
-                <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.55 }}>Your {completedCycles[completedCycles.length - 1].food.toLowerCase()} verdict is entered in your verdicts. Pick the next food below to start a fresh 14-day cycle, day 1 starts when you do.</div>
+              <div className="sn-rise" style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(139,174,138,0.04)), #FFFFFF', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '20px', marginBottom: '16px' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '8px' }}>Cycle complete · {completedCycles.length} verdict{completedCycles.length !== 1 ? 's' : ''} earned</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 400, letterSpacing: '-0.3px', color: 'var(--ink)', marginBottom: '4px' }}>Choose your next food.</div>
+                <div style={{ fontSize: '13px', color: 'var(--gray)', lineHeight: 1.55 }}>Your {completedCycles[completedCycles.length - 1].food.toLowerCase()} verdict is entered in your verdicts. Pick the next food below to start a fresh 14-day cycle, day 1 starts when you do.</div>
               </div>
             )}
             {/* DAY-57 CEREMONY: first sight of the unlocked picker, before any
                 cycle has run. Disappears the moment the first verdict lands. */}
             {lowUnlocked && completedCycles.length === 0 && (
-              <div style={{ background: '#22301F', borderRadius: '18px', padding: '22px 22px 24px', marginBottom: '16px', boxShadow: '0 16px 40px rgba(34,48,31,0.25)' }}>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9.5px', letterSpacing: '1.5px', color: '#8BAE8A', textTransform: 'uppercase', marginBottom: '10px' }}>SENSIFY · REINTRODUCTION</div>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, color: '#FAF8F4', lineHeight: 1.3, marginBottom: '8px' }}>56 clean days on the record. Testing begins.</div>
+              <div className="sn-rise" style={{ position: 'relative', overflow: 'hidden', background: 'radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.3), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', borderRadius: '28px', padding: '24px 22px 26px', marginBottom: '16px', boxShadow: 'var(--shadow-3)' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9.5px', fontWeight: 500, letterSpacing: '0.17em', color: '#8BAE8A', textTransform: 'uppercase', marginBottom: '10px' }}>SENSIFY · REINTRODUCTION</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 400, letterSpacing: '-0.3px', color: '#FAF8F4', lineHeight: 1.25, marginBottom: '8px' }}>56 clean days on the record. Testing begins.</div>
                 <div style={{ fontSize: '13px', color: 'rgba(250,248,244,0.7)', lineHeight: 1.6 }}>Your foods are ordered by how often you eat them. Each one gets a 14 day trial and earns its verdict.</div>
               </div>
             )}
@@ -1301,7 +1301,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                   {getRemainingFoods('Low').length === 0 && ' · none to test'}
                 </div>
                 {getRemainingFoods('Low').map((food, i) => (
-                  <div key={food.name} className={`rt-food-card${i === 0 ? ' recommended' : ''}`}>
+                  <div key={food.name} className={`rt-food-card${i === 0 ? ' recommended' : ''} ${['sn-rise', 'sn-rise-2', 'sn-rise-3', 'sn-rise-4'][Math.min(i, 3)]}`}>
                     <div className="rt-food-left">
                       <div className={`rt-food-rank${i === 0 ? ' top' : ''}`}>{i + 1}</div>
                       <div>
@@ -1312,7 +1312,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                         <div className="rt-food-freq">{FREQ_LABEL[foodFrequency[food.name]] || ''}</div>
                         {/* Projected verdict date: queue position i finishes a 14-day
                             cycle starting today for i=0, today + 14*i for the rest. */}
-                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', letterSpacing: '0.4px', color: '#8A8A82', marginTop: '2px' }}>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.4px', color: '#8A8A82', marginTop: '2px' }}>
                           Verdict by ~{(() => { const t = new Date(); const d = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 14 * (i + 1)); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) })()}
                         </div>
                       </div>
@@ -1337,13 +1337,13 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               <>
                 <div className="rt-section-label" style={{ marginTop: '22px' }}>Retest available · ruled on conflicting evidence</div>
                 {retestable.map(cyc => (
-                  <div key={'retest-' + cyc.food} className="rt-food-card">
+                  <div key={'retest-' + cyc.food} className="rt-food-card sn-rise-4">
                     <div className="rt-food-left">
                       <div className="rt-food-rank">↻</div>
                       <div>
                         <div className="rt-food-name">{cyc.food}</div>
                         <div className="rt-food-freq">Ruled {cyc.verdict} · your logs and your account of it disagreed</div>
-                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', letterSpacing: '0.4px', color: '#8A8A82', marginTop: '2px' }}>A re-run replaces this verdict with whatever the new trial earns</div>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.4px', color: '#8A8A82', marginTop: '2px' }}>A re-run replaces this verdict with whatever the new trial earns</div>
                       </div>
                     </div>
                     <button className="rt-start-btn" disabled={!!starting} onClick={() => { setShowDatePick(false); setFarPick(null); setPendingStart({ food: cyc.food, level: cyc.sensitivity_level || 'Low' }) }}>

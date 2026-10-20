@@ -3,58 +3,61 @@ import { supabase } from '../supabase'
 import { isTestAccount, autoApproveTestLab } from '../utils/testMode'
 import { aiCall } from '../utils/aiClient'
 
+const PAGE_CSS = `
+  .sn-input { background: #FFFFFF; border: none; box-shadow: var(--shadow-1), inset 0 1px 3px rgba(56,62,48,0.05); transition: box-shadow var(--t-fast) var(--ease); }
+  .sn-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(61,92,60,0.30), var(--shadow-1); }
+`
+
 const s = {
   wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column' },
-  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)' },
-  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
+  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', boxShadow: 'var(--shadow-1)' },
+  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#20241F' },
   logoEm: { color: '#3D5C3C' },
-  back: { fontSize: '13px', color: '#7A7A72', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'DM Sans, sans-serif' },
-  content: { flex: 1, padding: '28px 24px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 400, marginBottom: '6px' },
+  back: { fontSize: '13px', color: '#73736A', cursor: 'pointer', background: 'none', border: 'none' },
+  content: { flex: 1, padding: '28px 24px', maxWidth: '560px', margin: '0 auto', width: '100%' },
+  title: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, letterSpacing: '-0.3px', marginBottom: '6px' },
   titleEm: { fontStyle: 'normal', color: 'inherit' },
-  sub: { fontSize: '14px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.6 },
+  sub: { fontSize: '13px', color: '#73736A', marginBottom: '28px', lineHeight: 1.6 },
   methodRow: { display: 'flex', gap: '10px', marginBottom: '24px' },
-  methodBtn: { flex: 1, padding: '14px 10px', borderRadius: '12px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', cursor: 'pointer', textAlign: 'center', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s' },
-  methodBtnActive: { flex: 1, padding: '14px 10px', borderRadius: '12px', border: '2px solid #3D5C3C', background: '#EDF3ED', cursor: 'pointer', textAlign: 'center', fontFamily: 'DM Sans, sans-serif' },
+  methodBtn: { flex: 1, padding: '14px 10px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FFFFFF', cursor: 'pointer', textAlign: 'center', transition: 'all 0.12s' },
+  methodBtnActive: { flex: 1, padding: '14px 10px', borderRadius: '16px', border: 'none', boxShadow: '0 0 0 1.5px #3D5C3C, var(--shadow-1)', background: '#EDF3ED', cursor: 'pointer', textAlign: 'center' },
   methodIcon: { fontSize: '24px', marginBottom: '5px' },
-  methodLabel: { fontSize: '12px', fontWeight: 500, color: '#1C1C1C' },
-  uploadZone: { border: '2px dashed rgba(61,92,60,0.2)', borderRadius: '14px', padding: '40px 20px', textAlign: 'center', background: '#EDF3ED', cursor: 'pointer', marginBottom: '16px', transition: 'all 0.15s' },
-  uploadIcon: { width: '48px', height: '48px', background: '#3D5C3C', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' },
-  uploadTitle: { fontSize: '15px', fontWeight: 500, marginBottom: '4px' },
-  uploadSub: { fontSize: '13px', color: '#7A7A72' },
+  methodLabel: { fontSize: '12px', fontWeight: 600, color: '#20241F' },
+  uploadZone: { border: '2px dashed rgba(139,174,138,0.75)', borderRadius: '24px', padding: '40px 20px', textAlign: 'center', background: 'rgba(139,174,138,0.08)', cursor: 'pointer', marginBottom: '16px', transition: 'all 0.15s' },
+  uploadIcon: { width: '48px', height: '48px', background: '#3D5C3C', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', boxShadow: 'var(--shadow-pill)' },
+  uploadTitle: { fontSize: '15px', fontWeight: 600, marginBottom: '4px' },
+  uploadSub: { fontSize: '13px', color: '#73736A' },
   fileInput: { display: 'none' },
-  fileCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' },
-  fileIcon: { width: '34px', height: '34px', background: '#FAEAEA', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '16px' },
+  fileCard: { background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1)', borderRadius: '16px', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' },
+  fileIcon: { width: '34px', height: '34px', background: '#EDF3ED', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '16px' },
   fileName: { fontSize: '13px', fontWeight: 500 },
-  fileSize: { fontSize: '11px', color: '#7A7A72' },
-  fileRemove: { marginLeft: 'auto', fontSize: '12px', color: '#C95B5B', cursor: 'pointer' },
+  fileSize: { fontSize: '11px', color: '#73736A' },
+  fileRemove: { marginLeft: 'auto', fontSize: '12px', color: '#73736A', fontWeight: 600, cursor: 'pointer' },
   manualSection: { marginBottom: '16px' },
-  manualSearch: { width: '100%', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '13px 15px', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px', outline: 'none', background: '#FAF8F4', boxSizing: 'border-box' },
-  foodItem: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 0', borderBottom: '1px solid rgba(0,0,0,0.06)' },
+  manualSearch: { width: '100%', borderRadius: '14px', padding: '13px 15px', fontSize: '16px', marginBottom: '10px', color: '#20241F', boxSizing: 'border-box' },
+  foodItem: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 0' },
   foodName: { fontSize: '14px', fontWeight: 400 },
   levelBtns: { display: 'flex', gap: '5px' },
-  levelBtn: { padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.1)', background: '#FAF8F4', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#7A7A72', transition: 'all 0.1s' },
-  levelBtnHigh: { padding: '4px 10px', borderRadius: '20px', border: '1px solid #D64545', background: '#FBE9E9', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#A32D2D' },
-  levelBtnMod: { padding: '4px 10px', borderRadius: '20px', border: '1px solid #E8941F', background: '#FCEFD9', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#8A5410' },
-  levelBtnLow: { padding: '4px 10px', borderRadius: '20px', border: '1px solid #2C9D8A', background: '#DEF2EE', fontSize: '11px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1A6256' },
-  processingCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '32px 24px', textAlign: 'center', marginBottom: '16px' },
+  levelBtn: { padding: '4px 10px', borderRadius: '999px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FFFFFF', fontSize: '11px', cursor: 'pointer', fontWeight: 600, color: '#73736A', transition: 'all 0.1s' },
+  levelBtnOn: { padding: '4px 10px', borderRadius: '999px', border: 'none', boxShadow: 'var(--shadow-pill)', background: '#3D5C3C', fontSize: '11px', cursor: 'pointer', fontWeight: 600, color: '#FFFFFF' },
+  processingCard: { background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '24px', padding: '32px 24px', textAlign: 'center', marginBottom: '16px' },
   spinner: { width: '36px', height: '36px', border: '3px solid #EDF3ED', borderTopColor: '#3D5C3C', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' },
   processingTitle: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, marginBottom: '6px' },
   processingTitle2: { color: '#3D5C3C' },
-  processingSub: { fontSize: '13px', color: '#7A7A72' },
+  processingSub: { fontSize: '13px', color: '#73736A' },
   resultSection: { marginBottom: '20px' },
-  resultHeader: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '8px' },
-  resultItem: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '9px', marginBottom: '7px' },
+  resultHeader: { display: 'block', marginBottom: '8px' },
+  resultItem: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1)', borderRadius: '16px', marginBottom: '7px' },
   resultLeft: { display: 'flex', alignItems: 'center', gap: '9px', fontSize: '14px' },
   resultDot: { width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0 },
-  badge: { fontSize: '11px', fontWeight: 500, padding: '3px 9px', borderRadius: '20px' },
-  editSelect: { fontSize: '12px', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '6px', padding: '3px 7px', background: '#FAF8F4', color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
-  confirmBar: { background: '#EDF3ED', border: '1px solid rgba(61,92,60,0.13)', borderRadius: '12px', padding: '11px 14px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#3D5C3C' },
+  badge: { fontSize: '11px', fontWeight: 500, padding: '3px 9px', borderRadius: '999px' },
+  editSelect: { fontSize: '16px', border: 'none', boxShadow: 'var(--shadow-1)', borderRadius: '10px', padding: '3px 7px', background: '#FFFFFF', color: '#20241F', cursor: 'pointer' },
+  confirmBar: { background: 'rgba(139,174,138,0.12)', borderRadius: '16px', padding: '11px 14px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#3D5C3C' },
   checkIcon: { width: '16px', height: '16px', background: '#3D5C3C', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  errorCard: { background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.2)', borderRadius: '12px', padding: '14px', marginBottom: '16px', fontSize: '13px', color: '#C95B5B', lineHeight: 1.6 },
-  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px' },
-  ctaDisabled: { background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px' },
-  secBtn: { background: 'none', color: '#7A7A72', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '13px', width: '100%', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
+  errorCard: { background: '#FAEAEA', borderRadius: '16px', padding: '14px', marginBottom: '16px', fontSize: '13px', color: '#C95B5B', lineHeight: 1.6 },
+  cta: { width: '100%', marginBottom: '10px' },
+  ctaDisabled: { width: '100%', marginBottom: '10px' },
+  secBtn: { width: '100%' },
 }
 
 const COMMON_FOODS = [
@@ -259,23 +262,23 @@ Rules:
 
   // Rendered in manual entry and in the upload path when extraction finds zero foods.
   const noSensitivitiesToggle = (
-    <button onClick={() => { setNoSensitivities(v => !v); setError('') }} style={{ width: '100%', textAlign: 'left', background: noSensitivities ? '#EDF3ED' : '#FAF8F4', border: noSensitivities ? '1.5px solid #3D5C3C' : '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', padding: '13px 15px', fontSize: '13.5px', color: '#1C1C1C', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px', fontWeight: noSensitivities ? 600 : 400 }}>
+    <button onClick={() => { setNoSensitivities(v => !v); setError('') }} style={{ width: '100%', textAlign: 'left', background: noSensitivities ? '#EDF3ED' : '#F7F5EE', border: 'none', boxShadow: noSensitivities ? '0 0 0 1.5px #3D5C3C, var(--shadow-1)' : 'none', borderRadius: '16px', padding: '13px 15px', fontSize: '13.5px', color: '#20241F', cursor: 'pointer', marginBottom: '10px', fontWeight: noSensitivities ? 600 : 400 }}>
       My report shows no sensitivities
-      <div style={{ fontSize: '12px', color: '#7A7A72', fontWeight: 400, marginTop: '3px', lineHeight: 1.5 }}>That's a real result. We'll review it and recommend the right path, often testing common trigger foods instead.</div>
+      <div style={{ fontSize: '12px', color: '#73736A', fontWeight: 400, marginTop: '3px', lineHeight: 1.5 }}>That's a real result. We'll review it and recommend the right path, often testing common trigger foods instead.</div>
     </button>
   )
 
   return (
     <div style={s.wrap}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }` + PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
         <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
         <div style={{ width: 40 }}></div>
       </div>
 
-      <div style={s.content}>
-        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', letterSpacing: '1.5px', color: '#8BAE8A', textTransform: 'uppercase', marginBottom: '8px' }}>Your lab results</div>
+      <div className="sn-rise" style={s.content}>
+        <div className="sn-micro" style={{ marginBottom: '8px' }}>Your lab results</div>
         <div style={s.title}>Add your test results.</div>
         <div style={s.sub}>Enter only the foods that showed a reaction. Anything you leave out is treated as clear.</div>
 
@@ -303,7 +306,7 @@ Rules:
         {error && <div style={s.errorCard}>{error}</div>}
 
         {(method === 'pdf' || method === 'photo') && !extractedFoods && !processing && (
-          <div style={{ background: '#22301F', borderRadius: 12, padding: '13px 15px', display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 16 }}>
+          <div style={{ background: '#22301F', borderRadius: 16, boxShadow: 'var(--shadow-3)', padding: '13px 15px', display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 16 }}>
             <span style={{ color: '#8BAE8A', fontSize: 14, flexShrink: 0, marginTop: 1 }}>\u2726</span>
             <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.75)', lineHeight: 1.55 }}>We read the reacted foods automatically. You review and confirm before anything is saved.</div>
           </div>
@@ -343,10 +346,10 @@ Rules:
               </div>
             )}
 
-            <button style={file ? s.cta : s.ctaDisabled} onClick={analyzeFile} disabled={!file}>
+            <button className="sn-btn" style={s.cta} onClick={analyzeFile} disabled={!file}>
               Read my results
             </button>
-            <button style={s.secBtn} onClick={() => setMethod('manual')}>Enter manually instead</button>
+            <button className="sn-btn sn-btn-quiet" style={s.secBtn} onClick={() => setMethod('manual')}>Enter manually instead</button>
           </>
         )}
 
@@ -375,7 +378,7 @@ Rules:
               const colors = SENSITIVITY_COLORS[level]
               return (
                 <div key={level} style={s.resultSection}>
-                  <div style={s.resultHeader}>{level} sensitivity</div>
+                  <div className="sn-micro sn-micro-dim" style={s.resultHeader}>{level} sensitivity</div>
                   {foods.map((food, i) => (
                     <div key={i} style={s.resultItem}>
                       <div style={s.resultLeft}>
@@ -402,10 +405,10 @@ Rules:
 
             {extractedFoods.length === 0 && noSensitivitiesToggle}
 
-            <button style={s.cta} onClick={handleSave} disabled={saving}>
+            <button className="sn-btn" style={s.cta} onClick={handleSave} disabled={saving}>
               {saving ? 'Submitting...' : 'Looks right, submit for review →'}
             </button>
-            <button style={s.secBtn} onClick={() => setExtractedFoods(null)}>Re-analyze</button>
+            <button className="sn-btn sn-btn-quiet" style={s.secBtn} onClick={() => setExtractedFoods(null)}>Re-analyze</button>
           </>
         )}
 
@@ -415,6 +418,7 @@ Rules:
         {method === 'manual' && (
           <>
             <input
+              className="sn-input"
               style={s.manualSearch}
               placeholder="Search foods"
               value={search}
@@ -424,7 +428,7 @@ Rules:
               Search for each food on your results, then tap its level. Only what you flag gets saved.
             </div>
             {Object.keys(manualFoods).length > 0 && (
-              <div style={{ background: '#22301F', borderRadius: 12, padding: '11px 14px', display: 'flex', alignItems: 'center', gap: 9, marginBottom: 14 }}>
+              <div style={{ background: '#22301F', borderRadius: 16, boxShadow: 'var(--shadow-3)', padding: '11px 14px', display: 'flex', alignItems: 'center', gap: 9, marginBottom: 14 }}>
                 <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#8BAE8A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#22301F" strokeWidth="4"><polyline points="20 6 9 17 4 12"/></svg></div>
                 <span style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.85)' }}>{Object.keys(manualFoods).length} food{Object.keys(manualFoods).length !== 1 ? 's' : ''} flagged so far</span>
               </div>
@@ -432,22 +436,22 @@ Rules:
             <div style={s.manualSection}>
               {filteredFoods.map((food) => {
                 const lvl = manualFoods[food]
-                const pill = (label, val, onBg, onShadow) => (
+                const pill = (label, val) => (
                   <button
                     onClick={() => toggleManualFood(food, val)}
-                    style={{ flex: 1, textAlign: 'center', padding: '9px 0', borderRadius: 9, border: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 12.5,
-                      fontWeight: lvl === val ? 600 : 400,
-                      background: lvl === val ? onBg : '#F4F2EC',
+                    style={{ flex: 1, textAlign: 'center', padding: '11px 0', borderRadius: 999, border: 'none', cursor: 'pointer', fontSize: 12.5,
+                      fontWeight: 600,
+                      background: lvl === val ? '#3D5C3C' : '#F7F5EE',
                       color: lvl === val ? '#fff' : '#8A8A82',
-                      boxShadow: lvl === val ? onShadow : 'none', transition: 'all 0.12s' }}>{label}</button>
+                      boxShadow: lvl === val ? 'var(--shadow-pill)' : 'none', transition: 'all 0.12s' }}>{label}</button>
                 )
                 return (
-                  <div key={food} style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 13, padding: '14px 15px', marginBottom: 9 }}>
-                    <div style={{ fontSize: 14.5, fontWeight: 500, color: '#1C1C1C', marginBottom: 11 }}>{food}</div>
+                  <div key={food} style={{ background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1)', borderRadius: 16, padding: '14px 15px', marginBottom: 9 }}>
+                    <div style={{ fontSize: 14.5, fontWeight: 500, color: '#20241F', marginBottom: 11 }}>{food}</div>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      {pill('High', 'High', '#D64545', '0 2px 8px rgba(214,69,69,0.3)')}
-                      {pill('Moderate', 'Moderate', '#E8941F', '0 2px 8px rgba(232,148,31,0.3)')}
-                      {pill('Low', 'Low', '#C9A227', '0 2px 8px rgba(201,162,39,0.3)')}
+                      {pill('High', 'High')}
+                      {pill('Moderate', 'Moderate')}
+                      {pill('Low', 'Low')}
                     </div>
                   </div>
                 )

@@ -490,12 +490,12 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
           <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
           <div style={s.weekBadge}>Week {weekNumber}</div>
         </div>
-        <div style={s.content}>
+        <div className="sn-rise" style={s.content}>
 
           {/* Streak celebration card — appears after confetti */}
           {showStreakCard && (
-            <div style={{ background: '#1C1C1C', borderRadius: '14px', padding: '22px 20px', marginBottom: '16px', animation: 'slideUp 0.4s ease', position: 'relative' }}>
-              <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'rgba(255,255,255,0.35)', marginBottom: '8px' }}>Week {weekNumber} complete</div>
+            <div className="sn-hero" style={{ borderRadius: '24px', padding: '22px 20px', marginBottom: '16px', animation: 'slideUp 0.4s ease' }}>
+              <div className="sn-micro sn-micro-dark" style={{ marginBottom: '8px' }}>Week {weekNumber} complete</div>
               <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.75, margin: 0 }}>{streakMessage}</p>
               <button onClick={() => setShowStreakCard(false)} style={{ position: 'absolute', top: '14px', right: '14px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
             </div>
@@ -511,37 +511,57 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
             }).length
             const roughWeek = improvedCount === 0
             return (
-              <div style={{ position: 'relative', background: '#22301F', borderRadius: '20px', padding: '24px 22px', overflow: 'hidden', boxShadow: '0 20px 48px rgba(34,48,31,0.3)', marginBottom: '14px' }}>
-                <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: '#8BAE8A', opacity: 0.09, pointerEvents: 'none' }} />
+              <div className="sn-hero" style={{ padding: '24px 22px', marginBottom: '14px' }}>
                 <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · RECORD</span>
-                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.5)' }}>WEEK {weekNumber} LOGGED</span>
+                  <span className="sn-micro" style={{ color: '#8BAE8A' }}>SENSIFY · RECORD</span>
+                  <span className="sn-micro sn-micro-dark" style={{ fontSize: 8.5 }}>WEEK {weekNumber} LOGGED</span>
                 </div>
                 <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 26, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.2, marginBottom: 4 }}>This week is <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>on the record.</em></div>
                 <div style={{ position: 'relative', fontSize: 13, color: 'rgba(250,248,244,0.6)', marginBottom: 20 }}>Every honest week makes your map sharper.</div>
 
-                {firstScale && secondScale && (
-                  <div style={{ position: 'relative', display: 'flex', gap: 8, marginBottom: (insight || generatingInsight) ? 20 : 4 }}>
-                    {[firstScale, secondScale].map(scale => {
+                {(() => {
+                  // Display-scale payoff: the biggest computed change (vs the
+                  // baseline already on record) leads at headline size; the
+                  // remaining scores follow small. Numbers come straight from
+                  // this check-in's answers, nothing is invented.
+                  const goodIds = ['energy','clarity','afternoon','sleep','digestive','wellbeing']
+                  const scored = symptomScales
+                    .filter(scale => answers[scale.id] != null)
+                    .map(scale => {
                       const cur = answers[scale.id]; const bl = scale.baseline
-                      const good = ['energy','clarity','afternoon','sleep','digestive','wellbeing'].includes(scale.id)
-                      const improved = bl != null && cur != null ? (good ? cur > bl : cur < bl) : null
-                      const color = improved == null ? '#FAF8F4' : improved ? '#8BAE8A' : (good ? '#F2A0A0' : '#F2C078')
-                      return (
-                        <div key={scale.id} style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 12 }}>
-                          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, color }}>{cur ?? '—'}</div>
-                          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '0.5px', color: 'rgba(250,248,244,0.5)', marginTop: 2 }}>{scale.id.toUpperCase()}{bl != null ? ` · WAS ${bl}` : ''}</div>
+                      const good = goodIds.includes(scale.id)
+                      const improved = bl != null ? (good ? cur > bl : cur < bl) : null
+                      return { id: scale.id, cur, bl, improved, delta: bl != null ? Math.abs(cur - bl) : 0 }
+                    })
+                    .sort((a, b) => b.delta - a.delta)
+                  if (scored.length === 0) return null
+                  const lead = scored[0]
+                  const rest = scored.slice(1, 3)
+                  return (
+                    <div style={{ position: 'relative', marginBottom: (insight || generatingInsight) ? 20 : 4 }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                        <div className="sn-num" style={{ fontSize: 48, color: lead.improved === true ? '#8BAE8A' : '#FAF8F4' }}>{lead.cur}</div>
+                        <div className="sn-micro sn-micro-dark">{lead.id.toUpperCase()}{lead.bl != null ? ` · WAS ${lead.bl}` : ''}</div>
+                      </div>
+                      {rest.length > 0 && (
+                        <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+                          {rest.map(scale => (
+                            <div key={scale.id} style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 12 }}>
+                              <div className="sn-num" style={{ fontSize: 22, color: scale.improved === true ? '#8BAE8A' : '#FAF8F4' }}>{scale.cur}</div>
+                              <div className="sn-micro sn-micro-dark" style={{ fontSize: 8, letterSpacing: '0.5px', marginTop: 4 }}>{scale.id.toUpperCase()}{scale.bl != null ? ` · WAS ${scale.bl}` : ''}</div>
+                            </div>
+                          ))}
                         </div>
-                      )
-                    })}
-                  </div>
-                )}
+                      )}
+                    </div>
+                  )
+                })()}
 
                 {generatingInsight ? (
                   <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 13, color: 'rgba(250,248,244,0.6)' }}>Writing your insight…</div>
                 ) : insight ? (
                   <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16 }}>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1px', color: '#8BAE8A', marginBottom: 8 }}>YOUR WEEK {weekNumber} INSIGHT</div>
+                    <div className="sn-micro" style={{ color: '#8BAE8A', marginBottom: 8 }}>YOUR WEEK {weekNumber} INSIGHT</div>
                     <div style={{ fontSize: 13.5, color: '#FAF8F4', lineHeight: 1.7, fontWeight: 300 }}>{insight}</div>
                   </div>
                 ) : insightError ? (
@@ -552,7 +572,8 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
           })()}
 
           <button
-            style={{ ...s.cta, marginTop: '8px', ...(generatingInsight ? { background: '#F4F2EC', border: '1px solid rgba(0,0,0,0.08)', color: 'rgba(28,28,28,0.38)', cursor: 'not-allowed', boxShadow: 'none' } : {}) }}
+            className="sn-btn"
+            style={{ ...s.cta, marginTop: '8px' }}
             disabled={generatingInsight}
             onClick={onComplete}
           >{generatingInsight ? 'Saving your insight…' : 'Back to dashboard →'}</button>
@@ -635,7 +656,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
           <div style={s.questionLabel}>How closely did you follow the elimination plan this week?</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {['Fully', 'Mostly', 'Some slip-ups', 'Not at all'].map(opt => (
-              <button key={opt} style={answers.compliance === opt ? { padding: '13px 16px', borderRadius: '11px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', color: '#3D5C3C', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', fontWeight: 500 } : { padding: '13px 16px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '14px', cursor: 'pointer', color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', textAlign: 'left' }} onClick={() => setAnswer('compliance', opt)}>{opt}</button>
+              <button key={opt} style={answers.compliance === opt ? { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', textAlign: 'left', fontWeight: 600, boxShadow: 'var(--shadow-pill)' } : { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#F7F5EE', fontSize: '14px', cursor: 'pointer', color: '#3B4036', textAlign: 'left' }} onClick={() => setAnswer('compliance', opt)}>{opt}</button>
             ))}
           </div>
         </div>
@@ -644,6 +665,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         <div className="sn-card" style={s.questionBlock}>
           <div style={s.questionLabel}>Anything else worth noting? <span style={{ fontSize: '12px', color: '#7A7A72', fontWeight: 400 }}>(optional)</span></div>
           <textarea
+            className="sn-input"
             style={s.textarea}
             placeholder="Anything unusual, a reaction you noticed, something you want your AI insight to factor in..."
             value={answers.notes || ''}
@@ -654,7 +676,8 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
 
       <div style={s.footer}>
         <button
-          style={allRequiredAnswered() ? s.cta : s.ctaDisabled}
+          className="sn-btn"
+          style={s.cta}
           disabled={!allRequiredAnswered() || submitting}
           onClick={handleSubmit}
         >

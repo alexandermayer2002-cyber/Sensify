@@ -384,20 +384,22 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
   const [trendLens, setTrendLens] = React.useState('average')
   const [phaseLens, setPhaseLens] = React.useState('all')
   const metrics = []
-  if (profile?.baseline_bloating) metrics.push({ id: 'bloating', label: 'Bloating', baseline: profile.baseline_bloating, color: '#C95B5B', lowerIsBetter: true })
+  // One metric draws at a time, so the line is always forest: color carries no
+  // metric identity, and verdict-family hues stay reserved for verdicts.
+  if (profile?.baseline_bloating) metrics.push({ id: 'bloating', label: 'Bloating', baseline: profile.baseline_bloating, color: '#3D5C3C', lowerIsBetter: true })
   if (profile?.baseline_energy) metrics.push({ id: 'energy', label: 'Energy', baseline: profile.baseline_energy, color: '#3D5C3C', lowerIsBetter: false })
-  if (profile?.baseline_clarity) metrics.push({ id: 'clarity', label: 'Clarity', baseline: profile.baseline_clarity, color: '#4A8C6A', lowerIsBetter: false })
-  if (profile?.baseline_sleep) metrics.push({ id: 'sleep', label: 'Sleep', baseline: profile.baseline_sleep, color: '#D4894A', lowerIsBetter: false })
-  if (profile?.baseline_gas) metrics.push({ id: 'gas', label: 'Gas', baseline: profile.baseline_gas, color: '#7A7A72', lowerIsBetter: true })
+  if (profile?.baseline_clarity) metrics.push({ id: 'clarity', label: 'Clarity', baseline: profile.baseline_clarity, color: '#3D5C3C', lowerIsBetter: false })
+  if (profile?.baseline_sleep) metrics.push({ id: 'sleep', label: 'Sleep', baseline: profile.baseline_sleep, color: '#3D5C3C', lowerIsBetter: false })
+  if (profile?.baseline_gas) metrics.push({ id: 'gas', label: 'Gas', baseline: profile.baseline_gas, color: '#3D5C3C', lowerIsBetter: true })
 
   const selected = activeMetric || metrics[0]?.id
   const metric = metrics.find(m => m.id === selected) || metrics[0]
 
   if (!metric || checkins.length === 0) {
     return (
-      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '20px', marginTop: '14px' }}>
-        <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '10px' }}>Symptom trends</div>
-        <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.65 }}>
+      <div className="sn-card" style={{ marginTop: '14px' }}>
+        <div className="sn-micro" style={{ marginBottom: '10px' }}>Symptom trends</div>
+        <div style={{ fontSize: '13px', color: 'var(--gray)', lineHeight: 1.65 }}>
           {metrics.length === 0 ? 'Complete your intake survey to set baselines.' : 'Your symptom trends will appear here after your first weekly check-in.'}
         </div>
       </div>
@@ -447,9 +449,9 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
     : ''
 
   return (
-    <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '18px', marginTop: '14px' }}>
+    <div className="sn-card" style={{ marginTop: '14px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-        <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72' }}>Symptom trends</div>
+        <div className="sn-micro">Symptom trends</div>
         <div style={{ fontSize: '11px', fontWeight: 500, color: improved ? '#4A8C6A' : change === 0 ? '#7A7A72' : '#C95B5B' }}>{changeLabel} vs baseline</div>
       </div>
       {allCheckinCount >= 2 && (<>
@@ -470,13 +472,8 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
           <button
             key={m.id}
             onClick={() => setActiveMetric(m.id)}
-            style={{
-              padding: '4px 10px', borderRadius: '20px', border: 'none', cursor: 'pointer',
-              fontSize: '11px', fontWeight: 500,
-              background: selected === m.id ? m.color : 'rgba(0,0,0,0.04)',
-              color: selected === m.id ? 'white' : '#7A7A72',
-              transition: 'all 0.15s',
-            }}
+            className={selected === m.id ? 'sn-chip sn-chip-on' : 'sn-chip'}
+            style={{ padding: '5px 11px', fontSize: '11px' }}
           >{m.label}</button>
         ))}
       </div>
@@ -495,40 +492,40 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
         {/* Line */}
         <path d={pathD} fill="none" stroke={metric.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         {firstReintroIdx > 0 && (<>
-          <line x1={toX(firstReintroIdx)} y1={padT} x2={toX(firstReintroIdx)} y2={H - padB} stroke="#D4894A" strokeWidth="1" strokeDasharray="3,3" opacity="0.5" />
-          <text x={toX(firstReintroIdx) + 3} y={padT + 7} fontSize="6" fill="#D4894A" fontFamily="DM Mono, monospace" letterSpacing="0.5">REINTRO</text>
+          <line x1={toX(firstReintroIdx)} y1={padT} x2={toX(firstReintroIdx)} y2={H - padB} stroke="#73736A" strokeWidth="1" strokeDasharray="3,3" opacity="0.5" />
+          <text x={toX(firstReintroIdx) + 3} y={padT + 7} fontSize="6" fill="#73736A" fontFamily="DM Mono, monospace" letterSpacing="0.5">REINTRO</text>
         </>)}
 
         {/* Points */}
         {points.map((p, i) => (
           <g key={i}>
-            <circle cx={toX(i)} cy={toY(p.val)} r="4" fill="white" stroke={p.exposure ? '#D4894A' : metric.color} strokeWidth="2">{p.cycleFood && <title>{`${p.cycleFood} ${p.exposure ? 'exposure' : 'washout'} week`}</title>}</circle>
-            {p.exposure && <circle cx={toX(i)} cy={toY(p.val)} r="7" fill="none" stroke="#D4894A" strokeWidth="1" opacity="0.5" />}
+            <circle cx={toX(i)} cy={toY(p.val)} r="4" fill="white" stroke={p.exposure ? '#73736A' : metric.color} strokeWidth="2">{p.cycleFood && <title>{`${p.cycleFood} ${p.exposure ? 'exposure' : 'washout'} week`}</title>}</circle>
+            {p.exposure && <circle cx={toX(i)} cy={toY(p.val)} r="7" fill="none" stroke="#73736A" strokeWidth="1" opacity="0.5" />}
             {i === points.length - 1 && (
-              <text x={toX(i)} y={toY(p.val) - 8} textAnchor="middle" fontSize="10" fill={metric.color} fontFamily="DM Sans, sans-serif" fontWeight="500">{p.val}</text>
+              <text x={toX(i)} y={toY(p.val) - 8} textAnchor="middle" fontSize="10" fill={metric.color} fontFamily="Plus Jakarta Sans, sans-serif" fontWeight="500">{p.val}</text>
             )}
           </g>
         ))}
 
         {/* X axis labels */}
         {points.map((p, i) => (
-          <text key={i} x={toX(i)} y={H - 4} textAnchor="middle" fontSize="8" fill="#7A7A72" fontFamily="DM Sans, sans-serif">{p.label}</text>
+          <text key={i} x={toX(i)} y={H - 4} textAnchor="middle" fontSize="8" fill="#7A7A72" fontFamily="Plus Jakarta Sans, sans-serif">{p.label}</text>
         ))}
       </svg>
 
       {/* Summary row */}
       <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
-        <div style={{ flex: 1, background: '#FAF8F4', borderRadius: '8px', padding: '10px 12px' }}>
-          <div style={{ fontSize: '10px', color: '#7A7A72', marginBottom: '3px' }}>Baseline</div>
-          <div style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: 300 }}>{metric.baseline}</div>
+        <div style={{ flex: 1, background: 'var(--tint-warm)', borderRadius: 'var(--r-md)', padding: '11px 13px' }}>
+          <div className="sn-micro sn-micro-dim" style={{ marginBottom: '4px' }}>Baseline</div>
+          <div className="sn-num" style={{ fontSize: '22px' }}>{metric.baseline}</div>
         </div>
-        <div style={{ flex: 1, background: '#FAF8F4', borderRadius: '8px', padding: '10px 12px' }}>
-          <div style={{ fontSize: '10px', color: '#7A7A72', marginBottom: '3px' }}>Latest</div>
-          <div style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: 300, color: improved ? '#4A8C6A' : change === 0 ? '#1C1C1C' : '#C95B5B' }}>{latest?.val ?? '—'}</div>
+        <div style={{ flex: 1, background: 'var(--tint-warm)', borderRadius: 'var(--r-md)', padding: '11px 13px' }}>
+          <div className="sn-micro sn-micro-dim" style={{ marginBottom: '4px' }}>Latest</div>
+          <div className="sn-num" style={{ fontSize: '22px', color: improved ? '#4A8C6A' : change === 0 ? 'var(--ink)' : '#C95B5B' }}>{latest?.val ?? '—'}</div>
         </div>
-        <div style={{ flex: 1, background: '#FAF8F4', borderRadius: '8px', padding: '10px 12px' }}>
-          <div style={{ fontSize: '10px', color: '#7A7A72', marginBottom: '3px' }}>Check-ins</div>
-          <div style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: 300 }}>{points.length - 1}</div>
+        <div style={{ flex: 1, background: 'var(--tint-warm)', borderRadius: 'var(--r-md)', padding: '11px 13px' }}>
+          <div className="sn-micro sn-micro-dim" style={{ marginBottom: '4px' }}>Check-ins</div>
+          <div className="sn-num" style={{ fontSize: '22px' }}>{points.length - 1}</div>
         </div>
       </div>
     </div>
@@ -1652,17 +1649,17 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 doesn't appear the day before, while elimination "starts tomorrow". */}
             {!cockpitActive && !dailyDone && !needsCommonDecision && !showIntakeCard && !showLabCard && !showPendingLabCard &&
              ((currentDay >= 1 && (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction')) || isTracking) && (
-              <button className="snfy-action" style={{ width: '100%', textAlign: 'left', cursor: 'pointer', border: '1px solid rgba(61,92,60,0.2)', background: '#EDF3ED' }} onClick={() => setScreen('daily-checkin')}>
-                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.7px', color: '#3D5C3C', marginBottom: '6px' }}>Daily check-in</div>
-                <div style={{ fontSize: '15px', fontWeight: 600, color: '#1C1C1C', marginBottom: '3px' }}>How's today going?</div>
+              <button className="snfy-action sn-card-hov sn-rise" style={{ width: '100%', textAlign: 'left', cursor: 'pointer', background: 'linear-gradient(135deg, rgba(139,174,138,0.12), rgba(139,174,138,0.04)), var(--paper)' }} onClick={() => setScreen('daily-checkin')}>
+                <div className="sn-micro" style={{ marginBottom: '6px' }}>Daily check-in</div>
+                <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--ink)', marginBottom: '3px' }}>How's today going?</div>
                 <div style={{ fontSize: '13px', color: '#5A6A55' }}>A few quick taps to log how you slept, your stress, and more. Tap to start →</div>
               </button>
             )}
 
             {/* MILESTONE MESSAGE */}
             {milestoneMessage && (
-              <div className="snfy-action" style={{ background: '#1C1C1C', borderColor: '#1C1C1C', color: 'white', position: 'relative' }}>
-                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.7px', color: 'rgba(255,255,255,0.5)', marginBottom: '10px' }}>
+              <div className="snfy-action sn-rise" style={{ background: 'linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', boxShadow: 'var(--shadow-3)', color: 'white', position: 'relative' }}>
+                <div className="sn-micro sn-micro-dark" style={{ marginBottom: '10px' }}>
                   {milestoneKey === 'day1' ? 'Day 1' : milestoneKey === 'day3' ? 'Day 3' : milestoneKey === 'day14' ? '2 week milestone' : milestoneKey === 'day28' ? 'One month in' : milestoneKey === 'day57' ? 'Reintroduction begins' : milestoneKey === 'day113' ? 'Moderate tier unlocked' : milestoneKey === 'day169' ? 'Final tier unlocked' : 'Milestone'}
                 </div>
                 {(() => {
@@ -1766,7 +1763,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             {/* AWAITING APPROVAL state */}
             {profile?.program_phase === 'pending_review' && !showIntakeCard && !showLabCard && (
-              <div className="snfy-phase" style={{ background: '#3D5C3C' }}>
+              <div className="snfy-phase sn-rise">
                 <div className="snfy-phase-eyebrow">Your program</div>
                 <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, color: 'white', marginBottom: '8px' }}>Awaiting <em style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>approval.</em></div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>Complete setup to begin</div>
@@ -1885,12 +1882,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             {/* I TOOK THE TEST — persistent pleasant card until clicked (finding #14) */}
             {!labResult && !normalizeMilestones(profile?.shown_milestones).test_taken && (showIntakeCard || showLabCard || showPendingLabCard) && (
-              <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: 18, padding: '18px 20px', marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+              <div className="sn-card sn-rise-2" style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.12), rgba(139,174,138,0.04)), var(--paper)', marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: 6 }}>Your lab kit</div>
-                  <div style={{ fontSize: 13.5, color: '#3A3A35', lineHeight: 1.55 }}>Done with your test? Tell us so we know your results are on the way.</div>
+                  <div className="sn-micro" style={{ marginBottom: 6 }}>Your lab kit</div>
+                  <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.55 }}>Done with your test? Tell us so we know your results are on the way.</div>
                 </div>
-                <button onClick={async () => { const sm = serializeMilestones({ ...normalizeMilestones(profile?.shown_milestones), test_taken: true }); await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '11px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>I took my test</button>
+                <button onClick={async () => { const sm = serializeMilestones({ ...normalizeMilestones(profile?.shown_milestones), test_taken: true }); await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-md)', padding: '11px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)', flexShrink: 0 }}>I took my test</button>
               </div>
             )}
 
