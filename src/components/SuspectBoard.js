@@ -18,13 +18,13 @@ import { getTestingOrder } from '../utils/protocolEngine'
 const ELIMINATION_DAYS = 56
 const CYCLE_DAYS = 14
 
-// Stamp colors (full strength text on a ~12% wash of the same color).
+// Stamps ride the system's .sn-stamp classes: verdict colors appear only here.
 const STAMP = {
-  Suspect: { label: 'SUSPECT', color: '#5A5A52' },
-  Trial:   { label: 'ON TRIAL', color: '#3D5C3C' },
-  Safe:    { label: 'SAFE', color: '#2C9D8A' },
-  Limit:   { label: 'LIMIT', color: '#E8941F' },
-  Avoid:   { label: 'AVOID', color: '#D64545' },
+  Suspect: { label: 'SUSPECT', cls: 'sn-stamp-quiet' },
+  Trial:   { label: 'ON TRIAL', cls: 'sn-stamp-live' },
+  Safe:    { label: 'SAFE', cls: 'sn-stamp-safe' },
+  Limit:   { label: 'LIMIT', cls: 'sn-stamp-limit' },
+  Avoid:   { label: 'AVOID', cls: 'sn-stamp-avoid' },
 }
 
 // Lab level colors for the origin micro-line (dark variants for small-text legibility).
@@ -142,10 +142,11 @@ export default function SuspectBoard({ session, profile, labResult, onOpenReintr
     const hasOpen = typeof onOpenReintro === 'function'
 
     return (
-      <div style={s.card}>
+      <div className="sn-card" style={s.card}>
+        <style>{`.snsb-tap { transition: background 160ms ease; } @media (hover: hover) { .snsb-tap:hover { background: var(--forest-050); } }`}</style>
         <div style={s.header}>
-          <span style={s.micro}>THE SUSPECT BOARD</span>
-          <span style={{ ...s.micro, color: '#9A927E' }}>{ruledCount} OF {boardFoods.length} RULED</span>
+          <span className="sn-micro">THE SUSPECT BOARD</span>
+          <span className="sn-micro sn-micro-dim">{ruledCount} OF {boardFoods.length} RULED</span>
         </div>
 
         <div style={s.intro}>
@@ -172,6 +173,7 @@ export default function SuspectBoard({ session, profile, labResult, onOpenReintr
             return (
               <div
                 key={r.name}
+                className={tappable ? 'snsb-tap' : undefined}
                 style={rowStyle}
                 onClick={tappable ? () => onOpenReintro(r.name) : undefined}
                 role={tappable ? 'button' : undefined}
@@ -191,11 +193,7 @@ export default function SuspectBoard({ session, profile, labResult, onOpenReintr
                   </div>
                 </div>
                 <span style={s.stampCol}>
-                  <span style={{
-                    ...s.stamp,
-                    color: r.stamp.color,
-                    background: `${r.stamp.color}1F`,
-                  }}>{r.stamp.label}</span>
+                  <span className={`sn-stamp ${r.stamp.cls}`} style={s.stamp}>{r.stamp.label}</span>
                 </span>
                 {hasOpen && (
                   <span style={{ ...s.chevron, visibility: tappable ? 'visible' : 'hidden' }}>›</span>
@@ -225,11 +223,7 @@ export default function SuspectBoard({ session, profile, labResult, onOpenReintr
 
 const s = {
   card: {
-    background: '#FFFFFF',
-    border: '1px solid rgba(0,0,0,0.07)',
-    borderRadius: 18,
-    padding: '18px 18px 14px',
-    fontFamily: 'DM Sans, sans-serif',
+    padding: '22px 22px 16px',
   },
   header: {
     display: 'flex',
@@ -237,21 +231,14 @@ const s = {
     alignItems: 'baseline',
     marginBottom: 8,
   },
-  micro: {
-    fontFamily: 'DM Mono, monospace',
-    fontSize: 9,
-    letterSpacing: '1.2px',
-    textTransform: 'uppercase',
-    color: '#3D5C3C',
-  },
   intro: { fontSize: 12, color: '#8A8A82', lineHeight: 1.55 },
   howBtn: {
-    background: 'none', border: 'none', padding: 0, fontFamily: 'DM Sans, sans-serif',
+    background: 'none', border: 'none', padding: 0,
     fontSize: 12, fontWeight: 600, color: '#3D5C3C', cursor: 'pointer',
     textDecoration: 'underline', textUnderlineOffset: 2,
   },
   howPanel: {
-    background: '#FAF8F4', borderRadius: 10, padding: '10px 12px', marginTop: 8,
+    background: 'var(--tint-warm)', borderRadius: 10, padding: '10px 12px', marginTop: 8,
     fontSize: 11.5, color: '#7A7A72', lineHeight: 1.6,
   },
   row: {
@@ -259,14 +246,12 @@ const s = {
     alignItems: 'center',
     gap: 10,
     minHeight: 52,
-    padding: '8px 8px',
+    padding: '8px 10px',
     boxSizing: 'border-box',
-    borderTop: '1px solid rgba(0,0,0,0.05)',
+    borderRadius: 10,
   },
   rowNext: {
-    background: '#F4F7F2',
-    border: '1px solid rgba(61,92,60,0.22)',
-    borderRadius: 12,
+    background: 'linear-gradient(135deg, rgba(139, 174, 138, 0.15), rgba(139, 174, 138, 0.05))',
     margin: '4px 0',
   },
   rank: {
@@ -292,9 +277,9 @@ const s = {
     fontSize: 8,
     letterSpacing: '0.8px',
     color: '#3D5C3C',
-    border: '1px solid rgba(61,92,60,0.35)',
-    borderRadius: 4,
-    padding: '1px 5px',
+    background: 'var(--forest-100)',
+    borderRadius: 999,
+    padding: '2px 7px',
     flexShrink: 0,
   },
   sub: {
@@ -310,12 +295,6 @@ const s = {
     justifyContent: 'flex-end',
   },
   stamp: {
-    fontFamily: 'DM Mono, monospace',
-    fontSize: 8,
-    letterSpacing: '0.8px',
-    textTransform: 'uppercase',
-    padding: '3px 7px',
-    borderRadius: 5,
     whiteSpace: 'nowrap',
   },
   chevron: {
@@ -332,7 +311,6 @@ const s = {
     padding: '8px 0 2px',
     width: '100%',
     textAlign: 'center',
-    fontFamily: 'DM Sans, sans-serif',
     fontSize: 12,
     fontWeight: 600,
     color: '#3D5C3C',

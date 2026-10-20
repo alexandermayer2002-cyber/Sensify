@@ -14,19 +14,19 @@ import { normalizeMilestones, serializeMilestones } from '../utils/aiInsights'
 //      through the normal authenticated client.
 
 const s = {
-  wrap: { minHeight: '100vh', background: '#FAF8F4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', boxSizing: 'border-box' },
-  card: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '420px', boxSizing: 'border-box' },
-  micro: { fontFamily: 'DM Mono, monospace', fontSize: '9.5px', fontWeight: 500, letterSpacing: '2px', textTransform: 'uppercase', color: '#7A7A72', marginBottom: '14px' },
-  headline: { fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, lineHeight: 1.2, marginBottom: '22px' },
-  sectionLabel: { fontFamily: 'DM Mono, monospace', fontSize: '9.5px', fontWeight: 500, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#7A7A72', marginBottom: '10px' },
+  wrap: { minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', color: 'var(--ink)', boxSizing: 'border-box' },
+  card: { background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '28px', width: '100%', maxWidth: '420px', boxSizing: 'border-box' },
+  micro: { marginBottom: '14px' },
+  headline: { fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 300, lineHeight: 1.2, marginBottom: '22px' },
+  sectionLabel: { marginBottom: '10px' },
   chips: { display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '22px' },
-  chip: { background: '#EFF3EE', color: '#3D5C3C', borderRadius: '999px', padding: '7px 14px', fontSize: '13.5px', fontWeight: 500 },
-  empty: { fontSize: '13.5px', color: '#7A7A72', marginBottom: '22px' },
-  trial: { border: '1.5px solid #D4894A', background: '#FDF2EA', borderRadius: '12px', padding: '16px', marginBottom: '22px' },
-  trialLabel: { fontFamily: 'DM Mono, monospace', fontSize: '9.5px', fontWeight: 500, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#9A5F1A', marginBottom: '8px' },
-  trialLine: { fontSize: '14px', lineHeight: 1.5, color: '#1C1C1C' },
-  footer: { borderTop: '1px solid rgba(0,0,0,0.07)', paddingTop: '14px', fontSize: '12px', lineHeight: 1.5, color: '#7A7A72' },
-  centerText: { fontSize: '14px', color: '#7A7A72', textAlign: 'center' },
+  chip: { background: 'var(--forest-100)', color: 'var(--forest-500)', borderRadius: 'var(--r-pill)', padding: '7px 14px', fontSize: '13.5px', fontWeight: 500 },
+  empty: { fontSize: '13.5px', color: 'var(--gray)', marginBottom: '22px' },
+  trial: { background: 'linear-gradient(135deg, rgba(139, 174, 138, 0.15), rgba(139, 174, 138, 0.05))', borderRadius: 'var(--r-md)', padding: '16px', marginBottom: '22px' },
+  trialLabel: { marginBottom: '8px' },
+  trialLine: { fontSize: '14px', lineHeight: 1.5, color: 'var(--ink)' },
+  footer: { borderTop: '1px solid rgba(0,0,0,0.07)', paddingTop: '14px', fontSize: '12px', lineHeight: 1.5, color: 'var(--gray)' },
+  centerText: { fontSize: '14px', color: 'var(--gray)', textAlign: 'center' },
 }
 
 export default function HouseholdCard({ token }) {
@@ -49,7 +49,7 @@ export default function HouseholdCard({ token }) {
   if (state === 'loading') return (
     <div style={s.wrap}>
       <div style={s.card}>
-        <div style={s.micro}>Sensify · Household card</div>
+        <div className="sn-micro sn-micro-dim" style={s.micro}>Sensify · Household card</div>
         <div style={s.centerText}>Loading the card...</div>
       </div>
     </div>
@@ -58,7 +58,7 @@ export default function HouseholdCard({ token }) {
   if (state === 'notfound' || state === 'error') return (
     <div style={s.wrap}>
       <div style={s.card}>
-        <div style={s.micro}>Sensify · Household card</div>
+        <div className="sn-micro sn-micro-dim" style={s.micro}>Sensify · Household card</div>
         <div style={{ ...s.headline, fontSize: '24px' }}>This card is not available.</div>
         <div style={{ ...s.centerText, textAlign: 'left' }}>
           {state === 'notfound'
@@ -76,10 +76,10 @@ export default function HouseholdCard({ token }) {
   return (
     <div style={s.wrap}>
       <div style={s.card}>
-        <div style={s.micro}>Sensify · Household card</div>
+        <div className="sn-micro sn-micro-dim" style={s.micro}>Sensify · Household card</div>
         <div style={s.headline}>Cooking for {name}?</div>
 
-        <div style={s.sectionLabel}>Currently off the plate</div>
+        <div className="sn-micro" style={s.sectionLabel}>Currently off the plate</div>
         {avoiding.length > 0 ? (
           <div style={s.chips}>
             {avoiding.map(food => <span key={food} style={s.chip}>{food}</span>)}
@@ -90,7 +90,7 @@ export default function HouseholdCard({ token }) {
 
         {trial && (
           <div style={s.trial}>
-            <div style={s.trialLabel}>This week's trial: {trial.food}</div>
+            <div className="sn-micro" style={s.trialLabel}>This week's trial: {trial.food}</div>
             <div style={s.trialLine}>
               {trial.phase === 'washout'
                 ? `${trial.food} is off again while the record settles. Everything on the list stays off.`
@@ -115,19 +115,19 @@ export default function HouseholdCard({ token }) {
 // Compact utility row before minting (one line + button); the link tools only
 // appear after a link exists. Same logic as before, quieter ceremony.
 const sc = {
-  card: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '18px', padding: '14px 16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C' },
+  card: { padding: '16px 18px' },
   row: { display: 'flex', alignItems: 'center', gap: '14px' },
-  micro: { fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#7A7A72', marginBottom: '4px' },
-  line: { fontSize: '12px', lineHeight: 1.5, color: '#8A8A82' },
-  btn: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 15px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', whiteSpace: 'nowrap', flexShrink: 0 },
+  micro: { marginBottom: '4px' },
+  line: { fontSize: '12px', lineHeight: 1.5, color: 'var(--gray)' },
+  btn: { background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-md)', padding: '11px 16px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)', whiteSpace: 'nowrap', flexShrink: 0 },
   linkRow: { display: 'flex', gap: '8px', marginTop: '12px' },
-  linkInput: { flex: 1, minWidth: 0, border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '10px 12px', fontSize: '12.5px', background: '#FAF8F4', color: '#1C1C1C', outline: 'none', fontFamily: 'DM Mono, monospace', boxSizing: 'border-box' },
-  copyBtn: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 14px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'DM Sans, sans-serif' },
+  linkInput: { flex: 1, minWidth: 0, border: 'none', borderRadius: 'var(--r-sm)', padding: '10px 12px', fontSize: '12.5px', background: 'var(--tint-warm)', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--font-mono)', boxSizing: 'border-box' },
+  copyBtn: { background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-sm)', padding: '10px 14px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' },
   statusRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '10px' },
-  liveNote: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#7A7A72' },
-  liveDot: { width: '6px', height: '6px', borderRadius: '50%', background: '#8BAE8A', flexShrink: 0 },
-  off: { background: 'none', border: 'none', padding: 0, fontSize: '12px', color: '#C95B5B', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 },
-  err: { background: '#FAEAEA', color: '#C95B5B', borderRadius: '8px', padding: '9px 12px', fontSize: '12.5px', marginTop: '10px' },
+  liveNote: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--gray)' },
+  liveDot: { width: '6px', height: '6px', borderRadius: '50%', background: 'var(--forest-300)', flexShrink: 0 },
+  off: { background: 'none', border: 'none', padding: 0, fontSize: '12px', color: 'var(--avoid-700)', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 },
+  err: { background: 'var(--avoid-100)', color: 'var(--avoid-700)', borderRadius: 'var(--r-sm)', padding: '9px 12px', fontSize: '12.5px', marginTop: '10px' },
 }
 
 const mintToken = () =>
@@ -206,10 +206,10 @@ export function HouseholdShareCard({ session, profile }) {
   }
 
   return (
-    <div style={sc.card}>
+    <div className="sn-card" style={sc.card}>
       <div style={sc.row}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={sc.micro}>Household card</div>
+          <div className="sn-micro sn-micro-dim" style={sc.micro}>Household card</div>
           <div style={sc.line}>
             {!token
               ? 'A link for whoever cooks for you: what is off the plate right now, nothing else.'

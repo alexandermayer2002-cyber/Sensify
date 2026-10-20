@@ -136,10 +136,10 @@ export default function BaselineSharpness({ session, profile }) {
   const status = sharpFrac < 0.35 ? 'Still rough' : sharpFrac < 0.75 ? 'Settling' : 'Sharp'
 
   return (
-    <div style={b.card}>
+    <div className="sn-card">
       <div style={b.header}>
-        <span style={b.micro}>Baseline Sharpness</span>
-        <span style={{ ...b.micro, color: '#9A927E' }}>
+        <span className="sn-micro">Baseline Sharpness</span>
+        <span className="sn-micro sn-micro-dim">
           {data.loggedDays} {data.loggedDays === 1 ? 'day' : 'days'} logged
         </span>
       </div>
@@ -165,7 +165,8 @@ export default function BaselineSharpness({ session, profile }) {
             <button
               key={sc.id}
               type="button"
-              style={i === Math.min(sel, data.scales.length - 1) ? b.tabOn : b.tab}
+              className={i === Math.min(sel, data.scales.length - 1) ? 'sn-chip sn-chip-on' : 'sn-chip'}
+              style={b.tab}
               onClick={() => setSel(i)}
             >
               {sc.label}
@@ -182,13 +183,13 @@ export default function BaselineSharpness({ session, profile }) {
       <div style={b.statName}>your normal {cur.label}, and how much that reading still wobbles</div>
 
       <div style={b.bandWrap}>
-        <div style={b.track}>
-          <div style={{ ...b.fill, width: `${fillPct}%` }} />
-          <div style={{ ...b.marker, left: `calc(${fillPct}% - 7px)` }} />
+        <div className="sn-track">
+          <div className="sn-fill" style={{ width: `${fillPct}%` }} />
+          <div className="sn-dot" style={{ left: `${fillPct}%` }} />
         </div>
         <div style={b.endpoints}>
-          <span style={b.endLabel}>Day 1 · ±{fmt1(U_START)}</span>
-          <span style={{ ...b.endLabel, color: '#3D5C3C' }}>Verdict-ready · ±{fmt1(U_FLOOR)}</span>
+          <span className="sn-micro sn-micro-dim">Day 1 · ±{fmt1(U_START)}</span>
+          <span className="sn-micro">Verdict-ready · ±{fmt1(U_FLOOR)}</span>
         </div>
       </div>
 
@@ -200,40 +201,23 @@ export default function BaselineSharpness({ session, profile }) {
 }
 
 const b = {
-  card: {
-    background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18,
-    padding: '18px 20px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C',
-  },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 },
-  micro: {
-    fontFamily: 'DM Mono, monospace', fontSize: 10, letterSpacing: '0.12em',
-    textTransform: 'uppercase', color: '#3D5C3C',
-  },
   headline: {
-    fontFamily: 'Fraunces, serif', fontSize: 18, fontWeight: 300, color: '#1C1C1C',
+    fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 300, color: '#1C1C1C',
     lineHeight: 1.25, marginBottom: 6,
   },
   intro: { fontSize: 12, color: '#8A8A82', lineHeight: 1.55 },
   howBtn: {
-    background: 'none', border: 'none', padding: 0, fontFamily: 'DM Sans, sans-serif',
+    background: 'none', border: 'none', padding: 0,
     fontSize: 12, fontWeight: 600, color: '#3D5C3C', cursor: 'pointer',
     textDecoration: 'underline', textUnderlineOffset: 2,
   },
   howPanel: {
-    background: '#FAF8F4', borderRadius: 10, padding: '10px 12px', marginTop: 8,
+    background: 'var(--tint-warm)', borderRadius: 10, padding: '10px 12px', marginTop: 8,
     fontSize: 11.5, color: '#7A7A72', lineHeight: 1.6,
   },
   tabs: { display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 14 },
-  tab: {
-    background: 'none', border: '1px solid rgba(0,0,0,0.12)', borderRadius: 999,
-    padding: '5px 12px', fontSize: 11.5, fontWeight: 500, color: '#7A7A72',
-    cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textTransform: 'capitalize',
-  },
-  tabOn: {
-    background: '#3D5C3C', border: '1px solid #3D5C3C', borderRadius: 999,
-    padding: '5px 12px', fontSize: 11.5, fontWeight: 500, color: '#FFFFFF',
-    cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textTransform: 'capitalize',
-  },
+  tab: { padding: '5px 12px', fontSize: 11.5, textTransform: 'capitalize' },
   statRow: { display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 16 },
   statVal: {
     fontFamily: 'Fraunces, serif', fontSize: 36, fontWeight: 300, color: '#1C1C1C',
@@ -248,24 +232,7 @@ const b = {
   },
   statName: { fontSize: 11.5, color: '#8A8A82', marginTop: 5, lineHeight: 1.4 },
   bandWrap: { marginTop: 14 },
-  track: {
-    position: 'relative', height: 8, borderRadius: 4, background: '#F0EDE6',
-  },
-  fill: {
-    position: 'absolute', top: 0, bottom: 0, left: 0,
-    background: 'linear-gradient(90deg, #C9D8C8 0%, #8BAE8A 100%)',
-    borderRadius: 4,
-  },
-  marker: {
-    position: 'absolute', top: -3, width: 14, height: 14, borderRadius: '50%',
-    background: '#3D5C3C', border: '2.5px solid #FFFFFF', boxSizing: 'border-box',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.18)',
-  },
-  endpoints: { display: 'flex', justifyContent: 'space-between', marginTop: 7 },
-  endLabel: {
-    fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.1em',
-    textTransform: 'uppercase', color: '#A8A69E',
-  },
+  endpoints: { display: 'flex', justifyContent: 'space-between', marginTop: 9 },
   footNote: {
     marginTop: 14, paddingTop: 10, borderTop: '1px solid rgba(0,0,0,0.05)',
     fontSize: 11, color: '#7A7A72', lineHeight: 1.5,

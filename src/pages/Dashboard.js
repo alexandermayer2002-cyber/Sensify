@@ -1543,13 +1543,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   {betweenCycles && <div className="sn-micro" style={{ color: '#8BAE8A', marginTop: 8 }}>REINTRODUCTION · DAY {currentDay - 56}{(currentDay - 56) <= (labResult?.foods?.length || 8) * 14 ? ` OF ${(labResult?.foods?.length || 8) * 14}` : ''} · {reintroRows.some(r => r.verdict) ? 'CYCLE COMPLETE' : 'TESTING OPEN'}</div>}
                 </div>
                 {verdictReadyFood ? (
-                  <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#C9A227', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', boxShadow: '0 0 22px rgba(201,162,39,0.35)' }}>
+                  <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#C9A227', border: 'none', borderRadius: 'var(--r-md)', padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', boxShadow: '0 0 22px rgba(201,162,39,0.35)' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Your {verdictReadyFood} verdict is ready</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                   </button>
                 ) : cycleStaleLite ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
-                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 'var(--r-md)', padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                       <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Restart the {activeCycleLite.food.toLowerCase()} cycle</span>
                       <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                     </button>
@@ -1557,32 +1557,32 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   </div>
                 ) : cycleStaleFood ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
-                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#D4894A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', boxShadow: '0 0 20px rgba(212,137,74,0.3)' }}>
+                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#D4894A', border: 'none', borderRadius: 'var(--r-md)', padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', boxShadow: '0 0 20px rgba(212,137,74,0.3)' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Restart your {cycleStaleFood.toLowerCase()} cycle</span>
                       <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                     </button>
                     {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11.5, color: 'rgba(250,248,244,0.55)', textDecoration: 'underline', cursor: 'pointer' }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
                   </div>
                 ) : profile?.program_phase === 'complete' ? (
-                  <button onClick={() => goTab('Verdicts')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <button onClick={() => goTab('Verdicts')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 'var(--r-md)', padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Your Food Map is complete</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                   </button>
                 ) : betweenCycles ? (
                   <div>
-                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 'var(--r-md)', padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Pick your next food</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                     </button>
                     {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: '8px 2px 0', fontSize: 12, color: 'rgba(250,248,244,0.5)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
                   </div>
                 ) : !dailyDone ? (
-                  <button onClick={() => setScreen('daily-checkin')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <button onClick={() => setScreen('daily-checkin')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 'var(--r-md)', padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>{new Date().getHours() >= 17 ? "Tonight's check-in" : "Today's check-in"}</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                   </button>
                 ) : (
-                  <div style={{ background: 'rgba(139,174,138,0.13)', border: '1px solid rgba(139,174,138,0.28)', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ background: 'rgba(139,174,138,0.16)', borderRadius: 'var(--r-md)', padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 13, color: '#8BAE8A', fontWeight: 600 }}>{'\u2713'} Today logged</span>
                   </div>
                 )}
@@ -1606,7 +1606,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           {/* LEFT COLUMN */}
           <div>
             {!cockpitActive && (
-            <div className="snfy-greeting">
+            <div className="snfy-greeting sn-rise">
               <h1>{getGreeting()},<br /><em>{name}.</em></h1>
               <p>
                 {showIntakeCard ? "Welcome to Sensify. Let's get you set up."
@@ -1676,7 +1676,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     })
                     return chunks.map((c, i) => (
                       <div key={c.label} style={{ marginBottom: i < 2 ? 14 : 0 }}>
-                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: i === 2 ? '#8BAE8A' : 'rgba(255,255,255,0.45)', marginBottom: 4 }}>{c.label}</div>
+                        <div className="sn-micro" style={{ color: i === 2 ? '#8BAE8A' : 'rgba(250,248,244,0.55)', marginBottom: 4 }}>{c.label}</div>
                         <p style={{ color: i === 2 ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 0, fontSize: i === 2 ? '15px' : '13.5px', fontWeight: i === 2 ? 500 : 400 }}>{c.body}</p>
                       </div>
                     ))
@@ -1689,7 +1689,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             {/* DARK PROTOCOL CARD */}
             {!cockpitActive && (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && (
-              <div className="snfy-phase">
+              <div className="snfy-phase sn-rise-2">
                 <div className="snfy-phase-orb" />
                 <div className="snfy-phase-orb2" />
                 <div className="snfy-phase-eyebrow">{calculatedPhase === 'elimination' ? 'Elimination phase' : 'Reintroduction phase'}</div>
@@ -1848,7 +1848,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {awayGap && (
               <div style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.5)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18 }}>
                 <div style={{ background: '#FAF8F4', borderRadius: 18, padding: '26px 24px', maxWidth: 430, width: '100%', boxShadow: '0 30px 80px rgba(0,0,0,0.3)' }}>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.4px', color: '#3D5C3C', marginBottom: 8 }}>Welcome back · {awayGap.days} days away</div>
+                  <div className="sn-micro" style={{ marginBottom: 8 }}>Welcome back · {awayGap.days} days away</div>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: '#1C1C1C', marginBottom: 8, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{awayGap.hard ? 'Let\u2019s restart your clock.' : 'Were you on your plan?'}</div>
                   <div style={{ fontSize: 13.5, color: '#5A5A52', lineHeight: 1.65, marginBottom: 18 }}>
                     {awayGap.hard
@@ -1873,7 +1873,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                         await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigger_type: 'away_gap_restart', hardest_parts: [], status: 'responded', admin_note: `${awayGap.days} silent days → user chose restart (plan did not hold)` })
                         await supabase.from('profiles').update({ protocol_start_date: t }).eq('id', session.user.id)
                         window.location.reload()
-                      }} style={{ width: '100%', background: '#FAF8F4', color: '#1C1C1C', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 12, padding: '13px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>Not really, restart my clock</button>
+                      }} style={{ width: '100%', background: 'var(--tint-warm)', color: 'var(--ink-soft)', border: 'none', borderRadius: 'var(--r-md)', padding: '13px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>Not really, restart my clock</button>
                     </div>
                   )}
                 </div>
@@ -1894,14 +1894,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {/* THE PROTOCOL — designed explainer for the common track (week 1 + eve). Static copy, deliberately not the AI voice.
                 Gated on an ACTIVE choice: during awaiting_decision there is no protocol to explain (finding 10). */}
             {profile?.protocol_track === 'common' && profile?.track_decision === 'active' && currentDay <= 7 && (
-              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '20px', marginTop: 14 }}>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#7A7A72', marginBottom: 10 }}>How your protocol works</div>
+              <div className="sn-card sn-rise-2" style={{ marginTop: 14 }}>
+                <div className="sn-micro sn-micro-dim" style={{ marginBottom: 10 }}>How your protocol works</div>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
                   {[`${labResult?.foods?.length || profile?.track_foods?.length || 8} FOODS REMOVED`, '56 DAYS CLEAN', 'THEN TESTED BACK, ONE AT A TIME'].map(t => (
-                    <div key={t} style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: 9, padding: '5px 10px' }}>{t}</div>
+                    <div key={t} className="sn-micro" style={{ background: 'var(--forest-100)', borderRadius: 'var(--r-pill)', padding: '5px 11px' }}>{t}</div>
                   ))}
                 </div>
-                <div style={{ fontSize: 13.5, color: '#3A3A35', lineHeight: 1.65 }}>
+                <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.65 }}>
                   For the next eight weeks you keep {(labResult?.foods?.length || 8) === 2 ? 'both' : `all ${labResult?.foods?.length || 8}`} foods off your plate while your daily and weekly check-ins track how your body responds. Then each food comes back one at a time, three exposure days and a washout, until every one has a verdict earned from your own data. Nothing gets labeled without being tested.
                 </div>
               </div>
@@ -1909,7 +1909,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             {/* THE SUSPECT BOARD — what happens next, so it outranks the meters */}
             {labResult && (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
-              <div style={{ marginTop: 14 }}><SuspectBoard session={session} profile={profile} labResult={labResult} onOpenReintro={() => goTab('Reintro')} /></div>
+              <div className="sn-rise-2" style={{ marginTop: 14 }}><SuspectBoard session={session} profile={profile} labResult={labResult} onOpenReintro={() => goTab('Reintro')} /></div>
             )}
 
             {/* AI INSIGHT — the voice card */}
@@ -1960,7 +1960,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             {/* BASELINE SHARPNESS — the invisible work of elimination, made visible */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
-              <div style={{ marginTop: 14 }}><BaselineSharpness session={session} profile={profile} /></div>
+              <div className="sn-rise-4" style={{ marginTop: 14 }}><BaselineSharpness session={session} profile={profile} /></div>
             )}
 
             {/* COMPLIANCE DOTS */}
@@ -2070,7 +2070,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               const goto = (t, s) => { setGuideOpen(false); window.scrollTo(0, 0); setTab(t); setScreen(s) }
               return (
                 <>
-                  <button className="snfy-guide-slot" onClick={() => setGuideOpen(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: 18, padding: '14px 15px', cursor: 'pointer', textAlign: 'left', boxShadow: '0 2px 10px rgba(61,92,60,0.1)', marginBottom: 14 }}>
+                  <button className="snfy-guide-slot sn-card sn-card-hov sn-rise" onClick={() => setGuideOpen(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, border: 'none', padding: '14px 15px', cursor: 'pointer', textAlign: 'left', marginBottom: 14 }}>
                     <div style={{ width: 34, height: 34, borderRadius: 10, background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
                     </div>
@@ -2086,7 +2086,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                       <div onClick={e => e.stopPropagation()} style={{ background: '#FAF8F4', borderRadius: 18, padding: '20px 18px', maxWidth: 420, width: '100%', maxHeight: '86vh', overflowY: 'auto', boxShadow: '0 30px 80px rgba(0,0,0,0.25)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                           <div>
-                            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.4px', color: '#3D5C3C', marginBottom: 6 }}>Week one · Day {currentDay} of 7</div>
+                            <div className="sn-micro" style={{ marginBottom: 6 }}>Week one · Day {currentDay} of 7</div>
                             <div style={{ fontFamily: 'Fraunces, serif', fontSize: 23, fontWeight: 400, color: '#1C1C1C', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Your first week.</div>
                           </div>
                           <button onClick={() => setGuideOpen(false)} style={{ width: 27, height: 27, borderRadius: '50%', background: '#EFEDE6', border: 'none', color: '#7A7A72', fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>✕</button>
@@ -2123,7 +2123,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                         </div>
 
                         <div style={{ borderTop: '1px solid rgba(0,0,0,0.07)', paddingTop: 15 }}>
-                          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.2px', color: '#7A7A72', marginBottom: 4 }}>Know your tabs</div>
+                          <div className="sn-micro sn-micro-dim" style={{ marginBottom: 4 }}>Know your tabs</div>
                           <div style={{ fontSize: 11.5, color: '#A8A69E', marginBottom: 12 }}>Tap any of them to look around. Nothing breaks.</div>
                           {[
                             ['Ask Sensify', 'Can I eat this? What can I eat at an Italian restaurant? Ask anything, starting now.', 'ask-sensify', 'ask-sensify'],
@@ -2131,7 +2131,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             ['Reintro', `From day 57, you eat ${profile?.protocol_track === 'common' ? 'each food' : 'your flagged foods'} again one at a time to find out which ones actually cause problems.`, 'reintro', 'reintro-tab'],
                             ['Verdicts', `Where it all ends up. ${profile?.protocol_track === 'common' ? 'The foods you are testing' : 'Your flagged foods'} today, turning into answers you've earned along the way.`, 'verdicts', 'food-map'],
                           ].map(([nm, desc, t, scr], i, arr) => (
-                            <button key={nm} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '11px 13px', borderRadius: 12, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', marginBottom: i < arr.length - 1 ? 7 : 0, width: '100%', cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.15s, box-shadow 0.15s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(61,92,60,0.3)'; e.currentTarget.style.boxShadow = '0 3px 12px rgba(34,48,31,0.06)' }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.07)'; e.currentTarget.style.boxShadow = 'none' }}>
+                            <button key={nm} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '11px 13px', borderRadius: 'var(--r-md)', background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1)', marginBottom: i < arr.length - 1 ? 7 : 0, width: '100%', cursor: 'pointer', textAlign: 'left', transition: 'box-shadow 0.15s, transform 0.15s' }} onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 16px rgba(34,48,31,0.1)'; e.currentTarget.style.transform = 'translateY(-1px)' }} onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow-1)'; e.currentTarget.style.transform = 'none' }}>
                               <span style={{ background: '#EDF3ED', borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 600, color: '#3D5C3C', flexShrink: 0 }}>{nm}</span>
                               <span style={{ fontSize: 11.5, color: '#7A7A72', lineHeight: 1.5, flex: 1 }}>{desc}</span>
                               <span style={{ color: '#3D5C3C', fontSize: 14, fontWeight: 600 }}>›</span>
@@ -2224,7 +2224,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
             {/* HOUSEHOLD CARD — utility row, column footer per the design direction */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
-              <div style={{ marginTop: 14 }}><HouseholdShareCard session={session} profile={profile} /></div>
+              <div className="sn-rise-3" style={{ marginTop: 14 }}><HouseholdShareCard session={session} profile={profile} /></div>
             )}
 
             {/* THE LEAF CONSTELLATION — 28 nights, one star per logged day, randomized per user; the leaf reveals at 28 */}
@@ -2253,13 +2253,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               const present = new Set(order.slice(0, starCount))
               const P = A.map(([x, y, r], i) => [x + jit[i][0], y + jit[i][1], r])
               return (
-                <div className="snfy-garden" style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: 18, marginTop: 14 }}>
+                <div className="snfy-garden sn-card sn-rise-4" style={{ marginTop: 14 }}>
                   <style>{`
                     @keyframes lcTw { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }
                     @keyframes lcGp { 0%,100% { opacity: 1 } 50% { opacity: 0.7 } }
                   `}</style>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 19, fontWeight: 400, color: '#1C1C1C', lineHeight: 1.25, marginBottom: 7, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>
-                    {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#2C9D8A' }}>took shape.</span></> : starCount < 8 ? <>Every check-in <span style={{ color: '#3D5C3C' }}>hangs a star.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
+                    {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#3D5C3C' }}>took shape.</span></> : starCount < 8 ? <>Every check-in <span style={{ color: '#3D5C3C' }}>hangs a star.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
                   </div>
                   <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginBottom: 10 }}>
                     {preP ? <>Every day you log becomes a star. At 28 nights they form a constellation, and pattern detection unlocks. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <b style={{ color: '#1C1C1C', fontWeight: 600 }}>Pattern detection is live</b>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{ringCount > 0 ? <> ({ringCount} on your word while away)</> : ''}{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <b style={{ color: '#1C1C1C', fontWeight: 600 }}>pattern detection unlocks</b>: sleep, stress, and symptoms, cross-referenced for connections.</>}
@@ -2272,7 +2272,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     <rect width="280" height="195" fill="url(#lcSky)" />
                     {complete ? (
                       <g style={{ animation: 'lcGp 4.5s ease-in-out infinite' }}>
-                        <g stroke="#2C9D8A" fill="none">
+                        <g stroke="#8BAE8A" fill="none">
                           <path d="M140 168 C110 152 88 128 82 100 C78 74 88 48 104 32 C116 20 128 12 140 8 C152 12 164 20 176 32 C192 48 202 74 198 100 C192 128 170 152 140 168" strokeWidth="1" opacity="0.6" />
                           <path d="M140 186 L140 168 C140 140 139 110 140 76 C140 50 140 26 140 8" strokeWidth="0.9" opacity="0.55" />
                           <path d="M140 140 C122 132 108 120 100 106" strokeWidth="0.65" opacity="0.42" />
@@ -2286,15 +2286,15 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           {(() => {
                             const ringSet = new Set(order.slice(Math.max(0, 28 - ringCount), 28))
                             return P.map(([x, y, r], i) => ringSet.has(i)
-                              ? <circle key={i} cx={x} cy={y} r={r} fill="none" stroke="#2C9D8A" strokeWidth="1.1" />
-                              : <circle key={i} cx={x} cy={y} r={r} fill="#2C9D8A" />)
+                              ? <circle key={i} cx={x} cy={y} r={r} fill="none" stroke="#8BAE8A" strokeWidth="1.1" />
+                              : <circle key={i} cx={x} cy={y} r={r} fill="#8BAE8A" />)
                           })()}
                         </g>
                       </g>
                     ) : (
                       <>
                         {starCount >= 8 && (
-                          <g stroke="#2C9D8A" fill="none" opacity="0.5">
+                          <g stroke="#8BAE8A" fill="none" opacity="0.5">
                             {ADJ.filter(([a, b]) => present.has(a) && present.has(b)).map(([a, b], i) => (
                               <line key={i} x1={P[a][0]} y1={P[a][1]} x2={P[b][0]} y2={P[b][1]} strokeWidth="0.7" />
                             ))}
@@ -2313,7 +2313,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                       </>
                     )}
                   </svg>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.3px', color: complete ? 'rgba(44,157,138,0.75)' : '#9A927E', marginTop: 9, textTransform: 'uppercase' }}>{preP ? 'OPENS WITH DAY 1' : complete ? 'NIGHT 28 · CONSTELLATION COMPLETE' : `NIGHT ${starCount} OF 28 · ${28 - starCount} STAR${28 - starCount === 1 ? '' : 'S'} TO GO`}</div>
+                  <div className={complete ? 'sn-micro' : 'sn-micro sn-micro-dim'} style={{ marginTop: 9 }}>{preP ? 'OPENS WITH DAY 1' : complete ? 'NIGHT 28 · CONSTELLATION COMPLETE' : `NIGHT ${starCount} OF 28 · ${28 - starCount} STAR${28 - starCount === 1 ? '' : 'S'} TO GO`}</div>
                 </div>
               )
             })()}

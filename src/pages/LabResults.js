@@ -461,19 +461,20 @@ Rules:
             {noSensitivitiesToggle}
 
             {reviewing && (
-              <div style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 8 }}>Review before submitting</div>
-                <div style={{ fontSize: 13, color: '#1C1C1C', lineHeight: 1.7 }}>
+              <div className="sn-hero" style={{ borderRadius: 24, padding: '16px 18px', marginBottom: 10 }}>
+                <div className="sn-micro sn-micro-dark" style={{ position: 'relative', marginBottom: 8 }}>Review before submitting</div>
+                <div style={{ position: 'relative', fontSize: 13, color: '#FAF8F4', lineHeight: 1.7 }}>
                   {noSensitivities && getManualFoodsAsArray().length === 0
                     ? 'Your report shows no sensitivities. We will review this and recommend your path.'
                     : getManualFoodsAsArray().map(f => `${f.name} (${f.level})`).join(' · ')}
                 </div>
-                <button onClick={() => setReviewing(false)} style={{ background: 'transparent', border: 'none', padding: 0, marginTop: 8, fontSize: 12, color: '#3D5C3C', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Go back and edit</button>
+                <button onClick={() => setReviewing(false)} style={{ position: 'relative', background: 'transparent', border: 'none', padding: 0, marginTop: 8, fontSize: 12, color: '#8BAE8A', textDecoration: 'underline', cursor: 'pointer' }}>Go back and edit</button>
               </div>
             )}
 
             <button
-              style={saving || (Object.keys(manualFoods).length === 0 && !noSensitivities) ? s.ctaDisabled : s.cta}
+              className="sn-btn"
+              style={s.cta}
               onClick={handleSave}
               disabled={saving || (Object.keys(manualFoods).length === 0 && !noSensitivities)}
             >

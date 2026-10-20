@@ -255,8 +255,8 @@ export default function MapHealth({ session, profile }) {
   const rateLine = fmtRate(recentRate) + ' events a week, was ' + fmtRate(floorRate) + ' during the program.'
 
   return (
-    <div style={st.card}>
-      <div style={st.micro}>MAP HEALTH · LAST 30 DAYS</div>
+    <div className="sn-card">
+      <div className="sn-micro sn-micro-dim" style={{ marginBottom: 8 }}>MAP HEALTH · LAST 30 DAYS</div>
       <div style={st.intro}>
         Whether the foods you cleared are still behaving, checked against your own quiet weeks.{' '}
         <button type="button" style={st.howBtn} onClick={() => setShowHow(v => !v)}>
@@ -274,14 +274,10 @@ export default function MapHealth({ session, profile }) {
       </div>
 
       {!thin && foods.map((f, i) => (
-        <div key={f.food} style={{ ...st.row, borderTop: i === 0 ? '1px solid rgba(0,0,0,0.07)' : '1px solid rgba(0,0,0,0.05)' }}>
+        <div key={f.food} className="sn-row" style={{ ...st.row, display: 'block', marginTop: i === 0 ? 0 : 8 }}>
           <div style={st.rowTop}>
             <span style={st.food}>{f.food}</span>
-            <span style={{
-              ...st.pill,
-              color: VERDICT_COLORS[f.verdict],
-              background: VERDICT_COLORS[f.verdict] + '1F', // ~12% opacity
-            }}>{f.verdict}</span>
+            <span className={`sn-stamp sn-stamp-${String(f.verdict).toLowerCase()}`}>{f.verdict}</span>
             <span style={{ ...st.state, color: STATE_COLORS[f.state], marginLeft: 'auto' }}>
               {STATE_LABELS[f.state]}
             </span>
@@ -295,7 +291,7 @@ export default function MapHealth({ session, profile }) {
           {(f.state === 'watch' || f.state === 'drift') && (
             <div style={st.retest}>
               <span style={st.retestLine}>A fresh 14 day trial would update this verdict.</span>
-              <span style={st.retestHint}>Re-test from your Reintro tab</span>
+              <span className="sn-stamp sn-stamp-quiet" style={st.retestHint}>Re-test from your Reintro tab</span>
             </div>
           )}
         </div>
@@ -305,22 +301,14 @@ export default function MapHealth({ session, profile }) {
 }
 
 const st = {
-  card: {
-    background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18,
-    padding: '18px 20px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C',
-  },
-  micro: {
-    fontFamily: 'DM Mono, monospace', fontSize: 10, letterSpacing: '0.12em',
-    textTransform: 'uppercase', color: '#8A8A82', marginBottom: 8,
-  },
   intro: { fontSize: 12, color: '#8A8A82', lineHeight: 1.55, marginBottom: 12 },
   howBtn: {
-    background: 'none', border: 'none', padding: 0, fontFamily: 'DM Sans, sans-serif',
+    background: 'none', border: 'none', padding: 0,
     fontSize: 12, fontWeight: 600, color: '#3D5C3C', cursor: 'pointer',
     textDecoration: 'underline', textUnderlineOffset: 2,
   },
   howPanel: {
-    background: '#FAF8F4', borderRadius: 10, padding: '10px 12px', margin: '-4px 0 12px',
+    background: 'var(--tint-warm)', borderRadius: 10, padding: '10px 12px', margin: '-4px 0 12px',
     fontSize: 11.5, color: '#7A7A72', lineHeight: 1.6,
   },
   summary: {
@@ -328,13 +316,9 @@ const st = {
     lineHeight: 1.4, color: '#1C1C1C',
   },
   vitality: { fontSize: 12, color: '#8A8A82', marginTop: 6, marginBottom: 14 },
-  row: { padding: '12px 0' },
+  row: { padding: '12px 14px' },
   rowTop: { display: 'flex', alignItems: 'center', gap: 8 },
   food: { fontSize: 13.5, fontWeight: 600, color: '#1C1C1C' },
-  pill: {
-    fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '0.1em',
-    textTransform: 'uppercase', fontWeight: 500, padding: '3px 7px', borderRadius: 20,
-  },
   state: {
     fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '0.08em', fontWeight: 500,
   },
@@ -342,9 +326,5 @@ const st = {
   exposure: { fontFamily: 'DM Mono, monospace', fontSize: 10, color: '#A8A69E' },
   retest: { display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 8 },
   retestLine: { fontSize: 12, color: '#3D5C3C', fontWeight: 500 },
-  retestHint: {
-    fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '0.06em',
-    textTransform: 'uppercase', color: '#A8A69E', border: '1px solid rgba(0,0,0,0.1)',
-    borderRadius: 20, padding: '3px 9px', opacity: 0.7, cursor: 'default',
-  },
+  retestHint: { opacity: 0.8, cursor: 'default' },
 }

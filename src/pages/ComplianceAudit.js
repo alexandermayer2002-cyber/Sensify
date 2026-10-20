@@ -2,50 +2,55 @@ import React, { useState } from 'react'
 import { supabase } from '../supabase'
 import { aiPrompt } from '../utils/aiClient'
 
+const PAGE_CSS = `
+  .sn-input { background: #FFFFFF; border: none; box-shadow: var(--shadow-1), inset 0 1px 3px rgba(56,62,48,0.05); transition: box-shadow var(--t-fast) var(--ease); }
+  .sn-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(61,92,60,0.30), var(--shadow-1); }
+`
+
 const s = {
   wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column' },
-  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)' },
-  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
+  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', boxShadow: 'var(--shadow-1)' },
+  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#20241F' },
   logoEm: { color: '#3D5C3C', fontStyle: 'italic' },
-  back: { fontSize: '13px', color: '#7A7A72', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'DM Sans, sans-serif' },
-  content: { flex: 1, padding: '28px 24px 100px' },
-  eyebrow: { fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#3D5C3C', marginBottom: '12px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, lineHeight: 1.2, marginBottom: '8px' },
+  back: { fontSize: '13px', color: '#73736A', cursor: 'pointer', background: 'none', border: 'none' },
+  content: { flex: 1, padding: '28px 24px 100px', maxWidth: '560px', margin: '0 auto', width: '100%' },
+  eyebrow: { display: 'block', marginBottom: '12px' },
+  title: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, lineHeight: 1.2, marginBottom: '8px', letterSpacing: '-0.3px' },
   titleEm: { fontStyle: 'italic', color: '#3D5C3C' },
-  hint: { fontSize: '13px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.65 },
-  label: { fontSize: '14px', fontWeight: 500, marginBottom: '14px', lineHeight: 1.5 },
+  hint: { fontSize: '13px', color: '#73736A', marginBottom: '28px', lineHeight: 1.65 },
+  label: { fontSize: '14px', fontWeight: 600, marginBottom: '14px', lineHeight: 1.5 },
   optionGrid: { display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '24px' },
-  option: { padding: '14px 16px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '14px', cursor: 'pointer', color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', transition: 'all 0.12s', lineHeight: 1.5 },
-  optionOn: { padding: '14px 16px', borderRadius: '11px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', color: '#3D5C3C', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', fontWeight: 500, lineHeight: 1.5 },
-  optionMulti: { padding: '14px 16px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '14px', cursor: 'pointer', color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', transition: 'all 0.12s', lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '12px' },
-  optionMultiOn: { padding: '14px 16px', borderRadius: '11px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', color: '#3D5C3C', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', fontWeight: 500, lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '12px' },
+  option: { padding: '14px 16px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FFFFFF', fontSize: '14px', cursor: 'pointer', color: '#20241F', textAlign: 'left', transition: 'all 0.12s', lineHeight: 1.5 },
+  optionOn: { padding: '14px 16px', borderRadius: '16px', border: 'none', boxShadow: '0 0 0 1.5px #3D5C3C, var(--shadow-1)', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', color: '#3D5C3C', textAlign: 'left', fontWeight: 600, lineHeight: 1.5 },
+  optionMulti: { padding: '14px 16px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FFFFFF', fontSize: '14px', cursor: 'pointer', color: '#20241F', textAlign: 'left', transition: 'all 0.12s', lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '12px' },
+  optionMultiOn: { padding: '14px 16px', borderRadius: '16px', border: 'none', boxShadow: '0 0 0 1.5px #3D5C3C, var(--shadow-1)', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', color: '#3D5C3C', textAlign: 'left', fontWeight: 600, lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '12px' },
   checkbox: { width: '18px', height: '18px', borderRadius: '5px', border: '1.5px solid rgba(0,0,0,0.15)', background: '#FFFFFF', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' },
   checkboxOn: { width: '18px', height: '18px', borderRadius: '5px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  textarea: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '11px', padding: '13px 16px', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FFFFFF', resize: 'none', height: '100px', outline: 'none', marginBottom: '20px' },
+  textarea: { width: '100%', borderRadius: '14px', padding: '13px 16px', fontSize: '16px', color: '#20241F', resize: 'none', height: '100px', marginBottom: '20px' },
   scaleWrap: { marginBottom: '24px' },
-  scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#7A7A72', marginBottom: '8px' },
+  scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#73736A', marginBottom: '8px' },
   scaleRow: { display: 'flex', gap: '5px' },
-  sbt: { flex: 1, height: '42px', borderRadius: '8px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s' },
-  sbtOn: { flex: 1, height: '42px', borderRadius: '8px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: 'white', fontFamily: 'DM Sans, sans-serif' },
-  infoCard: { background: '#EDF3ED', borderRadius: '11px', padding: '14px 16px', marginBottom: '16px' },
-  infoLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', marginBottom: '7px' },
-  infoText: { fontSize: '13px', color: '#1C1C1C', lineHeight: 1.7 },
-  warningCard: { background: '#FDF2EA', border: '1px solid rgba(212,137,74,0.2)', borderRadius: '11px', padding: '14px 16px', marginBottom: '16px' },
-  warningLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#D4894A', marginBottom: '7px' },
-  warningText: { fontSize: '13px', color: '#1C1C1C', lineHeight: 1.7 },
+  sbt: { flex: 1, height: '42px', borderRadius: '10px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FFFFFF', fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: '#20241F', transition: 'all 0.12s' },
+  sbtOn: { flex: 1, height: '42px', borderRadius: '10px', border: 'none', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', fontWeight: 600, color: 'white', boxShadow: 'var(--shadow-pill)' },
+  infoCard: { background: '#F7F5EE', borderRadius: '16px', padding: '14px 16px', marginBottom: '16px' },
+  infoLabel: { display: 'block', marginBottom: '7px' },
+  infoText: { fontSize: '13px', color: '#20241F', lineHeight: 1.7 },
+  warningCard: { background: '#FDF2EA', borderRadius: '16px', padding: '14px 16px', marginBottom: '16px' },
+  warningLabel: { display: 'block', color: '#9A5F1A', marginBottom: '7px' },
+  warningText: { fontSize: '13px', color: '#20241F', lineHeight: 1.7 },
   divider: { height: '1px', background: 'rgba(0,0,0,0.06)', margin: '20px 0' },
-  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#FAF8F4', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginBottom: '10px' },
-  ctaDisabled: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif', opacity: 0.35, marginBottom: '10px' },
-  secBtn: { background: 'none', color: '#7A7A72', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '11px', padding: '13px', width: '100%', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
-  submittedWrap: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center' },
-  submittedIcon: { width: '60px', height: '60px', background: '#EDF3ED', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' },
+  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: 'rgba(251,248,242,0.92)', backdropFilter: 'blur(8px)', boxShadow: '0 -8px 24px rgba(56,62,48,0.06)' },
+  cta: { width: '100%', marginBottom: '10px' },
+  ctaDisabled: { width: '100%', marginBottom: '10px' },
+  secBtn: { width: '100%' },
+  submittedWrap: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center', maxWidth: '560px', margin: '0 auto', width: '100%' },
+  submittedIcon: { width: '60px', height: '60px', background: '#EDF3ED', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', boxShadow: 'var(--shadow-1)' },
   submittedTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300, marginBottom: '10px' },
   submittedTitleEm: { fontStyle: 'italic', color: '#3D5C3C' },
-  submittedMsg: { fontSize: '14px', color: '#7A7A72', lineHeight: 1.7, maxWidth: '280px', margin: '0 auto 28px' },
-  pendingCard: { background: '#FDF2EA', border: '1px solid rgba(212,137,74,0.15)', borderRadius: '12px', padding: '16px', width: '100%', textAlign: 'left' },
-  pendingLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#D4894A', marginBottom: '6px' },
-  pendingText: { fontSize: '13px', color: '#1C1C1C', lineHeight: 1.6 },
+  submittedMsg: { fontSize: '14px', color: '#73736A', lineHeight: 1.7, maxWidth: '280px', margin: '0 auto 28px' },
+  pendingCard: { background: '#FDF2EA', borderRadius: '16px', padding: '16px', width: '100%', textAlign: 'left' },
+  pendingLabel: { display: 'block', color: '#9A5F1A', marginBottom: '6px' },
+  pendingText: { fontSize: '13px', color: '#20241F', lineHeight: 1.6 },
   spinner: { width: '32px', height: '32px', border: '3px solid #EDF3ED', borderTopColor: '#3D5C3C', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' },
 }
 
@@ -169,14 +174,14 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
   // OPENING SCREEN
   if (phase === 'opening') return (
     <div style={s.wrap}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }` + PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
         <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
         <div style={{ width: 40 }} />
       </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 24px 100px' }}>
-        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, lineHeight: 1.3, marginBottom: '20px' }}>
+      <div className="sn-rise" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 24px 100px', maxWidth: '560px', margin: '0 auto', width: '100%' }}>
+        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '32px', fontWeight: 300, lineHeight: 1.3, marginBottom: '20px', letterSpacing: '-0.3px' }}>
           Three days is hard.<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>Let's not treat it as failure.</em>
         </div>
         <div style={{ fontSize: '15px', color: '#7A7A72', lineHeight: 1.8, marginBottom: '24px' }}>
@@ -187,7 +192,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         </div>
       </div>
       <div style={s.footer}>
-        <button style={s.cta} onClick={() => setPhase('q1')}>Okay, let's figure it out →</button>
+        <button className="sn-btn" style={s.cta} onClick={() => setPhase('q1')}>Okay, let's figure it out →</button>
       </div>
     </div>
   )
@@ -195,13 +200,14 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
   // QUESTION 1 — What's been hardest
   if (phase === 'q1') return (
     <div style={s.wrap}>
+      <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={() => setPhase('opening')}>← Back</button>
         <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
         <div style={{ width: 40 }} />
       </div>
-      <div style={s.content}>
-        <div style={s.eyebrow}>Tell us what's going on</div>
+      <div className="sn-rise" style={s.content}>
+        <div className="sn-micro" style={s.eyebrow}>Tell us what's going on</div>
         <div style={s.title}>What's been the<br /><em style={s.titleEm}>hardest part?</em></div>
         <div style={s.hint}>Select everything that applies. We'll go through each one.</div>
         <div style={s.optionGrid}>
@@ -226,7 +232,8 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       </div>
       <div style={s.footer}>
         <button
-          style={selectedReasons.length > 0 ? s.cta : s.ctaDisabled}
+          className="sn-btn"
+          style={s.cta}
           disabled={selectedReasons.length === 0}
           onClick={() => {
             if (branchOrder.length > 0) setPhase('branches')
@@ -246,23 +253,25 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
     // CRAVINGS BRANCH
     if (activeBranch === 'cravings') return (
       <div style={s.wrap}>
+        <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
           <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Food cravings</div>
         </div>
-        <div style={s.content}>
-          <div style={s.eyebrow}>Let's talk cravings</div>
+        <div className="sn-rise" style={s.content}>
+          <div className="sn-micro" style={s.eyebrow}>Let's talk cravings</div>
           <div style={s.title}>Is there a specific<br /><em style={s.titleEm}>food you're missing?</em></div>
           <div style={s.hint}>This helps us give you more relevant context about what you're going through.</div>
           <input
+            className="sn-input"
             style={{ ...s.textarea, height: '52px', resize: 'none', marginBottom: '20px' }}
             placeholder="e.g. dairy, bread, coffee..."
             value={craving}
             onChange={e => setCraving(e.target.value)}
           />
           <div style={s.infoCard}>
-            <div style={s.infoLabel}>Worth knowing</div>
+            <div className="sn-micro" style={s.infoLabel}>Worth knowing</div>
             <div style={s.infoText}>
               {craving
                 ? `Missing ${craving} is completely normal. Most cravings peak around week 2 and then fade. The good news: you're getting closer to finding out if it's actually causing your symptoms. That answer is worth the craving.`
@@ -271,7 +280,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
           </div>
         </div>
         <div style={s.footer}>
-          <button style={s.cta} onClick={() => advanceBranch({ craving_food: craving })}>
+          <button className="sn-btn" style={s.cta} onClick={() => advanceBranch({ craving_food: craving })}>
             {hasMoreBranches || hasOther ? 'Continue →' : 'Submit →'}
           </button>
         </div>
@@ -281,13 +290,14 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
     // SOCIAL BRANCH
     if (activeBranch === 'social') return (
       <div style={s.wrap}>
+        <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
           <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Social situations</div>
         </div>
-        <div style={s.content}>
-          <div style={s.eyebrow}>Let's talk social eating</div>
+        <div className="sn-rise" style={s.content}>
+          <div className="sn-micro" style={s.eyebrow}>Let's talk social eating</div>
           <div style={s.title}>When does it<br /><em style={s.titleEm}>happen most?</em></div>
           <div style={s.hint}>Knowing when helps us give you a specific strategy rather than general advice.</div>
           <div style={s.optionGrid}>
@@ -305,7 +315,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
           </div>
           {socialWhen && (
             <div style={s.infoCard}>
-              <div style={s.infoLabel}>What helps</div>
+              <div className="sn-micro" style={s.infoLabel}>What helps</div>
               <div style={s.infoText}>
                 {socialWhen === 'weekends' && "Weekends are the most common slip-up time. One thing that helps: decide before Saturday what you'll do when your eliminated foods come up. A plan made in advance is much easier than a decision made in the moment."}
                 {socialWhen === 'evenings' && "Evening slip-ups usually happen when you're tired and haven't planned ahead. A simple fix: make sure you have something you can eat ready before 6pm so you're not making food decisions when your willpower is lowest."}
@@ -318,7 +328,8 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         </div>
         <div style={s.footer}>
           <button
-            style={socialWhen ? s.cta : s.ctaDisabled}
+            className="sn-btn"
+            style={s.cta}
             disabled={!socialWhen}
             onClick={() => advanceBranch({ social_when: socialWhen })}
           >
@@ -331,18 +342,19 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
     // HIDDEN INGREDIENTS BRANCH
     if (activeBranch === 'hidden') return (
       <div style={s.wrap}>
+        <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
           <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Hidden ingredients</div>
         </div>
-        <div style={s.content}>
-          <div style={s.eyebrow}>Hidden ingredients</div>
+        <div className="sn-rise" style={s.content}>
+          <div className="sn-micro" style={s.eyebrow}>Hidden ingredients</div>
           <div style={s.title}>This is more<br /><em style={s.titleEm}>common than you think.</em></div>
           <div style={s.hint}>Hidden ingredients are one of the most common reasons people don't see improvement, and it's almost never the person's fault. Labels are confusing by design.</div>
 
           <div style={s.infoCard}>
-            <div style={s.infoLabel}>Where your foods hide</div>
+            <div className="sn-micro" style={s.infoLabel}>Where your foods hide</div>
             <div style={s.infoText}>
               <strong>Dairy</strong>: salad dressings, protein bars, some breads, anything labeled 'non-dairy' that contains casein or whey.<br /><br />
               <strong>Gluten</strong>: soy sauce, most condiments, soups, processed meats, some medications.<br /><br />
@@ -353,12 +365,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
           </div>
 
           <div style={s.warningCard}>
-            <div style={s.warningLabel}>The simple rule</div>
+            <div className="sn-micro" style={s.warningLabel}>The simple rule</div>
             <div style={s.warningText}>If you didn't make it yourself or can't read every ingredient, assume it might contain something on your list. That level of caution only needs to last until reintroduction begins.</div>
           </div>
         </div>
         <div style={s.footer}>
-          <button style={s.cta} onClick={() => advanceBranch({ hidden_reviewed: true })}>
+          <button className="sn-btn" style={s.cta} onClick={() => advanceBranch({ hidden_reviewed: true })}>
             {hasMoreBranches || hasOther ? 'Got it, continue →' : 'Got it, submit →'}
           </button>
         </div>
@@ -368,13 +380,14 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
     // LIFE GOT IN THE WAY BRANCH
     if (activeBranch === 'life') return (
       <div style={s.wrap}>
+        <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
           <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Life got in the way</div>
         </div>
-        <div style={s.content}>
-          <div style={s.eyebrow}>Let's check in on you</div>
+        <div className="sn-rise" style={s.content}>
+          <div className="sn-micro" style={s.eyebrow}>Let's check in on you</div>
           <div style={s.title}>How stressed have<br />you been <em style={s.titleEm}>this week?</em></div>
           <div style={s.hint}>Stress genuinely affects digestion and food choices. This isn't an excuse. It's important context.</div>
           <div style={s.scaleWrap}>
@@ -387,7 +400,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
           </div>
           {stressScore && (
             <div style={stressScore >= 8 ? s.warningCard : s.infoCard}>
-              <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: stressScore >= 8 ? '#D4894A' : '#3D5C3C', marginBottom: '7px' }}>
+              <div className="sn-micro" style={{ color: stressScore >= 8 ? '#9A5F1A' : '#3D5C3C', marginBottom: '7px' }}>
                 {stressScore >= 8 ? 'High stress acknowledged' : stressScore >= 5 ? 'Moderate stress noted' : 'Good to know'}
               </div>
               <div style={{ fontSize: '13px', color: '#1C1C1C', lineHeight: 1.7 }}>
@@ -402,7 +415,8 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         </div>
         <div style={s.footer}>
           <button
-            style={stressScore ? s.cta : s.ctaDisabled}
+            className="sn-btn"
+            style={s.cta}
             disabled={!stressScore}
             onClick={() => advanceBranch({ stress_score: stressScore })}
           >
@@ -415,13 +429,14 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
     // COOKING FOR OTHERS BRANCH
     if (activeBranch === 'cooking') return (
       <div style={s.wrap}>
+        <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
           <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Cooking for others</div>
         </div>
-        <div style={s.content}>
-          <div style={s.eyebrow}>Let's talk about cooking</div>
+        <div className="sn-rise" style={s.content}>
+          <div className="sn-micro" style={s.eyebrow}>Let's talk about cooking</div>
           <div style={s.title}>Are you the main<br /><em style={s.titleEm}>cook at home?</em></div>
           <div style={s.hint}>Cooking for others while on an elimination protocol is genuinely one of the hardest situations.</div>
           <div style={s.optionGrid}>
@@ -437,7 +452,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
           </div>
           {cookingRole && (
             <div style={s.infoCard}>
-              <div style={s.infoLabel}>What helps</div>
+              <div className="sn-micro" style={s.infoLabel}>What helps</div>
               <div style={s.infoText}>
                 {cookingRole === 'yes' && "Batch cook your own food separately at the start of the week so it's always ready. Find 2-3 meals that work for everyone so you're not always making two separate things."}
                 {cookingRole === 'no' && "When someone else is cooking, communication is everything. You don't need to explain the whole protocol, just the specific foods to avoid. A simple list on the fridge or a quick text goes a long way."}
@@ -448,7 +463,8 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         </div>
         <div style={s.footer}>
           <button
-            style={cookingRole ? s.cta : s.ctaDisabled}
+            className="sn-btn"
+            style={s.cta}
             disabled={!cookingRole}
             onClick={() => advanceBranch({ cooking_role: cookingRole })}
           >
@@ -461,30 +477,31 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
     // COST BRANCH
     if (activeBranch === 'cost') return (
       <div style={s.wrap}>
+        <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
           <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Cost</div>
         </div>
-        <div style={s.content}>
-          <div style={s.eyebrow}>Let's talk about cost</div>
+        <div className="sn-rise" style={s.content}>
+          <div className="sn-micro" style={s.eyebrow}>Let's talk about cost</div>
           <div style={s.title}>This is a<br /><em style={s.titleEm}>real challenge.</em></div>
           <div style={s.hint}>Eating on an elimination protocol can genuinely cost more, especially if you're replacing staple foods. You're not alone in this.</div>
           <div style={s.infoCard}>
-            <div style={s.infoLabel}>What helps</div>
+            <div className="sn-micro" style={s.infoLabel}>What helps</div>
             <div style={s.infoText}>
               The most affordable elimination diets focus on whole foods rather than specialty products. Rice, vegetables, plain proteins, and legumes (if not on your list) are usually the most budget-friendly safe foods. Specialty 'free from' products are convenient but not necessary.
             </div>
           </div>
           <div style={s.infoCard}>
-            <div style={s.infoLabel}>The bigger picture</div>
+            <div className="sn-micro" style={s.infoLabel}>The bigger picture</div>
             <div style={s.infoText}>
               This is temporary. You're not building a permanent expensive diet. You're doing this for a limited time to get answers that will inform how you eat for years. The cost-per-day math looks very different when framed that way.
             </div>
           </div>
         </div>
         <div style={s.footer}>
-          <button style={s.cta} onClick={() => advanceBranch({ cost_acknowledged: true })}>
+          <button className="sn-btn" style={s.cta} onClick={() => advanceBranch({ cost_acknowledged: true })}>
             {hasMoreBranches || hasOther ? 'Continue →' : 'Submit →'}
           </button>
         </div>
@@ -494,17 +511,18 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
     // DON'T KNOW WHAT TO EAT BRANCH
     if (activeBranch === 'ideas') return (
       <div style={s.wrap}>
+        <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
           <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Meal ideas</div>
         </div>
-        <div style={s.content}>
-          <div style={s.eyebrow}>Let's fix this</div>
+        <div className="sn-rise" style={s.content}>
+          <div className="sn-micro" style={s.eyebrow}>Let's fix this</div>
           <div style={s.title}>Running out of<br /><em style={s.titleEm}>ideas is fixable.</em></div>
           <div style={s.hint}>The most sustainable approach is building a small rotation of meals you actually like rather than trying to eat something different every day.</div>
           <div style={s.infoCard}>
-            <div style={s.infoLabel}>Simple meal frameworks</div>
+            <div className="sn-micro" style={s.infoLabel}>Simple meal frameworks</div>
             <div style={s.infoText}>
               • Protein + roasted vegetables + safe starch<br />
               • Protein + salad with olive oil and lemon<br />
@@ -514,12 +532,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             </div>
           </div>
           <div style={s.warningCard}>
-            <div style={s.warningLabel}>Remember</div>
+            <div className="sn-micro" style={s.warningLabel}>Remember</div>
             <div style={s.warningText}>Boring is fine. Consistent is better. Pick two meals you can eat this week without thinking about it and repeat them as many times as you need to.</div>
           </div>
         </div>
         <div style={s.footer}>
-          <button style={s.cta} onClick={() => advanceBranch({ ideas_reviewed: true })}>
+          <button className="sn-btn" style={s.cta} onClick={() => advanceBranch({ ideas_reviewed: true })}>
             {hasMoreBranches || hasOther ? 'Continue →' : 'Submit →'}
           </button>
         </div>
@@ -530,16 +548,18 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
   // OTHER BRANCH
   if (phase === 'branches' && (!activeBranch || currentBranch >= branchOrder.length) && hasOther) return (
     <div style={s.wrap}>
+      <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
         <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
         <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Other</div>
       </div>
-      <div style={s.content}>
-        <div style={s.eyebrow}>Tell us more</div>
+      <div className="sn-rise" style={s.content}>
+        <div className="sn-micro" style={s.eyebrow}>Tell us more</div>
         <div style={s.title}>What else is<br /><em style={s.titleEm}>going on?</em></div>
         <div style={s.hint}>Sometimes it's something we haven't thought to ask about. Tell us what's actually happening and we'll factor it into your guidance.</div>
         <textarea
+          className="sn-input"
           style={s.textarea}
           placeholder="Tell us what's been making it hard..."
           value={otherText}
@@ -548,7 +568,8 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       </div>
       <div style={s.footer}>
         <button
-          style={otherText.trim().length > 0 ? s.cta : s.ctaDisabled}
+          className="sn-btn"
+          style={s.cta}
           disabled={otherText.trim().length === 0 || submitting}
           onClick={handleSubmit}
         >
@@ -561,13 +582,13 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
   // SUBMITTED SCREEN
   if (phase === 'submitted') return (
     <div style={s.wrap}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }` + PAGE_CSS}</style>
       <div style={s.topBar}>
         <div style={{ width: 40 }} />
         <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
         <div style={{ width: 40 }} />
       </div>
-      <div style={s.submittedWrap}>
+      <div className="sn-rise" style={s.submittedWrap}>
         {generating ? (
           <>
             <div style={s.spinner} />
@@ -581,7 +602,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             <div style={s.submittedTitle}>Thank you, <em style={s.submittedTitleEm}>{name}.</em></div>
             <div style={s.submittedMsg}>{aiMessage}</div>
             <div style={{ ...s.pendingCard, marginBottom: '12px' }}>
-              <div style={s.pendingLabel}>What happens next</div>
+              <div className="sn-micro" style={s.pendingLabel}>What happens next</div>
               <div style={s.pendingText}>We're reviewing everything you shared and will have your personalized guidance ready within 24 hours. You'll see it right here on your dashboard.</div>
             </div>
           </>
@@ -589,7 +610,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       </div>
       {!generating && (
         <div style={s.footer}>
-          <button style={s.cta} onClick={onComplete}>Back to dashboard</button>
+          <button className="sn-btn" style={s.cta} onClick={onComplete}>Back to dashboard</button>
         </div>
       )}
     </div>

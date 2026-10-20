@@ -3,40 +3,45 @@ import { supabase } from '../supabase'
 import { todayLocal } from '../utils/dateUtils'
 import { generateSlipupMessage } from '../utils/aiInsights'
 
+const PAGE_CSS = `
+  .sn-input { background: #FFFFFF; border: none; box-shadow: var(--shadow-1), inset 0 1px 3px rgba(56,62,48,0.05); transition: box-shadow var(--t-fast) var(--ease); }
+  .sn-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(61,92,60,0.30), var(--shadow-1); }
+`
+
 const s = {
   wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column' },
-  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)' },
-  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
+  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', boxShadow: 'var(--shadow-1)' },
+  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#20241F' },
   logoEm: { color: '#3D5C3C', fontStyle: 'italic' },
-  back: { fontSize: '13px', color: '#7A7A72', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'DM Sans, sans-serif' },
-  content: { flex: 1, padding: '28px 24px 100px' },
-  eyebrow: { fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#3D5C3C', marginBottom: '12px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, lineHeight: 1.2, marginBottom: '8px' },
+  back: { fontSize: '13px', color: '#73736A', cursor: 'pointer', background: 'none', border: 'none' },
+  content: { flex: 1, padding: '28px 24px 100px', maxWidth: '560px', margin: '0 auto', width: '100%' },
+  eyebrow: { display: 'block', marginBottom: '12px' },
+  title: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, lineHeight: 1.2, marginBottom: '8px', letterSpacing: '-0.3px' },
   titleEm: { fontStyle: 'italic', color: '#3D5C3C' },
-  hint: { fontSize: '13px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.65 },
-  label: { fontSize: '14px', fontWeight: 500, marginBottom: '12px', lineHeight: 1.5 },
-  searchInput: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '11px', padding: '13px 16px', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FFFFFF', outline: 'none', marginBottom: '10px' },
-  foodList: { maxHeight: '200px', overflowY: 'auto', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '11px', background: '#FFFFFF', marginBottom: '20px' },
-  foodItem: { padding: '11px 14px', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: '14px', cursor: 'pointer', color: '#1C1C1C', transition: 'background 0.1s' },
-  foodItemSelected: { padding: '11px 14px', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: '14px', cursor: 'pointer', color: '#3D5C3C', background: '#EDF3ED', fontWeight: 500 },
+  hint: { fontSize: '13px', color: '#73736A', marginBottom: '28px', lineHeight: 1.65 },
+  label: { fontSize: '14px', fontWeight: 600, marginBottom: '12px', lineHeight: 1.5 },
+  searchInput: { width: '100%', borderRadius: '14px', padding: '13px 16px', fontSize: '16px', color: '#20241F', marginBottom: '10px' },
+  foodList: { maxHeight: '200px', overflowY: 'auto', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '16px', background: '#FFFFFF', marginBottom: '20px' },
+  foodItem: { padding: '11px 14px', fontSize: '14px', cursor: 'pointer', color: '#20241F', transition: 'background 0.1s' },
+  foodItemSelected: { padding: '11px 14px', fontSize: '14px', cursor: 'pointer', color: '#3D5C3C', background: '#EDF3ED', fontWeight: 500 },
   selectedPills: { display: 'flex', flexWrap: 'wrap', gap: '7px', marginBottom: '20px' },
-  pill: { display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '20px', background: '#EDF3ED', fontSize: '13px', color: '#3D5C3C', fontWeight: 500 },
-  pillRemove: { cursor: 'pointer', fontSize: '14px', color: '#8BAE8A', lineHeight: 1 },
+  pill: { display: 'flex', alignItems: 'center', gap: '5px', padding: '8px 14px', borderRadius: '999px', background: '#3D5C3C', fontSize: '13px', color: '#FFFFFF', fontWeight: 600, boxShadow: 'var(--shadow-pill)' },
+  pillRemove: { cursor: 'pointer', fontSize: '14px', color: '#C9D8C8', lineHeight: 1 },
   divider: { height: '1px', background: 'rgba(0,0,0,0.06)', margin: '24px 0' },
   reasonGrid: { display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '20px' },
-  reasonBtn: { padding: '14px 16px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '14px', cursor: 'pointer', color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', transition: 'all 0.12s' },
-  reasonBtnOn: { padding: '14px 16px', borderRadius: '11px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', color: '#3D5C3C', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', fontWeight: 500 },
-  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#FAF8F4', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
-  ctaDisabled: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif', opacity: 0.35 },
-  successWrap: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center' },
-  successIcon: { width: '56px', height: '56px', background: '#EDF3ED', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' },
-  successTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '10px' },
+  reasonBtn: { padding: '14px 16px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FFFFFF', fontSize: '14px', cursor: 'pointer', color: '#20241F', textAlign: 'left', transition: 'all 0.12s' },
+  reasonBtnOn: { padding: '14px 16px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-pill)', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', textAlign: 'left', fontWeight: 600 },
+  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: 'rgba(251,248,242,0.92)', backdropFilter: 'blur(8px)', boxShadow: '0 -8px 24px rgba(56,62,48,0.06)' },
+  cta: { width: '100%' },
+  ctaDisabled: { width: '100%' },
+  successWrap: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center', maxWidth: '560px', margin: '0 auto', width: '100%' },
+  successIcon: { width: '56px', height: '56px', background: '#EDF3ED', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', boxShadow: 'var(--shadow-1)' },
+  successTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300, marginBottom: '10px' },
   successTitleEm: { fontStyle: 'italic', color: '#3D5C3C' },
-  successMsg: { fontSize: '14px', color: '#7A7A72', lineHeight: 1.7, maxWidth: '280px', margin: '0 auto 28px' },
-  infoCard: { background: '#EDF3ED', borderRadius: '11px', padding: '14px 16px', textAlign: 'left', width: '100%' },
-  infoLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', marginBottom: '5px' },
-  infoText: { fontSize: '13px', color: '#1C1C1C', lineHeight: 1.6 },
+  successMsg: { fontSize: '14px', color: '#73736A', lineHeight: 1.7, maxWidth: '280px', margin: '0 auto 28px' },
+  infoCard: { background: '#F7F5EE', borderRadius: '16px', padding: '14px 16px', textAlign: 'left', width: '100%' },
+  infoLabel: { display: 'block', marginBottom: '5px' },
+  infoText: { fontSize: '13px', color: '#20241F', lineHeight: 1.6 },
 }
 
 const COMMON_FOODS = [
@@ -119,7 +124,8 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
         <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
         <div style={{ width: 40 }} />
       </div>
-      <div style={s.successWrap}>
+      <style>{PAGE_CSS}</style>
+      <div className="sn-rise" style={s.successWrap}>
         <div style={s.successIcon}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
@@ -131,7 +137,7 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
           </div>
         ) : aiMessage ? (
           <div style={{ ...s.infoCard, marginBottom: '12px' }}>
-            <div style={s.infoLabel}>What this means</div>
+            <div className="sn-micro" style={s.infoLabel}>What this means</div>
             <div style={s.infoText}>{aiMessage}</div>
           </div>
         ) : (
@@ -141,12 +147,12 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
         )}
 
         <div style={{ ...s.infoCard, marginBottom: 0 }}>
-          <div style={s.infoLabel}>What happens next</div>
+          <div className="sn-micro" style={s.infoLabel}>What happens next</div>
           <div style={s.infoText}>This gets factored into your weekly insight. Patterns across multiple days tell us much more than any single day.</div>
         </div>
       </div>
       <div style={s.footer}>
-        <button style={s.cta} onClick={onComplete}>Back to dashboard</button>
+        <button className="sn-btn" style={s.cta} onClick={onComplete}>Back to dashboard</button>
       </div>
     </div>
   )
@@ -159,13 +165,15 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
         <div style={{ width: 40 }} />
       </div>
 
-      <div style={s.content}>
-        <div style={s.eyebrow}>Slip-up logged</div>
+      <style>{PAGE_CSS}</style>
+      <div className="sn-rise" style={s.content}>
+        <div className="sn-micro" style={s.eyebrow}>Slip-up logged</div>
         <div style={s.title}>What <em style={s.titleEm}>happened today?</em></div>
         <div style={s.hint}>No judgment, this is just data. The more we know, the better your weekly insights become.</div>
 
         <div style={s.label}>What did you eat that wasn't on your plan?</div>
         <input
+          className="sn-input"
           style={s.searchInput}
           placeholder="Search foods or type your own..."
           value={search}
@@ -222,7 +230,8 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
 
       <div style={s.footer}>
         <button
-          style={canSubmit ? s.cta : s.ctaDisabled}
+          className="sn-btn"
+          style={s.cta}
           disabled={!canSubmit || submitting}
           onClick={handleSubmit}
         >
