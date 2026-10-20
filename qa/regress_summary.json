@@ -1,5 +1,5 @@
 {
- "date": "2610191722",
+ "date": "2610192301",
  "passed": 20,
  "total": 20,
  "results": [
@@ -31,7 +31,7 @@
   {
    "check": "p1.unlock_hero",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening, QA\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 1 OF 28 \u00b7 TESTING OPEN\nPick your next food\n\u2192\nor lo"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening, QA\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 1 OF 28 \u00b7 TESTING OPEN\nPick your next food\n\u2192\n57 da"
   },
   {
    "check": "p1.no_false_complete",

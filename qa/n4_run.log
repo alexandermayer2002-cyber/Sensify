@@ -7,3 +7,25 @@ N4B: 0/0 checks passed
 Traceback (most recent call last):
 playwright._impl._errors.TimeoutError: Locator.click: Timeout 8000ms exceeded.
 === REGRESS ===
+PASS mkt.example_labels
+PASS mkt.console_clean
+PASS p1.intake
+PASS p1.readback
+PASS p1.flagged_autostart
+PASS p1.unlock_hero
+PASS p1.no_false_complete
+PASS p1.single_queue
+PASS p1.freq_order_crab_first
+PASS p2.clean_toggle_visible
+PASS p2.clean_readback
+PASS p2.popup_clean_script
+PASS p2.no_premature_protocol
+PASS p2.decision_present
+PASS p2.protocol_started
+PASS p3.popup_flagged_script
+PASS p3.union_banner
+PASS p4.tracking_landing
+PASS p4.verdicts_tracking_state
+PASS p4.reintro_tracking_state
+REGRESSION: 20/20 checks passed
+=== N4 DONE ===
