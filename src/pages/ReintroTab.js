@@ -704,6 +704,13 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   // reintroduction_results is the source of truth the Tested ledger and the
   // gallery already use, so the picker excludes from BOTH (the silent-upsert
   // bug that left Dairy offered after its own Avoid verdict dies here).
+  // Conflicted rulings (latest cycle per food): eligible for a retest offer.
+  // completedCycles is started_at ascending, so later cycles win the map; a
+  // clean retest therefore retires the conflicted flag along with the verdict.
+  const latestCycleByFood = {}
+  for (const cy of completedCycles) latestCycleByFood[(cy.food || '').toLowerCase()] = cy
+  const retestable = Object.values(latestCycleByFood).filter(cy => cy.verdict && cy.answers?.conflicted === true)
+
   const fmVerdicts = foodMap.filter(f => f.verdict)
   const fmNameSet = new Set(fmVerdicts.map(f => (f.food || '').toLowerCase()))
   const completedFoods = [...fmVerdicts, ...completedCycles.filter(cy => cy.verdict && !fmNameSet.has((cy.food || '').toLowerCase())).map(cy => ({ food: cy.food, verdict: cy.verdict }))]
@@ -1255,6 +1262,31 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             {/* The Moderate/High tier sections and their unlock teasers are
                 retired: every track now runs ONE frequency-ordered queue that
                 unlocks whole at day 57 (the doctrine). */}
+
+            {/* RETEST: only verdicts ruled on conflicting evidence (clean logs
+                vs disputing testimony, not self-discounted) earn a re-run
+                offer. A retest is a fresh 14-day cycle; the newest ruling
+                replaces the old one everywhere. */}
+            {lowUnlocked && retestable.length > 0 && (
+              <>
+                <div className="rt-section-label" style={{ marginTop: '22px' }}>Retest available · ruled on conflicting evidence</div>
+                {retestable.map(cyc => (
+                  <div key={'retest-' + cyc.food} className="rt-food-card">
+                    <div className="rt-food-left">
+                      <div className="rt-food-rank">↻</div>
+                      <div>
+                        <div className="rt-food-name">{cyc.food}</div>
+                        <div className="rt-food-freq">Ruled {cyc.verdict} · your logs and your account of it disagreed</div>
+                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', letterSpacing: '0.4px', color: '#8A8A82', marginTop: '2px' }}>A re-run replaces this verdict with whatever the new trial earns</div>
+                      </div>
+                    </div>
+                    <button className="rt-start-btn" disabled={!!starting} onClick={() => { setShowDatePick(false); setFarPick(null); setPendingStart({ food: cyc.food, level: cyc.sensitivity_level || 'Low' }) }}>
+                      {starting === cyc.food ? 'Starting...' : 'Retest →'}
+                    </button>
+                  </div>
+                ))}
+              </>
+            )}
           </>
         )}
 

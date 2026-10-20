@@ -449,7 +449,7 @@ export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
 // based on logged daily data. The AI may CONFIRM it, or adjust by ONE
 // level with a stated reason. It never overrides the data wholesale.
 // Returns { verdict, analysis }.
-export const generateReintroVerdict = async ({ name, food, provisionalVerdict, signals, dailyLogs = [], surveyAnswers = {}, accuracyNote, contextNote, dayGrainContext }) => {
+export const generateReintroVerdict = async ({ name, food, provisionalVerdict, signals, dailyLogs = [], surveyAnswers = {}, accuracyNote, contextNote, dayGrainContext, disagreeDetail }) => {
   const exposureSummary = dailyLogs
     .filter(l => l.phase === 'exposure')
     .map(l => `Day(ate:${l.ate_food ? 'yes' : 'no'}, symptoms:${(l.symptoms || []).map(s => typeof s === 'string' ? s : `${s?.name || 'symptom'}/${s?.intensity || 'logged'}`).join(',') || 'none'})`)
@@ -467,7 +467,16 @@ LOGGED EXPOSURE DAYS: ${exposureSummary || 'no daily logs'}
 LOGGED WASHOUT SYMPTOMS: ${washoutSummary || 'none logged'}
 SIGNALS: ${JSON.stringify(signals || {})}
 USER CONFIRMED ACCURACY: ${accuracyNote === 'accurate' ? 'says the logged data is accurate' : accuracyNote === 'worse' ? 'says it actually felt WORSE than logged' : accuracyNote === 'milder' ? 'says it actually felt MILDER than logged' : 'no response'}
-${dayGrainContext ? dayGrainContext + '\n' : ''}USER NOTED CONTEXT (other things going on, may explain symptoms): ${contextNote ? `"${contextNote}"` : 'none noted'}
+${disagreeDetail ? `DISAGREEMENT DETAIL (asked only because the testimony disputes the logs):
+- What they felt: ${[...(disagreeDetail.felt || []), disagreeDetail.feltText].filter(Boolean).join(', ') || 'not specified'}
+- When it was strongest: ${disagreeDetail.when === 'exposure' ? 'on the days they ate the food' : disagreeDetail.when === 'washout' ? 'in the washout days after' : 'spread across the whole two weeks'}
+- Their own attribution: ${disagreeDetail.cause === 'food' ? 'they think it was the food' : disagreeDetail.cause === 'unsure' ? 'they are not sure what caused it' : 'they think it was probably something else, not the food'}
+WEIGHING THE DISAGREEMENT:
+- Testimony concentrated on exposure days and attributed to the food is the strongest case for moving one level away from Safe; cite those specifics in the analysis.
+- Testimony spread evenly across the whole two weeks fits a background cause at least as well as the food; say so, and lean toward the logged data.
+- If they attribute it to something else themselves, keep the data verdict and name their context as context, never as the cause of a shift.
+- Still never move more than one level, and name the gap between logs and testimony honestly in the analysis.
+` : ''}${dayGrainContext ? dayGrainContext + '\n' : ''}USER NOTED CONTEXT (other things going on, may explain symptoms): ${contextNote ? `"${contextNote}"` : 'none noted'}
 
 YOUR TASK:
 Decide the final verdict: Safe, Limit, or Avoid. Then write a 2 to 3 sentence explanation.

@@ -117,11 +117,19 @@ function buildSummary(logs, food) {
 
 export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumber = 1, baselineScores = {}, symptoms = [], profile = null, activeReintroId = null, onComplete, onBack }) {
   const [accuracy, setAccuracy] = useState(null) // 'accurate' | 'worse' | 'milder'
+  // Disagreement follow-up: only shown when the testimony disputes the logs.
+  // Three neutral questions so the one-step shift is earned from specifics,
+  // not from a single checkbox. feltWhat is optional; when and cause are not.
+  const [feltWhat, setFeltWhat] = useState([])
+  const [feltWhatText, setFeltWhatText] = useState('')
+  const [feltWhen, setFeltWhen] = useState(null) // 'exposure' | 'washout' | 'whole'
+  const [feltCause, setFeltCause] = useState(null) // 'food' | 'unsure' | 'other'
   const [context, setContext] = useState('')
   const [dailyLogs, setDailyLogs] = useState([])
   const [logsLoaded, setLogsLoaded] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [verdict, setVerdict] = useState(null)
+  const [wasConflicted, setWasConflicted] = useState(false)
   const [noiseFloor, setNoiseFloor] = useState(null)
   const [sleepOverlap, setSleepOverlap] = useState(null)
   const [analysis, setAnalysis] = useState('')
@@ -166,7 +174,8 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
     return () => { active = false }
   }, [activeReintroId])
 
-  const allAnswered = () => accuracy !== null
+  const disagreeing = accuracy === 'worse' || accuracy === 'milder'
+  const allAnswered = () => accuracy !== null && (!disagreeing || (feltWhen !== null && feltCause !== null))
 
   const handleSubmit = async () => {
     setSubmitting(true)
@@ -175,6 +184,18 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
     let provisional = null
     if (dailyLogs.length > 0) provisional = computeProvisionalVerdict(dailyLogs)
     let computedVerdict = provisional ? provisional.verdict : 'Limit'
+
+    // The follow-up detail rides with the testimony. A verdict is CONFLICTED
+    // when the testimony disputes the logs and the user did not discount it
+    // themselves ("probably something else"): ruled on conflicting evidence,
+    // which is what unlocks the retest offer.
+    const followup = disagreeing ? {
+      felt: feltWhat,
+      feltText: feltWhatText.trim() || null,
+      when: feltWhen,
+      cause: feltCause,
+    } : null
+    const conflicted = disagreeing && feltCause !== 'other'
 
     // AI refines (may adjust by one level with reason) — never against data
     let aiReason = ''
@@ -187,6 +208,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         dailyLogs,
         surveyAnswers: { accuracy, context },
         accuracyNote: accuracy,
+        disagreeDetail: followup,
         dayGrainContext: [
           noiseFloor ? `Clean-baseline noise floor: during elimination this person logged symptoms on about ${noiseFloor.daysPerWeek} day(s) per week (${noiseFloor.totalDays} symptom days total). Weigh exposure symptoms against that background, and say so if the exposure pattern clearly exceeds it.` : null,
           sleepOverlap ? `Sleep cross-reference: ${sleepOverlap.overlap} of their ${sleepOverlap.symDays} symptom days in this cycle were also among their worst sleep nights. Mention this as honest context; it may inflate the signal.` : null,
@@ -203,7 +225,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
     // Update the EXISTING active row (don't insert a duplicate)
     if (activeReintroId) {
       await supabase.from('reintroduction_results').update({
-        answers: { accuracy, context },
+        answers: { accuracy, context, followup, conflicted },
         verdict: computedVerdict,
         verdict_reason: aiReason,
         submitted_at: new Date().toISOString(),
@@ -211,10 +233,11 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
     } else {
       await supabase.from('reintroduction_results').insert({
         user_id: session.user.id, food, cycle_number: cycleNumber,
-        answers: { accuracy, context },
+        answers: { accuracy, context, followup, conflicted },
         verdict: computedVerdict, submitted_at: new Date().toISOString(),
       })
     }
+    setWasConflicted(conflicted)
 
     // Clear the active-cycle pointer on the profile
     await supabase.from('profiles').update({
@@ -283,6 +306,13 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
             <div style={s.analysisText}>{analysis}</div>
           </div>
 
+          {wasConflicted && (
+            <div style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '14px', padding: '14px 16px', marginBottom: '12px' }}>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '1px', color: '#9A5F1A', textTransform: 'uppercase', marginBottom: 7 }}>Ruled on conflicting evidence</div>
+              <div style={{ fontSize: '12.5px', color: '#5A5A52', lineHeight: 1.65 }}>Your logs and what you told us disagreed, so this verdict moved one careful step and no further. When you want a firmer answer, you can re-run this trial from your Reintro tab; the newest verdict replaces this one.</div>
+            </div>
+          )}
+
           <div style={{ padding: '14px 16px', marginBottom: '12px' }}>
             <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 7 }}>Worth knowing</div>
             <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>This isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food and update its verdict.</div>
@@ -337,6 +367,59 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
           </div>
         </div>
 
+        {/* BLOCK 2.5 — Disagreement follow-up: the gap, in the user's words.
+            Neutral questions only; the ruling weighs these, nothing leads. */}
+        {disagreeing && (
+          <div style={{ ...s.questionBlock, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '16px' }}>
+            <div style={s.questionLabel}>Tell us about the gap.</div>
+            <div style={s.questionSub}>Your logs and what you just said disagree. That is worth getting right, so three quick questions. The ruling weighs your answers.</div>
+
+            <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '8px' }}>
+              {accuracy === 'worse' ? 'What did you feel that the logs missed? (optional)' : 'What do the logs overstate? (optional)'}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
+              {['Bloating', 'Gas', 'Stomach pain', 'Reflux', 'Headache', 'Fatigue', 'Brain fog', 'Skin'].map(sym => {
+                const on = feltWhat.includes(sym)
+                return (
+                  <button key={sym}
+                    style={{ padding: '7px 12px', borderRadius: '999px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', border: on ? '1.5px solid #3D5C3C' : '1px solid rgba(0,0,0,0.1)', background: on ? '#EDF3ED' : '#FAF8F4', color: on ? '#2D6B42' : '#5A5A52' }}
+                    onClick={() => setFeltWhat(v => on ? v.filter(x => x !== sym) : [...v, sym])}>
+                    {sym}
+                  </button>
+                )
+              })}
+            </div>
+            <input
+              style={{ ...s.textarea, padding: '10px 12px', fontSize: '14px', marginBottom: '16px' }}
+              value={feltWhatText}
+              onChange={e => setFeltWhatText(e.target.value)}
+              placeholder="Anything else, in your own words"
+            />
+
+            <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '8px' }}>When was it strongest?</div>
+            <div style={{ ...s.stackBtns, marginBottom: '16px' }}>
+              {[
+                { id: 'exposure', label: `On the days I ate ${food.toLowerCase()}` },
+                { id: 'washout', label: 'In the days after' },
+                { id: 'whole', label: 'The whole two weeks, evenly' },
+              ].map(opt => (
+                <button key={opt.id} style={feltWhen === opt.id ? s.stackBtnOn : s.stackBtn} onClick={() => setFeltWhen(opt.id)}>{opt.label}</button>
+              ))}
+            </div>
+
+            <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '8px' }}>Do you think {food.toLowerCase()} was behind it?</div>
+            <div style={s.stackBtns}>
+              {[
+                { id: 'food', label: `Yes, I think it was the ${food.toLowerCase()}` },
+                { id: 'unsure', label: 'Not sure' },
+                { id: 'other', label: 'Probably something else going on' },
+              ].map(opt => (
+                <button key={opt.id} style={feltCause === opt.id ? s.stackBtnOn : s.stackBtn} onClick={() => setFeltCause(opt.id)}>{opt.label}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* BLOCK 3 — Confounders, free text, no examples */}
         <div style={s.questionBlock}>
           <div style={s.questionLabel}>Was anything else going on? (optional)</div>
@@ -355,7 +438,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         <button
           style={allAnswered() ? s.cta : { ...s.cta, background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none', cursor: 'not-allowed' }}
           disabled={!allAnswered()}
-          title={!allAnswered() ? 'Answer the accuracy question above first' : undefined}
+          title={!allAnswered() ? (disagreeing ? 'Answer the follow-up questions above first' : 'Answer the accuracy question above first') : undefined}
           onClick={handleSubmit}
         >
           Get my verdict →
