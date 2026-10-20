@@ -17,50 +17,55 @@ const CONTEXT_OPTIONS = [
   'Nothing unusual, a normal week',
 ]
 
+const PAGE_CSS = `
+  .sn-input { background: #FFFFFF; border: none; box-shadow: var(--shadow-1), inset 0 1px 3px rgba(56,62,48,0.05); transition: box-shadow var(--t-fast) var(--ease); }
+  .sn-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(61,92,60,0.30), var(--shadow-1); }
+`
+
 const s = {
-  wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column', fontFamily: 'DM Sans, sans-serif' },
-  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 10 },
-  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
+  wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column' },
+  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', boxShadow: 'var(--shadow-1)', position: 'sticky', top: 0, zIndex: 10 },
+  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#20241F' },
   logoEm: { color: '#3D5C3C', fontStyle: 'italic' },
-  back: { fontSize: '13px', color: '#7A7A72', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'DM Sans, sans-serif' },
-  weekBadge: { fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 },
+  back: { fontSize: '13px', color: '#73736A', cursor: 'pointer', background: 'none', border: 'none' },
+  weekBadge: { fontSize: '11px', color: '#3D5C3C', background: '#EDF3ED', padding: '4px 10px', borderRadius: '999px', fontWeight: 600 },
   content: { flex: 1, padding: '28px 24px 100px', maxWidth: '560px', margin: '0 auto', width: '100%' },
-  eyebrow: { fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#3D5C3C', marginBottom: '10px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, marginBottom: '6px', letterSpacing: '-0.3px' },
+  eyebrow: { display: 'block', marginBottom: '10px' },
+  title: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, marginBottom: '6px', letterSpacing: '-0.3px' },
   titleEm: { fontStyle: 'italic', color: '#3D5C3C' },
-  hint: { fontSize: '13px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.65 },
+  hint: { fontSize: '13px', color: '#73736A', marginBottom: '28px', lineHeight: 1.65 },
   sectionDivider: { display: 'flex', alignItems: 'center', gap: '12px', margin: '28px 0 20px' },
   sectionLine: { flex: 1, height: '1px', background: 'rgba(0,0,0,0.07)' },
-  sectionLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', whiteSpace: 'nowrap' },
-  questionBlock: { marginBottom: '14px', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px' },
-  questionLabel: { fontFamily: 'Fraunces, serif', fontSize: '17px', fontWeight: 300, marginBottom: '12px', lineHeight: 1.3, color: '#1C1C1C' },
-  scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#7A7A72', marginBottom: '7px' },
+  sectionLabel: { whiteSpace: 'nowrap' },
+  questionBlock: { marginBottom: '14px', padding: '18px 16px' },
+  questionLabel: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, marginBottom: '12px', lineHeight: 1.3, color: '#20241F' },
+  scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#73736A', marginBottom: '7px' },
   scaleRow: { display: 'flex', gap: '4px' },
-  sbt: { flex: 1, height: '44px', borderRadius: '9px', border: 'none', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', fontWeight: 400, color: '#5A5A52', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s' },
-  sbtOn: { flex: 1, height: '44px', borderRadius: '9px', border: 'none', background: '#3D5C3C', fontSize: '18px', cursor: 'pointer', fontWeight: 400, color: 'white', fontFamily: 'Fraunces, serif', boxShadow: '0 2px 8px rgba(61,92,60,0.3)' },
+  sbt: { flex: 1, height: '44px', borderRadius: '10px', border: 'none', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', fontWeight: 400, color: '#5A5A52', transition: 'all 0.12s' },
+  sbtOn: { flex: 1, height: '44px', borderRadius: '10px', border: 'none', background: '#3D5C3C', fontSize: '18px', cursor: 'pointer', fontWeight: 400, color: 'white', fontFamily: 'Fraunces, serif', boxShadow: 'var(--shadow-pill)' },
   chipRow: { display: 'flex', gap: '7px', flexWrap: 'wrap' },
-  chip: { padding: '10px 14px', borderRadius: '22px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '13px', cursor: 'pointer', color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s', lineHeight: 1.3 },
-  chipOn: { padding: '10px 14px', borderRadius: '22px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', color: 'white', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.3 },
-  textarea: { width: '100%', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '12px 14px', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FFFFFF', resize: 'none', height: '80px', outline: 'none' },
-  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#FAF8F4', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
-  ctaDisabled: { background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '11px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif' },
-  successCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '28px 24px', textAlign: 'center', margin: '8px 0 16px' },
+  chip: { padding: '10px 14px', borderRadius: '999px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', color: '#73736A', transition: 'all 0.12s', lineHeight: 1.3 },
+  chipOn: { padding: '10px 14px', borderRadius: '999px', border: 'none', boxShadow: 'var(--shadow-pill)', background: '#3D5C3C', fontSize: '13px', fontWeight: 600, cursor: 'pointer', color: 'white', lineHeight: 1.3 },
+  textarea: { width: '100%', borderRadius: '14px', padding: '12px 14px', fontSize: '16px', color: '#20241F', resize: 'none', height: '80px' },
+  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: 'rgba(251,248,242,0.92)', backdropFilter: 'blur(8px)', boxShadow: '0 -8px 24px rgba(56,62,48,0.06)' },
+  cta: { width: '100%' },
+  ctaDisabled: { width: '100%' },
+  successCard: { background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '24px', padding: '28px 24px', textAlign: 'center', margin: '8px 0 16px' },
   successIcon: { width: '52px', height: '52px', background: '#EDF3ED', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' },
   successTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '6px' },
   successTitleEm: { fontStyle: 'italic', color: '#3D5C3C' },
-  successSub: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.65 },
-  insightCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '18px', marginBottom: '12px' },
-  insightTag: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 8px', borderRadius: '20px', display: 'inline-block', marginBottom: '10px' },
-  insightText: { fontSize: '14px', color: '#1C1C1C', lineHeight: 1.75 },
+  successSub: { fontSize: '13px', color: '#73736A', lineHeight: 1.65 },
+  insightCard: { background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '16px', padding: '18px', marginBottom: '12px' },
+  insightTag: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 8px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' },
+  insightText: { fontSize: '14px', color: '#20241F', lineHeight: 1.75 },
   statsRow: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' },
-  statCard: { background: '#FAF8F4', borderRadius: '10px', padding: '14px', textAlign: 'center' },
-  statVal: { fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, color: '#1C1C1C', lineHeight: 1 },
-  statLabel: { fontSize: '11px', color: '#7A7A72', marginTop: '4px' },
+  statCard: { background: '#F7F5EE', borderRadius: '16px', padding: '14px', textAlign: 'center' },
+  statVal: { fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, color: '#20241F', lineHeight: 1 },
+  statLabel: { fontSize: '11px', color: '#73736A', marginTop: '4px' },
   statChange: { fontSize: '11px', fontWeight: 500, marginTop: '2px' },
-  loadingCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '24px', textAlign: 'center', marginBottom: '12px' },
+  loadingCard: { background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '16px', padding: '24px', textAlign: 'center', marginBottom: '12px' },
   spinner: { width: '28px', height: '28px', border: '2.5px solid #EDF3ED', borderTopColor: '#3D5C3C', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' },
-  loadingText: { fontSize: '13px', color: '#7A7A72', fontFamily: 'Fraunces, serif', fontStyle: 'italic' },
+  loadingText: { fontSize: '13px', color: '#73736A', fontFamily: 'Fraunces, serif', fontStyle: 'italic' },
 }
 
 // Build adaptive symptom scales based on what the user has baseline scores for
@@ -479,7 +484,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
     const secondScale = symptomScales[1]
     return (
       <div style={s.wrap}>
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } } @keyframes slideUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }`}</style>
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } } @keyframes slideUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }` + PAGE_CSS}</style>
         <div style={s.topBar}>
           <div style={{ width: 40 }} />
           <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
@@ -559,26 +564,26 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
 
   return (
     <div style={s.wrap}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }` + PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
         <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
         <div style={s.weekBadge}>Week {weekNumber}</div>
       </div>
-      <div style={s.content}>
-        <div style={s.eyebrow}>Week {weekNumber} check-in</div>
+      <div className="sn-rise" style={s.content}>
+        <div className="sn-micro" style={s.eyebrow}>Week {weekNumber} check-in</div>
         <div style={s.title}>How was your<br /><em style={s.titleEm}>week?</em></div>
         <div style={s.hint}>Honest answers only, good or bad. This is how we track what's actually working.</div>
 
         {/* ADAPTIVE SYMPTOM SCALES */}
         <div style={s.sectionDivider}>
           <div style={s.sectionLine} />
-          <div style={s.sectionLabel}>Your symptoms</div>
+          <div className="sn-micro sn-micro-dim" style={s.sectionLabel}>Your symptoms</div>
           <div style={s.sectionLine} />
         </div>
 
         {symptomScales.map(scale => (
-          <div key={scale.id} style={s.questionBlock}>
+          <div key={scale.id} className="sn-card" style={s.questionBlock}>
             <div style={s.questionLabel}>{scale.label}</div>
             <div style={s.scaleLabels}><span>{scale.low}</span><span>{scale.high}</span></div>
             <div style={s.scaleRow}>
@@ -592,21 +597,21 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         {/* OVERALL FEELING */}
         <div style={s.sectionDivider}>
           <div style={s.sectionLine} />
-          <div style={s.sectionLabel}>Overall</div>
+          <div className="sn-micro sn-micro-dim" style={s.sectionLabel}>Overall</div>
           <div style={s.sectionLine} />
         </div>
 
-        <div style={s.questionBlock}>
+        <div className="sn-card" style={s.questionBlock}>
           <div style={s.questionLabel}>How do you feel overall compared to last week?</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {['Better', 'About the same', 'Worse'].map(opt => (
-              <button key={opt} style={answers.overall_feeling === opt ? { padding: '13px 16px', borderRadius: '11px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', color: '#3D5C3C', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', fontWeight: 500 } : { padding: '13px 16px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '14px', cursor: 'pointer', color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', textAlign: 'left' }} onClick={() => setAnswer('overall_feeling', opt)}>{opt}</button>
+              <button key={opt} style={answers.overall_feeling === opt ? { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', textAlign: 'left', fontWeight: 600, boxShadow: 'var(--shadow-pill)' } : { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#F7F5EE', fontSize: '14px', cursor: 'pointer', color: '#3B4036', textAlign: 'left' }} onClick={() => setAnswer('overall_feeling', opt)}>{opt}</button>
             ))}
           </div>
         </div>
 
         {/* WHAT CHANGED */}
-        <div style={s.questionBlock}>
+        <div className="sn-card" style={s.questionBlock}>
           <div style={s.questionLabel}>What changed this week? <span style={{ fontSize: '12px', color: '#7A7A72', fontWeight: 400 }}>(select all that apply)</span></div>
           <div style={s.chipRow}>
             {CONTEXT_OPTIONS.map(opt => (
@@ -622,11 +627,11 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         {/* COMPLIANCE */}
         <div style={s.sectionDivider}>
           <div style={s.sectionLine} />
-          <div style={s.sectionLabel}>Compliance</div>
+          <div className="sn-micro sn-micro-dim" style={s.sectionLabel}>Compliance</div>
           <div style={s.sectionLine} />
         </div>
 
-        <div style={s.questionBlock}>
+        <div className="sn-card" style={s.questionBlock}>
           <div style={s.questionLabel}>How closely did you follow the elimination plan this week?</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {['Fully', 'Mostly', 'Some slip-ups', 'Not at all'].map(opt => (
@@ -636,7 +641,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         </div>
 
         {/* NOTES */}
-        <div style={s.questionBlock}>
+        <div className="sn-card" style={s.questionBlock}>
           <div style={s.questionLabel}>Anything else worth noting? <span style={{ fontSize: '12px', color: '#7A7A72', fontWeight: 400 }}>(optional)</span></div>
           <textarea
             style={s.textarea}

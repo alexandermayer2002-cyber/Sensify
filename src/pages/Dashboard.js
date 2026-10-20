@@ -351,7 +351,7 @@ function YourNumbers({ profile, weekFactors }) {
     <div className="snfy-card" style={{ marginTop: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: '#1C1C1C' }}>Your numbers</div>
-        <select value={cat} onChange={e => setCat(e.target.value)} style={{ background: '#F4F2EC', border: 'none', borderRadius: 10, padding: '7px 11px', fontSize: 12, color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif', cursor: 'pointer', outline: 'none' }}>
+        <select value={cat} onChange={e => setCat(e.target.value)} style={{ background: '#F4F2EC', border: 'none', borderRadius: 10, padding: '7px 11px', fontSize: 12, color: '#1C1C1C', cursor: 'pointer', outline: 'none' }}>
           {Object.entries(CATS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
         </select>
       </div>
@@ -459,7 +459,7 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
         </div>
         <div style={{ display: 'flex', gap: 4, marginTop: 6, marginBottom: 4 }}>
           {[['all', 'Both phases'], ['elimination', 'Elimination'], ['reintroduction', 'Reintro']].map(([key, label]) => (
-            <button key={key} onClick={() => setPhaseLens(key)} style={{ flex: 1, textAlign: 'center', fontSize: '10.5px', fontWeight: phaseLens === key ? 600 : 400, color: phaseLens === key ? '#1C1C1C' : '#8A8A82', background: phaseLens === key ? '#fff' : 'transparent', padding: '4px 0', borderRadius: '6px', border: phaseLens === key ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{label}</button>
+            <button key={key} onClick={() => setPhaseLens(key)} style={{ flex: 1, textAlign: 'center', fontSize: '10.5px', fontWeight: phaseLens === key ? 600 : 400, color: phaseLens === key ? '#1C1C1C' : '#8A8A82', background: phaseLens === key ? '#fff' : 'transparent', padding: '4px 0', borderRadius: '6px', border: phaseLens === key ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent', cursor: 'pointer' }}>{label}</button>
           ))}
         </div>
       </>)}
@@ -472,7 +472,7 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
             onClick={() => setActiveMetric(m.id)}
             style={{
               padding: '4px 10px', borderRadius: '20px', border: 'none', cursor: 'pointer',
-              fontSize: '11px', fontWeight: 500, fontFamily: 'DM Sans, sans-serif',
+              fontSize: '11px', fontWeight: 500,
               background: selected === m.id ? m.color : 'rgba(0,0,0,0.04)',
               color: selected === m.id ? 'white' : '#7A7A72',
               transition: 'all 0.15s',
@@ -632,11 +632,31 @@ function WeekFactorCards({ days, factors, profile }) {
     return def.labels[def.bands[avg]]
   }
 
+  // Compact stat strip: one glanceable row of the week's factors; tapping a
+  // cell expands its full detail below (expand-on-tap preserved).
   return (
-    <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: 7 }}>
-      {factorKeys.map(key => {
+    <div style={{ marginTop: 16 }}>
+      <div style={{ display: 'flex', gap: 7 }}>
+        {factorKeys.map(key => {
+          const def = FACTOR_DEFS[key]
+          const weekAvg = weekAvgLabel(key)
+          if (!weekAvg) return null
+          const isOpen = open === key
+          return (
+            <button key={key} type="button" onClick={() => setOpen(isOpen ? null : key)} style={{
+              flex: 1, minWidth: 0, border: 'none', cursor: 'pointer',
+              background: isOpen ? 'var(--forest-100)' : 'var(--tint-warm)', borderRadius: 10,
+              padding: '9px 4px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+            }}>
+              <span className="sn-micro sn-micro-dim" style={{ fontSize: 8.5 }}>{def.name}</span>
+              <span style={{ fontSize: 11.5, fontWeight: 600, color: isOpen ? 'var(--forest-500)' : 'var(--ink-soft)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{weekAvg.toLowerCase()}</span>
+            </button>
+          )
+        })}
+      </div>
+      {open && (() => {
+        const key = open
         const def = FACTOR_DEFS[key]
-        const isOpen = open === key
         const rawNorm = profile?.[def.normField]
         const norm = def.numeric
           ? (rawNorm != null && !isNaN(parseFloat(rawNorm)) ? `${parseFloat(rawNorm)} ${def.unit}` : null)
@@ -644,23 +664,7 @@ function WeekFactorCards({ days, factors, profile }) {
         const weekAvg = weekAvgLabel(key)
         if (!weekAvg) return null
         return (
-          <div key={key} onClick={() => setOpen(isOpen ? null : key)} style={{
-            background: '#FAF8F4', borderRadius: 12, padding: '11px 13px', cursor: 'pointer',
-            border: isOpen ? '1px solid rgba(61,92,60,0.18)' : '1px solid transparent',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7, minWidth: 0 }}>
-                {def.icon}
-                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#1C1C1C' }}>{def.name}</span>
-                {!isOpen && (
-                  <span style={{ fontSize: 11.5, color: '#8A8A82', marginLeft: 5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {norm ? `norm ${norm.toLowerCase()} \u00b7 ` : ''}this week {weekAvg.toLowerCase()}
-                  </span>
-                )}
-              </div>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#B0B0A8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', flexShrink: 0 }}><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            {isOpen && (
+          <div style={{ background: 'var(--tint-warm)', borderRadius: 'var(--r-md)', padding: '12px 14px', marginTop: 7 }}>
               <>
                 {def.numeric ? (() => {
                   const tv = threeVals(key)
@@ -692,18 +696,18 @@ function WeekFactorCards({ days, factors, profile }) {
                 <div style={{ display: 'flex', gap: 20, marginTop: 9 }}>
                   {norm && (
                     <div>
-                      <div style={{ fontSize: 9.5, color: '#A0A096', textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: 'DM Mono, monospace' }}>Your norm</div>
+                      <div className="sn-micro sn-micro-dim">Your norm</div>
                       <div style={{ fontSize: 13.5, fontWeight: 500, color: '#8A8A82', marginTop: 1 }}>{norm}</div>
                     </div>
                   )}
                   <div>
-                    <div style={{ fontSize: 9.5, color: '#A0A096', textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: 'DM Mono, monospace' }}>This week</div>
+                    <div className="sn-micro sn-micro-dim">This week</div>
                     <div style={{ fontSize: 13.5, fontWeight: 500, color: '#3D5C3C', marginTop: 1 }}>{weekAvg}{key === 'drinks' ? '' : ' avg'}</div>
                   </div>
                 </div>
                 )}
                 <div style={{ marginTop: 11, paddingTop: 9, borderTop: '1px solid rgba(0,0,0,0.05)' }} onClick={e => e.stopPropagation()}>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '0.8px', color: '#A0A096', textTransform: 'uppercase', marginBottom: 7 }}>This week, day by day</div>
+                  <div className="sn-micro sn-micro-dim" style={{ marginBottom: 7 }}>This week, day by day</div>
                   <div style={{ display: 'flex', gap: 7, alignItems: 'flex-end', height: 34 }}>
                     {days.map((d, i) => {
                       const val = byDate[d.dateStr]?.[key]
@@ -753,10 +757,9 @@ function WeekFactorCards({ days, factors, profile }) {
                   </div>
                 </div>
               </>
-            )}
           </div>
         )
-      })}
+      })()}
     </div>
   )
 }
@@ -1543,41 +1546,41 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   {betweenCycles && <div className="sn-micro" style={{ color: '#8BAE8A', marginTop: 8 }}>REINTRODUCTION · DAY {currentDay - 56}{(currentDay - 56) <= (labResult?.foods?.length || 8) * 14 ? ` OF ${(labResult?.foods?.length || 8) * 14}` : ''} · {reintroRows.some(r => r.verdict) ? 'CYCLE COMPLETE' : 'TESTING OPEN'}</div>}
                 </div>
                 {verdictReadyFood ? (
-                  <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#C9A227', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 0 22px rgba(201,162,39,0.35)' }}>
+                  <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#C9A227', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', boxShadow: '0 0 22px rgba(201,162,39,0.35)' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Your {verdictReadyFood} verdict is ready</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                   </button>
                 ) : cycleStaleLite ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
-                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                       <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Restart the {activeCycleLite.food.toLowerCase()} cycle</span>
                       <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                     </button>
-                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11.5, color: 'rgba(250,248,244,0.55)', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
+                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11.5, color: 'rgba(250,248,244,0.55)', textDecoration: 'underline', cursor: 'pointer' }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
                   </div>
                 ) : cycleStaleFood ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
-                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#D4894A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 0 20px rgba(212,137,74,0.3)' }}>
+                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#D4894A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', boxShadow: '0 0 20px rgba(212,137,74,0.3)' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Restart your {cycleStaleFood.toLowerCase()} cycle</span>
                       <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                     </button>
-                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11.5, color: 'rgba(250,248,244,0.55)', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
+                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11.5, color: 'rgba(250,248,244,0.55)', textDecoration: 'underline', cursor: 'pointer' }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
                   </div>
                 ) : profile?.program_phase === 'complete' ? (
-                  <button onClick={() => goTab('Verdicts')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  <button onClick={() => goTab('Verdicts')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Your Food Map is complete</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                   </button>
                 ) : betweenCycles ? (
                   <div>
-                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Pick your next food</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                     </button>
-                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: '8px 2px 0', fontSize: 12, color: 'rgba(250,248,244,0.5)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textDecoration: 'underline', textUnderlineOffset: 3 }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
+                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: '8px 2px 0', fontSize: 12, color: 'rgba(250,248,244,0.5)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
                   </div>
                 ) : !dailyDone ? (
-                  <button onClick={() => setScreen('daily-checkin')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  <button onClick={() => setScreen('daily-checkin')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>{new Date().getHours() >= 17 ? "Tonight's check-in" : "Today's check-in"}</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                   </button>
@@ -1683,7 +1686,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   }
                   return <p style={{ color: 'rgba(255,255,255,0.85)', lineHeight: 1.75, marginBottom: 0, fontSize: '14px' }}>{milestoneMessage}</p>
                 })()}
-                <button onClick={() => setMilestoneMessage(null)} style={{ position: 'absolute', top: '14px', right: '14px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '18px', lineHeight: 1, fontFamily: 'DM Sans, sans-serif' }}>×</button>
+                <button onClick={() => setMilestoneMessage(null)} style={{ position: 'absolute', top: '14px', right: '14px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
               </div>
             )}
 
@@ -1861,19 +1864,19 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                       await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigger_type: 'away_gap_restart', hardest_parts: [], status: 'responded', admin_note: `${awayGap.days} silent days → elimination clock restarted` })
                       await supabase.from('profiles').update({ protocol_start_date: t }).eq('id', session.user.id)
                       window.location.reload()
-                    }} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '14px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Restart elimination · day 1 today</button>
+                    }} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '14px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Restart elimination · day 1 today</button>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       <button onClick={async () => {
                         await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigger_type: 'away_gap_attested', hardest_parts: [], status: 'responded', admin_note: `${awayGap.days} silent days → user attested plan held (gap attested, not observed)` })
                         setAwayGap(null)
-                      }} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '13px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Yes, I stayed on my plan</button>
+                      }} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '13px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>Yes, I stayed on my plan</button>
                       <button onClick={async () => {
                         const t = todayLocal()
                         await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigger_type: 'away_gap_restart', hardest_parts: [], status: 'responded', admin_note: `${awayGap.days} silent days → user chose restart (plan did not hold)` })
                         await supabase.from('profiles').update({ protocol_start_date: t }).eq('id', session.user.id)
                         window.location.reload()
-                      }} style={{ width: '100%', background: '#FAF8F4', color: '#1C1C1C', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 12, padding: '13px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Not really, restart my clock</button>
+                      }} style={{ width: '100%', background: '#FAF8F4', color: '#1C1C1C', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 12, padding: '13px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>Not really, restart my clock</button>
                     </div>
                   )}
                 </div>
@@ -1887,7 +1890,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: 6 }}>Your lab kit</div>
                   <div style={{ fontSize: 13.5, color: '#3A3A35', lineHeight: 1.55 }}>Done with your test? Tell us so we know your results are on the way.</div>
                 </div>
-                <button onClick={async () => { const sm = serializeMilestones({ ...normalizeMilestones(profile?.shown_milestones), test_taken: true }); await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '11px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 }}>I took my test</button>
+                <button onClick={async () => { const sm = serializeMilestones({ ...normalizeMilestones(profile?.shown_milestones), test_taken: true }); await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: 12, padding: '11px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>I took my test</button>
               </div>
             )}
 
@@ -1913,14 +1916,19 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
 
             {/* AI INSIGHT — the voice card */}
-            <div className="snfy-insight" style={{ marginTop: 14 }}>
+            <div className="snfy-insight sn-rise-3" style={{ marginTop: 14 }}>
               <div className="snfy-insight-head">
                 <span className="snfy-insight-dot"></span>
-                <span className="snfy-insight-tag">{
-                  profile?.latest_insight ? `WEEKLY INSIGHT · WEEK ${profile?.latest_insight_week || 1}`
-                  : (currentDay >= 1 ? `PROTOCOL · DAY ${currentDay}` : 'GETTING STARTED')
+                <span className="sn-micro">{
+                  profile?.latest_insight ? 'WEEKLY INSIGHT'
+                  : (currentDay >= 1 ? 'PROTOCOL' : 'GETTING STARTED')
                 }</span>
               </div>
+              {profile?.latest_insight ? (
+                <div className="snfy-insight-num">Week {profile?.latest_insight_week || 1}</div>
+              ) : currentDay >= 1 ? (
+                <div className="snfy-insight-num">Day {currentDay}</div>
+              ) : null}
               <p>{
                 profile?.latest_insight
                 || (currentDay >= 1
@@ -1929,26 +1937,26 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   ? 'You are set. Elimination begins tomorrow. Your day 1 briefing will meet you here.'
                   : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
               }</p>
-              {profile?.latest_insight && <div className="snfy-insight-foot">GENERATED FROM YOUR CHECK-IN DATA</div>}
+              {profile?.latest_insight && <div className="sn-micro sn-micro-dim" style={{ marginTop: 12 }}>GENERATED FROM YOUR CHECK-IN DATA</div>}
             </div>
 
             {/* WEEKLY CHECK-IN — slim state card */}
             <div className="snfy-weekly-card">
             {showCheckinCard ? (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: checkinLate ? '#FDF2EA' : '#EDF3ED', border: checkinLate ? '1px solid rgba(212,137,74,0.25)' : '1px solid rgba(61,92,60,0.18)', borderRadius: 12, padding: '12px 14px', marginTop: 14 }}>
+              <div className={checkinLate ? 'sn-row' : 'sn-row sn-row-up'} style={{ justifyContent: 'space-between', marginTop: 14, background: checkinLate ? 'var(--limit-100)' : undefined }}>
                 <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1C1C1C' }}>Weekly check-in</div>
-                  <div style={{ fontSize: 10.5, color: checkinLate ? '#8A5410' : '#3D5C3C', marginTop: 1 }}>{checkinLate ? "Catch up, your data still matters" : 'Due now · takes 2 minutes'}</div>
+                  <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--ink)' }}>Weekly check-in</div>
+                  <div style={{ fontSize: 10.5, color: checkinLate ? 'var(--limit-700)' : 'var(--forest-500)', marginTop: 1 }}>{checkinLate ? "Catch up, your data still matters" : 'Due now · takes 2 minutes'}</div>
                 </div>
                 <button className={`snfy-btn${checkinLate ? ' amber' : ''}`} style={{ padding: '9px 15px', fontSize: 12.5 }} onClick={() => setScreen('checkin')}>Start →</button>
               </div>
             ) : (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FAF8F4', borderRadius: 12, padding: '12px 14px', marginTop: 14 }}>
+              <div className="sn-row" style={{ justifyContent: 'space-between', marginTop: 14 }}>
                 <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1C1C1C' }}>Weekly check-in</div>
-                  <div style={{ fontSize: 10.5, color: '#8A8A82', marginTop: 1 }}>{checkins.length === 0 ? 'Opens at the end of week 1' : 'Done. Next one opens at week\u2019s end'}</div>
+                  <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--ink)' }}>Weekly check-in</div>
+                  <div style={{ fontSize: 10.5, color: 'var(--gray)', marginTop: 1 }}>{checkins.length === 0 ? 'Opens at the end of week 1' : 'Done. Next one opens at week\u2019s end'}</div>
                 </div>
-                <span style={{ fontSize: 11, color: '#B8B6AE' }}>{checkins.length === 0 ? 'Locked' : '\u2713'}</span>
+                <span style={{ fontSize: 11, color: 'var(--gray-faint)' }}>{checkins.length === 0 ? 'Locked' : '\u2713'}</span>
               </div>
             )}
             </div>
@@ -2029,7 +2037,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             <span style={{ fontSize: '10px', color: '#8A8A82' }}>{l.label}</span>
                           </div>
                         ))}
-                        <button onClick={() => setLegendOpen(v => !v)} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: '10px', color: '#3D5C3C', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{legendOpen ? 'Hide' : 'What do these mean?'}</button>
+                        <button onClick={() => setLegendOpen(v => !v)} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: '10px', color: '#3D5C3C', textDecoration: 'underline', cursor: 'pointer' }}>{legendOpen ? 'Hide' : 'What do these mean?'}</button>
                       </div>
                       {legendOpen && (
                         <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -2065,7 +2073,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               const goto = (t, s) => { setGuideOpen(false); window.scrollTo(0, 0); setTab(t); setScreen(s) }
               return (
                 <>
-                  <button className="snfy-guide-slot" onClick={() => setGuideOpen(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: 18, padding: '14px 15px', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 2px 10px rgba(61,92,60,0.1)', marginBottom: 14 }}>
+                  <button className="snfy-guide-slot" onClick={() => setGuideOpen(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: 18, padding: '14px 15px', cursor: 'pointer', textAlign: 'left', boxShadow: '0 2px 10px rgba(61,92,60,0.1)', marginBottom: 14 }}>
                     <div style={{ width: 34, height: 34, borderRadius: 10, background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
                     </div>
@@ -2084,7 +2092,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.4px', color: '#3D5C3C', marginBottom: 6 }}>Week one · Day {currentDay} of 7</div>
                             <div style={{ fontFamily: 'Fraunces, serif', fontSize: 23, fontWeight: 400, color: '#1C1C1C', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Your first week.</div>
                           </div>
-                          <button onClick={() => setGuideOpen(false)} style={{ width: 27, height: 27, borderRadius: '50%', background: '#EFEDE6', border: 'none', color: '#7A7A72', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', flexShrink: 0 }}>✕</button>
+                          <button onClick={() => setGuideOpen(false)} style={{ width: 27, height: 27, borderRadius: '50%', background: '#EFEDE6', border: 'none', color: '#7A7A72', fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>✕</button>
                         </div>
                         <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.65, marginBottom: 18 }}>{currentDay === 1 ? 'Elimination starts today.' : 'Elimination is underway.'} Eight clean weeks gives your body a quiet baseline, and every answer you earn later is measured against it.</div>
 
@@ -2095,7 +2103,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
                               {flagged.map(f => <span key={f.name} style={{ background: '#EDF3ED', color: '#3D5C3C', borderRadius: 9, padding: '4px 11px', fontSize: 11.5, fontWeight: 600 }}>{f.name}</span>)}
                             </div>
-                            <button onClick={() => goto('verdicts', 'food-map')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#3D5C3C', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{profile?.protocol_track === 'common' ? 'See your foods \u2192' : 'See sensitivity levels \u2192'}</button>
+                            <button onClick={() => goto('verdicts', 'food-map')} style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#3D5C3C', fontWeight: 600, cursor: 'pointer' }}>{profile?.protocol_track === 'common' ? 'See your foods \u2192' : 'See sensitivity levels \u2192'}</button>
                           </div>
                         </div>
 
@@ -2126,7 +2134,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             ['Reintro', `From day 57, you eat ${profile?.protocol_track === 'common' ? 'each food' : 'your flagged foods'} again one at a time to find out which ones actually cause problems.`, 'reintro', 'reintro-tab'],
                             ['Verdicts', `Where it all ends up. ${profile?.protocol_track === 'common' ? 'The foods you are testing' : 'Your flagged foods'} today, turning into answers you've earned along the way.`, 'verdicts', 'food-map'],
                           ].map(([nm, desc, t, scr], i, arr) => (
-                            <button key={nm} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '11px 13px', borderRadius: 12, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', marginBottom: i < arr.length - 1 ? 7 : 0, width: '100%', cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif', transition: 'border-color 0.15s, box-shadow 0.15s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(61,92,60,0.3)'; e.currentTarget.style.boxShadow = '0 3px 12px rgba(34,48,31,0.06)' }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.07)'; e.currentTarget.style.boxShadow = 'none' }}>
+                            <button key={nm} onClick={() => goto(t, scr)} style={{ display: 'flex', gap: 11, alignItems: 'center', padding: '11px 13px', borderRadius: 12, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', marginBottom: i < arr.length - 1 ? 7 : 0, width: '100%', cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.15s, box-shadow 0.15s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(61,92,60,0.3)'; e.currentTarget.style.boxShadow = '0 3px 12px rgba(34,48,31,0.06)' }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.07)'; e.currentTarget.style.boxShadow = 'none' }}>
                               <span style={{ background: '#EDF3ED', borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 600, color: '#3D5C3C', flexShrink: 0 }}>{nm}</span>
                               <span style={{ fontSize: 11.5, color: '#7A7A72', lineHeight: 1.5, flex: 1 }}>{desc}</span>
                               <span style={{ color: '#3D5C3C', fontSize: 14, fontWeight: 600 }}>›</span>

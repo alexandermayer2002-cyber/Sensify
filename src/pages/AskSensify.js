@@ -297,7 +297,7 @@ function verdictTextColor(label) {
 const s = {
   priorReveal: { display: 'flex', margin: '4px auto 16px', color: '#7A7A72' },
   priorHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--gray-faint)', margin: '4px 0 12px' },
-  priorHide: { background: 'none', border: 'none', color: '#8BAE8A', fontSize: '11px', fontWeight: 600, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px' },
+  priorHide: { background: 'none', border: 'none', color: 'var(--forest-500)', fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.17em' },
   priorDivider: { textAlign: 'center', fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--gray-faint)', margin: '8px 0 16px', paddingTop: '12px', borderTop: '1px solid rgba(0,0,0,0.06)' },
   wrap: { display: 'flex', flexDirection: 'column', height: 'calc(100% - 24px)', maxWidth: '680px', margin: '12px auto', width: 'calc(100% - 24px)', background: 'var(--paper)', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '24px', overflow: 'hidden' },
   header: { padding: '20px 20px 14px', background: 'var(--paper)' },

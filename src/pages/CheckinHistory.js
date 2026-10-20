@@ -376,7 +376,7 @@ const s = {
   checkinDate: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gray-faint)' },
   checkinScores: { display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' },
   scoreChip: { display: 'flex', align: 'center', gap: '5px', background: 'var(--tint-warm)', border: 'none', borderRadius: '10px', padding: '7px 11px' },
-  scoreLabel: { fontSize: '10px', color: '#7A7A72', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.4px' },
+  scoreLabel: { fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#7A7A72', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em' },
   scoreVal: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, lineHeight: 1, marginTop: '1px' },
   compliancePill: { fontSize: '11px', fontWeight: 500, padding: '4px 11px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' },
   insightBox: { background: '#EDF3ED', borderRadius: '16px', padding: '11px 13px' },

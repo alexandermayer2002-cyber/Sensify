@@ -384,13 +384,13 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
           <div style={{ width: 40 }} />
         </div>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', textAlign: 'center' }}>
-          <div style={{ width: 68, height: 68, borderRadius: '50%', background: '#22301F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#8BAE8A', marginBottom: 22, boxShadow: '0 12px 32px rgba(34,48,31,0.28), 0 0 0 8px rgba(139,174,138,0.08)' }}>✓</div>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 30, fontWeight: 300, color: '#1C1C1C', marginBottom: 8 }}>Today, logged.</div>
+        <div className="sn-rise" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', textAlign: 'center' }}>
+          <div style={{ width: 68, height: 68, borderRadius: '50%', background: '#22301F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#8BAE8A', marginBottom: 22, boxShadow: 'var(--shadow-3), 0 0 0 8px rgba(139,174,138,0.08)' }}>✓</div>
+          <div className="sn-headline" style={{ fontSize: 38, marginBottom: 8 }}>Today, logged.</div>
           {reward.streak > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 24 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.7)' }}></span>
-              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 12, color: '#3D5C3C', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.2px' }}>{reward.streak} day streak, unbroken</span>
+              <span className="sn-micro" style={{ fontSize: 11 }}>{reward.streak} day streak, unbroken</span>
             </div>
           )}
           {/* Week row */}
@@ -411,12 +411,12 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           </div>
           <div style={{ fontSize: 15, lineHeight: 1.6, color: '#4A4A45', maxWidth: 320, marginBottom: reward.onRecord ? 14 : 32 }}>{reward.reflection}</div>
           {reward.onRecord && (
-            <div style={{ background: '#FFFFFF', border: '1px solid rgba(61,92,60,0.18)', borderRadius: 12, padding: '11px 15px', marginBottom: 28, maxWidth: 320 }}>
-              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7.5, letterSpacing: '1.2px', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2C9D8A', boxShadow: '0 0 7px rgba(44,157,138,0.7)' }}></span>On the record</div>
+            <div style={{ background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1)', borderRadius: 16, padding: '11px 15px', marginBottom: 28, maxWidth: 320 }}>
+              <div className="sn-micro" style={{ fontSize: 8.5, marginBottom: 5, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 5, height: 5, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 7px rgba(139,174,138,0.7)' }}></span>On the record</div>
               <div style={{ fontSize: 12.5, color: '#4A4A45', lineHeight: 1.55 }}>{reward.onRecord}</div>
             </div>
           )}
-          <button style={{ ...s.cta, maxWidth: 280 }} onClick={() => { onComplete && onComplete() }}>Done →</button>
+          <button className="sn-btn" style={{ ...s.cta, maxWidth: 280 }} onClick={() => { onComplete && onComplete() }}>Done →</button>
         </div>
       </div>
     )
@@ -516,11 +516,11 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
 
         <div className="sn-card" style={s.block}>
           <div style={s.label}>How many hours did you sleep last night? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>to the half hour is fine</span></div>
-          <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'sleep' ? null : 'sleep') }} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: sleep === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+          <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'sleep' ? null : 'sleep') }} style={{ width: '100%', textAlign: 'left', background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1), inset 0 1px 3px rgba(56,62,48,0.05)', borderRadius: 14, padding: '13px 15px', fontSize: 15, color: sleep === '' ? '#B8B6AE' : '#20241F', cursor: 'pointer' }}>
             {sleep === '' ? 'Tap to enter' : `${sleep} hours`}
           </button>
           {openPad === 'sleep' && (
-            <div style={{ marginTop: 10 }}>
+            <div className="sn-pad" style={{ marginTop: 10 }}>
               <NumPad value={sleep} onChange={v => { setPadWarning(null); setSleep(v) }} decimals maxDigits={2} unit="hours" onSubmit={() => confirmPad('sleep', sleep)} />
               {padWarning === 'sleep' && <div style={s.padWarn}>{PAD_LIMITS.sleep.warn}</div>}
             </div>
@@ -534,11 +534,11 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
 
         <div className="sn-card" style={s.block}>
           <div style={s.label}>How many cups of water today?</div>
-          <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'hydration' ? null : 'hydration') }} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: hydration === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+          <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'hydration' ? null : 'hydration') }} style={{ width: '100%', textAlign: 'left', background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1), inset 0 1px 3px rgba(56,62,48,0.05)', borderRadius: 14, padding: '13px 15px', fontSize: 15, color: hydration === '' ? '#B8B6AE' : '#20241F', cursor: 'pointer' }}>
             {hydration === '' ? 'Tap to enter' : `${hydration} cups`}
           </button>
           {openPad === 'hydration' && (
-            <div style={{ marginTop: 10 }}>
+            <div className="sn-pad" style={{ marginTop: 10 }}>
               <NumPad value={hydration} onChange={v => { setPadWarning(null); setHydration(v) }} maxDigits={2} unit="cups" onSubmit={() => confirmPad('hydration', hydration)} />
               {padWarning === 'hydration' && <div style={s.padWarn}>{PAD_LIMITS.hydration.warn}</div>}
             </div>
@@ -555,11 +555,11 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         {isDrinker && (
           <div className="sn-card" style={s.block}>
             <div style={s.label}>How many drinks today?</div>
-            <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'drinks' ? null : 'drinks') }} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: drinks === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+            <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'drinks' ? null : 'drinks') }} style={{ width: '100%', textAlign: 'left', background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1), inset 0 1px 3px rgba(56,62,48,0.05)', borderRadius: 14, padding: '13px 15px', fontSize: 15, color: drinks === '' ? '#B8B6AE' : '#20241F', cursor: 'pointer' }}>
               {drinks === '' ? 'Tap to enter' : `${drinks} ${drinks === '1' ? 'drink' : 'drinks'}`}
             </button>
             {openPad === 'drinks' && (
-              <div style={{ marginTop: 10 }}>
+              <div className="sn-pad" style={{ marginTop: 10 }}>
                 <NumPad value={drinks} onChange={v => { setPadWarning(null); setDrinks(v) }} maxDigits={2} unit="drinks" onSubmit={() => confirmPad('drinks', drinks)} />
                 {padWarning === 'drinks' && <div style={s.padWarn}>{PAD_LIMITS.drinks.warn}</div>}
               </div>
@@ -602,7 +602,8 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                     onChange={e => { setRecallText(e.target.value); setRecallTags(null) }}
                     rows={2}
                     placeholder=""
-                    style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.09)', background: '#FFFFFF', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', resize: 'vertical', lineHeight: 1.5 }}
+                    className="sn-input"
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: '12px', fontSize: '16px', color: '#20241F', resize: 'vertical', lineHeight: 1.5 }}
                   />
                   {recallText.trim().length > 2 && recallTags === null && (
                     <button type="button" disabled={recallBusy} onClick={async () => {
@@ -612,13 +613,13 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                         setRecallTags(await parseRecallFoods(recallText))
                       } catch (e) { setRecallTags([]) }
                       setRecallBusy(false)
-                    }} style={{ marginTop: '8px', background: 'none', border: 'none', padding: 0, fontSize: '12px', fontWeight: 600, color: '#3D5C3C', textDecoration: 'underline', textUnderlineOffset: 2, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                    }} style={{ marginTop: '8px', background: 'none', border: 'none', padding: 0, fontSize: '12px', fontWeight: 600, color: '#3D5C3C', textDecoration: 'underline', textUnderlineOffset: 2, cursor: 'pointer' }}>
                       {recallBusy ? 'Reading...' : 'Check what we read from it'}
                     </button>
                   )}
                   {recallTags && recallTags.length > 0 && (
                     <div style={{ marginTop: '10px' }}>
-                      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8.5px', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#9A927E', marginBottom: '6px' }}>We read it as · tap anything we got wrong</div>
+                      <div className="sn-micro sn-micro-dim" style={{ marginBottom: '6px' }}>We read it as · tap anything we got wrong</div>
                       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                         {recallTags.map((t, i) => (
                           <button key={i} type="button" onClick={() => setRecallTags(recallTags.filter((_, j) => j !== i))}
@@ -638,7 +639,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       )}
 
       <div style={s.footer}>
-        <button style={complete ? s.cta : s.ctaOff} disabled={!complete || saving} onClick={submit}>
+        <button className="sn-btn" style={s.cta} disabled={!complete || saving} onClick={submit}>
           {saving ? 'Saving...' : 'Done for today →'}
         </button>
       </div>

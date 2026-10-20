@@ -547,43 +547,43 @@ function EvidenceNeedle({ logs = [], cycleStartStr }) {
   ]
 
   return (
-    <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '16px', marginBottom: '14px' }}>
-      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase', color: '#7A7A72', marginBottom: '12px' }}>The evidence so far</div>
-      <div style={{ display: 'flex', marginBottom: '5px' }}>
+    <div style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px', marginBottom: '14px' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, letterSpacing: '0.17em', textTransform: 'uppercase', color: 'var(--forest-500)', marginBottom: '12px' }}>The evidence so far</div>
+      <div style={{ display: 'flex', marginBottom: '7px' }}>
         {zones.map(z => (
-          <div key={z.label} style={{ width: `${z.width}%`, fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.8px', textTransform: 'uppercase', color: z.color }}>{z.label}</div>
+          <div key={z.label} style={{ width: `${z.width}%`, fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.8px', textTransform: 'uppercase', color: z.color }}>{z.label}</div>
         ))}
       </div>
       <div style={{ position: 'relative', paddingTop: '4px', paddingBottom: '4px' }}>
-        <div style={{ display: 'flex', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', height: '9px', borderRadius: '5px', overflow: 'hidden' }}>
           {zones.map(z => (
             <div key={z.label} style={{ width: `${z.width}%`, background: z.color + '2E' }} />
           ))}
         </div>
-        <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${position}%`, width: '2px', marginLeft: '-1px', background: '#1C1C1C', borderRadius: '1px', transition: 'left 0.4s ease' }} />
+        <div style={{ position: 'absolute', top: '50%', left: `${position}%`, transform: 'translate(-50%, -50%)', width: '15px', height: '15px', borderRadius: '50%', background: 'var(--ink)', border: '3px solid #fff', boxShadow: '0 3px 10px rgba(32,36,31,0.35)', transition: 'left 0.4s ease' }} />
       </div>
-      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9.5px', letterSpacing: '0.4px', color: '#4A4A45', marginTop: '10px' }}>{caption}</div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9.5px', letterSpacing: '0.4px', color: 'var(--ink-soft)', marginTop: '10px' }}>{caption}</div>
       <div style={{ fontSize: '10.5px', color: '#8A8A82', lineHeight: 1.5, marginTop: '6px' }}>A reading, not a ruling. The verdict is decided by the full 14 days and your survey.</div>
     </div>
   )
 }
 
 const cs = {
-  wrap: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '16px', marginBottom: '14px' },
+  wrap: { background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px', marginBottom: '14px' },
   header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' },
-  label: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72' },
-  toggle: { background: 'rgba(0,0,0,0.04)', border: 'none', borderRadius: '7px', padding: '4px 10px', fontSize: '11px', color: '#3D5C3C', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
-  oneLiner: { fontSize: '13.5px', color: '#1C1C1C', lineHeight: 1.6 },
-  empty: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.6 },
-  log: { marginTop: '14px', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '12px' },
-  phaseLabel: { fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', margin: '8px 0 6px' },
-  logRow: { display: 'flex', gap: '14px', padding: '7px 0', borderBottom: '1px solid rgba(0,0,0,0.03)', alignItems: 'flex-start' },
-  logDate: { fontSize: '11px', color: '#7A7A72', fontFamily: 'DM Mono, monospace', minWidth: '52px', flexShrink: 0, paddingTop: '2px' },
+  label: { fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)' },
+  toggle: { background: 'var(--tint-warm)', border: 'none', borderRadius: '999px', padding: '5px 12px', fontSize: '11px', color: '#3D5C3C', fontWeight: 600, cursor: 'pointer' },
+  oneLiner: { fontSize: '13.5px', color: 'var(--ink)', lineHeight: 1.6 },
+  empty: { fontSize: '13px', color: 'var(--gray)', lineHeight: 1.6 },
+  log: { marginTop: '14px', background: 'var(--tint-warm)', borderRadius: 'var(--r-sm)', padding: '10px 12px' },
+  phaseLabel: { fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--gray-faint)', margin: '8px 0 6px' },
+  logRow: { display: 'flex', gap: '14px', padding: '7px 0', alignItems: 'flex-start' },
+  logDate: { fontSize: '11px', color: 'var(--gray)', fontFamily: 'var(--font-mono)', minWidth: '52px', flexShrink: 0, paddingTop: '2px' },
   logBody: { fontSize: '12.5px', flex: 1 },
-  clean: { color: '#4A8C6A', fontSize: '12.5px' },
-  skip: { color: '#7A7A72', fontStyle: 'italic', fontSize: '12.5px' },
+  clean: { color: 'var(--forest-500)', fontSize: '12.5px' },
+  skip: { color: 'var(--gray)', fontStyle: 'italic', fontSize: '12.5px' },
   symRow: { display: 'flex', gap: '5px', flexWrap: 'wrap' },
-  symPill: { fontSize: '11px', padding: '2px 8px', borderRadius: '20px', border: '1px solid', textTransform: 'capitalize' },
+  symPill: { fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', border: '1px solid', textTransform: 'capitalize', background: 'var(--paper)' },
 }
 
 export default function ReintroTab({ session, profile, labResult, currentDay, onStartVerdictSurvey, onOpenDailyCheckin }) {
@@ -880,8 +880,8 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <div className="rt-title">Reintro<em>duction.</em></div>
             <div className="rt-sub">The testing phase of the structured protocol.</div>
           </div>
-          <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 16, padding: '20px 18px' }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 10 }}>You're tracking, not testing</div>
+          <div className="sn-rise" style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '20px 18px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 500, letterSpacing: '0.17em', color: 'var(--forest-500)', textTransform: 'uppercase', marginBottom: 10 }}>You're tracking, not testing</div>
             <div style={{ fontSize: 13.5, color: '#4A4A45', lineHeight: 1.65, marginBottom: 10 }}>Reintroduction cycles are how the protocol earns verdicts: one food returns at a time while your logs decide whether it is Safe, Limit, or Avoid. You chose to track for now, so no cycles are scheduled.</div>
             <div style={{ fontSize: 13.5, color: '#4A4A45', lineHeight: 1.65 }}>If your tracking starts pointing at food, you can begin the full protocol anytime from your Home tab. Your timeline would start the day you choose it.</div>
           </div>
@@ -911,18 +911,18 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
       <div className="rt-wrap">
         <style>{css}</style>
         <div className="rt-content">
-          <div style={{ maxWidth: '460px', margin: '40px auto', background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '18px', padding: '28px' }}>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '12px' }}>Let's restart this <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>cycle.</em></div>
-            <p style={{ fontSize: '14px', color: '#7A7A72', lineHeight: 1.7, marginBottom: '20px' }}>
+          <div style={{ maxWidth: '460px', margin: '40px auto', background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '28px' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 300, letterSpacing: '-0.3px', marginBottom: '12px' }}>Let's restart this <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>cycle.</em></div>
+            <p style={{ fontSize: '14px', color: 'var(--gray)', lineHeight: 1.7, marginBottom: '20px' }}>
               Getting three exposure days close together gives the clearest read on how {activeReintro.food} affects you. It's been more than five days without reaching three, so we'll start fresh whenever you're ready. Nothing you logged counts against you.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <button onClick={() => { const t = new Date(); const tm = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1); handleRestartCycle(`${tm.getFullYear()}-${String(tm.getMonth() + 1).padStart(2, '0')}-${String(tm.getDate()).padStart(2, '0')}`) }}
-                style={{ width: '100%', background: new Date().getHours() >= 17 ? '#3D5C3C' : '#FAF8F4', color: new Date().getHours() >= 17 ? '#FFFFFF' : '#1C1C1C', border: new Date().getHours() >= 17 ? 'none' : '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                style={{ width: '100%', background: new Date().getHours() >= 17 ? 'var(--forest-500)' : 'var(--tint-warm)', color: new Date().getHours() >= 17 ? '#FFFFFF' : 'var(--ink)', border: 'none', borderRadius: 'var(--r-md)', padding: '14px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', boxShadow: new Date().getHours() >= 17 ? 'var(--shadow-pill)' : 'none' }}>
                 Restart tomorrow, day 1 is {new Date(Date.now() + 86400000).toLocaleDateString('en-US', { weekday: 'long' })}
               </button>
               <button onClick={() => handleRestartCycle(todayLocal())}
-                style={{ width: '100%', background: new Date().getHours() >= 17 ? '#FAF8F4' : '#3D5C3C', color: new Date().getHours() >= 17 ? '#1C1C1C' : '#FFFFFF', border: new Date().getHours() >= 17 ? '1px solid rgba(0,0,0,0.09)' : 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                style={{ width: '100%', background: new Date().getHours() >= 17 ? 'var(--tint-warm)' : 'var(--forest-500)', color: new Date().getHours() >= 17 ? 'var(--ink)' : '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '14px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', boxShadow: new Date().getHours() >= 17 ? 'none' : 'var(--shadow-pill)' }}>
                 Restart today
               </button>
             </div>
@@ -951,14 +951,14 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
           // The countdown below would show fiction ("57 days") — show the honest explainer instead.
           if (!profile?.protocol_start_date) return (
             <>
-              <div style={{ position: 'relative', background: '#22301F', borderRadius: 18, padding: '26px 22px', overflow: 'hidden', boxShadow: '0 16px 40px rgba(34,48,31,0.25)', marginBottom: 14 }}>
+              <div className="sn-rise" style={{ position: 'relative', background: 'radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.28), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', borderRadius: 28, padding: '26px 22px', overflow: 'hidden', boxShadow: 'var(--shadow-3)', marginBottom: 14 }}>
                 <div style={{ position: 'absolute', top: -50, right: -50, width: 180, height: 180, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
-                <div style={{ position: 'relative', fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.5px', color: '#C9A227', textTransform: 'uppercase', marginBottom: 12 }}>Phase 2 · Locked</div>
-                <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.25, marginBottom: 9 }}>Where your answers get earned.</div>
+                <div style={{ position: 'relative', fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 500, letterSpacing: '0.17em', color: '#C9A227', textTransform: 'uppercase', marginBottom: 12 }}>Phase 2 · Locked</div>
+                <div style={{ position: 'relative', fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.25, marginBottom: 9 }}>Where your answers get earned.</div>
                 <div style={{ position: 'relative', fontSize: 13, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65 }}>Reintroduction is the testing phase. One food at a time comes back into your diet while you track how your body responds. Every food ends with a verdict: Safe, Limit, or Avoid.</div>
               </div>
-              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 14, padding: '18px 16px' }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#1C1C1C', marginBottom: 12 }}>How it unlocks</div>
+              <div className="sn-rise-2" style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px 16px' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 12 }}>How it unlocks</div>
                 {[
                   ['1', '#3D5C3C', 'Your lab results come in and your elimination list is built'],
                   ['2', '#8BAE8A', 'You complete 8 weeks of clean elimination. This is the baseline that makes every test trustworthy'],
@@ -991,14 +991,14 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                 @keyframes rtGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
                 @keyframes rtRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
               `}</style>
-              <div style={{ position: 'relative', background: '#22301F', borderRadius: 22, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'rtRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
+              <div style={{ position: 'relative', background: 'radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.28), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', borderRadius: 28, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: 'var(--shadow-3)', animation: 'rtRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
                 <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'rtGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
                 <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, position: 'relative' }}>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · REINTRODUCTION</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9.5, fontWeight: 500, letterSpacing: '0.17em', color: '#8BAE8A' }}>SENSIFY · REINTRODUCTION</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8941F' }} />
-                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.55)' }}>T-MINUS {daysUntilLow}D</span>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--forest-300)', boxShadow: '0 0 8px rgba(139,174,138,0.8)' }} />
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.55)' }}>T-MINUS {daysUntilLow}D</span>
                   </div>
                 </div>
                 <div style={{ position: 'relative', width: 110, height: 110, margin: '0 auto 14px' }}>
@@ -1008,24 +1008,24 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                       strokeDasharray={CIRC} strokeDashoffset={offset} transform="rotate(-90 55 55)" style={{ filter: 'drop-shadow(0 0 8px rgba(139,174,138,0.5))' }} />
                   </svg>
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: 27, fontWeight: 400, color: '#FAF8F4' }}>{pct}%</div>
-                    <div style={{ fontSize: 8, color: 'rgba(250,248,244,0.55)', fontFamily: 'DM Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Day {dayCapped} of {elimDays}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 300, letterSpacing: '-0.02em', color: '#FAF8F4' }}>{pct}%</div>
+                    <div style={{ fontSize: 8, color: 'rgba(250,248,244,0.55)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Day {dayCapped} of {elimDays}</div>
                   </div>
                 </div>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 400, color: '#FAF8F4', position: 'relative', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Your first tests unlock in <span style={{ color: '#8BAE8A' }}>{daysUntilLow} {daysUntilLow === 1 ? 'day' : 'days'}.</span></div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 21, fontWeight: 400, color: '#FAF8F4', position: 'relative', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Your first tests unlock in <span style={{ color: '#8BAE8A' }}>{daysUntilLow} {daysUntilLow === 1 ? 'day' : 'days'}.</span></div>
                 <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65, maxWidth: 310, margin: '8px auto 0', position: 'relative', fontWeight: 300 }}>Every clean elimination day makes your reintroduction results sharper. You're building the baseline that makes testing work.</div>
               </div>
 
               {(() => {
                 const firstFood = (tiers.find(t => t.next)?.foods || [])[0]
                 return (
-                  <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 18, padding: '18px 20px', margin: '16px 0 18px', animation: 'rtNodeIn 0.5s ease 0.35s both' }}>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 500, letterSpacing: '1.4px', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: 12 }}>How a trial works</div>
+                  <div style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px 20px', margin: '16px 0 18px', animation: 'rtNodeIn 0.5s ease 0.35s both' }}>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 500, letterSpacing: '0.17em', color: 'var(--forest-500)', textTransform: 'uppercase', marginBottom: 12 }}>How a trial works</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
                       {[0, 1, 2].map(i => <span key={'q' + i} style={{ width: 11, height: 11, borderRadius: 3, background: '#4C7A4A', flexShrink: 0 }} />)}
                       <span style={{ width: 6 }} />
                       {Array.from({ length: 11 }).map((_, i) => <span key={'w' + i} style={{ width: 9, height: 9, borderRadius: '50%', background: '#9DBD9C', flexShrink: 0 }} />)}
-                      <span style={{ fontFamily: 'Fraunces, serif', fontSize: 16, color: '#3D5C3C', marginLeft: 8, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Verdict.</span>
+                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: '#3D5C3C', marginLeft: 8, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Verdict.</span>
                     </div>
                     <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.65, marginTop: 11 }}>Three days eating it, then eleven clean days, watching for anything delayed. One food at a time, so the answer can only belong to that food.{firstFood ? <> First up: <b style={{ fontWeight: 600, color: '#1C1C1C' }}>{firstFood}</b>, chosen because it ranks highest in how often you eat it.</> : ''}</div>
                   </div>
@@ -1079,25 +1079,25 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
         {/* ACTIVE REINTRODUCTION */}
         {activeReintro && (
           <>
-            <div className="rt-active-card">
+            <div className="rt-active-card sn-rise">
               <div className="rt-active-eyebrow">Currently testing</div>
               <div className="rt-active-food"><em>{activeReintro.food}</em></div>
               <div className="rt-active-sub">{cycleDay < 1 ? `14-day reintroduction cycle · ${cycleDay === 0 ? 'Starts tomorrow' : `Starts in ${1 - cycleDay} days`}` : `14-day reintroduction cycle · Day ${Math.min(cycleDay, 14)} of 14`}</div>
 
               <div className={`rt-phase-badge ${isVerdictDay ? 'exposure' : isExposure ? 'exposure' : 'washout'}`}>
-                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isVerdictDay ? '#3D5C3C' : isExposure ? '#6DBF8A' : '#D4894A', flexShrink: 0 }}></div>
+                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isVerdictDay ? '#AECDAD' : isExposure ? '#AECDAD' : '#C9D8C8', flexShrink: 0 }}></div>
                 {isVerdictDay ? 'Cycle complete' : isExposure ? 'Exposure phase: eat this food' : 'Washout phase: avoid this food'}
               </div>
               {!isVerdictDay && (
-                <div style={{ marginTop: '10px', padding: '8px 12px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '9px', fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.8px', color: 'rgba(250,248,244,0.75)' }}>ONLY {activeReintro.food.toUpperCase()} COMES BACK · EVERY OTHER FOOD ON YOUR LIST STAYS ELIMINATED</div>
+                <div style={{ marginTop: '10px', padding: '9px 12px', background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 'var(--r-sm)', fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.8px', color: 'rgba(250,248,244,0.75)' }}>ONLY {activeReintro.food.toUpperCase()} COMES BACK · EVERY OTHER FOOD ON YOUR LIST STAYS ELIMINATED</div>
               )}
 
               {isVerdictDay && (
-              <div style={{ background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: '14px', padding: '18px', marginBottom: '14px' }}>
-                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 9px', borderRadius: '20px', display: 'inline-block', marginBottom: '10px' }}>Day 14 · Verdict ready</div>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, marginBottom: '6px' }}><span style={{ color: '#3D5C3C' }}>{activeReintro.food}</span> reintroduction complete.</div>
-                <div style={{ fontSize: '13px', color: '#7A7A72', marginBottom: '14px', lineHeight: 1.6 }}>One last survey. Your answers and fourteen days of logs decide the verdict: Safe, Limit, or Avoid.</div>
-                <button style={{ background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '9px', padding: '11px 20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }} onClick={() => onStartVerdictSurvey(activeReintro.food)}>
+              <div style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-md)', boxShadow: 'var(--shadow-2)', padding: '18px', marginBottom: '14px', color: 'var(--ink)' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--forest-500)', background: 'var(--forest-100)', padding: '4px 10px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' }}>Day 14 · Verdict ready</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '21px', fontWeight: 400, marginBottom: '6px' }}><span style={{ color: '#3D5C3C' }}>{activeReintro.food}</span> reintroduction complete.</div>
+                <div style={{ fontSize: '13px', color: 'var(--gray)', marginBottom: '14px', lineHeight: 1.6 }}>One last survey. Your answers and fourteen days of logs decide the verdict: Safe, Limit, or Avoid.</div>
+                <button style={{ background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-sm)', padding: '12px 20px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)' }} onClick={() => onStartVerdictSurvey(activeReintro.food)}>
                   Get my verdict →
                 </button>
               </div>
@@ -1137,15 +1137,15 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                     : `Avoid ${activeReintro.food} completely today. This is washout day ${washoutDay} of ${WASHOUT_LENGTH}. Continue your elimination diet as usual.`}
                 </div>
                 {cycleDay < 1 && (
-                  <div style={{ marginTop: '12px', fontFamily: 'DM Mono, monospace', fontSize: '9px', letterSpacing: '0.8px', color: '#9A927E' }}>YOUR FIRST CHECK-IN UNLOCKS WITH DAY 1</div>
+                  <div style={{ marginTop: '12px', fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.8px', color: 'rgba(250,248,244,0.55)' }}>YOUR FIRST CHECK-IN UNLOCKS WITH DAY 1</div>
                 )}
                 {!isVerdictDay && cycleDay >= 1 && (
                   loggedToday ? (
-                    <div style={{ marginTop: '14px', fontSize: '12px', color: '#4A8C6A', fontWeight: 500 }}>✓ Logged for today. See you tomorrow.</div>
+                    <div style={{ marginTop: '14px', fontSize: '12px', color: '#AECDAD', fontWeight: 600 }}>✓ Logged for today. See you tomorrow.</div>
                   ) : (
                     <button
                       onClick={() => onOpenDailyCheckin ? onOpenDailyCheckin() : setShowDailyCheckin(true)}
-                      style={{ marginTop: '14px', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '10px', padding: '11px 20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+                      style={{ marginTop: '14px', background: 'var(--forest-300)', color: 'var(--forest-900)', border: 'none', borderRadius: 'var(--r-sm)', padding: '12px 20px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 10px 24px -6px rgba(139,174,138,0.4)' }}
                     >
                       {isExposure ? 'Log today\u2019s check-in \u2192' : 'Log washout check \u2192'}
                     </button>
@@ -1157,15 +1157,15 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
             {/* Food briefing */}
             {loadingBriefing && (
-              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '16px', marginBottom: '14px', textAlign: 'center' }}>
-                <div style={{ fontSize: '12px', color: '#7A7A72', fontStyle: 'italic' }}>Getting your personalized briefing...</div>
+              <div style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-1)', padding: '16px', marginBottom: '14px', textAlign: 'center' }}>
+                <div style={{ fontSize: '12px', color: 'var(--gray)', fontStyle: 'italic' }}>Getting your personalized briefing...</div>
               </div>
             )}
             {foodBriefing && !loadingBriefing && !isVerdictDay && (
-              <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: '14px', padding: '16px', marginBottom: '14px' }}>
+              <div className="sn-rise-2" style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(139,174,138,0.04)), #FFFFFF', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px', marginBottom: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '9px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2C9D8A', animation: 'snfyPulse 1.6s infinite', flexShrink: 0 }}></span>
-                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#3D5C3C' }}>REINTRODUCTION BRIEFING</span>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--forest-300)', animation: 'snfyPulse 1.6s infinite', flexShrink: 0 }}></span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)' }}>REINTRODUCTION BRIEFING</span>
                 </div>
                 {(() => {
                   const clean = foodBriefing.replace(/\*\*/g, '')
@@ -1173,38 +1173,42 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                   const t = clean.match(/\[TIP\]([\s\S]*?)(?=\[SAFETY\]|$)/)
                   const sf = clean.match(/\[SAFETY\]([\s\S]*?)$/)
                   if (!w || !sf) return <div style={{ fontSize: '13.5px', color: '#1C1C1C', lineHeight: 1.7 }}>{clean.replace(/\[(WATCH|TIP|SAFETY)\]/g, '')}</div>
-                  const mono = { fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '1px', color: '#9A927E', marginBottom: '4px' }
+                  const mono = { fontFamily: 'var(--font-mono)', fontSize: '7px', fontWeight: 500, letterSpacing: '1px', color: 'var(--gray-faint)', marginBottom: '4px' }
                   return (
                     <>
                       <div style={mono}>WATCH FOR</div>
                       <div style={{ fontSize: '12.5px', color: '#1C1C1C', lineHeight: 1.65, marginBottom: '12px' }}>{w[1].trim()}</div>
                       {t && <><div style={mono}>ONE TIP</div>
                       <div style={{ fontSize: '12.5px', color: '#1C1C1C', lineHeight: 1.65, marginBottom: '12px' }}>{t[1].trim()}</div></>}
-                      <div style={{ background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.3)', borderRadius: '10px', padding: '10px 12px' }}>
-                        <div style={{ ...mono, color: '#8B2E2E' }}>STOP IMMEDIATELY IF</div>
+                      <div style={{ background: 'var(--avoid-100)', border: 'none', borderRadius: 'var(--r-sm)', padding: '10px 12px' }}>
+                        <div style={{ ...mono, color: 'var(--avoid-700)' }}>STOP IMMEDIATELY IF</div>
                         <div style={{ fontSize: '12px', color: '#1C1C1C', lineHeight: 1.55 }}>{sf[1].trim()}</div>
                       </div>
                     </>
                   )
                 })()}
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8.5px', letterSpacing: '0.6px', color: '#A8A69E', textTransform: 'uppercase', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>BASED ON YOUR SENSITIVITY LEVEL</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '8.5px', letterSpacing: '0.6px', color: 'var(--gray-faint)', textTransform: 'uppercase', marginTop: '12px' }}>BASED ON YOUR SENSITIVITY LEVEL</div>
               </div>
             )}
 
             {/* CYCLE SO FAR — factual summary, expands to full log */}
-            <CycleSummary
-              logs={dailyLogs}
-              food={activeReintro.food}
-              exposureDaysCompleted={exposureDaysCompleted}
-              expanded={logExpanded}
-              onToggle={() => setLogExpanded(v => !v)}
-              cycleStart={activeReintro.started_at}
-            />
+            <div className="sn-rise-3">
+              <CycleSummary
+                logs={dailyLogs}
+                food={activeReintro.food}
+                exposureDaysCompleted={exposureDaysCompleted}
+                expanded={logExpanded}
+                onToggle={() => setLogExpanded(v => !v)}
+                cycleStart={activeReintro.started_at}
+              />
+            </div>
 
             {/* THE EVIDENCE SO FAR: live provisional needle, logs only.
                 Never rendered once the verdict survey is available. */}
             {!isVerdictDay && cycleDay >= 1 && (
-              <EvidenceNeedle logs={dailyLogs} cycleStartStr={activeReintro.started_at} />
+              <div className="sn-rise-4">
+                <EvidenceNeedle logs={dailyLogs} cycleStartStr={activeReintro.started_at} />
+              </div>
             )}
 
           </>
@@ -1213,22 +1217,22 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
         {/* START CHOICE — day 1 begins when the person says so, not when the button was pressed */}
         {pendingStart && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, padding: '20px' }} onClick={() => { setPendingStart(null); setShowDatePick(false); setFarPick(null) }}>
-            <div style={{ background: '#FFFFFF', borderRadius: '18px', padding: '24px', maxWidth: '380px', width: '100%', boxShadow: '0 24px 60px rgba(0,0,0,0.25)' }} onClick={e => e.stopPropagation()}>
-              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.9px', color: '#3D5C3C', marginBottom: '8px' }}>{pendingStart.food} cycle</div>
-              <div style={{ fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 400, color: '#1C1C1C', marginBottom: '6px' }}>When should day 1 begin?</div>
-              <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.55, marginBottom: '16px' }}>Only {pendingStart.food.toLowerCase()} comes back during this cycle. Everything else on your list stays eliminated. Day 1 is an exposure day, you'll want a real chance to eat {pendingStart.food.toLowerCase()} that day.{new Date().getHours() >= 17 ? ' It\u2019s getting late, so starting tomorrow is probably the honest choice.' : ''}</div>
+            <div className="sn-rise" style={{ background: 'var(--paper)', borderRadius: 'var(--r-lg)', padding: '24px', maxWidth: '380px', width: '100%', boxShadow: 'var(--shadow-3)' }} onClick={e => e.stopPropagation()}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '8px' }}>{pendingStart.food} cycle</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, letterSpacing: '-0.3px', color: 'var(--ink)', marginBottom: '6px' }}>When should day 1 begin?</div>
+              <div style={{ fontSize: '13px', color: 'var(--gray)', lineHeight: 1.55, marginBottom: '16px' }}>Only {pendingStart.food.toLowerCase()} comes back during this cycle. Everything else on your list stays eliminated. Day 1 is an exposure day, you'll want a real chance to eat {pendingStart.food.toLowerCase()} that day.{new Date().getHours() >= 17 ? ' It\u2019s getting late, so starting tomorrow is probably the honest choice.' : ''}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <button disabled={!!starting} onClick={() => { const t = new Date(); const tm = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1); const s = `${tm.getFullYear()}-${String(tm.getMonth() + 1).padStart(2, '0')}-${String(tm.getDate()).padStart(2, '0')}`; startReintro(pendingStart.food, pendingStart.level, s); setPendingStart(null); setShowDatePick(false); setFarPick(null) }}
-                  style={{ background: new Date().getHours() >= 17 ? '#3D5C3C' : '#FAF8F4', color: new Date().getHours() >= 17 ? '#FFFFFF' : '#1C1C1C', border: new Date().getHours() >= 17 ? 'none' : '1px solid rgba(0,0,0,0.09)', borderRadius: '12px', padding: '13px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  style={{ background: new Date().getHours() >= 17 ? 'var(--forest-500)' : 'var(--tint-warm)', color: new Date().getHours() >= 17 ? '#FFFFFF' : 'var(--ink)', border: 'none', borderRadius: 'var(--r-md)', padding: '13px', fontSize: '13.5px', fontWeight: 700, cursor: 'pointer', boxShadow: new Date().getHours() >= 17 ? 'var(--shadow-pill)' : 'none' }}>
                   Start tomorrow, day 1 is {new Date(Date.now() + 86400000).toLocaleDateString('en-US', { weekday: 'long' })}
                 </button>
                 <button disabled={!!starting} onClick={() => { startReintro(pendingStart.food, pendingStart.level, todayLocal()); setPendingStart(null); setShowDatePick(false); setFarPick(null) }}
-                  style={{ background: new Date().getHours() >= 17 ? '#FAF8F4' : '#3D5C3C', color: new Date().getHours() >= 17 ? '#1C1C1C' : '#FFFFFF', border: new Date().getHours() >= 17 ? '1px solid rgba(0,0,0,0.09)' : 'none', borderRadius: '12px', padding: '13px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  style={{ background: new Date().getHours() >= 17 ? 'var(--tint-warm)' : 'var(--forest-500)', color: new Date().getHours() >= 17 ? 'var(--ink)' : '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '13px', fontSize: '13.5px', fontWeight: 700, cursor: 'pointer', boxShadow: new Date().getHours() >= 17 ? 'none' : 'var(--shadow-pill)' }}>
                   Start today
                 </button>
                 {/* THE TRIAL SCHEDULER: pick any of the next 14 days as day 1 */}
                 <button disabled={!!starting} onClick={() => { setShowDatePick(v => !v); setFarPick(null) }}
-                  style={{ background: 'transparent', color: '#3D5C3C', border: '1px dashed rgba(61,92,60,0.4)', borderRadius: '12px', padding: '12px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  style={{ background: 'var(--forest-050)', color: 'var(--forest-500)', border: 'none', borderRadius: 'var(--r-md)', padding: '12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
                   Pick a start date
                 </button>
               </div>

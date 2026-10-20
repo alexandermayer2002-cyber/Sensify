@@ -36,7 +36,7 @@ const css = `
   .sup-tabs { display:flex; gap:6px; padding:0 max(22px, calc((100% - 620px) / 2)); background:var(--paper); border-bottom:none; }
   .sup-tab { background:none; border:none; padding:11px 4px; margin-right:18px; font-size:13px; color:#8A8A82; cursor:pointer; border-bottom:2px solid transparent; font-weight:500; }
   .sup-tab.active { color:#3D5C3C; border-bottom-color:#3D5C3C; }
-  .sup-dot { width:8px; height:8px; border-radius:50%; background:#D64545; flex-shrink:0; }
+  .sup-dot { width:8px; height:8px; border-radius:50%; background:#3D5C3C; flex-shrink:0; }
   .sup-empty { text-align:center; color:#A0A096; max-width:300px; margin:48px auto; }
   .sup-empty-icon { width:52px; height:52px; border-radius:50%; background:#EDF3ED; display:flex; align-items:center; justify-content:center; font-size:22px; margin:0 auto 14px; color:#3D5C3C; }
   .sup-label { font-size:11.5px; color:#6A6A62; margin-bottom:5px; }
@@ -179,7 +179,7 @@ export default function Support({ session, onUnreadChange }) {
               <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 400, color: '#1C1C1C' }}>{active.subject}</div>
               {!isResolved && (
                 <button onClick={async () => { await setTicketStatus({ ticketId: active.id, status: 'resolved' }); setActive({ ...active, status: 'resolved' }) }}
-                  style={{ background: 'none', border: 'none', fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 700, letterSpacing: '0.8px', color: '#1A6256', cursor: 'pointer', flexShrink: 0, padding: 0 }}>
+                  style={{ background: 'none', border: 'none', fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 700, letterSpacing: '0.8px', color: '#3D5C3C', cursor: 'pointer', flexShrink: 0, padding: 0 }}>
                   \u2713 MARK RESOLVED
                 </button>
               )}
@@ -259,7 +259,7 @@ export default function Support({ session, onUnreadChange }) {
               : sl.tone === 'waiting' ? `${sl.text.toUpperCase()} \u00b7 NOTHING NEEDED FROM YOU`
               : sl.text.toUpperCase()
             return (
-              <div key={t.id} onClick={() => openTicket(t)} style={{ borderTop: '1px solid rgba(0,0,0,0.07)', padding: '13px 0', cursor: 'pointer' }}>
+              <div key={t.id} className="sup-trowcard" onClick={() => openTicket(t)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 7, minWidth: 0, paddingLeft: hot || t.unread_for_user ? 0 : 14 }}>
                     {(hot || t.unread_for_user) && <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#3D5C3C', flexShrink: 0 }} />}
@@ -275,28 +275,28 @@ export default function Support({ session, onUnreadChange }) {
           return (
             <>
               {attention.length > 0 && (
-                <>
+                <div className="sn-rise">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 7, margin: '4px 0 8px' }}>
-                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#E8941F' }} />
-                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: '#9A6212' }}>NEEDS YOUR ATTENTION · {attention.length}</span>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#3D5C3C' }} />
+                    <span className="sn-micro">NEEDS YOUR ATTENTION · {attention.length}</span>
                   </div>
                   {attention.map(t => card(t, true))}
-                </>
+                </div>
               )}
               {waiting.length > 0 && (
-                <>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: '#A0A096', margin: '14px 0 8px' }}>WAITING ON SENSIFY · {waiting.length}</div>
+                <div className="sn-rise-2">
+                  <div className="sn-micro sn-micro-dim" style={{ display: 'block', margin: '14px 0 8px' }}>WAITING ON SENSIFY · {waiting.length}</div>
                   {waiting.map(t => card(t, false))}
-                </>
+                </div>
               )}
               {resolved.length > 0 && (
-                <>
-                  <div onClick={() => setShowResolved(!showResolved)} style={{ borderTop: '1px solid rgba(0,0,0,0.07)', marginTop: 16, paddingTop: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: '#1A6256' }}>RESOLVED · {resolved.length}</span>
+                <div className="sn-rise-3">
+                  <div onClick={() => setShowResolved(!showResolved)} style={{ marginTop: 16, paddingTop: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                    <span className="sn-micro">RESOLVED · {resolved.length}</span>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#B0B0A8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showResolved ? 'rotate(180deg)' : 'none' }}><polyline points="6 9 12 15 18 9" /></svg>
                   </div>
                   {showResolved && <div style={{ marginTop: 8 }}>{resolved.map(t => card(t, false))}</div>}
-                </>
+                </div>
               )}
             </>
           )
