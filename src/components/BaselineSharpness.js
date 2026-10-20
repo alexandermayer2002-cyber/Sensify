@@ -69,6 +69,7 @@ const fmt1 = (n) => n.toFixed(1)
 export default function BaselineSharpness({ session, profile }) {
   const [data, setData] = useState(null) // { loggedDays, scales: [{ id, label, baseline, uncertainty }] }
   const [showHow, setShowHow] = useState(false)
+  const [sel, setSel] = useState(0)
 
   useEffect(() => {
     let cancelled = false
@@ -126,13 +127,13 @@ export default function BaselineSharpness({ session, profile }) {
 
   if (!data || !data.scales.length) return null
 
-  const [primary, ...rest] = data.scales
-  const others = rest.slice(0, 3)
+  const cur = data.scales[Math.min(sel, data.scales.length - 1)]
   const day3 = baseUncertainty(3)
   // Sharpness as a 0-to-1 journey from the day-one margin to the floor. This is
-  // pure presentation: it reuses the same uncertainty the old bar displayed.
-  const sharpFrac = Math.min(1, Math.max(0, (U_START - primary.uncertainty) / (U_START - U_FLOOR)))
-  const fillPct = Math.max(3, sharpFrac * 100) // never invisible on day one
+  // pure presentation: it reuses the same uncertainty the math always produced.
+  const sharpFrac = Math.min(1, Math.max(0, (U_START - cur.uncertainty) / (U_START - U_FLOOR)))
+  const fillPct = Math.max(3, sharpFrac * 100)
+  const status = sharpFrac < 0.35 ? 'Still rough' : sharpFrac < 0.75 ? 'Settling' : 'Sharp'
 
   return (
     <div style={b.card}>
@@ -143,51 +144,57 @@ export default function BaselineSharpness({ session, profile }) {
         </span>
       </div>
 
+      <div style={b.headline}>How well we know your normal.</div>
+
       <div style={b.intro}>
-        How steady your symptom baseline has become. Tighter is better: every verdict is measured against this line.{' '}
+        Every verdict is your trial week measured against your ordinary week. This is how precisely your ordinary week has been measured so far.{' '}
         <button type="button" style={b.howBtn} onClick={() => setShowHow(v => !v)}>
-          {showHow ? 'Hide' : 'How this works'}
+          {showHow ? 'Hide' : 'Why this matters'}
         </button>
       </div>
 
       {showHow && (
         <div style={b.howPanel}>
-          Your baseline is where your symptoms sit on an ordinary day, and the margin is how much that reading still wobbles. Every day you log narrows it: on-plan days count in full, off-plan days count half, and noisy weekly check-ins widen it a little. It starts at ±{fmt1(U_START)} and can tighten to ±{fmt1(U_FLOOR)}; a food only earns a verdict by moving you clearly outside this band.
+          Say you trial dairy and log bloating at 6. If your normal is 5, that is nothing. If your normal is 2, that is a clear spike. Same logs, opposite verdicts, decided entirely by how well your normal is known. Every day you log is one more measurement of it: on-plan days count in full, off-plan days count half, and noisy weeks widen the margin. A sharp baseline is what makes your verdicts trustworthy.
         </div>
       )}
 
-      {/* THE BAND: the hero. Fuzzy on the left, sharp on the right, you are the dot. */}
+      {data.scales.length > 1 && (
+        <div style={b.tabs}>
+          {data.scales.map((sc, i) => (
+            <button
+              key={sc.id}
+              type="button"
+              style={i === Math.min(sel, data.scales.length - 1) ? b.tabOn : b.tab}
+              onClick={() => setSel(i)}
+            >
+              {sc.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div style={b.statRow}>
+        <span style={b.statVal}>{fmt1(cur.baseline)}</span>
+        <span style={b.statMargin}>±{fmt1(cur.uncertainty)}</span>
+        <span style={b.statusChip}>{status}</span>
+      </div>
+      <div style={b.statName}>your normal {cur.label}, and how much that reading still wobbles</div>
+
       <div style={b.bandWrap}>
         <div style={b.track}>
           <div style={{ ...b.fill, width: `${fillPct}%` }} />
           <div style={{ ...b.marker, left: `calc(${fillPct}% - 7px)` }} />
         </div>
         <div style={b.endpoints}>
-          <span style={b.endLabel}>Day 1: fuzzy</span>
-          <span style={{ ...b.endLabel, color: '#3D5C3C' }}>Goal: sharp</span>
+          <span style={b.endLabel}>Day 1 · ±{fmt1(U_START)}</span>
+          <span style={{ ...b.endLabel, color: '#3D5C3C' }}>Verdict-ready · ±{fmt1(U_FLOOR)}</span>
         </div>
       </div>
 
-      <div style={b.statRow}>
-        <span style={b.bigMargin}>±{fmt1(primary.uncertainty)}</span>
-        <span style={b.statCaption}>
-          today&rsquo;s margin on your {primary.label} baseline of {fmt1(primary.baseline)}. Was ±{fmt1(day3)} on day 3.
-        </span>
+      <div style={b.footNote}>
+        Was ±{fmt1(day3)} on day 3; your logging narrowed it. Not a symptom score: how you feel week to week lives in the Weekly Insight.
       </div>
-
-      {others.length > 0 && (
-        <div style={b.othersWrap}>
-          <div style={b.othersLabel}>Other baselines</div>
-          <div style={b.othersRow}>
-            {others.map(sc => (
-              <span key={sc.id} style={b.otherItem}>
-                <span style={b.otherName}>{sc.label}</span>
-                <span style={b.otherVal}>{fmt1(sc.baseline)} ±{fmt1(sc.uncertainty)}</span>
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
@@ -202,6 +209,10 @@ const b = {
     fontFamily: 'DM Mono, monospace', fontSize: 10, letterSpacing: '0.12em',
     textTransform: 'uppercase', color: '#3D5C3C',
   },
+  headline: {
+    fontFamily: 'Fraunces, serif', fontSize: 18, fontWeight: 300, color: '#1C1C1C',
+    lineHeight: 1.25, marginBottom: 6,
+  },
   intro: { fontSize: 12, color: '#8A8A82', lineHeight: 1.55 },
   howBtn: {
     background: 'none', border: 'none', padding: 0, fontFamily: 'DM Sans, sans-serif',
@@ -212,18 +223,41 @@ const b = {
     background: '#FAF8F4', borderRadius: 10, padding: '10px 12px', marginTop: 8,
     fontSize: 11.5, color: '#7A7A72', lineHeight: 1.6,
   },
-  bandWrap: { marginTop: 16 },
+  tabs: { display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 14 },
+  tab: {
+    background: 'none', border: '1px solid rgba(0,0,0,0.12)', borderRadius: 999,
+    padding: '5px 12px', fontSize: 11.5, fontWeight: 500, color: '#7A7A72',
+    cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textTransform: 'capitalize',
+  },
+  tabOn: {
+    background: '#3D5C3C', border: '1px solid #3D5C3C', borderRadius: 999,
+    padding: '5px 12px', fontSize: 11.5, fontWeight: 500, color: '#FFFFFF',
+    cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textTransform: 'capitalize',
+  },
+  statRow: { display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 16 },
+  statVal: {
+    fontFamily: 'Fraunces, serif', fontSize: 36, fontWeight: 300, color: '#1C1C1C',
+    lineHeight: 1,
+  },
+  statMargin: {
+    fontFamily: 'DM Mono, monospace', fontSize: 14, color: '#3D5C3C', fontWeight: 500,
+  },
+  statusChip: {
+    marginLeft: 'auto', background: '#EFF3EE', color: '#3D5C3C', borderRadius: 999,
+    padding: '4px 11px', fontSize: 11, fontWeight: 600,
+  },
+  statName: { fontSize: 11.5, color: '#8A8A82', marginTop: 5, lineHeight: 1.4 },
+  bandWrap: { marginTop: 14 },
   track: {
-    position: 'relative', height: 10, borderRadius: 5,
-    background: 'linear-gradient(90deg, #F0EDE6 0%, #ECEFE8 100%)',
+    position: 'relative', height: 8, borderRadius: 4, background: '#F0EDE6',
   },
   fill: {
     position: 'absolute', top: 0, bottom: 0, left: 0,
     background: 'linear-gradient(90deg, #C9D8C8 0%, #8BAE8A 100%)',
-    borderRadius: 5,
+    borderRadius: 4,
   },
   marker: {
-    position: 'absolute', top: -2, width: 14, height: 14, borderRadius: '50%',
+    position: 'absolute', top: -3, width: 14, height: 14, borderRadius: '50%',
     background: '#3D5C3C', border: '2.5px solid #FFFFFF', boxSizing: 'border-box',
     boxShadow: '0 1px 3px rgba(0,0,0,0.18)',
   },
@@ -232,19 +266,8 @@ const b = {
     fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.1em',
     textTransform: 'uppercase', color: '#A8A69E',
   },
-  statRow: { display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 14 },
-  bigMargin: {
-    fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#3D5C3C',
-    flexShrink: 0, lineHeight: 1,
+  footNote: {
+    marginTop: 14, paddingTop: 10, borderTop: '1px solid rgba(0,0,0,0.05)',
+    fontSize: 11, color: '#7A7A72', lineHeight: 1.5,
   },
-  statCaption: { fontSize: 11.5, color: '#8A8A82', lineHeight: 1.5 },
-  othersWrap: { marginTop: 14, paddingTop: 10, borderTop: '1px solid rgba(0,0,0,0.05)' },
-  othersLabel: {
-    fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '0.1em',
-    textTransform: 'uppercase', color: '#B8B6AE', marginBottom: 5,
-  },
-  othersRow: { display: 'flex', flexWrap: 'wrap', gap: '4px 16px' },
-  otherItem: { display: 'inline-flex', alignItems: 'baseline', gap: 5 },
-  otherName: { fontSize: 11, color: '#7A7A72' },
-  otherVal: { fontFamily: 'DM Mono, monospace', fontSize: 10, color: '#8A8A82' },
 }
