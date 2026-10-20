@@ -5,51 +5,50 @@ import { generateReintroVerdict } from '../utils/aiInsights'
 
 const s = {
   wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column' },
-  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)' },
-  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
+  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: 'var(--paper)', boxShadow: 'var(--shadow-1)' },
+  logo: { fontFamily: 'var(--font-display)', fontSize: '19px', fontWeight: 500, color: 'var(--ink)' },
   logoEm: { color: '#3D5C3C', fontStyle: 'italic' },
-  back: { fontSize: '13px', color: '#7A7A72', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'DM Sans, sans-serif' },
-  day14Badge: { fontSize: '11px', color: '#D4894A', background: '#FDF2EA', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 },
+  back: { fontSize: '13px', color: 'var(--gray)', cursor: 'pointer', background: 'none', border: 'none' },
+  day14Badge: { fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--forest-500)', background: 'var(--forest-100)', padding: '6px 12px', borderRadius: '999px' },
   content: { flex: 1, padding: '28px 24px 100px', maxWidth: '620px', margin: '0 auto', width: '100%', boxSizing: 'border-box' },
-  foodName: { fontFamily: 'Fraunces, serif', fontSize: '32px', fontWeight: 300, color: '#3D5C3C', fontStyle: 'italic', marginBottom: '4px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '8px' },
-  hint: { fontSize: '13px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.65 },
-  contextCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '16px', marginBottom: '24px' },
+  foodName: { fontFamily: 'var(--font-display)', fontSize: '38px', fontWeight: 300, color: '#3D5C3C', fontStyle: 'italic', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '4px' },
+  title: { fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, letterSpacing: '-0.3px', marginBottom: '8px' },
+  hint: { fontSize: '13px', color: 'var(--gray)', marginBottom: '28px', lineHeight: 1.65 },
+  contextCard: { background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-md)', boxShadow: 'var(--shadow-1)', padding: '16px', marginBottom: '24px' },
   contextRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: '13px' },
   contextRowLast: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', fontSize: '13px' },
-  contextLabel: { color: '#7A7A72' },
+  contextLabel: { color: 'var(--gray)' },
   contextValue: { fontWeight: 500 },
-  sectionLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '14px' },
+  sectionLabel: { fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '14px' },
   questionBlock: { marginBottom: '28px' },
-  questionSub: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.55, marginTop: '-4px', marginBottom: '12px' },
-  summaryCard: { background: '#22301F', borderRadius: '18px', padding: '22px', marginBottom: '28px' },
-  summaryText: { fontSize: '14.5px', color: 'rgba(255,255,255,0.92)', lineHeight: 1.7 },
+  questionSub: { fontSize: '12.5px', color: 'var(--gray)', lineHeight: 1.55, marginTop: '-4px', marginBottom: '12px' },
+  summaryCard: { position: 'relative', overflow: 'hidden', color: '#FAF8F4', borderRadius: 'var(--r-lg)', padding: '24px 22px', marginBottom: '28px', background: 'radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.32), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', boxShadow: 'var(--shadow-3)' },
+  summaryText: { position: 'relative', fontSize: '14.5px', color: 'rgba(250,248,244,0.92)', lineHeight: 1.7 },
   stackBtns: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  stackBtn: { textAlign: 'left', padding: '14px 16px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.09)', background: '#FAF8F4', fontSize: '13.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1C1C1C', transition: 'all 0.12s' },
-  stackBtnOn: { textAlign: 'left', padding: '14px 16px', borderRadius: '12px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '13.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#2D6B42' },
-  textarea: { width: '100%', boxSizing: 'border-box', padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.09)', background: '#FAF8F4', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', resize: 'vertical', lineHeight: 1.5 },
-  questionLabel: { fontSize: '14px', fontWeight: 500, marginBottom: '10px', lineHeight: 1.5 },
-  scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#7A7A72', marginBottom: '7px' },
+  stackBtn: { textAlign: 'left', padding: '14px 16px', borderRadius: 'var(--r-md)', border: 'none', background: 'var(--tint-warm)', fontSize: '13.5px', cursor: 'pointer', fontWeight: 600, color: 'var(--ink)', transition: 'all 0.12s' },
+  stackBtnOn: { textAlign: 'left', padding: '14px 16px', borderRadius: 'var(--r-md)', border: 'none', background: 'var(--forest-500)', fontSize: '13.5px', cursor: 'pointer', fontWeight: 600, color: '#FFFFFF', boxShadow: 'var(--shadow-pill)' },
+  textarea: { width: '100%', boxSizing: 'border-box', padding: '14px', borderRadius: 'var(--r-md)', border: 'none', background: 'var(--tint-warm)', fontSize: '16px', color: 'var(--ink)', resize: 'vertical', lineHeight: 1.5, outline: 'none' },
+  questionLabel: { fontSize: '14px', fontWeight: 600, marginBottom: '10px', lineHeight: 1.5 },
+  scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--gray)', marginBottom: '7px' },
   scaleRow: { display: 'flex', gap: '5px' },
-  sbt: { flex: 1, height: '40px', borderRadius: '7px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: '#1C1C1C', fontFamily: 'DM Sans, sans-serif' },
-  sbtOn: { flex: 1, height: '40px', borderRadius: '7px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: 'white', fontFamily: 'DM Sans, sans-serif' },
+  sbt: { flex: 1, height: '40px', borderRadius: 'var(--r-sm)', border: 'none', background: 'var(--paper)', boxShadow: 'var(--shadow-1)', fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: 'var(--ink)' },
+  sbtOn: { flex: 1, height: '40px', borderRadius: 'var(--r-sm)', border: 'none', background: 'var(--forest-500)', boxShadow: 'var(--shadow-pill)', fontSize: '13px', cursor: 'pointer', fontWeight: 600, color: 'white' },
   divider: { height: '1px', background: 'rgba(0,0,0,0.06)', margin: '24px 0' },
   triggerBtns: { display: 'flex', gap: '8px' },
-  triggerBtn: { flex: 1, padding: '13px', borderRadius: '10px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FFFFFF', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1C1C1C', textAlign: 'center', transition: 'all 0.12s' },
-  triggerBtnOn: { flex: 1, padding: '13px', borderRadius: '10px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: 'white', textAlign: 'center' },
-  triggerBtnUnsure: { flex: 1, padding: '13px', borderRadius: '10px', border: '1.5px solid rgba(0,0,0,0.08)', background: '#FAF8F4', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#7A7A72', textAlign: 'center', transition: 'all 0.12s' },
-  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#F6F3EC', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', maxWidth: '572px', margin: '0 auto', display: 'block', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
+  triggerBtn: { flex: 1, padding: '13px', borderRadius: 'var(--r-sm)', border: 'none', background: 'var(--paper)', boxShadow: 'var(--shadow-1)', fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: 'var(--ink)', textAlign: 'center', transition: 'all 0.12s' },
+  triggerBtnOn: { flex: 1, padding: '13px', borderRadius: 'var(--r-sm)', border: 'none', background: 'var(--forest-500)', boxShadow: 'var(--shadow-pill)', fontSize: '13px', cursor: 'pointer', fontWeight: 600, color: 'white', textAlign: 'center' },
+  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: 'rgba(251,248,242,0.92)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 -12px 30px rgba(56,62,48,0.08)' },
+  cta: { background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-md)', padding: '14px', width: '100%', maxWidth: '572px', margin: '0 auto', display: 'block', fontSize: '14px', fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)' },
   verdictWrap: { flex: 1, padding: '28px 24px', display: 'flex', flexDirection: 'column', maxWidth: '620px', margin: '0 auto', width: '100%', boxSizing: 'border-box' },
-  verdictBox: { borderRadius: '18px', padding: '28px 24px', textAlign: 'center', marginBottom: '16px' },
+  verdictBox: { borderRadius: 'var(--r-lg)', padding: '28px 24px', textAlign: 'center', marginBottom: '16px' },
   verdictEmoji: { display: 'flex', justifyContent: 'center', marginBottom: '12px' },
-  verdictTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 400, marginBottom: '6px' },
+  verdictTitle: { fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 400, marginBottom: '6px' },
   verdictSub: { fontSize: '13px', opacity: 0.8, lineHeight: 1.6 },
-  analysisCard: { background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF', border: '1px solid rgba(61,92,60,0.14)', borderRadius: '18px', padding: '18px 20px', marginBottom: '12px' },
-  analysisTag: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 8px', borderRadius: '20px', display: 'inline-block', marginBottom: '8px' },
-  analysisText: { fontSize: '13px', color: '#1C1C1C', lineHeight: 1.65 },
+  analysisCard: { background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(139,174,138,0.04)), #FFFFFF', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px 20px', marginBottom: '12px' },
+  analysisTag: { fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--forest-500)', background: 'var(--forest-100)', padding: '4px 10px', borderRadius: '999px', display: 'inline-block', marginBottom: '8px' },
+  analysisText: { fontSize: '13px', color: 'var(--ink)', lineHeight: 1.65 },
   spinner: { width: '32px', height: '32px', border: '3px solid #EDF3ED', borderTopColor: '#3D5C3C', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '40px auto 16px' },
-  processingText: { textAlign: 'center', fontSize: '14px', color: '#7A7A72', fontFamily: 'Fraunces, serif' },
+  processingText: { textAlign: 'center', fontSize: '14px', color: 'var(--gray)', fontFamily: 'var(--font-display)' },
 }
 
 const VERDICT_CONFIG = {
@@ -292,46 +291,46 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         </div>
         <div style={s.verdictWrap}>
           <div style={{ textAlign: 'center', marginBottom: 22, marginTop: 8 }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '2px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 10 }}>Verdict entered · Day 14 of 14</div>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '21px', fontWeight: 400, color: '#1C1C1C', marginBottom: 2 }}>{food}</div>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '46px', fontWeight: 400, color: config.color, lineHeight: 1.15, textShadow: config.glow.replace('0 0 24px', '0 0 34px') }}>{verdict}.</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray-faint)', textTransform: 'uppercase', marginBottom: 10 }}>Verdict entered · Day 14 of 14</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, color: 'var(--ink)', marginBottom: 2 }}>{food}</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '56px', fontWeight: 300, letterSpacing: '-0.02em', color: config.color, lineHeight: 1.1, textShadow: config.glow.replace('0 0 24px', '0 0 38px') }}>{verdict}.</div>
             <div style={{ width: '38px', height: '2px', background: config.color, opacity: 0.45, margin: '14px auto 12px' }} />
             <div style={{ fontSize: '13.5px', color: '#5A5A52', lineHeight: 1.6, maxWidth: 420, margin: '0 auto' }}>{config.sub.replace(/{food}/g, food)}</div>
           </div>
 
-          <div style={{ background: 'linear-gradient(180deg, #FDFBF6, #F8F4EA)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '6px', padding: '13px 16px', marginBottom: '14px', boxShadow: '0 6px 18px rgba(60,50,30,0.09), inset 0 0 30px rgba(201,162,39,0.03)' }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '1.2px', color: '#9A927E', marginBottom: 8 }}>ENTERED IN YOUR VERDICTS</div>
+          <div style={{ background: 'linear-gradient(180deg, #FDFBF6, #F8F4EA)', border: 'none', borderRadius: 'var(--r-md)', padding: '14px 16px', marginBottom: '14px', boxShadow: '0 10px 26px -8px rgba(60,50,30,0.16), 0 2px 6px rgba(60,50,30,0.05), inset 0 0 30px rgba(201,162,39,0.03)' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', fontWeight: 500, letterSpacing: '1.2px', color: '#9A927E', marginBottom: 8 }}>ENTERED IN YOUR VERDICTS</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                 <span style={{ width: 8, height: 8, borderRadius: 2, background: verdict === 'Safe' ? '#2C9D8A' : verdict === 'Limit' ? '#E8941F' : '#D64545', flexShrink: 0 }}></span>
                 <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C' }}>{food}</span>
               </div>
-              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{verdict === 'Safe' ? 'NO REACTION' : verdict === 'Limit' ? 'MILD, DOSE-LINKED' : 'SYMPTOMS CONFIRMED'}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{verdict === 'Safe' ? 'NO REACTION' : verdict === 'Limit' ? 'MILD, DOSE-LINKED' : 'SYMPTOMS CONFIRMED'}</span>
             </div>
           </div>
 
           <div style={s.analysisCard}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 9 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2C9D8A', boxShadow: '0 0 8px rgba(44,157,138,0.6)' }}></span>
-              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#3D5C3C' }}>The analysis</span>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--forest-300)', boxShadow: '0 0 8px rgba(139,174,138,0.75)' }}></span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)' }}>The analysis</span>
             </div>
             <div style={s.analysisText}>{analysis}</div>
           </div>
 
           {wasConflicted && (
-            <div style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '14px', padding: '14px 16px', marginBottom: '12px' }}>
-              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '1px', color: '#9A5F1A', textTransform: 'uppercase', marginBottom: 7 }}>Ruled on conflicting evidence</div>
+            <div style={{ background: 'var(--tint-warm)', border: 'none', borderRadius: 'var(--r-md)', padding: '14px 16px', marginBottom: '12px' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray)', textTransform: 'uppercase', marginBottom: 7 }}>Ruled on conflicting evidence</div>
               <div style={{ fontSize: '12.5px', color: '#5A5A52', lineHeight: 1.65 }}>Your logs and what you told us disagreed, so this verdict moved one careful step and no further. When you want a firmer answer, you can re-run this trial from your Reintro tab; the newest verdict replaces this one.</div>
             </div>
           )}
 
           <div style={{ padding: '14px 16px', marginBottom: '12px' }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 7 }}>Worth knowing</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray-faint)', textTransform: 'uppercase', marginBottom: 7 }}>Worth knowing</div>
             <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>This isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food and update its verdict.</div>
           </div>
         </div>
         <div style={s.footer}>
-          <button style={allAnswered() ? s.cta : { ...s.cta, background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', border: '1px solid rgba(0,0,0,0.08)', cursor: 'not-allowed' }} onClick={onComplete}>View your verdicts →</button>
+          <button style={allAnswered() ? s.cta : { ...s.cta, background: '#F0EEE6', color: 'rgba(32,36,31,0.35)', border: 'none', boxShadow: 'none', cursor: 'not-allowed' }} onClick={onComplete}>View your verdicts →</button>
         </div>
       </div>
     )
@@ -345,7 +344,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         <div style={s.day14Badge}>Day 14</div>
       </div>
 
-      <div style={s.content}>
+      <div style={s.content} className="sn-rise">
         <div style={s.foodName}>{food}</div>
         <div style={s.title}>Your {food.toLowerCase()} results.</div>
         <div style={s.hint}>One last step before we map {food} on your Food Map. Confirm what you logged, and tell us if anything unusual happened.</div>
@@ -357,8 +356,8 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         </div>
 
         {(noiseFloor?.totalDays > 0 || sleepOverlap) && (
-          <div style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '12px 14px', marginBottom: '14px' }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '7.5px', letterSpacing: '1px', color: '#9A927E', textTransform: 'uppercase', marginBottom: 6 }}>Worth weighing</div>
+          <div style={{ background: 'var(--tint-warm)', border: 'none', borderRadius: 'var(--r-md)', padding: '13px 14px', marginBottom: '14px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray-faint)', textTransform: 'uppercase', marginBottom: 6 }}>Worth weighing</div>
             {noiseFloor?.totalDays > 0 && <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6 }}>During clean elimination weeks you logged symptoms about {noiseFloor.daysPerWeek} day{noiseFloor.daysPerWeek === 1 ? '' : 's'} a week. That background is part of how this cycle gets read.</div>}
             {sleepOverlap && <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6, marginTop: noiseFloor?.totalDays > 0 ? 6 : 0 }}>{sleepOverlap.overlap} of your {sleepOverlap.symDays} symptom days were also among your worst sleep nights this cycle. The analysis weighs that too.</div>}
           </div>
@@ -382,7 +381,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         {/* BLOCK 2.5 — Disagreement follow-up: the gap, in the user's words.
             Neutral questions only; the ruling weighs these, nothing leads. */}
         {disagreeing && (
-          <div style={{ ...s.questionBlock, background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '16px' }}>
+          <div style={{ ...s.questionBlock, background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px' }}>
             <div style={s.questionLabel}>Tell us about the gap.</div>
             <div style={s.questionSub}>Your logs and what you just said disagree. That is worth getting right, so three quick questions. The ruling weighs your answers.</div>
 
@@ -394,7 +393,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
                 const on = feltWhat.includes(sym)
                 return (
                   <button key={sym}
-                    style={{ padding: '7px 12px', borderRadius: '999px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', border: on ? '1.5px solid #3D5C3C' : '1px solid rgba(0,0,0,0.1)', background: on ? '#EDF3ED' : '#FAF8F4', color: on ? '#2D6B42' : '#5A5A52' }}
+                    style={{ padding: '8px 15px', borderRadius: '999px', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer', border: 'none', background: on ? 'var(--forest-500)' : 'var(--paper)', color: on ? '#fff' : 'var(--gray)', boxShadow: on ? 'var(--shadow-pill)' : 'var(--shadow-1)', transition: 'all 0.16s' }}
                     onClick={() => setFeltWhat(v => on ? v.filter(x => x !== sym) : [...v, sym])}>
                     {sym}
                   </button>
@@ -448,7 +447,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
 
       <div style={s.footer}>
         <button
-          style={allAnswered() ? s.cta : { ...s.cta, background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none', cursor: 'not-allowed' }}
+          style={allAnswered() ? s.cta : { ...s.cta, background: '#F0EEE6', color: 'rgba(32,36,31,0.35)', border: 'none', boxShadow: 'none', cursor: 'not-allowed' }}
           disabled={!allAnswered()}
           title={!allAnswered() ? (disagreeing ? 'Answer the follow-up questions above first' : 'Answer the accuracy question above first') : undefined}
           onClick={handleSubmit}

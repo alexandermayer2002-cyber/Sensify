@@ -35,18 +35,16 @@ import {
 } from '../utils/aiInsights'
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
-
   @keyframes obsType { from { max-width: 0; } to { max-width: 100%; } }
   @keyframes obsEye { 0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(44,157,138,0.8); } 50% { opacity: 0.45; box-shadow: 0 0 3px rgba(44,157,138,0.4); } }
   .obs-line { overflow: hidden; white-space: nowrap; max-width: 0; animation: obsType 0.9s steps(34, end) forwards; }
-  .snfy-app { min-height: 100vh; background: #F6F3EC; color: #1C1C1C; font-family: 'DM Sans', sans-serif; }
+  .snfy-app { min-height: 100vh; color: var(--ink); }
 
   .snfy-nav {
-    background: rgba(255,255,255,0.92);
+    background: rgba(255,255,255,0.88);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(0,0,0,0.07);
+    box-shadow: 0 1px 0 rgba(56,62,48,0.06);
     padding: 0 24px;
     display: flex;
     align-items: center;
@@ -56,29 +54,29 @@ const css = `
     top: 0;
     z-index: 100;
   }
-  .snfy-logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; color: #1C1C1C; letter-spacing: -0.3px; }
-  .snfy-msg-btn { position: relative; width: 38px; height: 38px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .snfy-msg-btn:hover { background: #F2F5EF; }
-  .snfy-msg-icon { font-size: 16px; color: #3D5C3C; }
-  .snfy-msg-badge { position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; border-radius: 9px; background: #D64545; color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 0 5px; font-family: 'DM Sans', sans-serif; }
-  .snfy-logo em { color: #3D5C3C; font-style: italic; }
+  .snfy-logo { font-family: var(--font-display); font-size: 20px; font-weight: 500; color: var(--ink); letter-spacing: -0.3px; }
+  .snfy-msg-btn { position: relative; width: 38px; height: 38px; border-radius: var(--r-sm); border: none; background: var(--paper); box-shadow: var(--shadow-1); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .snfy-msg-btn:hover { background: var(--forest-050); }
+  .snfy-msg-icon { font-size: 16px; color: var(--forest-500); }
+  .snfy-msg-badge { position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--forest-500); color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+  .snfy-logo em { color: var(--forest-500); font-style: italic; }
   .snfy-nav-tabs { display: flex; gap: 2px; }
-  .snfy-tab { font-size: 13px; font-weight: 400; color: #7A7A72; padding: 6px 12px; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.15s; letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
-  .snfy-tab.active { color: #1C1C1C; font-weight: 500; border-bottom: 2px solid #3D5C3C; }
-  .snfy-tab:hover:not(.active) { color: #1C1C1C; }
+  .snfy-tab { font-size: 13px; font-weight: 500; color: var(--gray); padding: 6px 12px; border: none; background: none; cursor: pointer; transition: color var(--t-fast) var(--ease); letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
+  .snfy-tab.active { color: var(--ink); font-weight: 600; border-bottom: 2px solid var(--forest-500); }
+  .snfy-tab:hover:not(.active) { color: var(--ink); }
   .snfy-bottombar { display: none; }
   .snfy-more-sheet { display: none; }
   @media (max-width: 640px) {
     .snfy-nav-tabs { display: none !important; }
     .snfy-app { padding-bottom: 76px; }
-    .snfy-bottombar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 80; display: flex; background: rgba(250,248,244,0.97); backdrop-filter: blur(10px); border-top: 1px solid rgba(0,0,0,0.08); padding: 5px 4px calc(7px + env(safe-area-inset-bottom)); }
-    .snfy-bb-btn { flex: 1; background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 11px; color: #7A7A72; padding: 7px 2px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .snfy-bottombar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 80; display: flex; background: rgba(250,248,244,0.97); backdrop-filter: blur(10px); box-shadow: 0 -1px 0 rgba(56,62,48,0.07); padding: 5px 4px calc(7px + env(safe-area-inset-bottom)); }
+    .snfy-bb-btn { flex: 1; background: none; border: none; font-size: 11px; color: var(--gray); padding: 7px 2px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .snfy-bb-dot { width: 4px; height: 4px; border-radius: 50%; background: transparent; }
-    .snfy-bb-btn.active { color: #1C1C1C; font-weight: 600; }
-    .snfy-bb-btn.active .snfy-bb-dot { background: #3D5C3C; }
-    .snfy-more-sheet { position: fixed; bottom: 62px; right: 10px; z-index: 81; display: block; background: #FFFFFF; border: 1px solid rgba(0,0,0,0.09); border-radius: 14px; box-shadow: 0 14px 40px rgba(0,0,0,0.16); padding: 6px; min-width: 172px; }
-    .snfy-more-item { display: block; width: 100%; text-align: left; background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: #1C1C1C; padding: 11px 13px; border-radius: 9px; cursor: pointer; }
-    .snfy-more-item:active { background: #F4F2EC; }
+    .snfy-bb-btn.active { color: var(--ink); font-weight: 600; }
+    .snfy-bb-btn.active .snfy-bb-dot { background: var(--forest-500); }
+    .snfy-more-sheet { position: fixed; bottom: 62px; right: 10px; z-index: 81; display: block; background: var(--paper); border: none; border-radius: var(--r-md); box-shadow: var(--shadow-2); padding: 6px; min-width: 172px; }
+    .snfy-more-item { display: block; width: 100%; text-align: left; background: none; border: none; font-size: 13.5px; color: var(--ink); padding: 11px 13px; border-radius: var(--r-sm); cursor: pointer; }
+    .snfy-more-item:active { background: var(--tint-warm); }
   }
   @media (max-width: 600px) {
     .snfy-nav { padding: 0 14px; gap: 6px; }
@@ -89,16 +87,23 @@ const css = `
     .snfy-phase-pill { display: none; }
     .snfy-nav-right { gap: 6px; flex-shrink: 0; }
     .snfy-signout { font-size: 11px; }
-    .snfy-stats { gap: 7px; }
-    .snfy-stat { padding: 11px; }
-    .snfy-stat-val { font-size: 23px; }
   }
   .snfy-nav-right { display: flex; align-items: center; gap: 10px; }
-  .snfy-phase-pill { font-size: 11.5px; color: #3D5C3C; background: #EDF3ED; padding: 4px 12px; border-radius: 20px; font-weight: 500; border: 1px solid rgba(61,92,60,0.15); }
-  .snfy-signout { font-size: 12px; color: #7A7A72; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-  .snfy-signout:hover { color: #1C1C1C; }
+  .snfy-phase-pill { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); background: var(--forest-100); padding: 5px 12px; border-radius: var(--r-pill); }
+  .snfy-signout { font-size: 12px; color: var(--gray); background: none; border: none; cursor: pointer; }
+  .snfy-signout:hover { color: var(--ink); }
 
-  .snfy-layout { padding: 24px 20px 40px; max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  /* Hero band: slim, full-width, one sentence + one CTA + one labeled progress line */
+  .snfy-heroband { max-width: 1140px; margin: 0 auto; padding: 20px 16px 0; }
+  .snfy-hero-top { position: relative; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .snfy-hero-big { font-family: var(--font-display); font-size: 29px; font-weight: 300; color: #FAF8F4; line-height: 1.12; letter-spacing: -0.3px; }
+  .snfy-hero-phase { display: inline-block; vertical-align: middle; margin-left: 10px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-900); background: var(--forest-300); border-radius: var(--r-pill); padding: 4px 10px; transform: translateY(-4px); }
+  @media (min-width: 900px) {
+    .snfy-heroband { padding: 24px 28px 0; }
+    .snfy-hero-big { font-size: 38px; }
+  }
+
+  .snfy-layout { padding: 20px 16px 40px; max-width: 1140px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
   .snfy-layout > div { display: contents; }
   .snfy-avoiding { order: 1; }
   .snfy-garden { order: 1; }
@@ -108,89 +113,82 @@ const css = `
   .snfy-comp { order: 5; }
   .snfy-trends { order: 6; }
   .snfy-layout .snfy-action, .snfy-layout .snfy-greeting, .snfy-layout .snfy-phase { order: -1; }
-  @media (min-width: 680px) {
-    .snfy-layout { display: grid; grid-template-columns: 1.45fr 1fr; gap: 18px; padding: 24px 28px 48px; align-items: start; }
+  @media (min-width: 900px) {
+    .snfy-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 20px; padding: 24px 28px 56px; align-items: start; }
     .snfy-layout > div { display: block; }
   }
 
   /* Greeting */
   .snfy-greeting { margin-bottom: 16px; }
-  .snfy-greeting h1 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1.2; margin-bottom: 5px; letter-spacing: -0.5px; }
-  .snfy-greeting h1 em { font-style: italic; color: #3D5C3C; }
-  .snfy-greeting p { font-size: 13px; color: #7A7A72; line-height: 1.55; }
+  .snfy-greeting h1 { font-family: var(--font-display); font-size: 30px; font-weight: 300; line-height: 1.2; margin-bottom: 5px; letter-spacing: -0.5px; }
+  .snfy-greeting h1 em { font-style: italic; color: var(--forest-500); }
+  .snfy-greeting p { font-size: 13px; color: var(--gray); line-height: 1.55; }
 
   /* Dark protocol card */
-  .snfy-phase { background: #22301F; border-radius: 22px; padding: 22px; color: white; margin-bottom: 14px; position: relative; overflow: hidden; box-shadow: 0 18px 44px rgba(34,48,31,0.28); }
+  .snfy-phase {
+    position: relative; overflow: hidden; margin-bottom: 14px; padding: 24px; color: #FAF8F4;
+    border-radius: 28px;
+    background:
+      radial-gradient(120% 90% at 85% 0%, rgba(139, 174, 138, 0.32), transparent 55%),
+      linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%);
+    box-shadow: var(--shadow-3);
+  }
   .snfy-phase-orb { position: absolute; top: -70px; right: -70px; width: 240px; height: 240px; border-radius: 50%; background: #8BAE8A; animation: snfyGlow 5s ease-in-out infinite; pointer-events: none; }
-  .snfy-phase-orb2 { position: absolute; bottom: -90px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: #E8941F; opacity: 0.05; pointer-events: none; }
+  .snfy-phase-orb2 { position: absolute; bottom: -90px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: #8BAE8A; opacity: 0.04; pointer-events: none; }
   @keyframes snfyGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
-  .snfy-phase::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(139,174,138,0.15) 0%, transparent 70%); pointer-events: none; }
-  .snfy-phase-eyebrow { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.35); margin-bottom: 10px; }
-  .snfy-phase-day { font-family: 'Fraunces', serif; font-size: 68px; font-weight: 300; line-height: 0.9; color: white; margin-bottom: 4px; }
-  .snfy-phase-of { font-size: 14px; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
-  .snfy-pbar { background: rgba(255,255,255,0.08); border-radius: 2px; height: 2px; margin-bottom: 8px; }
-  .snfy-pfill { height: 2px; background: #8BAE8A; border-radius: 2px; transition: width 0.6s ease; }
-  .snfy-plabel { font-size: 11px; color: rgba(255,255,255,0.25); display: flex; justify-content: space-between; }
-  .snfy-phase-streak { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .snfy-phase-eyebrow { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(250,248,244,0.55); margin-bottom: 10px; }
+  .snfy-phase-day { font-family: var(--font-display); font-size: 64px; font-weight: 300; line-height: 0.9; color: white; margin-bottom: 4px; font-variant-numeric: lining-nums; }
+  .snfy-phase-of { font-size: 13px; color: rgba(250,248,244,0.45); margin-bottom: 18px; }
+  .snfy-pbar { position: relative; background: rgba(250,248,244,0.13); border-radius: 5px; height: 9px; margin-bottom: 9px; }
+  .snfy-pfill { position: absolute; top: 0; bottom: 0; left: 0; background: linear-gradient(90deg, var(--forest-150), var(--forest-300)); border-radius: 5px; box-shadow: 0 0 12px rgba(139, 174, 138, 0.75); transition: width 0.6s var(--ease); }
+  .snfy-plabel { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(250,248,244,0.55); display: flex; justify-content: space-between; }
+  .snfy-phase-streak { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
   .snfy-streak-dot { width: 7px; height: 7px; border-radius: 50%; background: #8BAE8A; flex-shrink: 0; }
-  .snfy-streak-text { font-size: 12px; color: rgba(255,255,255,0.4); }
+  .snfy-streak-text { font-size: 12px; color: rgba(250,248,244,0.45); }
   .snfy-streak-num { font-weight: 500; color: #8BAE8A; }
 
   /* Action cards */
-  .snfy-action { background: #FFFFFF; border-radius: 16px; padding: 20px; margin-bottom: 14px; border: 1px solid rgba(61,92,60,0.2); }
-  .snfy-action.amber { border-color: rgba(212,137,74,0.3); }
-  .snfy-action.red { border-color: rgba(201,91,91,0.25); }
-  .snfy-action.neutral { border-color: rgba(0,0,0,0.07); }
-  .snfy-action-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #3D5C3C; background: #EDF3ED; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
-  .snfy-action-tag.amber { color: #D4894A; background: #FDF2EA; }
-  .snfy-action-tag.red { color: #C95B5B; background: #FAEAEA; }
-  .snfy-action-dot { width: 5px; height: 5px; border-radius: 50%; background: #3D5C3C; animation: snfy-pulse 2s infinite; }
+  .snfy-action { background: var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 22px; margin-bottom: 14px; }
+  .snfy-action-tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); background: var(--forest-100); padding: 5px 11px; border-radius: var(--r-pill); margin-bottom: 12px; }
+  .snfy-action-tag.amber { color: var(--limit-700); background: var(--limit-100); }
+  .snfy-action-tag.red { color: var(--avoid-700); background: var(--avoid-100); }
+  .snfy-action-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--forest-500); animation: snfy-pulse 2s infinite; }
   @keyframes snfy-pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
-  .snfy-action h2 { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 300; margin-bottom: 6px; line-height: 1.3; letter-spacing: -0.3px; }
-  .snfy-action h2 em { font-style: italic; color: #3D5C3C; }
-  .snfy-action h2 em.amber { color: #D4894A; }
-  .snfy-action h2 em.red { color: #C95B5B; }
-  .snfy-action p { font-size: 13px; color: #7A7A72; line-height: 1.65; margin-bottom: 14px; }
-  .snfy-btn { background: #3D5C3C; color: white; border: none; border-radius: 9px; padding: 11px 20px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.15s; }
-  .snfy-btn:hover { opacity: 0.87; }
-  .snfy-btn.amber { background: #D4894A; }
-  .snfy-btn.red { background: #C95B5B; }
+  .snfy-action h2 { font-family: var(--font-display); font-size: 21px; font-weight: 300; margin-bottom: 6px; line-height: 1.3; letter-spacing: -0.3px; }
+  .snfy-action h2 em { font-style: italic; color: var(--forest-500); }
+  .snfy-action h2 em.amber { color: var(--limit-700); }
+  .snfy-action h2 em.red { color: var(--avoid-700); }
+  .snfy-action p { font-size: 13px; color: var(--gray); line-height: 1.65; margin-bottom: 14px; }
+  .snfy-btn { background: var(--forest-500); color: white; border: none; border-radius: var(--r-md); padding: 12px 20px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-pill); transition: transform var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease); }
+  .snfy-btn:hover { transform: translateY(-1px); }
+  .snfy-btn:active { transform: scale(0.985); }
+  .snfy-btn.amber { background: var(--limit); box-shadow: 0 10px 24px -6px rgba(154, 95, 26, 0.4); }
+  .snfy-btn.red { background: var(--avoid); box-shadow: 0 10px 24px -6px rgba(139, 46, 46, 0.4); }
 
-  /* Stat cards — 3 column */
-  .snfy-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
-  .snfy-stat { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 12px; padding: 14px; }
-  .snfy-stat-label { font-size: 10px; color: #7A7A72; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .snfy-stat-val { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; margin-bottom: 3px; }
-  .snfy-stat-change { font-size: 10px; font-weight: 500; margin-top: 3px; color: #4A8C6A; }
-
-  /* Compliance dots */
-  .snfy-comp { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 18px; padding: 20px; margin-bottom: 0; }
-  .snfy-comp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .snfy-comp-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-bottom: 4px; }
-  .snfy-comp-count { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1; color: #1C1C1C; }
-  .snfy-comp-count em { font-style: normal; color: #7A7A72; font-size: 16px; }
-  .snfy-comp-streak-wrap { text-align: right; }
-  .snfy-comp-streak-num { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1; color: #3D5C3C; }
-  .snfy-comp-streak-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-top: 4px; }
-  .snfy-comp-dots { display: flex; gap: 7px; }
-  .snfy-dot { flex: 1; aspect-ratio: 1 / 1.15; border-radius: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: transform 0.15s; }
+  /* Compliance: compact glanceable strip */
+  .snfy-comp { background: var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 22px; margin-bottom: 0; }
+  .snfy-comp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .snfy-comp-streak-wrap { display: flex; align-items: baseline; gap: 6px; }
+  .snfy-comp-streak-num { font-family: var(--font-display); font-size: 26px; font-weight: 300; line-height: 1; color: var(--forest-500); font-variant-numeric: lining-nums; }
+  .snfy-comp-dots { display: flex; gap: 5px; }
+  .snfy-dot { flex: 1; height: 34px; border-radius: var(--r-sm); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
   .snfy-dot.yes { background: #4A8C6A; }
-  .snfy-dot.no { background: #C95B5B; }
-  .snfy-dot.empty { background: #F4F2EC; border: 1px solid rgba(0,0,0,0.05); }
-  .snfy-dot.future { background: #FAF8F4; border: 1px dashed rgba(0,0,0,0.1); }
-  .snfy-dot.missed { background: #DDDAD1; border: 1px solid #C9C6BC; }
+  .snfy-dot.no { background: var(--avoid); }
+  .snfy-dot.empty { background: var(--tint-warm); }
+  .snfy-dot.future { background: transparent; border: 1px dashed rgba(0,0,0,0.12); }
+  .snfy-dot.missed { background: #DDDAD1; }
   .snfy-dot.away { background: transparent; border: 1.5px solid #8BAE8A; }
   .snfy-dot.away .snfy-dot-day { color: #3D5C3C; }
   .snfy-dot.away .snfy-dot-mark { color: #8BAE8A; }
   .snfy-dot.logged { background: #C9D8C4; }
   .snfy-dot.logged .snfy-dot-day { color: #3D5C3C; }
   .snfy-dot.logged .snfy-dot-mark { color: #3D5C3C; }
-  .snfy-dot.today { box-shadow: 0 0 0 2px #3D5C3C; }
-  .snfy-dot-day { font-size: 9px; font-weight: 700; letter-spacing: 0.3px; }
+  .snfy-dot.today { box-shadow: 0 0 0 2px var(--forest-500); }
+  .snfy-dot-day { font-size: 8px; font-weight: 700; letter-spacing: 0.3px; }
   .snfy-dot.yes .snfy-dot-day, .snfy-dot.no .snfy-dot-day { color: rgba(255,255,255,0.85); }
   .snfy-dot.empty .snfy-dot-day, .snfy-dot.future .snfy-dot-day { color: #A8A69E; }
   .snfy-dot.missed .snfy-dot-day { color: #6A6A62; }
-  .snfy-dot-mark { font-size: 14px; font-weight: 700; line-height: 1; }
+  .snfy-dot-mark { font-size: 11px; font-weight: 700; line-height: 1; }
   .snfy-dot.yes .snfy-dot-mark { color: white; }
   .snfy-dot.no .snfy-dot-mark { color: white; }
   .snfy-dot.empty .snfy-dot-mark { color: rgba(0,0,0,0.15); }
@@ -198,43 +196,34 @@ const css = `
   .snfy-dot.missed .snfy-dot-mark { color: #6A6A62; font-weight: 700; }
 
   /* Pending cards */
-  .snfy-pending { background: #FDF2EA; border: 1px solid rgba(212,137,74,0.18); border-radius: 13px; padding: 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
-  .snfy-pending-icon { width: 34px; height: 34px; background: #D4894A; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .snfy-audit-pending { background: #FAF8F4; border: 1px solid rgba(0,0,0,0.08); border-radius: 13px; padding: 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
-  .snfy-audit-icon { width: 34px; height: 34px; background: #EDF3ED; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-
-  /* Right column */
-  .snfy-sec-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-bottom: 9px; }
+  .snfy-pending { background: var(--limit-100); border: none; border-radius: var(--r-md); box-shadow: var(--shadow-1); padding: 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
+  .snfy-pending-icon { width: 34px; height: 34px; background: var(--limit); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .snfy-audit-pending { background: var(--tint-warm); border: none; border-radius: var(--r-md); box-shadow: var(--shadow-1); padding: 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
+  .snfy-audit-icon { width: 34px; height: 34px; background: var(--forest-100); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
   /* Avoiding list — full categorized */
-  .snfy-avoiding { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 18px; padding: 20px; margin-bottom: 0; }
+  .snfy-avoiding { background: var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 22px; margin-bottom: 0; }
   .snfy-avoid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .snfy-avoid-count { font-size: 11px; color: #A8A69E; }
-  .snfy-avoid-bar { display: flex; gap: 2px; height: 8px; border-radius: 5px; overflow: hidden; margin-bottom: 20px; }
-  .snfy-avoid-bar-seg { height: 8px; transition: flex 0.4s ease; }
+  .snfy-avoid-bar { display: flex; gap: 2px; height: 9px; border-radius: 5px; overflow: hidden; margin-bottom: 20px; }
+  .snfy-avoid-bar-seg { height: 9px; transition: flex 0.4s var(--ease); }
   .snfy-avoid-group { margin-bottom: 18px; }
   .snfy-avoid-group:last-child { margin-bottom: 0; }
   .snfy-avoid-group-head { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
   .snfy-avoid-level-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .snfy-avoid-level-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .snfy-avoid-level-count { font-size: 10px; color: #A8A69E; margin-left: auto; font-family: 'DM Mono', monospace; }
   .snfy-avoid-chips { display: flex; flex-wrap: wrap; gap: 7px; }
-  .snfy-avoid-chip { font-size: 13px; padding: 7px 13px; border-radius: 10px; font-weight: 500; }
+  .snfy-avoid-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; padding: 7px 13px; border-radius: var(--r-sm); font-weight: 500; }
 
   /* Weekly insight — instrument style */
-  .snfy-insight { background: linear-gradient(135deg, rgba(139,174,138,0.13), rgba(44,157,138,0.05)), #FFFFFF; border: 1px solid rgba(61,92,60,0.14); border-radius: 18px; padding: 18px 20px; margin-top: 16px; }
+  .snfy-insight { background: linear-gradient(135deg, rgba(139,174,138,0.08), rgba(139,174,138,0.03)), var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 22px; margin-top: 16px; }
   .snfy-weekly-card { margin-top: 14px; }
-  .snfy-weekly-card > div { border-radius: 18px !important; padding: 15px 18px !important; margin-top: 0 !important; }
   .snfy-trends { margin-top: 14px; }
-  .snfy-trends > div { border-radius: 18px !important; margin-top: 0 !important; }
-  .snfy-insight-head { display: flex; align-items: center; gap: 7px; margin-bottom: 9px; }
-  .snfy-insight-dot { width: 6px; height: 6px; border-radius: 50%; background: #2C9D8A; animation: snfyPulse 1.6s infinite; flex-shrink: 0; }
-  .snfy-insight-tag { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: #3D5C3C; }
-  .snfy-insight p { font-size: 13.5px; line-height: 1.7; color: #1C1C1C; }
-  .snfy-insight-foot { font-family: 'DM Mono', monospace; font-size: 8.5px; letter-spacing: 0.6px; color: #A8A69E; text-transform: uppercase; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.05); }
+  .snfy-insight-head { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
+  .snfy-insight-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--forest-300); animation: snfyPulse 1.6s infinite; flex-shrink: 0; }
+  .snfy-insight-num { font-family: var(--font-display); font-size: 38px; font-weight: 300; line-height: 1; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 10px; font-variant-numeric: lining-nums; }
+  .snfy-insight p { font-size: 13px; line-height: 1.7; color: var(--ink-soft); }
   @keyframes snfyPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 
-  .snfy-loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; font-size: 14px; color: #7A7A72; }
+  .snfy-loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; font-size: 14px; color: var(--gray); }
 `
 
 const BADGE = {
@@ -817,6 +806,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
   const getGreeting = () => {
     const h = new Date().getHours()
+    // Midnight to 4am is still the night before: never "Good morning" at 12:30am.
+    if (h < 4) return 'Good evening'
     if (h < 12) return 'Good morning'
     if (h < 17) return 'Good afternoon'
     return 'Good evening'
@@ -1290,6 +1281,24 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const moderateFoods = labResult?.foods?.filter(f => f.level === 'Moderate') || []
   const showAvoidingList = labResult?.foods && labResult.status !== 'pending_review'
 
+  // Exposure-honest avoiding list (mirrors netlify/functions/household-card.js):
+  // the trial food leaves the list during exposure, because it is deliberately
+  // back on the plate, and returns during washout. Verdict-aware: a food whose
+  // latest cycle verdict is Safe has left elimination entirely; Avoid and Limit
+  // foods stay listed carrying their earned verdict stamp.
+  const latestCycleByFood = (() => {
+    const map = {}
+    ;[...reintroRows].sort((a, b) => String(a.started_at || '').localeCompare(String(b.started_at || ''))).forEach(r => { map[(r.food || '').toLowerCase()] = r })
+    return map
+  })()
+  const activeExposureFood = (activeCycleLite && !activeCycleLite.washout_started_at) ? (activeCycleLite.food || '').toLowerCase() : null
+  const avoidedFoods = (labResult?.foods || []).filter(f => {
+    const key = (f.name || '').toLowerCase()
+    if (latestCycleByFood[key]?.verdict === 'Safe') return false
+    if (activeExposureFood === key && !latestCycleByFood[key]?.verdict) return false
+    return true
+  })
+
   if (screen === 'intake') return <IntakeSurvey session={session} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'labresults') return <LabResults session={session} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'checkin') return <WeeklyCheckin session={session} weekNumber={activeCheckinWeek || currentWeek || 1} profile={profile} currentFoods={labResult?.foods?.map(f => f.name) || []} phase={calculatedPhase || 'elimination'} onBack={() => { setTab('history'); setScreen('checkin-history') }} onComplete={() => { setWeeklyDue(false); setTab('home'); setScreen('dashboard') }} />
@@ -1486,16 +1495,52 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       ) : loading ? (
         <div className="snfy-loading">Loading your program...</div>
       ) : (<>
-        {cockpitActive && (
-          <div style={{ maxWidth: 960, margin: '0 auto', padding: '20px 20px 0' }}>
-            <div style={{ position: 'relative', background: '#22301F', borderRadius: 20, padding: '32px 28px 26px', overflow: 'hidden', boxShadow: '0 18px 44px rgba(34,48,31,0.3)' }}>
-              <div className="snfy-phase-orb" />
-              <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14, marginBottom: 16 }}>
-                <div>
-                  <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.5)', marginBottom: 3 }}>{getGreeting()}, {name}</div>
-                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.1 }}>{profile?.program_phase === 'complete' ? 'Every verdict, earned.' : betweenCycles ? 'Choose your next food.' : `Day ${calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.`}</div>
-                  {cycleLine && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>{cycleLine}</div>}
-                  {betweenCycles && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>REINTRODUCTION · DAY {currentDay - 56}{(currentDay - 56) <= (labResult?.foods?.length || 8) * 14 ? ` OF ${(labResult?.foods?.length || 8) * 14}` : ''} · {reintroRows.some(r => r.verdict) ? 'CYCLE COMPLETE' : 'TESTING OPEN'}</div>}
+        {cockpitActive && (() => {
+          // Presentation only: pick the ONE clock this hero leads with. While a
+          // cycle is running normally, the cycle clock is the big line and the
+          // program day demotes to a quiet micro line; stale and not-yet-started
+          // cycles keep their existing micro-line messaging.
+          const runningCycle = (() => {
+            try {
+              if (!activeCycleLite?.started_at || cycleStaleLite || cycleStaleFood) return null
+              const [y, m, d] = String(activeCycleLite.started_at).split('T')[0].split('-').map(Number)
+              const cs = new Date(y, m - 1, d)
+              const nowD = new Date()
+              const rawCd = Math.floor((new Date(nowD.getFullYear(), nowD.getMonth(), nowD.getDate()) - cs) / 86400000) + 1
+              if (rawCd < 1) return null
+              return { food: activeCycleLite.food, cd: Math.min(rawCd, 14), phase: activeCycleLite.washout_started_at ? 'Washout' : 'Exposure' }
+            } catch (e) { return null }
+          })()
+          const reintroSpan = (labResult?.foods?.length || 8) * 14
+          const clock = runningCycle
+            ? { pct: (runningCycle.cd / 14) * 100, left: 'Day 1', right: 'Day 14 · verdict' }
+            : calculatedPhase === 'reintroduction'
+              ? { pct: ((currentDay - 56) / reintroSpan) * 100, left: 'Day 1', right: `Day ${reintroSpan} · map complete` }
+              : { pct: (currentDay / 56) * 100, left: 'Day 1', right: 'Day 56 · reintroduction' }
+          const pct = Math.min(100, Math.max(2, Math.round(clock.pct)))
+          return (
+          <div className="snfy-heroband">
+            <div className="sn-hero sn-rise" style={{ padding: '24px 26px 22px' }}>
+              <div className="snfy-hero-top" style={{ marginBottom: 18 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                  <svg width="62" height="62" viewBox="0 0 62 62" aria-hidden="true">
+                    <circle cx="31" cy="31" r="26" fill="none" stroke="rgba(250,248,244,0.14)" strokeWidth="5" />
+                    <circle cx="31" cy="31" r="26" fill="none" stroke="#8BAE8A" strokeWidth="5" strokeLinecap="round" strokeDasharray="163.4" strokeDashoffset="0" transform="rotate(-90 31 31)" style={{ '--sn-draw-from': 163.4, animation: 'snDraw 1.1s var(--ease) both' }} />
+                    <text x="31" y="38" textAnchor="middle" fontFamily="Fraunces, Georgia, serif" fontWeight="300" fontSize="22" fill="#FAF8F4">{cleanDays}</text>
+                  </svg>
+                  <span className="sn-micro sn-micro-dark" style={{ textAlign: 'center', maxWidth: 86 }}>day streak{cleanDays >= 3 ? ', unbroken' : ''}</span>
+                </div>
+                <div style={{ flex: 1, minWidth: 220 }}>
+                  <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.5)', marginBottom: 4 }}>{getGreeting()}, {name}</div>
+                  <div className="snfy-hero-big">
+                    {profile?.program_phase === 'complete' ? 'Every verdict, earned.'
+                      : betweenCycles ? 'Choose your next food.'
+                      : runningCycle ? <>{runningCycle.food} cycle, day {runningCycle.cd} of 14.<span className="snfy-hero-phase">{runningCycle.phase}</span></>
+                      : `Day ${calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.`}
+                  </div>
+                  {runningCycle && <div className="sn-micro sn-micro-dark" style={{ marginTop: 8 }}>{calculatedPhase === 'reintroduction' ? 'Reintroduction' : 'Elimination'} · day {calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay}</div>}
+                  {!runningCycle && cycleLine && <div className="sn-micro" style={{ color: '#8BAE8A', marginTop: 8 }}>{cycleLine}</div>}
+                  {betweenCycles && <div className="sn-micro" style={{ color: '#8BAE8A', marginTop: 8 }}>REINTRODUCTION · DAY {currentDay - 56}{(currentDay - 56) <= (labResult?.foods?.length || 8) * 14 ? ` OF ${(labResult?.foods?.length || 8) * 14}` : ''} · {reintroRows.some(r => r.verdict) ? 'CYCLE COMPLETE' : 'TESTING OPEN'}</div>}
                 </div>
                 {verdictReadyFood ? (
                   <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#C9A227', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', boxShadow: '0 0 22px rgba(201,162,39,0.35)' }}>
@@ -1542,16 +1587,20 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   </div>
                 )}
               </div>
-              <div style={{ position: 'relative', height: 5, background: 'rgba(255,255,255,0.09)', borderRadius: 3, marginBottom: 7 }}>
-                <div style={{ width: `${Math.min(100, Math.max(2, Math.round((calculatedPhase === 'reintroduction' ? ((currentDay - 56) / ((labResult?.foods?.length || 8) * 14)) : (currentDay / 56)) * 100)))}%`, height: 5, background: '#8BAE8A', borderRadius: 3, boxShadow: '0 0 10px rgba(139,174,138,0.5)' }} />
-              </div>
-              <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'rgba(250,248,244,0.45)' }}>
-                <span>{cleanDays} day streak{cleanDays > 0 ? ', unbroken' : ''}</span>
-                <span>{calculatedPhase === 'elimination' ? `${Math.max(0, 57 - currentDay)} days to reintroduction` : 'Testing foods, one at a time'}</span>
+              <div style={{ position: 'relative' }}>
+                <div className="sn-track sn-track-dark">
+                  <div className="sn-fill" style={{ width: `${pct}%` }} />
+                  <div className="sn-dot sn-dot-dark" style={{ left: `${pct}%` }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
+                  <span className="sn-micro sn-micro-dark">{clock.left}</span>
+                  <span className="sn-micro sn-micro-dark">{clock.right}</span>
+                </div>
               </div>
             </div>
           </div>
-        )}
+          )
+        })()}
         <div className="snfy-layout">
 
           {/* LEFT COLUMN */}
@@ -1955,12 +2004,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   return (
                     <>
                       <div className="snfy-comp-top">
-                        <div>
-                          <div className="snfy-comp-label">{weekLabel}</div>
-                        </div>
+                        <div className="sn-micro">{weekLabel}</div>
                         <div className="snfy-comp-streak-wrap">
                           <div className="snfy-comp-streak-num">{cleanDays}</div>
-                          <div className="snfy-comp-streak-label">day streak</div>
+                          <div className="sn-micro sn-micro-dim">day streak</div>
                         </div>
                       </div>
                       <div className="snfy-comp-dots">
@@ -1973,8 +2020,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                       </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '10px', justifyContent: 'center', alignItems: 'center' }}>
                         {[
-                          { bg: '#3D5C3C', fg: 'white', m: '\u2713', label: 'On plan' },
-                          { bg: '#C95B5B', fg: 'white', m: '\u2717', label: 'Slipped' },
+                          { bg: '#4A8C6A', fg: 'white', m: '\u2713', label: 'On plan' },
+                          { bg: '#D64545', fg: 'white', m: '\u2717', label: 'Slipped' },
                           { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', label: 'No check-in' },
                         ].map((l, i) => (
                           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -1987,8 +2034,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                       {legendOpen && (
                         <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {[
-                            { bg: '#3D5C3C', fg: 'white', m: '\u2713', title: 'On plan', text: 'You checked in and stayed on your plan. A clean day. Builds your streak.' },
-                            { bg: '#C95B5B', fg: 'white', m: '\u2717', title: 'Slipped', text: 'You checked in and honestly logged eating something off-plan. Your streak keeps going. An honest slip is real data, and it never counts against you.' },
+                            { bg: '#4A8C6A', fg: 'white', m: '\u2713', title: 'On plan', text: 'You checked in and stayed on your plan. A clean day. Builds your streak.' },
+                            { bg: '#D64545', fg: 'white', m: '\u2717', title: 'Slipped', text: 'You checked in and honestly logged eating something off-plan. Your streak keeps going. An honest slip is real data, and it never counts against you.' },
                             { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', title: 'No check-in', text: 'The day went unlogged with no explanation, so there is no data and no word. This is the one that resets your streak. A slip we can work with. A blank we cannot.' },
                             { bg: 'transparent', bd: '1.5px solid #8BAE8A', fg: '#3D5C3C', m: '\u25cb', title: 'Away, on plan', text: 'You were away for a stretch, and when you returned you told us you stayed on your plan. We take your word for the days, so your streak pauses instead of resetting. But only a check-in creates data, so these days stay out of your analysis.' },
                           ].map((l, i) => (
@@ -2093,13 +2140,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               )
             })()}
             {/* FULL CATEGORIZED AVOIDING LIST */}
-            <div className="snfy-avoiding">
+            <div className="snfy-avoiding sn-rise-2">
               <div className="snfy-avoid-header">
-                <div className="snfy-sec-label" style={{ marginBottom: 0 }}>Currently avoiding</div>
-                {showAvoidingList && <div className="snfy-avoid-count">{labResult?.foods?.length || 0} foods total</div>}
+                <div className="sn-micro" style={{ marginBottom: 0 }}>Currently avoiding</div>
+                {showAvoidingList && <div className="sn-micro sn-micro-dim">{avoidedFoods.length} foods total</div>}
               </div>
 
-              {showAvoidingList && labResult?.foods?.length > 0 ? (
+              {showAvoidingList && avoidedFoods.length > 0 ? (
                 <>
                   {(() => {
                     const colors = { High: '#D64545', Moderate: '#E8941F', Low: '#2C9D8A', Common: '#8BAE8A' }
@@ -2108,7 +2155,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     const order = ['High', 'Moderate', 'Low', 'Common']
                     const grouped = order.map(level => ({
                       level,
-                      foods: labResult.foods.filter(f => f.level === level),
+                      foods: avoidedFoods.filter(f => f.level === level),
                     })).filter(g => g.foods.length > 0)
 
                     return (
@@ -2124,13 +2171,22 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           <div key={g.level} className="snfy-avoid-group">
                             <div className="snfy-avoid-group-head">
                               <div className="snfy-avoid-level-dot" style={{ background: colors[g.level] }}></div>
-                              <div className="snfy-avoid-level-name" style={{ color: textColors[g.level] }}>{g.level === 'Common' ? 'Common triggers \u00b7 not lab-flagged' : `${g.level} sensitivity`}</div>
-                              <div className="snfy-avoid-level-count">{g.foods.length}</div>
+                              <div className="sn-micro" style={{ color: textColors[g.level] }}>{g.level === 'Common' ? 'Common triggers \u00b7 not lab-flagged' : `${g.level} sensitivity`}</div>
+                              <div className="sn-micro sn-micro-dim" style={{ marginLeft: 'auto' }}>{g.foods.length}</div>
                             </div>
                             <div className="snfy-avoid-chips">
-                              {g.foods.map((food, i) => (
-                                <span key={i} className="snfy-avoid-chip" style={{ background: chipBg[g.level], color: textColors[g.level] }}>{food.name}</span>
-                              ))}
+                              {g.foods.map((food, i) => {
+                                const v = latestCycleByFood[(food.name || '').toLowerCase()]?.verdict
+                                if (v === 'Avoid' || v === 'Limit') {
+                                  return (
+                                    <span key={i} className="snfy-avoid-chip" style={{ background: 'var(--tint-warm)', color: 'var(--ink)' }}>
+                                      {food.name}
+                                      <span className={`sn-stamp ${v === 'Avoid' ? 'sn-stamp-avoid' : 'sn-stamp-limit'}`}>{v}</span>
+                                    </span>
+                                  )
+                                }
+                                return <span key={i} className="snfy-avoid-chip" style={{ background: chipBg[g.level], color: textColors[g.level] }}>{food.name}</span>
+                              })}
                             </div>
                           </div>
                         ))}

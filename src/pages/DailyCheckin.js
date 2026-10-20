@@ -51,33 +51,40 @@ const padInRange = (field, v) => {
   return !isNaN(n) && n >= PAD_LIMITS[field].min && n <= PAD_LIMITS[field].max
 }
 
+const PAGE_CSS = `
+  .sn-input { background: #FFFFFF; border: none; box-shadow: var(--shadow-1), inset 0 1px 3px rgba(56,62,48,0.05); transition: box-shadow var(--t-fast) var(--ease); }
+  .sn-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(61,92,60,0.30), var(--shadow-1); }
+  .sn-pad button { min-height: 52px; transition: transform 120ms var(--ease), box-shadow 120ms var(--ease); }
+  .sn-pad button:active { transform: scale(0.94); }
+`
+
 const s = {
-  wrap: { minHeight: '100vh', background: 'transparent', fontFamily: 'DM Sans, sans-serif', display: 'flex', flexDirection: 'column' },
-  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 10 },
-  back: { background: 'none', border: 'none', color: '#7A7A72', fontSize: '14px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
-  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
+  wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column' },
+  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', boxShadow: 'var(--shadow-1)', position: 'sticky', top: 0, zIndex: 10 },
+  back: { background: 'none', border: 'none', color: '#73736A', fontSize: '14px', cursor: 'pointer' },
+  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#20241F' },
   content: { flex: 1, maxWidth: '560px', width: '100%', margin: '0 auto', padding: '28px 24px 40px' },
-  eyebrow: { fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1.4px', color: '#3D5C3C', marginBottom: '10px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 400, lineHeight: 1.2, marginBottom: '6px', color: '#1C1C1C', fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
+  eyebrow: { display: 'block', marginBottom: '10px' },
+  title: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, lineHeight: 1.2, marginBottom: '6px', color: '#20241F', fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
   titleEm: { color: '#3D5C3C' },
-  hint: { fontSize: '13.5px', color: '#7A7A72', lineHeight: 1.5, marginBottom: '28px' },
-  block: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '18px', padding: '18px', marginBottom: '12px' },
-  label: { fontSize: '14.5px', fontWeight: 600, marginBottom: '11px', lineHeight: 1.5, color: '#1C1C1C' },
+  hint: { fontSize: '13px', color: '#73736A', lineHeight: 1.6, marginBottom: '28px' },
+  block: { padding: '18px', marginBottom: '12px' },
+  label: { fontSize: '14.5px', fontWeight: 600, marginBottom: '11px', lineHeight: 1.5, color: '#20241F' },
   opts: { display: 'flex', gap: '6px', flexWrap: 'wrap' },
-  opt: { padding: '11px 14px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.07)', background: '#FAF8F4', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#5A5A52', flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', transition: 'all 0.12s' },
-  optOn: { padding: '11px 14px', borderRadius: '12px', border: '1px solid #3D5C3C', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#FFFFFF', fontWeight: 500, flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', boxShadow: '0 2px 8px rgba(61,92,60,0.28)' },
+  opt: { padding: '11px 14px', borderRadius: '999px', border: 'none', background: '#F7F5EE', fontSize: '13px', cursor: 'pointer', color: '#5A5A52', fontWeight: 600, flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', transition: 'all 0.12s' },
+  optOn: { padding: '11px 14px', borderRadius: '999px', border: 'none', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', color: '#FFFFFF', fontWeight: 600, flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', boxShadow: 'var(--shadow-pill)' },
   yn: { display: 'flex', gap: '8px' },
-  ynBtn: { flex: 1, padding: '14px', borderRadius: '12px', border: '1.5px solid rgba(0,0,0,0.1)', background: '#FFFFFF', fontSize: '15px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C' },
-  ynYes: { flex: 1, padding: '14px', borderRadius: '12px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', fontSize: '15px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: 'white' },
-  ynNo: { flex: 1, padding: '14px', borderRadius: '12px', border: '1.5px solid #D64545', background: '#D64545', fontSize: '15px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: 'white' },
+  ynBtn: { flex: 1, padding: '14px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FFFFFF', fontSize: '15px', fontWeight: 500, cursor: 'pointer', color: '#20241F' },
+  ynYes: { flex: 1, padding: '14px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-pill)', background: '#3D5C3C', fontSize: '15px', fontWeight: 600, cursor: 'pointer', color: 'white' },
+  ynNo: { flex: 1, padding: '14px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#73736A', fontSize: '15px', fontWeight: 600, cursor: 'pointer', color: 'white' },
   drinksRow: { display: 'flex', alignItems: 'center', gap: '12px' },
   stepper: { display: 'flex', alignItems: 'center', gap: '14px' },
-  stepBtn: { width: '38px', height: '38px', borderRadius: '12px', border: '1.5px solid rgba(0,0,0,0.12)', background: 'white', fontSize: '18px', cursor: 'pointer', color: '#3D5C3C', fontFamily: 'DM Sans, sans-serif' },
-  stepVal: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 400, minWidth: '28px', textAlign: 'center', color: '#1C1C1C' },
-  footer: { position: 'sticky', bottom: 0, background: '#F6F3EC', borderTop: '1px solid rgba(0,0,0,0.06)', padding: '16px 24px', maxWidth: '560px', width: '100%', margin: '0 auto' },
-  cta: { width: '100%', padding: '15px', borderRadius: '12px', border: 'none', background: '#3D5C3C', color: 'white', fontSize: '15px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
-  ctaOff: { width: '100%', padding: '15px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.08)', background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', fontSize: '15px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'not-allowed' },
-  padWarn: { marginTop: 8, padding: '8px 11px', background: '#FBF0DF', color: '#9A6212', borderRadius: 9, fontSize: '11.5px', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.5 },
+  stepBtn: { width: '38px', height: '38px', borderRadius: '10px', border: 'none', boxShadow: 'var(--shadow-1)', background: 'white', fontSize: '18px', cursor: 'pointer', color: '#3D5C3C' },
+  stepVal: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300, minWidth: '28px', textAlign: 'center', color: '#20241F' },
+  footer: { position: 'sticky', bottom: 0, background: 'rgba(251,248,242,0.92)', backdropFilter: 'blur(8px)', boxShadow: '0 -8px 24px rgba(56,62,48,0.06)', padding: '16px 24px', maxWidth: '560px', width: '100%', margin: '0 auto' },
+  cta: { width: '100%' },
+  ctaOff: { width: '100%' },
+  padWarn: { marginTop: 8, padding: '8px 11px', background: '#FBF0DF', color: '#9A6212', borderRadius: 10, fontSize: '11.5px', lineHeight: 1.5 },
 }
 
 export default function DailyCheckin({ session, profile, onBack, onComplete }) {
@@ -371,6 +378,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   if (reward) {
     return (
       <div style={s.wrap}>
+        <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <div style={{ width: 40 }} />
           <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
@@ -416,25 +424,26 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
 
   return (
     <div style={s.wrap}>
+      <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
         <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
-      <div style={s.content}>
-        <div style={s.eyebrow}>Daily check-in</div>
+      <div className="sn-rise" style={s.content}>
+        <div className="sn-micro" style={s.eyebrow}>Daily check-in</div>
         <div style={s.title}>How's today?</div>
         <div style={s.hint}>A few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.</div>
 
         {showReintroBlock && (
-          <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.10), rgba(44,157,138,0.04)), #FFFFFF', border: '1px solid rgba(61,92,60,0.16)', borderRadius: '16px', padding: '18px', marginBottom: '18px' }}>
-            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1px', color: '#3D5C3C', marginBottom: '12px' }}>Reintroduction · {activeReintro.food}</div>
+          <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.10), rgba(44,157,138,0.04)), #FFFFFF', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '24px', padding: '18px', marginBottom: '18px' }}>
+            <div className="sn-micro" style={{ marginBottom: '12px' }}>Reintroduction · {activeReintro.food}</div>
             {reintroPhase === 'exposure' && (
               <div style={{ marginBottom: ateFood !== null ? 16 : 0 }}>
                 <div style={s.label}>Did you eat {activeReintro.food.toLowerCase()} today?</div>
                 <div style={s.yn}>
                   <button style={ateFood === true ? s.ynYes : s.ynBtn} onClick={() => setAteFood(true)}>Yes</button>
-                  <button style={ateFood === false ? { ...s.ynYes, background: '#7A7A72', borderColor: '#7A7A72' } : s.ynBtn} onClick={() => { setAteFood(false); setHadSymptoms(null); setSymptomIntensities({}); setPortion(null) }}>Not today</button>
+                  <button style={ateFood === false ? { ...s.ynYes, background: '#73736A', boxShadow: 'var(--shadow-1)' } : s.ynBtn} onClick={() => { setAteFood(false); setHadSymptoms(null); setSymptomIntensities({}); setPortion(null) }}>Not today</button>
                 </div>
                 {ateFood === true && (
                   <div style={{ marginTop: 12 }}>
@@ -464,9 +473,9 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                       const active = !!symptomIntensities[nm]
                       return (
                         <div key={nm} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          <button style={{ textAlign: 'left', background: active ? '#3D5C3C' : '#F4F2EC', border: 'none', borderRadius: '10px', padding: '12px 14px', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: active ? '#FFFFFF' : '#3A3A35', fontWeight: active ? 500 : 400 }} onClick={() => toggleSymptom(nm)}>{nm}</button>
+                          <button style={{ textAlign: 'left', background: active ? '#3D5C3C' : '#F7F5EE', border: 'none', borderRadius: '16px', padding: '12px 14px', fontSize: '13px', cursor: 'pointer', color: active ? '#FFFFFF' : '#3B4036', fontWeight: active ? 600 : 400, boxShadow: active ? 'var(--shadow-pill)' : 'none' }} onClick={() => toggleSymptom(nm)}>{nm}</button>
                           {active && nm === 'Other' && (
-                            <input type="text" value={otherText} onChange={e => setOtherText(e.target.value)} placeholder="What did you notice?" style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.09)', borderRadius: '10px', padding: '12px 14px', fontSize: '13px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', outline: 'none' }} />
+                            <input type="text" className="sn-input" value={otherText} onChange={e => setOtherText(e.target.value)} placeholder="What did you notice?" style={{ borderRadius: '12px', padding: '12px 14px', fontSize: '16px', color: '#20241F' }} />
                           )}
                           {active && (
                             <div style={{ display: 'flex', gap: '6px', paddingLeft: '4px' }}>
@@ -475,7 +484,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                                 const onStyle = lvl === 'mild' ? { background: '#EAF4EE', border: '1px solid rgba(74,140,106,0.4)', color: '#2D6B42', fontWeight: 500 }
                                   : lvl === 'moderate' ? { background: '#FDF2EA', border: '1px solid rgba(212,137,74,0.4)', color: '#9A5F1A', fontWeight: 500 }
                                   : { background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.4)', color: '#8B2E2E', fontWeight: 500 }
-                                return <button key={lvl} style={{ flex: 1, background: 'white', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '8px', fontSize: '12px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#7A7A72', textTransform: 'capitalize', ...(on ? onStyle : {}) }} onClick={() => setIntensity(nm, lvl)}>{lvl}</button>
+                                return <button key={lvl} style={{ flex: 1, background: 'white', border: 'none', boxShadow: 'var(--shadow-1)', borderRadius: '10px', padding: '8px', fontSize: '12px', cursor: 'pointer', color: '#73736A', textTransform: 'capitalize', minHeight: '40px', ...(on ? onStyle : {}) }} onClick={() => setIntensity(nm, lvl)}>{lvl}</button>
                               })}
                             </div>
                           )}
@@ -496,7 +505,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         )}
 
 {onProtocol && (
-          <div style={s.block}>
+          <div className="sn-card" style={s.block}>
             <div style={s.label}>Did you stay on your plan today?</div>
             <div style={s.yn}>
               <button style={followed === true ? s.ynYes : s.ynBtn} onClick={() => setFollowed(true)}>Yes</button>
@@ -505,7 +514,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           </div>
         )}
 
-        <div style={s.block}>
+        <div className="sn-card" style={s.block}>
           <div style={s.label}>How many hours did you sleep last night? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>to the half hour is fine</span></div>
           <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'sleep' ? null : 'sleep') }} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: sleep === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
             {sleep === '' ? 'Tap to enter' : `${sleep} hours`}
@@ -518,12 +527,12 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           )}
         </div>
 
-        <div style={s.block}>
+        <div className="sn-card" style={s.block}>
           <div style={s.label}>How's your stress today?</div>
           <Bands options={STRESS_BANDS} value={stress} onPick={setStress} />
         </div>
 
-        <div style={s.block}>
+        <div className="sn-card" style={s.block}>
           <div style={s.label}>How many cups of water today?</div>
           <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'hydration' ? null : 'hydration') }} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: hydration === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
             {hydration === '' ? 'Tap to enter' : `${hydration} cups`}
@@ -537,14 +546,14 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         </div>
 
         {isWoman && (
-          <div style={s.block}>
+          <div className="sn-card" style={s.block}>
             <div style={s.label}>Where are you in your cycle?</div>
             <Bands options={CYCLE_PHASES} value={cyclePhase} onPick={setCyclePhase} />
           </div>
         )}
 
         {isDrinker && (
-          <div style={s.block}>
+          <div className="sn-card" style={s.block}>
             <div style={s.label}>How many drinks today?</div>
             <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === 'drinks' ? null : 'drinks') }} style={{ width: '100%', textAlign: 'left', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: drinks === '' ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
               {drinks === '' ? 'Tap to enter' : `${drinks} ${drinks === '1' ? 'drink' : 'drinks'}`}
@@ -560,7 +569,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       </div>
       {!showReintroBlock && activeReintro !== undefined && (
         <div style={{ maxWidth: '560px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
-          <div style={s.block}>
+          <div className="sn-card" style={s.block}>
             <div style={s.label}>Anything off today? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>optional</span></div>
             <div style={s.opts}>
               {[['fine', 'Felt fine'], ['mild', 'Something mild'], ['notable', 'Something notable']].map(([v, l]) => (

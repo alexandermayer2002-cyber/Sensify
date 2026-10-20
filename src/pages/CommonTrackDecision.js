@@ -16,32 +16,34 @@ import { TIER_META, symptomsAreGI } from '../utils/protocolEngine'
 
 const css = `
   .ctd-overlay { position: fixed; inset: 0; background: rgba(20,20,18,0.55); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
-  .ctd-modal { background: #FAF8F4; border-radius: 20px; max-width: 460px; width: 100%; padding: 28px; position: relative; max-height: 88vh; overflow-y: auto; }
+  .ctd-modal { background: var(--paper); border-radius: var(--r-lg); max-width: 460px; width: 100%; padding: 28px; position: relative; max-height: 88vh; overflow-y: auto; box-shadow: var(--shadow-3); }
   .ctd-x { position: absolute; top: 16px; right: 16px; width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; font-size: 16px; color: #555; display: flex; align-items: center; justify-content: center; }
-  .ctd-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #8BAE8A; margin-bottom: 10px; }
-  .ctd-h { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1.15; margin-bottom: 14px; color: #1C1C1C; }
+  .ctd-eyebrow { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin-bottom: 10px; }
+  .ctd-h { font-family: var(--font-display); font-size: 28px; font-weight: 300; line-height: 1.15; letter-spacing: -0.3px; margin-bottom: 14px; color: var(--ink); }
   .ctd-h em { font-style: italic; color: #3D5C3C; }
-  .ctd-p { font-size: 14.5px; line-height: 1.65; color: #4A4A45; margin-bottom: 14px; }
-  .ctd-card { background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 20px; margin-bottom: 14px; }
+  .ctd-p { font-size: 14px; line-height: 1.65; color: var(--ink-soft); margin-bottom: 14px; }
+  .ctd-card { background: var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 22px; margin-bottom: 14px; }
   .ctd-card-head { display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-  .ctd-card-title { font-size: 15px; font-weight: 600; color: #1C1C1C; }
+  .ctd-card-title { font-size: 15px; font-weight: 600; color: var(--ink); }
   .ctd-card-chev { font-size: 13px; color: #8A8A82; transition: transform 0.2s; }
   .ctd-card-chev.open { transform: rotate(180deg); }
   .ctd-card-body { margin-top: 14px; }
-  .ctd-tier-label { font-size: 12px; font-weight: 600; color: #3D5C3C; margin: 18px 0 10px; }
-  .ctd-tier { border: 2px solid rgba(0,0,0,0.1); border-radius: 13px; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s; }
-  .ctd-tier.on { border-color: #3D5C3C; background: #EDF3ED; }
+  .ctd-tier-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin: 18px 0 10px; }
+  .ctd-tier { border: none; background: var(--tint-warm); border-radius: var(--r-md); padding: 16px; margin-bottom: 10px; cursor: pointer; transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), background var(--t-fast) var(--ease); }
+  @media (hover: hover) { .ctd-tier:hover { transform: translateY(-1px); box-shadow: var(--shadow-1); } }
+  .ctd-tier.on { background: linear-gradient(135deg, rgba(139,174,138,0.18), rgba(139,174,138,0.05)), var(--paper); box-shadow: var(--shadow-2); }
   .ctd-tier-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .ctd-tier-name { font-size: 15px; font-weight: 600; color: #1C1C1C; }
-  .ctd-tier-rec { font-size: 9.5px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px; background: #3D5C3C; color: white; padding: 2px 7px; border-radius: 5px; }
-  .ctd-tier-foods { font-size: 12.5px; color: #7A7A72; line-height: 1.5; }
-  .ctd-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #ccc; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-  .ctd-radio.on { border-color: #3D5C3C; }
-  .ctd-radio.on::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: #3D5C3C; }
-  .ctd-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 8px; }
-  .ctd-btn.primary { background: #3D5C3C; color: white; }
-  .ctd-btn.primary:disabled { background: #F4F2EC; color: rgba(28,28,28,0.38); border: 1px solid rgba(0,0,0,0.08); cursor: not-allowed; }
-  .ctd-btn.ghost { background: transparent; color: #8A8A82; font-weight: 500; font-size: 13px; }
+  .ctd-tier-name { font-size: 15px; font-weight: 600; color: var(--ink); }
+  .ctd-tier-rec { font-size: 9px; font-family: var(--font-mono); font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; background: var(--forest-500); color: white; padding: 4px 9px; border-radius: 999px; box-shadow: var(--shadow-pill); }
+  .ctd-tier-foods { font-size: 12.5px; color: var(--gray); line-height: 1.5; }
+  .ctd-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--forest-150); background: var(--paper); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .ctd-radio.on { border-color: var(--forest-500); }
+  .ctd-radio.on::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--forest-500); }
+  .ctd-btn { width: 100%; padding: 14px; border-radius: var(--r-md); border: none; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: transform var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease); }
+  @media (hover: hover) { .ctd-btn:hover { transform: translateY(-1px); } }
+  .ctd-btn.primary { background: var(--forest-500); color: white; box-shadow: var(--shadow-pill); }
+  .ctd-btn.primary:disabled { background: #F0EEE6; color: rgba(32,36,31,0.35); border: none; box-shadow: none; cursor: not-allowed; transform: none; }
+  .ctd-btn.ghost { background: transparent; color: #8A8A82; font-weight: 500; font-size: 13px; box-shadow: none; }
   .ctd-mascot { width: 40px; height: 40px; margin-bottom: 14px; }
 `
 
@@ -158,7 +160,7 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
       )}
 
       {/* Persistent dashboard decision card */}
-      <div className="ctd-card">
+      <div className="ctd-card sn-rise">
         <div className="ctd-card-head" onClick={() => setExpanded(e => !e)}>
           <span className="ctd-card-title">Choose your path</span>
           <span className={`ctd-card-chev${expanded ? ' open' : ''}`}>▾</span>
@@ -192,32 +194,34 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
           )
         })}
         {labFoods.length > 0 && (
-          <div style={{ background: '#EDF3ED', borderRadius: '12px', padding: '12px 14px', fontSize: '12.5px', color: '#3D5C3C', lineHeight: 1.6, marginBottom: '14px' }}>
+          <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.15), rgba(139,174,138,0.05))', borderRadius: 'var(--r-md)', padding: '13px 14px', fontSize: '12.5px', color: 'var(--forest-500)', lineHeight: 1.6, marginBottom: '14px' }}>
             Your lab also flagged {labFoods.map(f => f.name).join(', ')}. Whichever you choose, {labFoods.length === 1 ? 'it' : 'they'} come{labFoods.length === 1 ? 's' : ''} out with your trigger foods and get{labFoods.length === 1 ? 's' : ''} tested too.
           </div>
         )}
 
         {tier && (
-          <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '16px', marginBottom: '14px' }}>
-            <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C', marginBottom: '4px' }}>How often do you eat these?</div>
-            <div style={{ fontSize: '12px', color: '#7A7A72', lineHeight: 1.55, marginBottom: '12px' }}>Your testing order is built from how you actually eat. The foods in your life most get answered first.</div>
+          <div style={{ background: 'var(--tint-warm)', border: 'none', borderRadius: 'var(--r-md)', padding: '16px', marginBottom: '14px' }}>
+            <div style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--ink)', marginBottom: '4px' }}>How often do you eat these?</div>
+            <div style={{ fontSize: '12px', color: 'var(--gray)', lineHeight: 1.55, marginBottom: '12px' }}>Your testing order is built from how you actually eat. The foods in your life most get answered first.</div>
             {TIER_META[tier].foods.map(f => (
               <div key={f.name} style={{ marginBottom: '12px' }}>
-                <div style={{ fontSize: '12.5px', fontWeight: 600, color: '#3D5C3C', marginBottom: '6px' }}>{f.name}</div>
-                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '7px' }}>{f.name}</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                   {FREQ_OPTS.map(([v, l]) => (
                     <button key={v} onClick={() => setTierFreq(prev => ({ ...prev, [f.name]: v }))} style={{
-                      padding: '7px 11px', borderRadius: '9px', fontSize: '11.5px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
-                      border: tierFreq[f.name] === v ? '1px solid #3D5C3C' : '1px solid rgba(0,0,0,0.08)',
-                      background: tierFreq[f.name] === v ? '#3D5C3C' : '#FAF8F4',
-                      color: tierFreq[f.name] === v ? '#FAF8F4' : '#5A5A52',
+                      padding: '7px 13px', borderRadius: '999px', fontSize: '11.5px', fontWeight: 600, cursor: 'pointer',
+                      border: 'none',
+                      background: tierFreq[f.name] === v ? 'var(--forest-500)' : 'var(--paper)',
+                      color: tierFreq[f.name] === v ? '#fff' : 'var(--gray)',
+                      boxShadow: tierFreq[f.name] === v ? 'var(--shadow-pill)' : 'var(--shadow-1)',
+                      transition: 'all 0.16s',
                     }}>{l}</button>
                   ))}
                 </div>
               </div>
             ))}
             {TIER_META[tier].foods.some(f => tierFreq[f.name] === 'never') && (
-              <div style={{ fontSize: '11.5px', color: '#9A6212', background: '#FBF0DF', borderRadius: '9px', padding: '9px 12px', lineHeight: 1.55 }}>
+              <div style={{ fontSize: '11.5px', color: 'var(--ink-soft)', background: 'var(--paper)', boxShadow: 'var(--shadow-1)', borderRadius: 'var(--r-sm)', padding: '10px 12px', lineHeight: 1.55 }}>
                 Foods you never eat are not tested, since there is nothing to learn from removing them. If these foods are not part of your diet, the other path may fit you better.
               </div>
             )}

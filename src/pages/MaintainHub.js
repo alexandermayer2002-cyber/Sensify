@@ -50,18 +50,18 @@ function MaintainPreview({ profile, session }) {
   ]
 
   return (
-    <div style={{ maxWidth: '460px', margin: '0 auto', padding: '32px 22px', fontFamily: 'DM Sans, sans-serif' }}>
+    <div style={{ maxWidth: '460px', margin: '0 auto', padding: '32px 22px' }}>
       <style>{`
         @keyframes mtRowIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes mtGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
         @keyframes mtRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
       `}</style>
       <div style={{ marginBottom: '18px', animation: 'mtRowIn 0.5s ease both' }}>
-        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9.5px', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#3D5C3C', marginBottom: '8px' }}>After month six</div>
+        <div className="sn-micro" style={{ marginBottom: '8px' }}>After month six</div>
         <div style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, color: '#1C1C1C', lineHeight: 1.15 }}>The map is yours.<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>Keeping it alive is Maintain.</em></div>
       </div>
 
-      <div style={{ background: '#22301F', borderRadius: '22px', padding: '20px 22px', position: 'relative', overflow: 'hidden', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'mtRise 0.7s cubic-bezier(0.16,1,0.3,1) both' }}>
+      <div style={{ background: '#22301F', borderRadius: '24px', padding: '20px 22px', position: 'relative', overflow: 'hidden', boxShadow: 'var(--shadow-3)', animation: 'mtRise 0.7s cubic-bezier(0.16,1,0.3,1) both' }}>
         <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'mtGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
         <div style={{ position: 'relative' }}>
@@ -85,7 +85,7 @@ function MaintainPreview({ profile, session }) {
       </div>
 
       {optedIn ? (
-        <div style={{ marginTop: '14px', background: '#EDF3ED', borderRadius: '13px', padding: '15px 17px' }}>
+        <div style={{ marginTop: '14px', background: '#EDF3ED', borderRadius: '16px', padding: '15px 17px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
             <span style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#3D5C3C', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', flexShrink: 0 }}>\u2713</span>
             <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#3D5C3C' }}>You're set for Maintain.</span>
@@ -95,7 +95,7 @@ function MaintainPreview({ profile, session }) {
         </div>
       ) : (
         <div style={{ marginTop: '14px' }}>
-          <button onClick={startOptIn} disabled={busy} style={{ width: '100%', background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', fontSize: '14px', fontWeight: 500, cursor: 'pointer', opacity: busy ? 0.6 : 1, fontFamily: 'DM Sans, sans-serif' }}>
+          <button onClick={startOptIn} disabled={busy} className="sn-btn" style={{ width: '100%', opacity: busy ? 0.6 : 1 }}>
             {busy ? 'Opening secure checkout\u2026' : 'Reserve Maintain, $0 today'}
           </button>
           <div style={{ fontSize: '11px', color: '#A0A096', textAlign: 'center', marginTop: '8px', lineHeight: 1.55 }}>Saves your card securely with Stripe. Nothing is charged until your protocol completes, and you can cancel anytime before then.</div>
@@ -106,7 +106,7 @@ function MaintainPreview({ profile, session }) {
       {/* MAP HEALTH — the drift-detection promise, shown live as a preview
           of what Maintain's monthly report looks like on the user's own data */}
       <div style={{ marginTop: 18 }}>
-        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#7A7A72', textTransform: 'uppercase', textAlign: 'center', marginBottom: 8 }}>What drift detection looks like</div>
+        <div className="sn-micro sn-micro-dim" style={{ display: 'block', textAlign: 'center', marginBottom: 8 }}>What drift detection looks like</div>
         <MapHealth session={session} profile={profile} />
       </div>
 
@@ -126,10 +126,10 @@ export default function MaintainHub({ session, profile, isAdmin }) {
     <>
       {isAdmin && (
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'center', margin: '10px auto 4px', maxWidth: 400 }}>
-          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1px', color: '#A8A69E', textTransform: 'uppercase' }}>Admin preview</span>
+          <span className="sn-micro sn-micro-dim">Admin preview</span>
           {[['Real state', null], ['Locked', 'locked'], ['Unlocked', 'full']].map(([label, val]) => (
             <button key={label} onClick={() => setAdminView(val)}
-              style={{ border: 'none', borderRadius: 8, padding: '5px 10px', fontSize: 11, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+              style={{ border: 'none', borderRadius: 999, padding: '5px 11px', fontSize: 11, cursor: 'pointer',
                 background: adminView === val ? '#22301F' : '#EDEBE4', color: adminView === val ? '#FAF8F4' : '#7A7A72', fontWeight: adminView === val ? 600 : 400 }}>{label}</button>
           ))}
         </div>
@@ -189,12 +189,12 @@ function MaintainHubInner({ session, profile }) {
     <div style={s.wrap}>
       <style>{css}</style>
       <div style={s.body}>
-        <div style={s.greet}>Hi, <em style={s.em}>{firstName}.</em></div>
-        <div style={s.subgreet}>Your Food Map is up to date. Here's your kit for today.</div>
+        <div className="sn-rise" style={s.greet}>Hi, <em style={s.em}>{firstName}.</em></div>
+        <div className="sn-rise" style={s.subgreet}>Your Food Map is up to date. Here's your kit for today.</div>
 
         {/* Ask Sensify hero */}
-        <div style={s.hero} onClick={() => setView('ask')}>
-          <div style={s.heroEye}>Ask Sensify</div>
+        <div className="sn-hero sn-card-hov sn-rise-2" style={s.hero} onClick={() => setView('ask')}>
+          <div className="sn-micro sn-micro-dark" style={{ display: 'block', marginBottom: 8 }}>Ask Sensify</div>
           <div style={s.heroTitle}>What's on the menu <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>today?</em></div>
           <div style={s.heroDesc}>Check any food, read a menu, or just tell me what you ate. I know your whole map.</div>
           <div style={s.heroInput}>
@@ -204,8 +204,8 @@ function MaintainHubInner({ session, profile }) {
         </div>
 
         {/* Food Map summary */}
-        <div style={s.sectionLabel}>Your Food Map</div>
-        <div style={s.mapCard}>
+        <div className="sn-rise-3" style={s.sectionLabel}>Your Food Map</div>
+        <div className="sn-rise-3" style={s.mapCard}>
           {loading ? <div style={s.muted}>Loading…</div> : foodMap.length === 0 ? (
             <div style={s.muted}>Your verdicts will appear here as you complete reintroductions.</div>
           ) : (
@@ -218,14 +218,14 @@ function MaintainHubInner({ session, profile }) {
         </div>
 
         {/* Track tiles */}
-        <div style={s.sectionLabel}>Track</div>
-        <div style={s.grid2}>
-          <div style={s.tile} onClick={() => setView('symptom')}>
+        <div className="sn-rise-4" style={s.sectionLabel}>Track</div>
+        <div className="sn-rise-4" style={s.grid2}>
+          <div className="sn-card-hov" style={s.tile} onClick={() => setView('symptom')}>
             <div style={s.tileIco}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg></div>
             <div style={s.tileT}>Report a symptom</div>
             <div style={s.tileD}>Felt off? Note it so we can spot patterns.</div>
           </div>
-          <div style={s.tile} onClick={() => setView('history')}>
+          <div className="sn-card-hov" style={s.tile} onClick={() => setView('history')}>
             <div style={s.tileIco}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
             <div style={s.tileT}>History &amp; trends</div>
             <div style={s.tileD}>Your meals and symptoms over time.</div>
@@ -237,8 +237,8 @@ function MaintainHubInner({ session, profile }) {
             did nothing. It returns when referrals are real. */}
 
         {/* Recent activity */}
-        <div style={s.sectionLabel}>Recent activity</div>
-        <div style={s.activity}>
+        <div className="sn-rise-4" style={s.sectionLabel}>Recent activity</div>
+        <div className="sn-rise-4" style={s.activity}>
           {[...meals.slice(0, 2).map(m => ({ type: 'meal', m, at: m.logged_at })),
             ...symptoms.slice(0, 1).map(sm => ({ type: 'symptom', sm, at: sm.logged_at }))]
             .sort((a, b) => new Date(b.at) - new Date(a.at)).slice(0, 4).map((item, i) => (
@@ -258,10 +258,10 @@ function MapRow({ tier, foods }) {
     <div style={{ marginBottom: '12px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '7px' }}>
         <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: t.dot }} />
-        <span style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', color: t.text }}>{tier}</span>
+        <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: t.text }}>{tier}</span>
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-        {foods.map((f, i) => <span key={i} style={{ fontSize: '12.5px', fontWeight: 500, padding: '5px 11px', borderRadius: '9px', background: t.bg, color: t.text }}>{f.food}</span>)}
+        {foods.map((f, i) => <span key={i} style={{ fontSize: '12.5px', fontWeight: 500, padding: '5px 12px', borderRadius: '999px', background: t.bg, color: t.text }}>{f.food}</span>)}
       </div>
     </div>
   )
@@ -272,7 +272,7 @@ function ActivityRow({ item }) {
     const foods = (item.m.foods || []).map(f => f.name).join(', ')
     const flagged = item.m.flagged
     return (
-      <div style={s.actRow}>
+      <div className="sn-row" style={s.actRow}>
         <span style={{ ...s.actDot, background: flagged ? '#E8941F' : '#2C9D8A' }} />
         <span style={s.actTxt}><b>{flagged ? 'Logged (flagged):' : 'Logged:'}</b> {foods || item.m.raw_text}</span>
         <span style={s.actTime}>{fmtTime(item.at)}</span>
@@ -280,7 +280,7 @@ function ActivityRow({ item }) {
     )
   }
   return (
-    <div style={s.actRow}>
+    <div className="sn-row" style={s.actRow}>
       <span style={{ ...s.actDot, background: '#A8A69E' }} />
       <span style={s.actTxt}><b>Symptom:</b> {item.sm.severity} {item.sm.symptom.toLowerCase()}</span>
       <span style={s.actTime}>{fmtTime(item.at)}</span>
@@ -323,21 +323,21 @@ function SymptomReport({ session, onBack }) {
         <div style={s.qLabel}>What are you feeling?</div>
         <div style={s.chipWrap}>
           {SYMPTOM_OPTIONS.map(opt => (
-            <button key={opt} style={symptom === opt ? s.chipOn : s.chip} onClick={() => setSymptom(opt)}>{opt}</button>
+            <button key={opt} className={symptom === opt ? 'sn-chip sn-chip-on' : 'sn-chip'} onClick={() => setSymptom(opt)}>{opt}</button>
           ))}
         </div>
 
         <div style={{ ...s.qLabel, marginTop: '24px' }}>How intense?</div>
         <div style={s.sevRow}>
           {SEVERITY.map(sv => (
-            <button key={sv} style={severity === sv ? s.sevOn : s.sev} onClick={() => setSeverity(sv)}>{sv}</button>
+            <button key={sv} className={severity === sv ? 'sn-chip sn-chip-on' : 'sn-chip'} style={{ flex: 1, justifyContent: 'center', textTransform: 'capitalize' }} onClick={() => setSeverity(sv)}>{sv}</button>
           ))}
         </div>
 
         <div style={{ ...s.qLabel, marginTop: '24px' }}>Anything to add? <span style={{ fontWeight: 400, color: '#A8A69E' }}>(optional)</span></div>
         <textarea style={s.textarea} rows={3} value={note} onChange={e => setNote(e.target.value)} placeholder="" />
 
-        <button style={(symptom && severity && !saving) ? s.cta : s.ctaOff} disabled={!symptom || !severity || saving} onClick={save}>
+        <button className="sn-btn" style={{ width: '100%', marginTop: '24px' }} disabled={!symptom || !severity || saving} onClick={save}>
           {saving ? 'Saving…' : 'Log symptom'}
         </button>
         <div style={s.disclaimer}>For severe or concerning symptoms, contact a healthcare provider. This log helps spot patterns, it is not medical care.</div>
@@ -355,8 +355,8 @@ function HistoryLog({ meals, symptoms, onBack }) {
       <BackBar label="History & trends" onBack={onBack} />
       <div style={s.body}>
         <div style={s.histTabs}>
-          <button style={tab === 'meals' ? s.histTabOn : s.histTab} onClick={() => setTab('meals')}>Meals</button>
-          <button style={tab === 'symptoms' ? s.histTabOn : s.histTab} onClick={() => setTab('symptoms')}>Symptoms</button>
+          <button className={tab === 'meals' ? 'sn-chip sn-chip-on' : 'sn-chip'} style={{ flex: 1, justifyContent: 'center' }} onClick={() => setTab('meals')}>Meals</button>
+          <button className={tab === 'symptoms' ? 'sn-chip sn-chip-on' : 'sn-chip'} style={{ flex: 1, justifyContent: 'center' }} onClick={() => setTab('symptoms')}>Symptoms</button>
         </div>
 
         {tab === 'meals' ? (
@@ -365,7 +365,7 @@ function HistoryLog({ meals, symptoms, onBack }) {
             <div key={date} style={{ marginBottom: '18px' }}>
               <div style={s.histDate}>{fmtDate(date)}</div>
               {items.map((m, i) => (
-                <div key={i} style={s.histRow}>
+                <div key={i} className="sn-row" style={s.histRow}>
                   <span style={{ ...s.actDot, background: m.flagged ? '#E8941F' : '#2C9D8A', marginTop: '6px' }} />
                   <div style={{ flex: 1 }}>
                     <div style={s.histFoods}>{(m.foods || []).map(f => f.name).join(', ') || m.raw_text}</div>
@@ -382,7 +382,7 @@ function HistoryLog({ meals, symptoms, onBack }) {
             <div key={date} style={{ marginBottom: '18px' }}>
               <div style={s.histDate}>{fmtDate(date)}</div>
               {items.map((sm, i) => (
-                <div key={i} style={s.histRow}>
+                <div key={i} className="sn-row" style={s.histRow}>
                   <span style={{ ...s.actDot, background: sm.severity === 'severe' ? '#D64545' : sm.severity === 'moderate' ? '#E8941F' : '#A8A69E', marginTop: '6px' }} />
                   <div style={{ flex: 1 }}>
                     <div style={s.histFoods}>{sm.symptom} <span style={{ color: '#A8A69E', fontSize: '12px' }}>· {sm.severity}</span></div>
@@ -443,52 +443,43 @@ const s = {
   greet: { fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300 },
   em: { fontStyle: 'italic', color: '#3D5C3C' },
   subgreet: { fontSize: '13px', color: '#7A7A72', marginTop: '3px', marginBottom: '22px' },
-  sectionLabel: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.7px', color: '#7A7A72', margin: '24px 0 11px' },
+  sectionLabel: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', margin: '24px 0 11px' },
   muted: { fontSize: '13px', color: '#A8A69E', lineHeight: 1.5 },
 
-  hero: { background: '#0E0E0C', borderRadius: '16px', padding: '20px', position: 'relative', overflow: 'hidden', cursor: 'pointer' },
-  heroEye: { fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.2px', color: 'rgba(139,174,138,0.75)', marginBottom: '8px' },
+  hero: { padding: '22px 20px', cursor: 'pointer' },
   heroTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, color: 'white', marginBottom: '6px' },
   heroDesc: { fontSize: '12.5px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, marginBottom: '14px' },
-  heroInput: { background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: '10px', padding: '11px 13px', fontSize: '12px', color: 'rgba(255,255,255,0.5)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  heroSend: { width: '26px', height: '26px', borderRadius: '7px', background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  heroInput: { background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '999px', padding: '11px 11px 11px 16px', fontSize: '12px', color: 'rgba(255,255,255,0.55)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+  heroSend: { width: '26px', height: '26px', borderRadius: '999px', background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
 
-  mapCard: { background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '16px' },
+  mapCard: { background: 'var(--paper)', border: 'none', borderRadius: '24px', boxShadow: 'var(--shadow-2)', padding: '18px' },
 
   grid2: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' },
-  tile: { background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '13px', padding: '15px', cursor: 'pointer' },
-  tileIco: { width: '32px', height: '32px', borderRadius: '9px', background: '#EDF3ED', color: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' },
+  tile: { background: 'var(--paper)', border: 'none', borderRadius: '16px', boxShadow: 'var(--shadow-1)', padding: '15px', cursor: 'pointer' },
+  tileIco: { width: '32px', height: '32px', borderRadius: '10px', background: '#EDF3ED', color: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' },
   tileT: { fontSize: '13px', fontWeight: 600, marginBottom: '3px' },
   tileD: { fontSize: '11px', color: '#7A7A72', lineHeight: 1.4 },
 
 
-  activity: { background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '13px', padding: '4px 16px' },
-  actRow: { display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' },
+  activity: { background: 'var(--paper)', border: 'none', borderRadius: '24px', boxShadow: 'var(--shadow-2)', padding: '12px' },
+  actRow: { marginBottom: '8px' },
   actDot: { width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0 },
   actTxt: { fontSize: '12px', flex: 1, lineHeight: 1.4 },
   actTime: { fontSize: '10px', color: '#A8A69E', fontFamily: 'DM Mono, monospace', flexShrink: 0 },
 
-  backBar: { display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', borderBottom: '1px solid rgba(0,0,0,0.06)' },
-  backBtn: { width: '32px', height: '32px', borderRadius: '8px', border: 'none', background: '#F1EFE8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  backBar: { display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px' },
+  backBtn: { width: '32px', height: '32px', borderRadius: '10px', border: 'none', background: '#F1EFE8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-1)' },
   backLabel: { fontSize: '15px', fontWeight: 600 },
 
   qLabel: { fontSize: '14px', fontWeight: 600, marginBottom: '11px' },
   chipWrap: { display: 'flex', flexWrap: 'wrap', gap: '8px' },
-  chip: { padding: '9px 14px', borderRadius: '10px', border: '1.5px solid rgba(0,0,0,0.1)', background: 'white', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1C1C1C' },
-  chipOn: { padding: '9px 14px', borderRadius: '10px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#2D6B42' },
   sevRow: { display: 'flex', gap: '8px' },
-  sev: { flex: 1, padding: '11px', borderRadius: '10px', border: '1.5px solid rgba(0,0,0,0.1)', background: 'white', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#1C1C1C', textTransform: 'capitalize' },
-  sevOn: { flex: 1, padding: '11px', borderRadius: '10px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, color: '#2D6B42', textTransform: 'capitalize' },
-  textarea: { width: '100%', boxSizing: 'border-box', padding: '13px', borderRadius: '11px', border: '1.5px solid rgba(0,0,0,0.1)', background: 'white', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', resize: 'vertical', lineHeight: 1.5 },
-  cta: { width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', border: 'none', background: '#3D5C3C', color: 'white', fontSize: '14px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
-  ctaOff: { width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', border: 'none', background: '#C8C6BE', color: 'white', fontSize: '14px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'not-allowed' },
+  textarea: { width: '100%', boxSizing: 'border-box', padding: '13px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-1)', background: 'var(--paper)', fontSize: '16px', resize: 'vertical', lineHeight: 1.5 },
   disclaimer: { fontSize: '11px', color: '#A8A69E', textAlign: 'center', marginTop: '14px', lineHeight: 1.5 },
 
   histTabs: { display: 'flex', gap: '8px', marginBottom: '20px' },
-  histTab: { flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'white', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#7A7A72' },
-  histTabOn: { flex: 1, padding: '10px', borderRadius: '10px', border: '1.5px solid #3D5C3C', background: '#EDF3ED', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', color: '#2D6B42' },
-  histDate: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#7A7A72', marginBottom: '9px' },
-  histRow: { display: 'flex', gap: '11px', padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.05)', alignItems: 'flex-start' },
+  histDate: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '9px' },
+  histRow: { alignItems: 'flex-start', marginBottom: '8px' },
   histFoods: { fontSize: '13.5px', lineHeight: 1.4 },
   histFlag: { fontSize: '11px', color: '#8A5410', marginTop: '3px' },
 }

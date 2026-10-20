@@ -60,11 +60,11 @@ function TestedLedger({ cycles, protocolStartDate }) {
         const endDay = protoDay(cyc.updated_at || cyc.started_at)
         const logs = logsMap[cyc.id]
         return (
-          <div key={cyc.id} style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', marginBottom: '8px', overflow: 'hidden' }}>
-            <button onClick={() => toggle(cyc)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', background: 'transparent', border: 'none', padding: '14px 16px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textAlign: 'left' }}>
+          <div key={cyc.id} className="sn-card-hov" style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-md)', boxShadow: 'var(--shadow-1)', marginBottom: '8px', overflow: 'hidden' }}>
+            <button onClick={() => toggle(cyc)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', background: 'transparent', border: 'none', padding: '14px 16px', cursor: 'pointer', textAlign: 'left' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                <div style={{ fontSize: '14px', fontWeight: 500, color: '#1C1C1C' }}>{cyc.food}</div>
-                {startDay && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.6px', color: '#9A927E' }}>DAY {startDay}{endDay && endDay !== startDay ? ` → ${endDay}` : ''}</div>}
+                <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ink)' }}>{cyc.food}</div>
+                {startDay && <div style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.6px', color: 'var(--gray-faint)' }}>DAY {startDay}{endDay && endDay !== startDay ? ` → ${endDay}` : ''}</div>}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                 <div className={`rt-verdict-pill ${cyc.verdict}`}>{cyc.verdict}</div>
@@ -72,12 +72,12 @@ function TestedLedger({ cycles, protocolStartDate }) {
               </div>
             </button>
             {open && (
-              <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', padding: '12px 16px 14px' }}>
+              <div style={{ background: 'var(--tint-warm)', padding: '12px 16px 14px' }}>
                 {loadingId === cyc.id && <div style={{ fontSize: '12px', color: '#A8A69E', padding: '6px 0' }}>Loading the record...</div>}
                 {logs && logs.length === 0 && <div style={{ fontSize: '12px', color: '#A8A69E', padding: '6px 0' }}>No daily logs were recorded for this cycle.</div>}
                 {logs && logs.length > 0 && logs.map((log, li) => (
                   <div key={li} style={{ display: 'flex', gap: '10px', padding: '7px 0', borderBottom: li < logs.length - 1 ? '1px solid rgba(0,0,0,0.04)' : 'none' }}>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.5px', color: '#9A927E', width: '86px', flexShrink: 0, paddingTop: '2px' }}>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.5px', color: 'var(--gray-faint)', width: '86px', flexShrink: 0, paddingTop: '2px' }}>
                       {protoDay(log.log_date) ? `DAY ${protoDay(log.log_date)}` : ''} · {log.phase === 'exposure' ? `EXP ${log.exposure_number || ''}`.trim() : 'WASHOUT'}
                     </div>
                     <div style={{ fontSize: '12.5px', color: '#3A3A35', lineHeight: 1.5 }}>
@@ -87,8 +87,8 @@ function TestedLedger({ cycles, protocolStartDate }) {
                   </div>
                 ))}
                 {cyc.verdict_reason && (
-                  <div style={{ marginTop: '10px', padding: '10px 12px', background: '#FAF9F5', borderRadius: '10px', fontSize: '12px', color: '#5A5A52', lineHeight: 1.55 }}>
-                    <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.7px', color: '#9A927E' }}>VERDICT · </span>
+                  <div style={{ marginTop: '10px', padding: '10px 12px', background: 'var(--paper)', borderRadius: 'var(--r-sm)', boxShadow: 'var(--shadow-1)', fontSize: '12px', color: '#5A5A52', lineHeight: 1.55 }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.7px', color: 'var(--gray-faint)' }}>VERDICT · </span>
                     {cyc.verdict_reason}
                   </div>
                 )}
@@ -182,9 +182,9 @@ function ProgramComplete({ session, profile, labResult, completedFoods }) {
   }, [])
 
   return (
-    <div style={{ background: '#1C1C1C', borderRadius: '18px', padding: '28px 24px', marginBottom: '14px', color: 'white' }}>
-      <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', opacity: 0.45, marginBottom: '10px' }}>Program complete</div>
-      <div style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300, marginBottom: '16px', letterSpacing: '-0.3px' }}>
+    <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '28px', padding: '30px 26px', marginBottom: '14px', color: '#FAF8F4', background: 'radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.3), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', boxShadow: 'var(--shadow-3)' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'rgba(250,248,244,0.55)', marginBottom: '10px' }}>Program complete</div>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: '30px', fontWeight: 300, marginBottom: '16px', letterSpacing: '-0.3px' }}>
         Reintroduction <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>complete.</em>
       </div>
       {loading ? (
@@ -193,23 +193,23 @@ function ProgramComplete({ session, profile, labResult, completedFoods }) {
         <div style={{ fontSize: '14px', opacity: 0.85, lineHeight: 1.75, marginBottom: '20px' }}>{message}</div>
       )}
       <div style={{ display: 'flex', gap: '10px' }}>
-        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '11px 14px', flex: 1, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300, color: '#8BAE8A' }}>
+        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 'var(--r-sm)', padding: '13px 14px', flex: 1, textAlign: 'center' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: 300, lineHeight: 1, color: '#8BAE8A' }}>
             {completedFoods.filter(f => f.verdict === 'Safe').length}
           </div>
-          <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.45, marginTop: '3px' }}>Safe</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(250,248,244,0.5)', marginTop: '6px' }}>Safe</div>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '11px 14px', flex: 1, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300, color: '#D4894A' }}>
+        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 'var(--r-sm)', padding: '13px 14px', flex: 1, textAlign: 'center' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: 300, lineHeight: 1, color: '#D4894A' }}>
             {completedFoods.filter(f => f.verdict === 'Limit').length}
           </div>
-          <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.45, marginTop: '3px' }}>Limit</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(250,248,244,0.5)', marginTop: '6px' }}>Limit</div>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '11px 14px', flex: 1, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300, color: '#E07070' }}>
+        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 'var(--r-sm)', padding: '13px 14px', flex: 1, textAlign: 'center' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: 300, lineHeight: 1, color: '#E07070' }}>
             {completedFoods.filter(f => f.verdict === 'Avoid').length}
           </div>
-          <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.45, marginTop: '3px' }}>Avoid</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(250,248,244,0.5)', marginTop: '6px' }}>Avoid</div>
         </div>
       </div>
       <OutcomeQuestion session={session} profile={profile} />
@@ -251,18 +251,18 @@ function OutcomeQuestion({ session, profile }) {
 
   return (
     <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.12)' }}>
-      <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', opacity: 0.45, marginBottom: 8 }}>One last measurement</div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'rgba(250,248,244,0.55)', marginBottom: 8 }}>One last measurement</div>
       <div style={{ fontSize: 13.5, lineHeight: 1.6, marginBottom: 12 }}>Compared to day 1, how are your symptoms now? 0 means no better at all, 10 means gone.</div>
       <div style={{ display: 'flex', gap: 4, marginBottom: 12, flexWrap: 'wrap' }}>
         {Array.from({ length: 11 }).map((_, i) => (
           <button key={i} onClick={() => setScore(i)}
-            style={{ flex: '1 0 26px', minWidth: 26, height: 36, borderRadius: 7, border: score === i ? '1.5px solid #8BAE8A' : '1px solid rgba(255,255,255,0.18)', background: score === i ? '#8BAE8A' : 'transparent', color: score === i ? '#1C1C1C' : 'rgba(255,255,255,0.75)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{i}</button>
+            style={{ flex: '1 0 26px', minWidth: 26, height: 36, borderRadius: 'var(--r-sm)', border: 'none', background: score === i ? '#8BAE8A' : 'rgba(255,255,255,0.09)', color: score === i ? 'var(--forest-900)' : 'rgba(255,255,255,0.75)', fontSize: 13, fontWeight: 600, cursor: 'pointer', boxShadow: score === i ? '0 6px 16px -4px rgba(139,174,138,0.5)' : 'none', transition: 'all 0.16s' }}>{i}</button>
         ))}
       </div>
       <input value={note} onChange={e => setNote(e.target.value)} placeholder="Anything worth adding, in a sentence (optional)"
-        style={{ width: '100%', boxSizing: 'border-box', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '11px 13px', fontSize: 13, color: 'white', fontFamily: 'DM Sans, sans-serif', outline: 'none', marginBottom: 12 }} />
+        style={{ width: '100%', boxSizing: 'border-box', border: 'none', background: 'rgba(255,255,255,0.09)', borderRadius: 'var(--r-sm)', padding: '12px 13px', fontSize: 13, color: 'white', outline: 'none', marginBottom: 12 }} />
       <button onClick={save} disabled={score === null || busy}
-        style={{ width: '100%', border: 'none', borderRadius: 10, padding: 13, background: score === null ? 'rgba(255,255,255,0.12)' : '#8BAE8A', color: score === null ? 'rgba(255,255,255,0.4)' : '#1C1C1C', fontSize: 13.5, fontWeight: 600, cursor: score === null ? 'not-allowed' : 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+        style={{ width: '100%', border: 'none', borderRadius: 'var(--r-md)', padding: 13, background: score === null ? 'rgba(255,255,255,0.12)' : '#8BAE8A', color: score === null ? 'rgba(255,255,255,0.4)' : 'var(--forest-900)', fontSize: 13.5, fontWeight: 700, cursor: score === null ? 'not-allowed' : 'pointer', boxShadow: score === null ? 'none' : '0 10px 24px -6px rgba(139,174,138,0.4)' }}>
         {busy ? 'Saving...' : 'Record it'}
       </button>
     </div>
@@ -270,101 +270,100 @@ function OutcomeQuestion({ session, profile }) {
 }
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
-  .rt-wrap { min-height: 100vh; background: transparent; font-family: 'DM Sans', sans-serif; color: #1C1C1C; }
+  .rt-wrap { min-height: 100vh; background: transparent; color: var(--ink); }
   .rt-content { max-width: 680px; margin: 0 auto; padding: 24px 20px 60px; }
   .rt-header { margin-bottom: 24px; }
-  .rt-title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; margin-bottom: 5px; letter-spacing: -0.3px; }
+  .rt-title { font-family: var(--font-display); font-size: 30px; font-weight: 300; margin-bottom: 5px; letter-spacing: -0.3px; }
   .rt-title em { font-style: italic; color: #3D5C3C; }
-  .rt-sub { font-size: 13px; color: #7A7A72; line-height: 1.55; }
+  .rt-sub { font-size: 13px; color: var(--gray); line-height: 1.55; }
 
-  .rt-active-card { background: #22301F; border-radius: 18px; padding: 24px; margin-bottom: 14px; color: white; }
-  .rt-active-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; opacity: 0.45; margin-bottom: 6px; }
-  .rt-active-food { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .rt-active-card { position: relative; overflow: hidden; color: #FAF8F4; border-radius: 28px; padding: 26px 24px; margin-bottom: 14px; background: radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.32), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%); box-shadow: var(--shadow-3); }
+  .rt-active-eyebrow { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: rgba(250,248,244,0.55); margin-bottom: 8px; }
+  .rt-active-food { font-family: var(--font-display); font-size: 38px; font-weight: 300; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 6px; }
   .rt-active-food em { font-style: italic; color: #8BAE8A; }
-  .rt-active-sub { font-size: 13px; opacity: 0.5; margin-bottom: 20px; }
-  .rt-phase-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 16px; }
-  .rt-phase-badge.exposure { background: rgba(109,191,138,0.2); color: #6DBF8A; }
-  .rt-phase-badge.washout { background: rgba(212,137,74,0.2); color: #D4894A; }
+  .rt-active-sub { font-size: 12.5px; color: rgba(250,248,244,0.6); margin-bottom: 20px; }
+  .rt-phase-badge { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+  .rt-phase-badge.exposure { background: rgba(139,174,138,0.22); color: #AECDAD; }
+  .rt-phase-badge.washout { background: rgba(250,248,244,0.12); color: rgba(250,248,244,0.85); }
   .rt-timeline { display: flex; gap: 4px; margin-bottom: 10px; }
-  .rt-day-dot { flex: 1; height: 9px; border-radius: 4px; }
-  .rt-day-dot.past-logged { background: #8BAE8A; box-shadow: 0 0 6px rgba(139,174,138,0.4); }
-  .rt-day-dot.past-skipped { background: rgba(255,255,255,0.18); }
-  .rt-day-dot.current { background: white; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
-  .rt-day-dot.past-logged.current { background: #8BAE8A; }
-  .rt-day-dot.exposure-future { background: rgba(109,191,138,0.4); }
-  .rt-day-dot.washout-future { background: rgba(224,169,119,0.4); }
+  .rt-day-dot { flex: 1; height: 11px; border-radius: 5px; background: rgba(250,248,244,0.1); }
+  .rt-day-dot.past-logged { background: linear-gradient(90deg, var(--forest-150), var(--forest-300)); box-shadow: 0 0 12px rgba(139,174,138,0.75); }
+  .rt-day-dot.past-skipped { background: rgba(250,248,244,0.18); }
+  .rt-day-dot.current { background: #FAF8F4; box-shadow: 0 0 10px rgba(255,255,255,0.6); }
+  .rt-day-dot.past-logged.current { background: linear-gradient(90deg, var(--forest-150), var(--forest-300)); }
+  .rt-day-dot.exposure-future { background: rgba(139,174,138,0.38); }
+  .rt-day-dot.washout-future { background: rgba(201,216,200,0.18); }
   .rt-day-dot.exp-divider { margin-right: 8px; }
-  .rt-timeline-labels { display: flex; font-size: 10px; opacity: 0.55; margin-bottom: 16px; }
-  .rt-instruction { background: rgba(255,255,255,0.07); border-radius: 11px; padding: 14px; }
-  .rt-instruction-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.5; margin-bottom: 6px; }
+  .rt-timeline-labels { display: flex; font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(250,248,244,0.55); margin-bottom: 16px; }
+  .rt-instruction { background: rgba(255,255,255,0.08); border-radius: var(--r-md); padding: 16px; }
+  .rt-instruction-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(250,248,244,0.55); margin-bottom: 6px; }
   .rt-instruction-text { font-size: 14px; line-height: 1.65; }
 
-  .rt-section-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #7A7A72; margin-bottom: 10px; margin-top: 20px; }
+  .rt-section-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin-bottom: 10px; margin-top: 20px; }
 
-  .rt-food-card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 18px; padding: 17px 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; transition: border-color 0.15s, box-shadow 0.15s; }
-  .rt-food-card:hover { border-color: rgba(61,92,60,0.3); box-shadow: 0 4px 16px rgba(34,48,31,0.07); }
-  .rt-food-card.recommended { border: 1.5px solid #3D5C3C; box-shadow: 0 4px 18px rgba(61,92,60,0.1); background: linear-gradient(135deg, rgba(139,174,138,0.06), rgba(44,157,138,0.02)), #FFFFFF; }
+  .rt-food-card { background: var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+  @media (hover: hover) { .rt-food-card:hover { transform: translateY(-2px); box-shadow: 0 20px 44px -10px rgba(56,62,48,0.18), 0 3px 10px rgba(56,62,48,0.06); } }
+  .rt-food-card.recommended { background: linear-gradient(135deg, rgba(139,174,138,0.14), rgba(139,174,138,0.03)), var(--paper); box-shadow: 0 18px 40px -10px rgba(61,92,60,0.22), 0 2px 8px rgba(56,62,48,0.05); }
   .rt-food-left { display: flex; align-items: center; gap: 12px; }
-  .rt-food-rank { width: 30px; height: 30px; border-radius: 10px; background: #F4F2EC; display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 14px; font-weight: 400; color: #7A7A72; flex-shrink: 0; }
-  .rt-food-rank.top { background: #22301F; color: #8BAE8A; }
-  .rt-food-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
-  .rt-food-freq { font-size: 12px; color: #7A7A72; }
-  .rt-rec-badge { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #3D5C3C; background: #EDF3ED; padding: 2px 8px; border-radius: 20px; margin-left: 8px; }
-  .rt-start-btn { background: #3D5C3C; color: white; border: none; border-radius: 9px; padding: 9px 18px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; transition: opacity 0.15s; }
-  .rt-start-btn:hover { opacity: 0.87; }
-  .rt-start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .rt-food-rank { width: 34px; height: 34px; border-radius: var(--r-sm); background: var(--tint-warm); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; font-weight: 400; color: var(--gray); flex-shrink: 0; }
+  .rt-food-rank.top { background: var(--forest-900); color: #8BAE8A; }
+  .rt-food-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .rt-food-freq { font-size: 12px; color: var(--gray); }
+  .rt-rec-badge { font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--forest-500); background: var(--forest-100); padding: 3px 9px; border-radius: 999px; margin-left: 8px; }
+  .rt-start-btn { background: var(--forest-500); color: white; border: none; border-radius: var(--r-sm); padding: 10px 18px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; box-shadow: var(--shadow-pill); transition: transform var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease); }
+  @media (hover: hover) { .rt-start-btn:hover { transform: translateY(-1px); } }
+  .rt-start-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; transform: none; }
 
-  .rt-completed-card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 13px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-  .rt-escalation { background: #0E0E0C; border-radius: 18px; padding: 26px; margin-top: 20px; }
-  .rt-esc-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(139,174,138,0.8); margin-bottom: 12px; }
-  .rt-esc-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 300; color: white; margin-bottom: 14px; }
-  .rt-esc-body { font-size: 14.5px; line-height: 1.65; margin-bottom: 14px; color: rgba(255,255,255,0.72); }
-  .rt-esc-foods { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 20px; line-height: 1.5; }
-  .rt-esc-go { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #8BAE8A; color: #0E0E0C; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-bottom: 9px; }
-  .rt-esc-finish { width: 100%; padding: 12px; border-radius: 12px; border: none; background: transparent; color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-  .rt-verdict-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
-  .rt-verdict-pill.Safe { background: #EAF4EE; color: #2D6B42; }
-  .rt-verdict-pill.Limit { background: #FDF2EA; color: #9A5F1A; }
-  .rt-verdict-pill.Avoid { background: #FAEAEA; color: #8B2E2E; }
+  .rt-completed-card { background: var(--paper); border: none; border-radius: var(--r-md); box-shadow: var(--shadow-1); padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+  .rt-escalation { position: relative; overflow: hidden; color: #FAF8F4; border-radius: 28px; padding: 28px 26px; margin-top: 20px; background: radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.26), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%); box-shadow: var(--shadow-3); }
+  .rt-esc-eyebrow { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(139,174,138,0.85); margin-bottom: 12px; }
+  .rt-esc-title { font-family: var(--font-display); font-size: 27px; font-weight: 300; letter-spacing: -0.3px; color: #FAF8F4; margin-bottom: 14px; }
+  .rt-esc-body { font-size: 14px; line-height: 1.65; margin-bottom: 14px; color: rgba(250,248,244,0.75); }
+  .rt-esc-foods { font-size: 13px; color: rgba(250,248,244,0.55); margin-bottom: 20px; line-height: 1.5; }
+  .rt-esc-go { width: 100%; padding: 14px; border-radius: var(--r-md); border: none; background: var(--forest-300); color: var(--forest-900); font-size: 14px; font-weight: 700; cursor: pointer; margin-bottom: 9px; box-shadow: 0 10px 24px -6px rgba(139,174,138,0.4); }
+  .rt-esc-finish { width: 100%; padding: 12px; border-radius: var(--r-md); border: none; background: transparent; color: rgba(250,248,244,0.6); font-size: 13px; font-weight: 500; cursor: pointer; }
+  .rt-verdict-pill { font-family: var(--font-mono); font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; }
+  .rt-verdict-pill.Safe { background: var(--safe-100); color: #1F7465; }
+  .rt-verdict-pill.Limit { background: var(--limit-100); color: var(--limit-700); }
+  .rt-verdict-pill.Avoid { background: var(--avoid-100); color: var(--avoid-700); }
 
-  .rt-locked-card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 14px; padding: 28px 24px; text-align: center; margin-bottom: 14px; }
-  .rt-lk-hero { background: #FFFFFF; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 26px 24px; text-align: center; margin-bottom: 20px; }
+  .rt-locked-card { background: var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 28px 24px; text-align: center; margin-bottom: 14px; }
+  .rt-lk-hero { background: var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 26px 24px; text-align: center; margin-bottom: 20px; }
   .rt-lk-ringwrap { position: relative; width: 110px; height: 110px; margin: 0 auto 14px; }
   .rt-lk-ringcenter { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .rt-lk-pct { font-size: 26px; font-weight: 500; color: #3D5C3C; }
-  .rt-lk-daycount { font-size: 9.5px; color: #A0A096; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
-  .rt-lk-headline { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 300; color: #1C1C1C; }
+  .rt-lk-pct { font-family: var(--font-display); font-size: 30px; font-weight: 300; letter-spacing: -0.02em; color: #3D5C3C; }
+  .rt-lk-daycount { font-size: 9.5px; color: var(--gray-faint); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px; }
+  .rt-lk-headline { font-family: var(--font-display); font-size: 20px; font-weight: 300; color: var(--ink); }
   .rt-lk-headline em { font-style: italic; color: #3D5C3C; }
-  .rt-lk-purpose { font-size: 12.5px; color: #7A7A72; line-height: 1.6; max-width: 300px; margin: 8px auto 0; }
+  .rt-lk-purpose { font-size: 12.5px; color: var(--gray); line-height: 1.6; max-width: 300px; margin: 8px auto 0; }
   .rt-lk-timeline { position: relative; padding-left: 22px; }
   .rt-lk-timeline::before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 2px; background: #EFEDE6; border-radius: 1px; }
   .rt-lk-node { position: relative; margin-bottom: 10px; }
   .rt-lk-dot { position: absolute; left: -22px; top: 16px; width: 16px; height: 16px; border-radius: 50%; background: #EFEDE6; border: 3px solid #FAF8F4; }
-  .rt-lk-dot.next { background: #3D5C3C; border-color: #EDF3ED; }
-  .rt-lk-tiercard { background: #FCFBF8; border: 0.5px solid rgba(0,0,0,0.06); border-radius: 13px; padding: 14px 16px; opacity: 0.82; }
-  .rt-lk-tiercard.next { background: #FFFFFF; border: 1px solid rgba(61,92,60,0.25); opacity: 1; }
+  .rt-lk-dot.next { background: var(--forest-500); border-color: var(--forest-100); box-shadow: 0 0 10px rgba(139,174,138,0.6); }
+  .rt-lk-tiercard { background: var(--tint-warm); border: none; border-radius: var(--r-md); padding: 14px 16px; opacity: 0.85; }
+  .rt-lk-tiercard.next { background: var(--paper); border: none; box-shadow: var(--shadow-2); opacity: 1; }
   .rt-lk-tierhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
   .rt-lk-tierlabel { font-size: 13px; font-weight: 600; color: #6A6A62; }
-  .rt-lk-tiercard.next .rt-lk-tierlabel { color: #1C1C1C; }
-  .rt-lk-badge { font-size: 10px; font-weight: 600; color: #3D5C3C; background: #EDF3ED; padding: 3px 8px; border-radius: 5px; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
-  .rt-lk-tierwhen { font-size: 10px; color: #A0A096; font-family: 'DM Mono', monospace; white-space: nowrap; }
+  .rt-lk-tiercard.next .rt-lk-tierlabel { color: var(--ink); }
+  .rt-lk-badge { font-family: var(--font-mono); font-size: 9px; font-weight: 500; color: var(--forest-500); background: var(--forest-100); padding: 4px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+  .rt-lk-tierwhen { font-size: 10px; color: var(--gray-faint); font-family: var(--font-mono); white-space: nowrap; }
   .rt-lk-pills { display: flex; flex-wrap: wrap; gap: 5px; }
-  .rt-lk-pill { font-size: 11.5px; color: #3A3A35; background: #FAF8F4; border: 0.5px solid rgba(0,0,0,0.06); padding: 4px 10px; border-radius: 20px; }
-  .rt-lk-tiercard:not(.next) .rt-lk-pill { color: #8A8A82; background: #FFFFFF; }
-  .rt-lk-nofoods { font-size: 11.5px; color: #A0A096; font-style: italic; }
-  .rt-locked-icon { width: 48px; height: 48px; background: #FAF8F4; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
-  .rt-locked-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 300; margin-bottom: 6px; }
+  .rt-lk-pill { font-size: 11.5px; color: var(--ink-soft); background: var(--paper); border: none; box-shadow: var(--shadow-1); padding: 5px 11px; border-radius: 999px; }
+  .rt-lk-tiercard:not(.next) .rt-lk-pill { color: #8A8A82; background: var(--paper); box-shadow: none; }
+  .rt-lk-nofoods { font-size: 11.5px; color: var(--gray-faint); font-style: italic; }
+  .rt-locked-icon { width: 48px; height: 48px; background: var(--tint-warm); border-radius: var(--r-md); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+  .rt-locked-title { font-family: var(--font-display); font-size: 21px; font-weight: 300; margin-bottom: 6px; }
   .rt-locked-title em { font-style: italic; color: #3D5C3C; }
-  .rt-locked-sub { font-size: 13px; color: #7A7A72; line-height: 1.65; max-width: 280px; margin: 0 auto 16px; }
-  .rt-countdown { display: inline-flex; align-items: baseline; gap: 4px; background: #EDF3ED; padding: 8px 16px; border-radius: 20px; }
-  .rt-countdown-num { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; color: #3D5C3C; line-height: 1; }
+  .rt-locked-sub { font-size: 13px; color: var(--gray); line-height: 1.65; max-width: 280px; margin: 0 auto 16px; }
+  .rt-countdown { display: inline-flex; align-items: baseline; gap: 4px; background: var(--forest-100); padding: 8px 16px; border-radius: 999px; }
+  .rt-countdown-num { font-family: var(--font-display); font-size: 24px; font-weight: 300; color: #3D5C3C; line-height: 1; }
   .rt-countdown-label { font-size: 12px; color: #3D5C3C; font-weight: 500; }
 
-  .rt-tier-card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
-  .rt-tier-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #FAF8F4; border-bottom: 1px solid rgba(0,0,0,0.06); }
-  .rt-tier-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #7A7A72; }
-  .rt-tier-status { font-size: 11px; color: #7A7A72; }
+  .rt-tier-card { background: var(--paper); border: none; border-radius: var(--r-md); box-shadow: var(--shadow-1); overflow: hidden; margin-bottom: 14px; }
+  .rt-tier-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--tint-warm); border-bottom: none; }
+  .rt-tier-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--gray); }
+  .rt-tier-status { font-size: 11px; color: var(--gray); }
   .rt-tier-status.unlocked { color: #3D5C3C; font-weight: 500; }
   .rt-spinner { width: 28px; height: 28px; border: 2.5px solid #EDF3ED; border-top-color: #3D5C3C; border-radius: 50%; animation: rt-spin 0.8s linear infinite; margin: 40px auto; }
   @keyframes rt-spin { to { transform: rotate(360deg) } }

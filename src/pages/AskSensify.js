@@ -158,18 +158,18 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
               <div style={s.priorDivider}>Today</div>
             </>
           ) : (
-            <button style={s.priorReveal} onClick={() => setShowPrior(true)}>
+            <button className="sn-chip" style={s.priorReveal} onClick={() => setShowPrior(true)}>
               View earlier conversation
             </button>
           )
         )}
         {loaded && messages.length === 0 && (
-          <div style={s.empty}>
+          <div className="sn-rise" style={s.empty}>
             <div style={s.emptyTitle}>{observationMode ? 'What can I help you track?' : 'What can I help you eat?'}</div>
             <div style={s.emptyText}>{observationMode ? "You're tracking your meals and symptoms to spot patterns over time. Tell me what you eat and how you feel, and I'll help you notice what connects." : "I know your Food Map and your lab results, so I can give you guidance that's specific to you. Here's what I can do:"}</div>
             <div style={s.capList}>
               {!observationMode && capabilities.map((c, i) => (
-                <button key={i} style={s.capCard} onClick={() => setInput(c.example)}>
+                <button key={i} className={`sn-chip ${['sn-rise-2', 'sn-rise-3', 'sn-rise-4'][i] || 'sn-rise-4'}`} style={s.capCard} onClick={() => setInput(c.example)}>
                   <div style={s.capTitle}>{c.title}</div>
                   <div style={s.capDesc}>{c.desc}</div>
                   <div style={s.capExample}>"{c.example}"</div>
@@ -181,14 +181,14 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         )}
         {messages.map((m, i) => (
           m.role === 'user' ? (
-            <div key={i} style={s.userRow}>
+            <div key={i} className="sn-rise" style={s.userRow}>
               <div style={s.userBubble}>
                 {m.image && <img src={m.image} alt="sent" style={{ maxWidth: '180px', borderRadius: '10px', marginBottom: m.content && m.content !== '📷 Photo' ? '8px' : '0', display: 'block' }} />}
                 {m.content && m.content !== '📷 Photo' && m.content}
               </div>
             </div>
           ) : (
-            <div key={i} style={s.aiRow}>
+            <div key={i} className="sn-rise" style={s.aiRow}>
               <div style={s.aiPanel}>
                 {m.verdict && m.verdict.checked != null && (
                   <div style={s.aiMeta}>Checked {m.verdict.checked} ingredient{m.verdict.checked !== 1 ? 's' : ''}</div>
@@ -234,7 +234,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
           )
         ))}
         {sending && (
-          <div style={s.aiRow}>
+          <div className="sn-rise" style={s.aiRow}>
             <div style={s.aiPanel}><span style={s.dots}>•••</span></div>
           </div>
         )}
@@ -273,7 +273,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
 
 function GuideRow({ dot, label, items }) {
   return (
-    <div style={s.guideRow}>
+    <div className="sn-row" style={s.guideRow}>
       <span style={{ ...s.guideDot, background: dot }} />
       <span style={s.guideText}><b style={{ fontWeight: 600 }}>{label}</b>: {items.join(', ')}</span>
     </div>
@@ -295,37 +295,36 @@ function verdictTextColor(label) {
 }
 
 const s = {
-  priorReveal: { display: 'block', margin: '4px auto 16px', padding: '7px 16px', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.1)', background: 'white', color: '#7A7A72', fontSize: '12.5px', fontWeight: 500, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
-  priorHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#A0A096', fontWeight: 600, margin: '4px 0 12px' },
-  priorHide: { background: 'none', border: 'none', color: '#8BAE8A', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textTransform: 'uppercase', letterSpacing: '0.5px' },
-  priorDivider: { textAlign: 'center', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#A0A096', fontWeight: 600, margin: '8px 0 16px', paddingTop: '12px', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  wrap: { display: 'flex', flexDirection: 'column', height: 'calc(100% - 24px)', maxWidth: '680px', margin: '12px auto', width: 'calc(100% - 24px)', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '16px', overflow: 'hidden' },
-  header: { padding: '20px 20px 14px', borderBottom: '1px solid rgba(0,0,0,0.05)', background: '#FFFFFF' },
+  priorReveal: { display: 'flex', margin: '4px auto 16px', color: '#7A7A72' },
+  priorHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--gray-faint)', margin: '4px 0 12px' },
+  priorHide: { background: 'none', border: 'none', color: '#8BAE8A', fontSize: '11px', fontWeight: 600, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px' },
+  priorDivider: { textAlign: 'center', fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--gray-faint)', margin: '8px 0 16px', paddingTop: '12px', borderTop: '1px solid rgba(0,0,0,0.06)' },
+  wrap: { display: 'flex', flexDirection: 'column', height: 'calc(100% - 24px)', maxWidth: '680px', margin: '12px auto', width: 'calc(100% - 24px)', background: 'var(--paper)', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '24px', overflow: 'hidden' },
+  header: { padding: '20px 20px 14px', background: 'var(--paper)' },
   headerTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300 },
   em: { fontStyle: 'italic', color: '#3D5C3C' },
   headerStatus: { display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' },
-  statusDot: { width: '6px', height: '6px', borderRadius: '50%', background: '#2C9D8A', animation: 'asPulse 1.6s infinite' },
+  statusDot: { width: '6px', height: '6px', borderRadius: '50%', background: 'var(--forest-300)', boxShadow: '0 0 8px rgba(139,174,138,0.8)', animation: 'asPulse 1.6s infinite' },
   statusText: { fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#7A7A72', letterSpacing: '0.8px' },
   thread: { flex: 1, overflowY: 'auto', padding: '8px 16px 16px', display: 'flex', flexDirection: 'column', gap: '12px' },
   empty: { textAlign: 'center', padding: '36px 16px', margin: 'auto 0' },
   emptyTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '10px' },
   emptyText: { fontSize: '14px', color: '#7A7A72', lineHeight: 1.6, maxWidth: '420px', margin: '0 auto 22px' },
   capList: { display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '380px', margin: '0 auto' },
-  capCard: { textAlign: 'left', padding: '15px 16px', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.09)', background: '#FFFFFF', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'border-color 0.15s' },
+  capCard: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '3px', textAlign: 'left', padding: '14px 16px', borderRadius: '16px', width: '100%' },
   capTitle: { fontSize: '14px', fontWeight: 600, color: '#1C1C1C', marginBottom: '3px' },
   capDesc: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.5, marginBottom: '8px' },
   capExample: { fontSize: '12.5px', color: '#3D5C3C' },
   emptyFoot: { fontSize: '12px', color: '#A8A69E', marginTop: '18px' },
   chips: { display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '320px', margin: '0 auto' },
-  chip: { padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', background: '#FFFFFF', fontSize: '13.5px', color: '#3D5C3C', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500 },
   userRow: { display: 'flex', justifyContent: 'flex-end' },
   aiRow: { display: 'flex', justifyContent: 'flex-start' },
-  userBubble: { background: '#3D5C3C', color: 'white', padding: '11px 16px', borderRadius: '18px 18px 5px 18px', fontSize: '14px', lineHeight: 1.5, maxWidth: '80%', whiteSpace: 'pre-wrap' },
-  aiPanel: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '18px 18px 18px 6px', padding: '17px 18px', maxWidth: '90%', boxShadow: '0 1px 2px rgba(0,0,0,0.03), 0 6px 20px rgba(0,0,0,0.04)' },
+  userBubble: { background: 'var(--forest-100)', color: 'var(--forest-900)', padding: '11px 16px', borderRadius: '18px 18px 6px 18px', fontSize: '14px', lineHeight: 1.5, maxWidth: '80%', whiteSpace: 'pre-wrap' },
+  aiPanel: { background: 'var(--paper)', border: 'none', borderRadius: '18px 18px 18px 6px', padding: '17px 18px', maxWidth: '90%', boxShadow: 'var(--shadow-1)' },
   aiMeta: { fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#A8A69E', letterSpacing: '0.8px', textTransform: 'uppercase', marginBottom: '9px' },
   aiText: { color: '#1C1C1C', fontSize: '14px', lineHeight: 1.65, whiteSpace: 'pre-wrap' },
 
-  readout: { display: 'flex', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.07)', marginTop: '14px' },
+  readout: { display: 'flex', borderRadius: '16px', overflow: 'hidden', border: 'none', boxShadow: 'var(--shadow-1)', marginTop: '14px' },
   readoutAccent: { width: '4px', flexShrink: 0 },
   readoutBody: { flex: 1, padding: '11px 14px', background: '#FCFBF9' },
   readoutTop: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2px' },
@@ -334,25 +333,25 @@ const s = {
   readoutDetail: { fontSize: '11.5px', color: '#7A7A72', lineHeight: 1.4 },
 
   guide: { marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '7px' },
-  guideRow: { display: 'flex', alignItems: 'flex-start', gap: '9px', padding: '9px 12px', borderRadius: '10px', background: '#FCFBF9', border: '1px solid rgba(0,0,0,0.06)' },
+  guideRow: { alignItems: 'flex-start', gap: '9px', padding: '10px 13px' },
   guideDot: { width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0, marginTop: '5px' },
   guideText: { fontSize: '12.5px', color: '#1C1C1C', lineHeight: 1.45 },
 
-  log: { marginTop: '14px', display: 'flex', alignItems: 'center', gap: '11px', padding: '12px 14px', borderRadius: '12px', background: '#F4F8F3', border: '1px solid rgba(61,92,60,0.15)' },
+  log: { marginTop: '14px', display: 'flex', alignItems: 'center', gap: '11px', padding: '12px 14px', borderRadius: '16px', background: 'var(--forest-050)', border: 'none' },
   logCheck: { width: '26px', height: '26px', borderRadius: '50%', background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   logText: { fontSize: '12.5px', color: '#2D4A2C', fontWeight: 600 },
   logFoods: { fontFamily: 'DM Mono, monospace', fontSize: '10px', color: '#7A7A72', marginTop: '2px' },
 
   dots: { letterSpacing: '2px', color: '#3D5C3C', animation: 'asPulse 1.2s infinite' },
-  inputBar: { display: 'flex', gap: '8px', padding: '12px 16px', borderTop: '1px solid rgba(0,0,0,0.07)', alignItems: 'flex-end', background: '#FFFFFF' },
-  camera: { width: '42px', height: '42px', borderRadius: '12px', border: '1.5px solid rgba(61,92,60,0.25)', background: '#F2F5EF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  previewBar: { display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', background: '#F2F5EF', borderTop: '1px solid rgba(0,0,0,0.05)' },
+  inputBar: { display: 'flex', gap: '8px', padding: '8px 8px 8px 10px', margin: '6px 14px 10px', alignItems: 'flex-end', background: 'var(--paper)', borderRadius: '24px', boxShadow: 'var(--shadow-2)' },
+  camera: { width: '42px', height: '42px', borderRadius: '999px', border: 'none', background: 'var(--forest-100)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  previewBar: { display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', margin: '0 14px', background: 'var(--forest-050)', borderRadius: '16px' },
   previewThumb: { position: 'relative', width: '52px', height: '52px', flexShrink: 0 },
-  previewImg: { width: '52px', height: '52px', objectFit: 'cover', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.1)' },
+  previewImg: { width: '52px', height: '52px', objectFit: 'cover', borderRadius: '10px', border: 'none', boxShadow: 'var(--shadow-1)' },
   previewRemove: { position: 'absolute', top: '-7px', right: '-7px', width: '20px', height: '20px', borderRadius: '50%', background: '#1C1C1C', color: 'white', border: '2px solid white', cursor: 'pointer', fontSize: '12px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 },
   previewLabel: { fontSize: '12.5px', color: '#3D5C3C', fontWeight: 500 },
-  input: { flex: 1, resize: 'none', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '14px', padding: '12px 14px', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.4, maxHeight: '120px', outline: 'none', background: '#FFFFFF' },
-  send: { width: '42px', height: '42px', borderRadius: '12px', border: 'none', background: '#3D5C3C', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  sendOff: { width: '42px', height: '42px', borderRadius: '12px', border: 'none', background: '#C8C6BE', cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  input: { flex: 1, resize: 'none', border: 'none', borderRadius: '16px', padding: '12px 6px', fontSize: '16px', lineHeight: 1.4, maxHeight: '120px', outline: 'none', background: 'transparent' },
+  send: { width: '42px', height: '42px', borderRadius: '999px', border: 'none', background: '#3D5C3C', boxShadow: 'var(--shadow-pill)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  sendOff: { width: '42px', height: '42px', borderRadius: '999px', border: 'none', background: '#C8C6BE', cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   disclaimer: { fontSize: '10.5px', color: '#A8A69E', textAlign: 'center', padding: '0 16px 12px', lineHeight: 1.5 },
 }

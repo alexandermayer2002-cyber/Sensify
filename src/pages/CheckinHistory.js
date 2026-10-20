@@ -64,16 +64,16 @@ function SymptomProgress({ profile, checkins }) {
   const weekCount = sorted.length
 
   const pg = {
-    card: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '16px', padding: '22px', marginBottom: '16px' },
-    title: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '12px' },
-    toggle: { display: 'flex', gap: '4px', background: '#F0EEE7', borderRadius: '9px', padding: '3px', marginBottom: '18px' },
-    tOn: { flex: 1, textAlign: 'center', fontSize: '12.5px', fontWeight: 600, color: '#1C1C1C', background: '#fff', padding: '7px 0', borderRadius: '7px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', cursor: 'pointer', border: 'none' },
-    tOff: { flex: 1, textAlign: 'center', fontSize: '12.5px', fontWeight: 400, color: '#8A8A82', background: 'transparent', padding: '7px 0', borderRadius: '7px', cursor: 'pointer', border: 'none' },
+    card: { background: 'var(--paper)', border: 'none', borderRadius: '24px', boxShadow: 'var(--shadow-2)', padding: '22px', marginBottom: '16px' },
+    title: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '12px' },
+    toggle: { display: 'flex', gap: '4px', background: '#F0EEE7', borderRadius: '999px', padding: '3px', marginBottom: '18px' },
+    tOn: { flex: 1, textAlign: 'center', fontSize: '12.5px', fontWeight: 600, color: '#1C1C1C', background: '#fff', padding: '7px 0', borderRadius: '999px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', cursor: 'pointer', border: 'none' },
+    tOff: { flex: 1, textAlign: 'center', fontSize: '12.5px', fontWeight: 400, color: '#8A8A82', background: 'transparent', padding: '7px 0', borderRadius: '999px', cursor: 'pointer', border: 'none' },
     bigwrap: { display: 'flex', alignItems: 'baseline', gap: '9px', margin: '2px 0 3px' },
     big: { fontFamily: 'Fraunces, serif', fontSize: '36px', fontWeight: 300, color: avgImprovement > 0 ? '#2C9D8A' : avgImprovement < 0 ? '#D4894A' : '#7A7A72', lineHeight: 1 },
     bigsub: { fontSize: '13px', color: '#7A7A72' },
     weeks: { fontSize: '11px', color: '#A8A69E', marginBottom: '10px' },
-    reassure: { fontSize: '11.5px', color: '#3D5C3C', background: '#EDF3ED', borderRadius: '8px', padding: '8px 11px', lineHeight: 1.5, marginBottom: '18px' },
+    reassure: { fontSize: '11.5px', color: '#3D5C3C', background: 'var(--forest-100)', borderRadius: '16px', padding: '9px 13px', lineHeight: 1.5, marginBottom: '18px' },
     legend: { display: 'flex', gap: '16px', marginBottom: '18px', paddingBottom: '16px', borderBottom: '1px solid rgba(0,0,0,0.06)' },
     lgi: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#7A7A72' },
     lgtick: { width: '2px', height: '13px', background: '#999', borderRadius: '1px' },
@@ -93,7 +93,7 @@ function SymptomProgress({ profile, checkins }) {
   const showReassurance = lens === 'average' && avgImprovement > 0 && weekCount >= 2
 
   return (
-    <div style={pg.card}>
+    <div className="sn-rise" style={pg.card}>
       <div style={pg.title}>Your progress</div>
 
       {weekCount >= 2 && (
@@ -152,8 +152,8 @@ function IntakeMilestoneCard({ profile, formatDate }) {
 
   return (
     <>
-      <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '10px' }}>Program milestones</div>
-      <div style={{ background: '#EDF3ED', border: '1px solid rgba(61,92,60,0.15)', borderRadius: '14px', padding: '18px', marginBottom: '10px' }}>
+      <div className="sn-micro sn-micro-dim" style={{ marginBottom: '10px' }}>Program milestones</div>
+      <div className="sn-rise-2" style={{ background: 'var(--forest-100)', border: 'none', borderRadius: '24px', boxShadow: 'var(--shadow-1)', padding: '18px 20px', marginBottom: '10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: expanded ? '16px' : '0' }}>
           <div>
             <div style={{ fontFamily: 'Fraunces, serif', fontSize: '16px', fontWeight: 300 }}>
@@ -163,7 +163,7 @@ function IntakeMilestoneCard({ profile, formatDate }) {
           </div>
           <button
             onClick={() => setExpanded(!expanded)}
-            style={{ background: 'rgba(61,92,60,0.1)', border: 'none', borderRadius: '8px', padding: '6px 12px', fontSize: '12px', color: '#3D5C3C', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+            style={{ background: 'rgba(61,92,60,0.1)', border: 'none', borderRadius: '10px', padding: '6px 12px', fontSize: '12px', color: '#3D5C3C', fontWeight: 500, cursor: 'pointer' }}
           >
             {expanded ? 'Hide' : 'View all responses'}
           </button>
@@ -175,7 +175,7 @@ function IntakeMilestoneCard({ profile, formatDate }) {
             {/* Symptom focus */}
             {profile?.symptoms?.length > 0 && (
               <div style={{ marginBottom: '16px' }}>
-                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', marginBottom: '8px' }}>Symptom focus</div>
+                <div className="sn-micro" style={{ marginBottom: '8px' }}>Symptom focus</div>
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                   {profile.symptoms.map(s => (
                     <span key={s} style={{ background: 'rgba(61,92,60,0.15)', color: '#3D5C3C', fontSize: '12px', fontWeight: 500, padding: '4px 10px', borderRadius: '20px' }}>{s}</span>
@@ -187,7 +187,7 @@ function IntakeMilestoneCard({ profile, formatDate }) {
             {/* Baseline scores */}
             {baselines.length > 0 && (
               <div style={{ marginBottom: '16px' }}>
-                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', marginBottom: '10px' }}>Baseline scores</div>
+                <div className="sn-micro" style={{ marginBottom: '10px' }}>Baseline scores</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   {baselines.map(b => (
                     <div key={b.key} style={{ background: 'rgba(255,255,255,0.6)', borderRadius: '10px', padding: '10px 12px' }}>
@@ -206,10 +206,10 @@ function IntakeMilestoneCard({ profile, formatDate }) {
             {/* Most frequent foods */}
             {topFoods.length > 0 && (
               <div>
-                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', marginBottom: '8px' }}>Foods eaten most often</div>
+                <div className="sn-micro" style={{ marginBottom: '8px' }}>Foods eaten most often</div>
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                   {topFoods.map(f => (
-                    <span key={f} style={{ background: 'rgba(255,255,255,0.6)', color: '#1C1C1C', fontSize: '12px', padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(61,92,60,0.15)' }}>{f}</span>
+                    <span key={f} style={{ background: 'rgba(255,255,255,0.7)', color: '#1C1C1C', fontSize: '12px', padding: '4px 10px', borderRadius: '999px' }}>{f}</span>
                   ))}
                 </div>
               </div>
@@ -246,14 +246,14 @@ function CheckinCard({ checkin: c, index: i, profile, formatDate, complianceColo
   const notes = c.answers?.notes
 
   return (
-    <div style={s.checkinCard}>
+    <div className={['sn-rise', 'sn-rise-2', 'sn-rise-3', 'sn-rise-4'][Math.min(i, 3)]} style={s.checkinCard}>
       <div style={s.checkinHeader}>
         <div style={s.checkinWeek}>Week <em style={s.checkinWeekEm}>{weekNum}</em></div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={s.checkinDate}>{formatDate(c.submitted_at)}</div>
           <button
             onClick={() => setExpanded(!expanded)}
-            style={{ background: 'rgba(0,0,0,0.04)', border: 'none', borderRadius: '7px', padding: '4px 10px', fontSize: '11px', color: '#7A7A72', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500 }}
+            style={{ background: 'rgba(0,0,0,0.04)', border: 'none', borderRadius: '10px', padding: '4px 10px', fontSize: '11px', color: '#7A7A72', cursor: 'pointer', fontWeight: 500 }}
           >
             {expanded ? 'Less' : 'More'}
           </button>
@@ -294,17 +294,17 @@ function CheckinCard({ checkin: c, index: i, profile, formatDate, complianceColo
 
           {overallFeeling && (
             <div style={{ marginBottom: '12px' }}>
-              <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#7A7A72', marginBottom: '5px' }}>Overall feeling</div>
+              <div className="sn-micro sn-micro-dim" style={{ marginBottom: '5px' }}>Overall feeling</div>
               <div style={{ fontSize: '13px', color: '#1C1C1C', fontWeight: 500 }}>{overallFeeling} compared to last week</div>
             </div>
           )}
 
           {contextChanges.length > 0 && (
             <div style={{ marginBottom: '12px' }}>
-              <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#7A7A72', marginBottom: '6px' }}>What changed</div>
+              <div className="sn-micro sn-micro-dim" style={{ marginBottom: '6px' }}>What changed</div>
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {contextChanges.map(ch => (
-                  <span key={ch} style={{ background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '20px', fontSize: '11px', padding: '4px 10px', color: '#1C1C1C' }}>{ch}</span>
+                  <span key={ch} style={{ background: 'var(--tint-warm)', border: 'none', borderRadius: '999px', fontSize: '11px', padding: '5px 11px', color: '#1C1C1C' }}>{ch}</span>
                 ))}
               </div>
             </div>
@@ -312,7 +312,7 @@ function CheckinCard({ checkin: c, index: i, profile, formatDate, complianceColo
 
           {notes && (
             <div style={{ marginBottom: '12px' }}>
-              <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#7A7A72', marginBottom: '5px' }}>Notes</div>
+              <div className="sn-micro sn-micro-dim" style={{ marginBottom: '5px' }}>Notes</div>
               <div style={{ fontSize: '13px', color: '#7A7A72', fontStyle: 'italic', lineHeight: 1.6 }}>"{notes}"</div>
             </div>
           )}
@@ -339,26 +339,26 @@ const s = {
   sub: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.55 },
 
   // Locked state
-  lockedCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '16px', padding: '32px 24px', textAlign: 'center', marginBottom: '20px' },
-  lockedIcon: { width: '48px', height: '48px', background: '#EDF3ED', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' },
+  lockedCard: { background: 'var(--paper)', border: 'none', borderRadius: '24px', boxShadow: 'var(--shadow-2)', padding: '32px 24px', textAlign: 'center', marginBottom: '20px' },
+  lockedIcon: { width: '48px', height: '48px', background: '#EDF3ED', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' },
   lockedTitle: { fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 300, marginBottom: '6px' },
   lockedTitleEm: { fontStyle: 'italic', color: '#3D5C3C' },
   lockedSub: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.65, maxWidth: '280px', margin: '0 auto' },
-  countdown: { display: 'inline-flex', alignItems: 'baseline', gap: '4px', marginTop: '16px', background: '#EDF3ED', padding: '8px 16px', borderRadius: '20px' },
+  countdown: { display: 'inline-flex', alignItems: 'baseline', gap: '4px', marginTop: '16px', background: '#EDF3ED', padding: '8px 16px', borderRadius: '999px' },
   countdownNum: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, color: '#3D5C3C', lineHeight: 1 },
   countdownLabel: { fontSize: '12px', color: '#3D5C3C', fontWeight: 500 },
 
   // Due state
-  dueCard: { background: '#FFFFFF', border: '1.5px solid #3D5C3C', borderRadius: '16px', padding: '20px', marginBottom: '20px' },
-  dueTag: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.7px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 9px', borderRadius: '20px', display: 'inline-block', marginBottom: '10px' },
+  dueCard: { background: 'var(--paper)', border: 'none', borderRadius: '24px', boxShadow: 'var(--shadow-2)', padding: '20px', marginBottom: '20px' },
+  dueTag: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: '#3D5C3C', background: '#EDF3ED', padding: '4px 11px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' },
   dueTitle: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 300, marginBottom: '6px' },
   dueTitleEm: { fontStyle: 'italic', color: '#3D5C3C' },
   dueSub: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.6, marginBottom: '14px' },
-  dueBtn: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '9px', padding: '11px 20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
+  dueBtn: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '16px', padding: '11px 20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', boxShadow: 'var(--shadow-pill)' },
 
   // Chart
-  chartCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px', padding: '18px', marginBottom: '16px' },
-  chartLabel: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '14px' },
+  chartCard: { background: 'var(--paper)', border: 'none', borderRadius: '24px', boxShadow: 'var(--shadow-1)', padding: '18px', marginBottom: '16px' },
+  chartLabel: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '14px' },
   chartArea: { position: 'relative', height: '100px', display: 'flex', alignItems: 'flex-end', gap: '8px', borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: '8px', marginBottom: '8px' },
   chartBar: { flex: 1, borderRadius: '4px 4px 0 0', minHeight: '4px', transition: 'height 0.3s ease' },
   chartWeekLabels: { display: 'flex', gap: '8px' },
@@ -368,24 +368,24 @@ const s = {
   chartLegendDot: { width: '8px', height: '8px', borderRadius: '50%' },
 
   // Check-in cards
-  secLabel: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: '10px' },
-  checkinCard: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '13px', padding: '16px', marginBottom: '10px' },
+  secLabel: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '10px' },
+  checkinCard: { background: 'var(--paper)', border: 'none', borderRadius: '16px', boxShadow: 'var(--shadow-1)', padding: '17px 18px', marginBottom: '12px' },
   checkinHeader: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' },
-  checkinWeek: { fontFamily: 'Fraunces, serif', fontSize: '16px', fontWeight: 300 },
+  checkinWeek: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300 },
   checkinWeekEm: { fontStyle: 'italic', color: '#3D5C3C' },
-  checkinDate: { fontSize: '11px', color: '#7A7A72' },
+  checkinDate: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gray-faint)' },
   checkinScores: { display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' },
-  scoreChip: { display: 'flex', align: 'center', gap: '5px', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '8px', padding: '6px 10px' },
+  scoreChip: { display: 'flex', align: 'center', gap: '5px', background: 'var(--tint-warm)', border: 'none', borderRadius: '10px', padding: '7px 11px' },
   scoreLabel: { fontSize: '10px', color: '#7A7A72', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.4px' },
-  scoreVal: { fontFamily: 'Fraunces, serif', fontSize: '16px', fontWeight: 300, lineHeight: 1, marginTop: '1px' },
-  compliancePill: { fontSize: '11px', fontWeight: 500, padding: '3px 9px', borderRadius: '20px', display: 'inline-block', marginBottom: '10px' },
-  insightBox: { background: '#EDF3ED', borderRadius: '8px', padding: '10px 12px' },
-  insightTag: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', marginBottom: '5px' },
+  scoreVal: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, lineHeight: 1, marginTop: '1px' },
+  compliancePill: { fontSize: '11px', fontWeight: 500, padding: '4px 11px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' },
+  insightBox: { background: '#EDF3ED', borderRadius: '16px', padding: '11px 13px' },
+  insightTag: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '5px' },
   insightText: { fontSize: '12px', color: '#1C1C1C', lineHeight: 1.65 },
 
   // Empty state
   emptyWrap: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', textAlign: 'center' },
-  emptyIcon: { width: '52px', height: '52px', background: '#FAF8F4', border: '1.5px dashed rgba(0,0,0,0.1)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' },
+  emptyIcon: { width: '52px', height: '52px', background: 'var(--forest-050)', border: 'none', borderRadius: '16px', boxShadow: 'var(--shadow-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' },
   emptyTitle: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, marginBottom: '8px' },
   emptyTitleEm: { fontStyle: 'italic', color: '#3D5C3C' },
   emptySub: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.65, maxWidth: '260px' },
@@ -435,7 +435,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
   return (
     <div style={s.wrap}>
       <div style={s.content}>
-        <div style={s.header}>
+        <div className="sn-rise" style={s.header}>
           <div style={s.title}>Your <em style={s.titleEm}>history.</em></div>
           <div style={s.sub}>Weekly symptom scores, insights, and compliance trends over time.</div>
         </div>
@@ -448,7 +448,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               @keyframes chDueGlow { 0%, 100% { opacity: 0.06; } 50% { opacity: 0.13; } }
               @keyframes chDueBtn { 0%, 100% { box-shadow: 0 0 0 rgba(139,174,138,0); } 50% { box-shadow: 0 0 22px rgba(139,174,138,0.45); } }
             `}</style>
-            <div style={{ position: 'relative', background: '#22301F', borderRadius: 22, padding: '24px 24px 22px', overflow: 'hidden', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'chDueRise 0.6s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
+            <div style={{ position: 'relative', background: '#22301F', borderRadius: 24, padding: '24px 24px 22px', overflow: 'hidden', boxShadow: 'var(--shadow-3)', animation: 'chDueRise 0.6s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
               <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'chDueGlow 4s ease-in-out infinite', pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, position: 'relative' }}>
@@ -460,7 +460,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               </div>
               <div style={{ fontFamily: 'Fraunces, serif', fontSize: 23, fontWeight: 300, color: '#FAF8F4', position: 'relative', lineHeight: 1.2 }}>Your weekly <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>check-in is ready.</em></div>
               <div style={{ fontSize: 13, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65, margin: '8px 0 16px', position: 'relative', fontWeight: 300 }}>Takes 2 minutes. Complete it to log this week's symptoms and get your weekly insight. It will appear in your history once submitted.</div>
-              <button onClick={onStartCheckin} style={{ position: 'relative', width: '100%', background: '#8BAE8A', color: '#22301F', border: 'none', borderRadius: 12, padding: '14px', fontSize: 14.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', animation: 'chDueBtn 2.6s ease-in-out infinite' }}>Start check-in →</button>
+              <button onClick={onStartCheckin} style={{ position: 'relative', width: '100%', background: '#8BAE8A', color: '#22301F', border: 'none', borderRadius: 16, padding: '14px', fontSize: 14.5, fontWeight: 600, cursor: 'pointer', animation: 'chDueBtn 2.6s ease-in-out infinite' }}>Start check-in →</button>
             </div>
           </>
         )}
@@ -477,7 +477,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
                   @keyframes chLkGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
                   @keyframes chLkIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 `}</style>
-                <div style={{ position: 'relative', background: '#22301F', borderRadius: 22, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: '0 24px 60px rgba(34,48,31,0.35)', animation: 'chLkRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
+                <div style={{ position: 'relative', background: '#22301F', borderRadius: 24, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: 'var(--shadow-3)', animation: 'chLkRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
                   <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'chLkGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
                   <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, position: 'relative' }}>
@@ -515,7 +515,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               @keyframes chRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
               @keyframes chDotPulse { 0%, 60%, 100% { opacity: 0.25; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
             `}</style>
-            <div style={{ position: 'relative', background: '#22301F', borderRadius: 20, padding: '28px 22px 22px', overflow: 'hidden', boxShadow: '0 20px 48px rgba(34,48,31,0.3)', animation: 'chRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 18 }}>
+            <div style={{ position: 'relative', background: '#22301F', borderRadius: 24, padding: '28px 22px 22px', overflow: 'hidden', boxShadow: 'var(--shadow-3)', animation: 'chRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 18 }}>
               <div style={{ position: 'absolute', top: -70, right: -50, width: 210, height: 210, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
 
               <div style={{ position: 'relative', fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.8px', color: '#C9A227', textTransform: 'uppercase', marginBottom: 16 }}>Your record</div>
@@ -563,11 +563,11 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
         {/* CHECK-IN HISTORY */}
         {!loading && checkins.length > 0 && (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-              <div style={s.secLabel}>Past entries</div>
+            <div className="sn-rise-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+              <div style={{ ...s.secLabel, marginBottom: 0 }}>Past entries</div>
               <div style={{ display: 'flex', gap: 5 }}>
                 {[['all', 'All'], ['elimination', 'Elimination'], ['reintroduction', 'Reintro']].map(([key, label]) => (
-                  <button key={key} onClick={() => setPhaseFilter(key)} style={{ background: phaseFilter === key ? '#3D5C3C' : '#FFFFFF', color: phaseFilter === key ? '#FFFFFF' : '#7A7A72', border: phaseFilter === key ? '1px solid #3D5C3C' : '1px solid rgba(0,0,0,0.1)', borderRadius: 16, padding: '5px 12px', fontSize: 11.5, fontWeight: phaseFilter === key ? 600 : 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{label}</button>
+                  <button key={key} onClick={() => setPhaseFilter(key)} className={phaseFilter === key ? 'sn-chip sn-chip-on' : 'sn-chip'} style={{ padding: '6px 13px', fontSize: 11.5 }}>{label}</button>
                 ))}
               </div>
             </div>
@@ -609,10 +609,10 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               return (
                 <div style={{ width: '100%', maxWidth: '320px', margin: '24px auto 0', textAlign: 'left' }}>
                   <div style={s.secLabel}>Coming up</div>
-                  <div style={{ background: '#EDF3ED', border: '1px solid rgba(61,92,60,0.15)', borderRadius: '14px', padding: '5px 18px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {upcoming.map((w, i) => (
-                      <div key={w.n} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '10px', padding: '12px 0', borderBottom: i < upcoming.length - 1 ? '1px solid rgba(61,92,60,0.12)' : 'none' }}>
-                        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '15px', fontWeight: 300, color: '#1C1C1C' }}>Week {w.n} check-in</div>
+                      <div key={w.n} className={['sn-rise', 'sn-rise-2', 'sn-rise-3', 'sn-rise-4'][i]} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '13px', padding: '13px 14px', borderRadius: '16px', background: 'var(--forest-100)' }}>
+                        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '16px', fontWeight: 300, color: '#1C1C1C' }}>Week {w.n} check-in</div>
                         <div style={{ fontSize: '12px', color: '#3D5C3C', fontWeight: 500 }}>{w.when}</div>
                       </div>
                     ))}

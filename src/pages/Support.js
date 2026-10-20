@@ -11,40 +11,42 @@ import {
 // ============================================================
 
 const css = `
-  .sup-wrap { display:flex; flex-direction:column; height:100%; background:#FAF8F4; }
-  .sup-head { padding:20px max(22px, calc((100% - 620px) / 2)) 16px; background:white; border-bottom:0.5px solid rgba(0,0,0,0.07); display:flex; align-items:center; justify-content:space-between; }
-  .sup-compose-bar { padding:14px max(18px, calc((100% - 620px) / 2)); background:white; border-top:0.5px solid rgba(0,0,0,0.07); display:flex; gap:9px; align-items:flex-end; }
+  .sup-wrap { display:flex; flex-direction:column; height:100%; background:transparent; }
+  .sup-head { padding:20px max(22px, calc((100% - 620px) / 2)) 16px; background:var(--paper); border-bottom:none; box-shadow:var(--shadow-1); display:flex; align-items:center; justify-content:space-between; }
+  .sup-compose-bar { padding:14px max(18px, calc((100% - 620px) / 2)); background:var(--paper); border-top:none; box-shadow:0 -8px 24px rgba(56,62,48,0.07); display:flex; gap:9px; align-items:flex-end; }
   .sup-head-l { display:flex; align-items:center; gap:10px; }
   .sup-back { background:none; border:none; color:#8A8A82; font-size:13px; cursor:pointer; padding:0; }
   .sup-title { font-family:'Fraunces',serif; font-size:22px; font-weight:300; color:#1C1C1C; }
   .sup-title em { font-style:italic; color:#3D5C3C; }
   .sup-sub { font-size:12.5px; color:#8A8A82; margin-top:2px; }
-  .sup-newbtn { background:#3D5C3C; color:white; border:none; border-radius:9px; padding:8px 14px; font-size:12.5px; font-weight:500; cursor:pointer; }
+  .sup-newbtn { background:#3D5C3C; color:white; border:none; border-radius:999px; padding:8px 15px; font-size:12.5px; font-weight:500; cursor:pointer; box-shadow:var(--shadow-pill); }
   .sup-body { flex:1; overflow-y:auto; padding:18px max(22px, calc((100% - 620px) / 2)); }
-  .sup-ticket { background:white; border:0.5px solid rgba(0,0,0,0.08); border-radius:11px; padding:13px 15px; margin-bottom:9px; cursor:pointer; }
-  .sup-ticket:hover { border-color:#3D5C3C; }
+  .sup-ticket { background:var(--paper); border:none; box-shadow:var(--shadow-1); border-radius:16px; padding:13px 15px; margin-bottom:9px; cursor:pointer; transition:transform 160ms var(--ease), box-shadow 160ms var(--ease); }
+  .sup-ticket:hover { transform:translateY(-1px); box-shadow:var(--shadow-2); }
+  .sup-trowcard { border-radius:16px; background:var(--tint-warm); padding:13px 14px; margin-bottom:8px; cursor:pointer; transition:transform 160ms var(--ease), box-shadow 160ms var(--ease); }
+  @media (hover:hover) { .sup-trowcard:hover { transform:translateY(-1px); box-shadow:var(--shadow-1); } }
   .sup-trow { display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .sup-tsubj { font-size:13.5px; font-weight:500; color:#1C1C1C; }
   .sup-tprev { font-size:12px; color:#8A8A82; margin-top:3px; line-height:1.4; }
   .sup-tdate { font-size:10.5px; color:#B0B0A8; margin-top:6px; font-family:'DM Mono',monospace; }
-  .sup-pill { font-size:9.5px; font-weight:600; padding:3px 7px; border-radius:5px; text-transform:uppercase; letter-spacing:0.4px; white-space:nowrap; flex-shrink:0; }
+  .sup-pill { font-size:9.5px; font-weight:600; padding:3px 9px; border-radius:999px; text-transform:uppercase; letter-spacing:0.4px; white-space:nowrap; flex-shrink:0; }
   .sup-pill.action { background:#FBEFD8; color:#9A6212; }
   .sup-pill.waiting { background:#EDF3ED; color:#3D5C3C; }
   .sup-pill.resolved { background:#EDEDEA; color:#7A7A72; }
-  .sup-tabs { display:flex; gap:6px; padding:0 max(22px, calc((100% - 620px) / 2)); background:white; border-bottom:0.5px solid rgba(0,0,0,0.07); }
+  .sup-tabs { display:flex; gap:6px; padding:0 max(22px, calc((100% - 620px) / 2)); background:var(--paper); border-bottom:none; }
   .sup-tab { background:none; border:none; padding:11px 4px; margin-right:18px; font-size:13px; color:#8A8A82; cursor:pointer; border-bottom:2px solid transparent; font-weight:500; }
   .sup-tab.active { color:#3D5C3C; border-bottom-color:#3D5C3C; }
   .sup-dot { width:8px; height:8px; border-radius:50%; background:#D64545; flex-shrink:0; }
   .sup-empty { text-align:center; color:#A0A096; max-width:300px; margin:48px auto; }
   .sup-empty-icon { width:52px; height:52px; border-radius:50%; background:#EDF3ED; display:flex; align-items:center; justify-content:center; font-size:22px; margin:0 auto 14px; color:#3D5C3C; }
   .sup-label { font-size:11.5px; color:#6A6A62; margin-bottom:5px; }
-  .sup-input { width:100%; box-sizing:border-box; border:1px solid rgba(0,0,0,0.12); border-radius:9px; padding:10px 12px; font-size:13.5px; background:white; font-family:'DM Sans',sans-serif; }
+  .sup-input { width:100%; box-sizing:border-box; border:1px solid rgba(0,0,0,0.12); border-radius:10px; padding:10px 12px; font-size:13.5px; background:white; }
   .sup-input:focus { outline:none; border-color:#3D5C3C; }
-  .sup-note { display:flex; align-items:center; gap:7px; margin:13px 0 16px; padding:9px 11px; background:#EDF3ED; border-radius:8px; font-size:11.5px; color:#3D5C3C; }
-  .sup-warn { font-size:11px; color:#9A6212; background:#FBEFD8; border-radius:8px; padding:9px 11px; margin-bottom:14px; line-height:1.45; }
-  .sup-primary { width:100%; background:#3D5C3C; color:white; border:none; border-radius:10px; padding:12px; font-size:13.5px; font-weight:500; cursor:pointer; }
-  .sup-primary:disabled { background:#C3CDBF; cursor:not-allowed; }
-  .sup-msg { margin-bottom:14px; border-radius:12px; padding:14px 16px; border:0.5px solid rgba(0,0,0,0.07); }
+  .sup-note { display:flex; align-items:center; gap:7px; margin:13px 0 16px; padding:10px 13px; background:#EDF3ED; border-radius:10px; font-size:11.5px; color:#3D5C3C; }
+  .sup-warn { font-size:11px; color:#9A6212; background:#FBEFD8; border-radius:10px; padding:10px 13px; margin-bottom:14px; line-height:1.45; }
+  .sup-primary { width:100%; background:#3D5C3C; color:white; border:none; border-radius:16px; padding:12px; font-size:13.5px; font-weight:500; cursor:pointer; box-shadow:var(--shadow-pill); }
+  .sup-primary:disabled { background:#C3CDBF; cursor:not-allowed; box-shadow:none; }
+  .sup-msg { margin-bottom:14px; border-radius:16px; padding:14px 16px; border:none; box-shadow:var(--shadow-1); }
   .sup-msg.admin { background:#F4F7F2; border-left:3px solid #3D5C3C; border-top-left-radius:4px; border-bottom-left-radius:4px; }
   .sup-msg.user { background:white; }
   .sup-msg-head { display:flex; align-items:center; gap:9px; margin-bottom:8px; }
@@ -55,9 +57,9 @@ const css = `
   .sup-ts { font-size:10px; color:#B0B0A8; font-family:'DM Mono',monospace; }
   .sup-mbody { font-size:13.5px; line-height:1.6; color:#3A3A35; }
   .sup-divider { border-top:0.5px solid rgba(0,0,0,0.06); margin:18px 0; }
-  .sup-reply { flex:1; border:1px solid rgba(0,0,0,0.12); border-radius:10px; padding:10px 12px; font-size:13px; resize:none; max-height:120px; background:white; font-family:'DM Sans',sans-serif; }
+  .sup-reply { flex:1; border:1px solid rgba(0,0,0,0.12); border-radius:16px; padding:10px 13px; font-size:13px; resize:none; max-height:120px; background:white; }
   .sup-reply:focus { outline:none; border-color:#3D5C3C; }
-  .sup-send { background:#3D5C3C; color:white; border:none; border-radius:10px; padding:10px 16px; font-size:13px; font-weight:500; cursor:pointer; flex-shrink:0; }
+  .sup-send { background:#3D5C3C; color:white; border:none; border-radius:999px; padding:10px 17px; font-size:13px; font-weight:500; cursor:pointer; flex-shrink:0; box-shadow:var(--shadow-pill); }
   .sup-send:disabled { background:#C3CDBF; cursor:not-allowed; }
   .sup-resolved-banner { text-align:center; font-size:11.5px; color:#7A7A72; padding:10px; background:#EDEDEA; }
   .sup-reopen { background:none; border:none; color:#3D5C3C; font-weight:500; cursor:pointer; text-decoration:underline; font-size:11.5px; }
@@ -196,7 +198,7 @@ export default function Support({ session, onUnreadChange }) {
                       <span style={{ fontSize: 11, color: '#3D5C3C', fontWeight: 600 }}>Sensify team</span>
                     </div>
                   )}
-                  <div style={{ maxWidth: '82%', background: admin ? '#FFFFFF' : '#3D5C3C', border: admin ? '1px solid rgba(0,0,0,0.06)' : 'none', color: admin ? '#1C1C1C' : '#fff', borderRadius: admin ? '16px 16px 16px 4px' : '16px 16px 4px 16px', padding: '12px 15px', fontSize: 13.5, lineHeight: 1.6 }}>{m._failed ? <span style={{ color: '#F2A0A0' }}>{m.body}</span> : m.body}</div>
+                  <div style={{ maxWidth: '82%', background: admin ? '#FFFFFF' : '#3D5C3C', border: 'none', boxShadow: admin ? 'var(--shadow-1)' : 'none', color: admin ? '#1C1C1C' : '#fff', borderRadius: admin ? '16px 16px 16px 4px' : '16px 16px 4px 16px', padding: '12px 15px', fontSize: 13.5, lineHeight: 1.6 }}>{m._failed ? <span style={{ color: '#F2A0A0' }}>{m.body}</span> : m.body}</div>
                   <div style={{ fontSize: 10, color: '#B8B6AE', marginTop: 4 }}>{m._pending ? 'Sending…' : m._failed ? 'Failed to send' : (admin ? '' : 'You · ') + fmt(m.created_at)}</div>
                 </div>
               )
@@ -232,7 +234,7 @@ export default function Support({ session, onUnreadChange }) {
         {(() => {
           if (loading) return <div style={{ textAlign: 'center', color: '#A0A096', fontSize: 13, marginTop: 30 }}>Loading…</div>
           if (tickets.length === 0) return (
-            <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 16, padding: '24px 20px', marginTop: 8 }}>
+            <div className="sn-card sn-rise" style={{ padding: '24px 20px', marginTop: 8 }}>
               <div style={{ width: 42, height: 42, borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, color: '#3D5C3C', fontSize: 17 }}>✉</div>
               <div style={{ fontFamily: 'Fraunces, serif', fontSize: 21, fontWeight: 400, color: '#1C1C1C', lineHeight: 1.25, marginBottom: 7 }}>Talk to us.</div>
               <div style={{ fontSize: 13, color: '#7A7A72', lineHeight: 1.65, marginBottom: 18 }}>Questions about your program, your results, your account, anything. A real person reads every message and replies here, usually within a day.</div>

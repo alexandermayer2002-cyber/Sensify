@@ -155,7 +155,7 @@ export default function FoodMap({ session, profile, labResult }) {
       ? (ruledDay ? `DAY ${ruledDay}` : null)
       : live && cycle ? `DAY ${Math.min(14, Math.max(1, Math.round((new Date(today + 'T12:00:00') - new Date(String(cycle.started_at).split('T')[0] + 'T12:00:00')) / 86400000) + 1))} OF 14` : null
     return (
-      <div style={{ ...s.card, background: bg, border: `1${ghost ? '.5' : ''}px ${ghost ? 'dashed' : 'solid'} ${bd}`, cursor: canOpen ? 'pointer' : 'default', gridColumn: open ? '1 / -1' : 'auto' }} onClick={() => canOpen && setOpenRow(open ? null : k)}>
+      <div className={canOpen ? 'sn-card-hov' : undefined} style={{ ...s.card, background: bg, border: ghost ? `1.5px dashed ${bd}` : 'none', cursor: canOpen ? 'pointer' : 'default', gridColumn: open ? '1 / -1' : 'auto' }} onClick={() => canOpen && setOpenRow(open ? null : k)}>
         {dayStamp && <div style={s.dayStamp}>{dayStamp}</div>}
         <div>
           <div style={{ ...s.fname, color: ghost ? 'rgba(122,122,114,0.5)' : '#7A7A72' }}>{food.name}{trials > 1 && <span style={{ marginLeft: 6, opacity: 0.7 }}>{trials === 2 ? '2ND' : trials + 'TH'} TRIAL</span>}</div>
@@ -176,7 +176,7 @@ export default function FoodMap({ session, profile, labResult }) {
   if (profile?.track_decision === 'declined' && loaded) {
     return (
       <div style={s.page}>
-        <div style={s.doc}>
+        <div className="sn-rise" style={s.doc}>
           <div style={s.dochead}>
             <div>
               <div style={s.kicker}>SENSIFY · THE VERDICTS</div>
@@ -197,7 +197,7 @@ export default function FoodMap({ session, profile, labResult }) {
     const daysLeft = Math.max(1, 57 - currentDay)
     const pct = Math.max(2, Math.min(100, (currentDay / 56) * 100))
     const exCard = (nm, wd, sub, color, bg, bd) => (
-      <div key={nm} style={{ borderRadius: 12, padding: '11px 11px 10px', minHeight: 64, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: bg, border: `1px solid ${bd}` }}>
+      <div key={nm} style={{ borderRadius: 16, padding: '12px 12px 11px', minHeight: 64, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: bg }}>
         <div>
           <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.3px', color: '#7A7A72' }}>{nm}</div>
           <div style={{ fontFamily: 'Fraunces, serif', fontSize: 19, lineHeight: 1, marginTop: 4, color, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{wd}</div>
@@ -207,7 +207,7 @@ export default function FoodMap({ session, profile, labResult }) {
     )
     return (
       <div style={s.page}>
-        <div style={{ ...s.doc, padding: '24px 24px 20px' }}>
+        <div className="sn-rise" style={{ ...s.doc, padding: '24px 24px 20px' }}>
           <div style={s.kicker}>SENSIFY · THE VERDICTS</div>
           <div style={{ ...s.title, fontSize: 25 }}>This is what you're <span style={{ color: '#3D5C3C' }}>working toward.</span></div>
           <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginTop: 8 }}>A finished wall, shown as an example: every food ruled by a real 14 day trial on a real body. Yours gets earned the same way, one trial at a time.</div>
@@ -234,13 +234,13 @@ export default function FoodMap({ session, profile, labResult }) {
             </div>
           </div>
 
-          <div style={{ marginTop: 16, background: '#22301F', borderRadius: 12, padding: '13px 15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          <div style={{ marginTop: 16, background: '#22301F', borderRadius: 16, boxShadow: 'var(--shadow-3)', padding: '13px 15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
             <div style={{ fontSize: 11.5, color: 'rgba(250,248,244,0.85)', lineHeight: 1.5 }}><b style={{ color: '#FAF8F4', fontWeight: 600 }}>Yours unlocks in</b><br />Day {currentDay} of 56 · every clean day counts</div>
             <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, color: '#8BAE8A', whiteSpace: 'nowrap', lineHeight: 1 }}>{daysLeft} day{daysLeft === 1 ? '' : 's'}</div>
           </div>
-          <div style={{ margin: '14px 0 5px', position: 'relative', height: 4, borderRadius: 3, background: 'rgba(61,92,60,0.1)' }}>
-            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${pct}%`, borderRadius: 3, background: 'linear-gradient(90deg, #3D5C3C, #8BAE8A)' }} />
-            <div style={{ position: 'absolute', left: `${pct}%`, top: -3, width: 10, height: 10, borderRadius: '50%', background: '#3D5C3C', border: '2px solid #FFF', boxShadow: '0 1px 4px rgba(0,0,0,0.2)', transform: 'translateX(-50%)' }} />
+          <div className="sn-track" style={{ margin: '16px 0 5px' }}>
+            <div className="sn-fill" style={{ width: `${pct}%` }} />
+            <div className="sn-dot" style={{ left: `${pct}%` }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'DM Mono, monospace', fontSize: 6, letterSpacing: '1px', color: '#9A927E', marginTop: 7 }}>
             <span>DAY 1</span><span>TRIALS BEGIN · DAY 57</span>
@@ -253,7 +253,7 @@ export default function FoodMap({ session, profile, labResult }) {
   return (
     <div style={s.page}>
       <style>{`@keyframes fmPl { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }`}</style>
-      <div style={s.doc}>
+      <div className="sn-rise" style={s.doc}>
         <div style={s.dochead}>
           <div>
             <div style={s.kicker}>SENSIFY · THE VERDICTS{complete ? ' · VERIFIED' : ''}</div>
@@ -274,6 +274,7 @@ export default function FoodMap({ session, profile, labResult }) {
           <div style={s.printRow}>
             <button
               type="button"
+              className="sn-btn sn-btn-quiet"
               style={{ ...s.printBtn, opacity: pdfBusy ? 0.6 : 1 }}
               disabled={pdfBusy}
               onClick={async () => {
@@ -335,31 +336,31 @@ export default function FoodMap({ session, profile, labResult }) {
 
 const s = {
   page: { maxWidth: 640, margin: '0 auto', padding: '28px 18px 60px' },
-  doc: { background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 18, overflow: 'hidden', boxShadow: '0 10px 34px rgba(34,48,31,0.07)' },
+  doc: { background: 'var(--paper)', border: 'none', borderRadius: 24, overflow: 'hidden', boxShadow: 'var(--shadow-2)' },
   dochead: { padding: '25px 26px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
-  kicker: { fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '2px', color: '#7A7A72', marginBottom: 8, textTransform: 'uppercase' },
+  kicker: { fontFamily: 'DM Mono, monospace', fontSize: 10, fontWeight: 500, letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: 8, textTransform: 'uppercase' },
   title: { fontFamily: 'Fraunces, serif', fontSize: 27, fontWeight: 400, color: '#1C1C1C', lineHeight: 1.1, fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
   bignum: { fontFamily: 'Fraunces, serif', fontSize: 27, color: '#3D5C3C', lineHeight: 1 },
   bigden: { color: 'rgba(28,28,28,0.25)', fontSize: 18 },
   countLabel: { fontFamily: 'DM Mono, monospace', fontSize: 7.5, letterSpacing: '1.4px', color: '#9A927E', marginTop: 3 },
   printRow: { padding: '0 26px 10px', display: 'flex', justifyContent: 'flex-end' },
-  printBtn: { fontFamily: 'DM Sans, sans-serif', fontSize: 11.5, fontWeight: 500, letterSpacing: '0.2px', color: '#3D5C3C', background: 'transparent', border: '1px solid rgba(61,92,60,0.3)', borderRadius: 999, padding: '6px 14px', cursor: 'pointer' },
+  printBtn: { fontSize: 12, letterSpacing: '0.2px', borderRadius: 999, padding: '9px 16px' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 12, padding: '6px 26px 10px' },
   card: { borderRadius: 16, padding: '15px 15px 13px', minHeight: 116, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', gap: 10 },
   dayStamp: { position: 'absolute', top: 12, right: 13, fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.1px', color: '#9A927E' },
   fname: { fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1.6px', textTransform: 'uppercase' },
-  vword: { fontFamily: 'Fraunces, serif', fontSize: 28, lineHeight: 1, marginTop: 7, fontWeight: 400, fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
-  vGhost: { fontSize: 19 },
+  vword: { fontFamily: 'Fraunces, serif', fontSize: 32, lineHeight: 1, marginTop: 7, fontWeight: 400, fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
+  vGhost: { fontSize: 20 },
   ghostCorner: { position: 'absolute', top: 12, right: 13, fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.1px', color: 'rgba(122,122,114,0.55)' },
   row: { display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0' },
   food: { fontFamily: 'Fraunces, serif', fontSize: 16, width: 86, flexShrink: 0, lineHeight: 1.25 },
   trialTag: { display: 'block', fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1px', color: '#9A927E', marginTop: 2 },
   strip: { display: 'flex', gap: 4, alignItems: 'center', flex: 1, flexWrap: 'wrap' },
-  sq: { width: 8, height: 8, borderRadius: 2, flexShrink: 0 },
-  ci: { width: 7, height: 7, borderRadius: '50%', flexShrink: 0 },
-  symSize: { width: 10, height: 10 },
-  todayMark: { background: '#2C9D8A', animation: 'fmPl 1.6s infinite', boxShadow: '0 0 7px rgba(44,157,138,0.5)', width: 9, height: 9 },
-  speck: { width: 3.5, height: 3.5, borderRadius: '50%', background: 'rgba(0,0,0,0.12)', margin: '0 2px', flexShrink: 0 },
+  sq: { width: 10, height: 10, borderRadius: 3, flexShrink: 0, boxShadow: '0 1px 3px rgba(32,36,31,0.16)' },
+  ci: { width: 9, height: 9, borderRadius: '50%', flexShrink: 0, boxShadow: '0 1px 3px rgba(32,36,31,0.16)' },
+  symSize: { width: 12, height: 12 },
+  todayMark: { background: '#2C9D8A', animation: 'fmPl 1.6s infinite', boxShadow: '0 0 7px rgba(44,157,138,0.5)', width: 11, height: 11 },
+  speck: { width: 4, height: 4, borderRadius: '50%', background: 'rgba(0,0,0,0.12)', margin: '0 2px', flexShrink: 0 },
   verdict: { width: 68, textAlign: 'right', flexShrink: 0 },
   verdictWord: { fontFamily: 'Fraunces, serif', fontSize: 17, fontWeight: 400 },
   ghostTag: { fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.2px', color: 'rgba(28,28,28,0.25)' },

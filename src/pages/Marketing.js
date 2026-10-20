@@ -1,23 +1,17 @@
 import React, { useState } from 'react'
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap');
+  /* Fonts + body atmosphere load once globally (index.css -> styles/system.css).
+     This page consumes the system tokens: var(--shadow-*), var(--r-*), var(--font-*). */
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --sage: #3D5C3C; --sage-light: #EDF3ED; --sage-mid: #8BAE8A;
-    --cream: #FAF8F4; --warm: #FFFFFF; --charcoal: #1C1C1C; --muted: #7A7A72;
-    --border: rgba(0,0,0,0.07); --amber: #D4894A; --amber-light: #FDF2EA;
-    --red: #C95B5B; --red-light: #FAEAEA; --green: #4A8C6A; --green-light: #EAF4EE;
-  }
-  body { font-family: 'DM Sans', sans-serif; color: #1C1C1C; background: #F6F3EC; }
 
   @keyframes mkPulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
         @keyframes mkFade { from { opacity: 0; } to { opacity: 1; } }
   .mk-nav {
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(0,0,0,0.07);
+    background: rgba(251,248,242,0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 1px 0 rgba(56,62,48,0.05), 0 14px 30px -20px rgba(56,62,48,0.28);
     padding: 0 40px;
     display: flex;
     align-items: center;
@@ -30,24 +24,37 @@ const css = `
   .mk-logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; color: #1C1C1C; letter-spacing: -0.3px; }
   .mk-logo-dot { color: #3D5C3C; }
   .mk-tabs { display: flex; gap: 2px; }
-  .mk-tab { font-size: 13px; font-weight: 400; color: #7A7A72; padding: 6px 12px; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.15s; letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
+  .mk-tab { font-size: 13px; font-weight: 500; color: #73736A; padding: 6px 12px; border: none; background: none; cursor: pointer; transition: color 0.15s; letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
   .mk-tab.active { color: #1C1C1C; font-weight: 500; border-bottom: 2px solid #3D5C3C; }
   .mk-tab:hover:not(.active) { color: #1C1C1C; }
   .mk-nav-right { display: flex; align-items: center; gap: 8px; }
-  .mk-signin { font-size: 13px; color: #1C1C1C; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; padding: 8px 12px; }
-  .mk-signin:hover { color: #3D5C3C; }
-  .mk-cta { background: #3D5C3C; color: white; border: none; border-radius: 9px; padding: 9px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; letter-spacing: -0.1px; }
-  .mk-cta:hover { opacity: 0.87; }
-  .mk-menu-btn { display: none; font-size: 13px; color: #1C1C1C; background: none; border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; padding: 7px 12px; }
+  .mk-signin { font-size: 13px; color: #20241F; background: none; border: none; cursor: pointer; font-weight: 600; padding: 8px 12px; }
+  .mk-signin:hover { color: var(--forest-500); }
+  .mk-cta { background: var(--forest-500); color: white; border: none; border-radius: var(--r-pill); padding: 10px 20px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-pill); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); letter-spacing: -0.1px; }
+  @media (hover: hover) { .mk-cta:hover { transform: translateY(-1px); } }
+  .mk-cta:active { transform: scale(0.985); }
+  .mk-menu-btn { display: none; font-size: 13px; color: #20241F; background: var(--paper); border: none; border-radius: var(--r-sm); cursor: pointer; font-weight: 600; padding: 8px 12px; box-shadow: var(--shadow-1); }
   .mk-nav-panel { display: none; }
 
-  .mk-hero { position: relative; padding: 56px 64px 8px; background: #F6F3EC; overflow: hidden; }
-  .mk-hero.dark { padding: 48px 40px; background: #FAF8F4; }
-  .mk-hero.dark .mk-hero-centered { position: relative; background: #22301F; border-radius: 24px; padding: 68px 48px; box-shadow: 0 24px 60px rgba(34,48,31,0.3); overflow: hidden; max-width: 1000px; }
+  .mk-hero { position: relative; padding: 64px 64px 8px; overflow: hidden; }
+  .mk-hero.dark { padding: 48px 40px; }
+  .mk-hero.dark .mk-hero-centered {
+    position: relative;
+    border-radius: 28px;
+    padding: 76px 48px;
+    overflow: hidden;
+    max-width: 1000px;
+    background:
+      radial-gradient(120% 90% at 85% 0%, rgba(139, 174, 138, 0.32), transparent 55%),
+      linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%);
+    box-shadow: var(--shadow-3);
+  }
+  .mk-hero.dark .mk-hero-centered::before { content: ''; position: absolute; inset: -40%; background: radial-gradient(55% 45% at 68% 24%, rgba(139,174,138,0.16), transparent 62%); animation: mkDrift 16s ease-in-out infinite alternate; pointer-events: none; }
+  @keyframes mkDrift { from { transform: translate3d(-4%, -2%, 0) scale(1); } to { transform: translate3d(4%, 3%, 0) scale(1.06); } }
   .mk-hero.dark .mk-hero-orb1 { position: absolute; top: -70px; left: -40px; width: 260px; height: 260px; border-radius: 50%; background: #8BAE8A; opacity: 0.12; pointer-events: none; animation: mkHeroGlow 6s ease-in-out infinite; }
   .mk-hero.dark .mk-hero-orb2 { position: absolute; bottom: -80px; right: -40px; width: 220px; height: 220px; border-radius: 50%; background: #E8941F; opacity: 0.06; pointer-events: none; }
   @keyframes mkHeroGlow { 0%, 100% { opacity: 0.07; } 50% { opacity: 0.14; } }
-  .mk-hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 12.5px; letter-spacing: 2.5px; color: #E6C35C; text-transform: uppercase; margin-bottom: 22px; }
+  .mk-hero-eyebrow { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.17em; color: rgba(139,174,138,0.95); text-transform: uppercase; margin-bottom: 22px; }
   .mk-price-line { font-size: 12.5px; color: rgba(250,248,244,0.5); margin-top: 14px; }
   .mk-hero-inner { max-width: 960px; margin: 0 auto; }
   .mk-hero-centered { max-width: 760px; margin: 0 auto; text-align: center; }
@@ -56,57 +63,58 @@ const css = `
   .mk-actions.centered { justify-content: center; }
   .fmshow { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
   @media (max-width: 800px) { .fmshow { grid-template-columns: 1fr; gap: 32px; } }
-  .mk-tag { display: inline-flex; align-items: center; font-size: 12.5px; color: #7A7A72; margin-bottom: 14px; }
-  .mk-h1 { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 400; line-height: 1.06; margin-bottom: 16px; letter-spacing: -1px; max-width: 680px; color: #1C1C1C; }
+  .mk-tag { display: inline-flex; align-items: center; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); margin-bottom: 14px; }
+  .mk-h1 { font-family: var(--font-display); font-size: 60px; font-weight: 300; line-height: 1.04; margin-bottom: 18px; letter-spacing: -1.5px; max-width: 680px; color: var(--ink); }
   .mk-hero.dark .mk-h1 { color: #FAF8F4; }
   .mk-h1 em { font-style: italic; color: #3D5C3C; }
   .mk-hero.dark .mk-h1 em { color: #8BAE8A; }
-  .mk-sub { font-size: 17px; color: #7A7A72; line-height: 1.7; margin-bottom: 30px; max-width: 520px; }
+  .mk-sub { font-size: 16px; color: #73736A; line-height: 1.7; margin-bottom: 30px; max-width: 520px; }
   .mk-hero.dark .mk-sub { color: rgba(250,248,244,0.68); font-weight: 300; }
   .mk-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
-  .btn-p { background: #8BAE8A; color: #22301F; border: none; border-radius: 11px; padding: 14px 26px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
-  .mk-hero.dark .btn-g { border: 1px solid rgba(250,248,244,0.25); color: #FAF8F4; background: transparent; }
+  .btn-p { background: var(--forest-500); color: #fff; border: none; border-radius: var(--r-md); padding: 15px 26px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-pill); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+  .mk-hero.dark .btn-g { background: rgba(250,248,244,0.1); color: #FAF8F4; box-shadow: none; }
   .mk-hero.dark .mk-trust { color: rgba(250,248,244,0.5) !important; }
-  .btn-p:hover { opacity: 0.87; }
-  .btn-g { background: none; color: #1C1C1C; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 10px; padding: 13px 22px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
-  .btn-g:hover { border-color: #3D5C3C; color: #3D5C3C; }
-  .fmcard { background: #22301F; border-radius: 22px; padding: 24px; position: relative; overflow: hidden; box-shadow: 0 24px 60px rgba(34,48,31,0.35); }
+  @media (hover: hover) { .btn-p:hover { transform: translateY(-1px); box-shadow: 0 14px 30px -6px rgba(61,92,60,0.5); } }
+  .btn-p:active { transform: scale(0.985); }
+  .btn-g { background: var(--paper); color: var(--ink-soft); border: none; border-radius: var(--r-md); padding: 14px 22px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow-1); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
+  @media (hover: hover) { .btn-g:hover { transform: translateY(-1px); color: var(--forest-500); box-shadow: var(--shadow-2); } }
+  .fmcard { background: radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.18), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%); border-radius: var(--r-lg); padding: 26px; position: relative; overflow: hidden; box-shadow: var(--shadow-3); }
   .fmcard-orb { position: absolute; top: -70px; right: -70px; width: 240px; height: 240px; border-radius: 50%; background: #8BAE8A; animation: mkGlow 5s ease-in-out infinite; pointer-events: none; }
   .fmcard-orb2 { position: absolute; bottom: -90px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: #E8941F; opacity: 0.05; pointer-events: none; }
   @keyframes mkGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
   .fmcard::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(139,174,138,0.14) 0%, transparent 65%); pointer-events: none; }
-  .fmcard-eyebrow { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; color: rgba(139,174,138,0.7); margin-bottom: 7px; }
-  .fmcard-title { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 300; color: white; margin-bottom: 18px; }
+  .fmcard-eyebrow { font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(139,174,138,0.8); margin-bottom: 7px; }
+  .fmcard-title { font-family: var(--font-display); font-size: 22px; font-weight: 300; color: white; margin-bottom: 18px; }
   .fmcard-title em { font-style: italic; color: #8BAE8A; }
   .fmcard-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
   .fmcard-verify { font-family: 'DM Mono', monospace; font-size: 8.5px; color: rgba(255,255,255,0.3); letter-spacing: 0.4px; }
 
-  .mk-section { padding: 64px 64px; max-width: 100%; }
+  .mk-section { padding: 72px 64px; max-width: 100%; }
   .mk-section-inner { max-width: 960px; margin: 0 auto; }
-  .mk-section.alt { background: #FFFFFF; }
-  .mk-section.sage { background: #F2F5EF; }
-  .mk-section.cream { background: #F6F3EC; }
-  .ey { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #3D5C3C; margin-bottom: 14px; }
-  .sh { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 400; line-height: 1.2; margin-bottom: 16px; letter-spacing: -0.5px; }
-  .sh em { font-style: italic; color: #3D5C3C; }
-  .ss { font-size: 16px; color: #7A7A72; line-height: 1.78; max-width: 560px; margin-bottom: 40px; }
+  .mk-section.alt { background: linear-gradient(180deg, rgba(139,174,138,0.07), rgba(139,174,138,0)); }
+  .mk-section.sage { background: linear-gradient(180deg, rgba(139,174,138,0.07), rgba(139,174,138,0)); }
+  .mk-section.cream { background: transparent; }
+  .ey { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); margin-bottom: 14px; }
+  .sh { font-family: var(--font-display); font-size: 30px; font-weight: 400; line-height: 1.22; margin-bottom: 14px; letter-spacing: -0.4px; color: var(--ink); }
+  .sh em { font-style: italic; color: var(--forest-500); }
+  .ss { font-size: 14px; color: #73736A; line-height: 1.75; max-width: 560px; margin-bottom: 40px; }
 
   .ph-head { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
-  .ph-badge { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: white; background: #3D5C3C; padding: 6px 13px; border-radius: 8px; flex-shrink: 0; letter-spacing: 0.5px; }
-  .ph-name { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1; }
-  .ph-name em { font-style: italic; color: #3D5C3C; }
-  .ph-time { font-size: 12px; color: #A8A69E; margin-top: 5px; font-family: 'DM Mono', monospace; }
+  .ph-badge { font-family: var(--font-mono); font-size: 10px; font-weight: 500; color: white; background: var(--forest-500); padding: 7px 14px; border-radius: var(--r-pill); flex-shrink: 0; letter-spacing: 0.14em; box-shadow: var(--shadow-pill); }
+  .ph-name { font-family: var(--font-display); font-size: 28px; font-weight: 300; line-height: 1.05; }
+  .ph-name em { font-style: italic; color: var(--forest-500); }
+  .ph-time { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-faint); margin-top: 6px; }
   .spine { position: relative; padding-left: 44px; }
   .spine::before { content: ''; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(#3D5C3C, rgba(61,92,60,0.15)); }
   .spine-step { position: relative; margin-bottom: 26px; }
   .spine-step:last-child { margin-bottom: 0; }
   .spine-dot { position: absolute; left: -36px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: white; border: 3px solid #3D5C3C; }
-  .spine-tag { display: inline-block; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #3D5C3C; background: #EDF3ED; padding: 3px 9px; border-radius: 20px; margin-bottom: 8px; }
-  .spine-tag.amber { color: #9A5F1A; background: #FCEFD9; }
+  .spine-tag { display: inline-block; font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.15em; color: var(--forest-500); background: var(--forest-100); padding: 4px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+  .spine-tag.amber { color: #8A887C; background: #EFEDE4; }
   .spine-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
   .spine-desc { font-size: 13px; color: #7A7A72; line-height: 1.65; max-width: 520px; }
-  .cyclebox { background: #0E0E0C; border-radius: 14px; padding: 20px; margin-top: 16px; max-width: 520px; }
-  .cb-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: rgba(139,174,138,0.7); margin-bottom: 14px; }
+  .cyclebox { background: radial-gradient(110% 100% at 90% 0%, rgba(139,174,138,0.2), transparent 55%), linear-gradient(160deg, var(--forest-700), var(--forest-900) 75%); border-radius: var(--r-md); padding: 20px; margin-top: 16px; max-width: 520px; box-shadow: var(--shadow-3); }
+  .cb-label { font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(139,174,138,0.8); margin-bottom: 14px; }
   .cb-dots { display: flex; gap: 3px; margin-bottom: 10px; }
   .cb-dot { flex: 1; height: 9px; border-radius: 3px; }
   .cb-labels { display: flex; font-size: 10px; color: rgba(255,255,255,0.45); }
@@ -115,39 +123,39 @@ const css = `
     .ph-name { font-size: 22px; }
   }
   .sci-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .sci-card { background: #FAF8F4; border-radius: 14px; padding: 22px; }
+  .sci-card { background: var(--paper); border-radius: var(--r-md); padding: 22px; box-shadow: var(--shadow-1); }
   .sci-icon { width: 36px; height: 36px; border-radius: 11px; background: #EDF3ED; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
   .sci-t { font-size: 14px; font-weight: 500; margin-bottom: 7px; }
   .sci-d { font-size: 13px; color: #7A7A72; line-height: 1.7; }
-  .sci-badge { display: inline-block; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 9px; border-radius: 20px; background: #EDF3ED; color: #3D5C3C; margin-top: 12px; }
-  .sci-compare { background: #0E0E0C; border-radius: 20px; padding: 36px; margin: 8px 0 40px; }
-  .sci-compare-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; color: rgba(139,174,138,0.7); margin-bottom: 26px; text-align: center; }
+  .sci-badge { display: inline-block; font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; padding: 4px 10px; border-radius: var(--r-pill); background: var(--forest-100); color: var(--forest-500); margin-top: 12px; }
+  .sci-compare { background: radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.22), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%); border-radius: var(--r-lg); padding: 36px; margin: 8px 0 48px; box-shadow: var(--shadow-3); }
+  .sci-compare-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(139,174,138,0.8); margin-bottom: 26px; text-align: center; }
   .sci-compare-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 22px; align-items: stretch; }
   .sci-cside { padding: 26px; border-radius: 16px; }
-  .sci-cside.test { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
-  .sci-cside.verdict { background: rgba(139,174,138,0.1); border: 1px solid rgba(139,174,138,0.25); }
-  .sci-cside-tag { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .sci-cside.test { background: rgba(255,255,255,0.06); }
+  .sci-cside.verdict { background: rgba(139,174,138,0.14); box-shadow: 0 14px 30px -14px rgba(0,0,0,0.4); }
+  .sci-cside-tag { font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; margin-bottom: 12px; }
   .sci-cside.test .sci-cside-tag { color: rgba(255,255,255,0.4); }
   .sci-cside.verdict .sci-cside-tag { color: #8BAE8A; }
-  .sci-cside-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; color: white; margin-bottom: 12px; line-height: 1.2; }
+  .sci-cside-title { font-family: var(--font-display); font-size: 24px; font-weight: 300; color: white; margin-bottom: 12px; line-height: 1.2; }
   .sci-cside-desc { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.55); }
   .sci-cside.verdict .sci-cside-desc { color: rgba(255,255,255,0.72); }
   .sci-arrow { display: flex; align-items: center; justify-content: center; color: rgba(139,174,138,0.6); font-size: 24px; }
   .sci-disclaimers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-  .sci-answer { margin-top: 40px; background: #0E0E0C; border-radius: 18px; padding: 32px; }
-  .sci-answer-tag { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(139,174,138,0.8); margin-bottom: 12px; }
-  .sci-answer-h { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 300; color: white; margin-bottom: 14px; }
+  .sci-answer { margin-top: 48px; background: radial-gradient(120% 90% at 15% 0%, rgba(139,174,138,0.2), transparent 55%), linear-gradient(200deg, var(--forest-700) 0%, var(--forest-900) 70%); border-radius: var(--r-lg); padding: 36px; box-shadow: var(--shadow-3); }
+  .sci-answer-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(139,174,138,0.8); margin-bottom: 12px; }
+  .sci-answer-h { font-family: var(--font-display); font-size: 32px; font-weight: 300; color: white; margin-bottom: 14px; }
   .sci-answer-p { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.72); max-width: 620px; }
   .sci-paths { margin-top: 40px; }
-  .sci-paths-tag { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #8BAE8A; margin-bottom: 10px; }
-  .sci-paths-h { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 400; color: #1C1C1C; margin-bottom: 22px; max-width: 560px; }
+  .sci-paths-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin-bottom: 10px; }
+  .sci-paths-h { font-family: var(--font-display); font-size: 26px; font-weight: 400; color: var(--ink); margin-bottom: 22px; max-width: 560px; }
   .sci-paths-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .sci-path { background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 14px; padding: 20px; }
+  .sci-path { background: var(--paper); border-radius: var(--r-md); padding: 22px; box-shadow: var(--shadow-1); }
   .sci-path-num { width: 28px; height: 28px; border-radius: 50%; background: #EDF3ED; color: #3D5C3C; font-family: 'DM Mono', monospace; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
   .sci-path-t { font-size: 15px; font-weight: 600; color: #1C1C1C; margin-bottom: 8px; }
   .sci-path-d { font-size: 13px; line-height: 1.6; color: #6A6A62; }
   @media (max-width: 760px) { .sci-paths-grid { grid-template-columns: 1fr; } }
-  .sci-disc { display: flex; gap: 10px; align-items: flex-start; padding: 16px; background: #FAF8F4; border-radius: 12px; }
+  .sci-disc { display: flex; gap: 10px; align-items: flex-start; padding: 16px; background: var(--tint-warm); border-radius: var(--r-md); }
   .sci-disc-t { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
   .sci-disc-d { font-size: 11.5px; color: #7A7A72; line-height: 1.55; }
   @media (max-width: 700px) {
@@ -157,12 +165,14 @@ const css = `
     .sci-disclaimers { grid-template-columns: 1fr; }
   }
 
-  .pricing-wrap { max-width: 440px; }
-  .pricing-card { background: #FFFFFF; border: 2px solid #3D5C3C; border-radius: 18px; padding: 32px; }
-  .price-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #3D5C3C; margin-bottom: 10px; }
-  .price-num { font-family: 'Fraunces', serif; font-size: 54px; font-weight: 300; line-height: 1; margin-bottom: 6px; letter-spacing: -1px; }
-  .price-sub { font-size: 13px; color: #7A7A72; margin-bottom: 22px; }
-  .price-div { height: 1px; background: rgba(0,0,0,0.07); margin: 22px 0; }
+  .pricing-wrap { max-width: 460px; }
+  .pricing-card { background: var(--paper); border: none; border-radius: var(--r-lg); padding: 36px 32px; box-shadow: var(--shadow-2); }
+  .price-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); margin-bottom: 12px; }
+  .price-num { font-family: var(--font-display); font-size: 72px; font-weight: 300; line-height: 1; margin-bottom: 8px; letter-spacing: -0.02em; font-variant-numeric: lining-nums; }
+  .price-sub { font-size: 13px; color: #73736A; margin-bottom: 24px; }
+  .pricing-card .btn-p { padding: 17px 26px; font-size: 15px; border-radius: var(--r-pill); box-shadow: 0 14px 32px -6px rgba(61,92,60,0.55); }
+  @media (hover: hover) { .pricing-card .btn-p:hover { box-shadow: 0 18px 38px -6px rgba(61,92,60,0.6); } }
+  .price-div { height: 1px; background: rgba(56,62,48,0.08); margin: 24px 0; }
   .price-item { display: flex; align-items: flex-start; gap: 11px; margin-bottom: 12px; font-size: 13px; line-height: 1.5; }
   .p-check { width: 19px; height: 19px; background: #EDF3ED; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
   .price-note { font-size: 12px; color: #7A7A72; margin-top: 16px; line-height: 1.65; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.07); }
@@ -170,31 +180,41 @@ const css = `
   .faq-wrap { max-width: 660px; margin: 0 auto; }
   .faq-group { margin-bottom: 32px; }
   .faq-group:last-child { margin-bottom: 0; }
-  .faq-group-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #3D5C3C; margin-bottom: 14px; }
+  .faq-group-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin-bottom: 14px; }
   .faq-list { display: flex; flex-direction: column; gap: 10px; }
-  .faq-item { background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: 13px; cursor: pointer; padding: 0 18px; transition: border-color 0.15s, box-shadow 0.15s; }
-  .faq-item:hover { border-color: rgba(61,92,60,0.25); }
-  .faq-item.open { border-color: rgba(61,92,60,0.3); box-shadow: 0 2px 12px rgba(61,92,60,0.06); }
+  .faq-item { background: var(--paper); border: none; border-radius: var(--r-md); cursor: pointer; padding: 0 20px; box-shadow: var(--shadow-1); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+  @media (hover: hover) { .faq-item:hover { transform: translateY(-1px); box-shadow: var(--shadow-2); } }
+  .faq-item.open { box-shadow: var(--shadow-2); }
   .faq-q { font-size: 14.5px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 17px 0; line-height: 1.45; }
   .faq-a { font-size: 13.5px; color: #7A7A72; line-height: 1.75; padding: 0 0 18px; }
   .faq-plus { font-size: 20px; color: #3D5C3C; flex-shrink: 0; font-weight: 300; line-height: 1; width: 20px; text-align: center; }
 
-  .cta-section { padding: 80px 64px; text-align: center; background: #FFFFFF; border-top: 1px solid rgba(0,0,0,0.07); }
-  .cta-section h2 { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 400; margin-bottom: 14px; letter-spacing: -0.5px; }
-  .cta-section h2 em { font-style: italic; color: #3D5C3C; }
-  .cta-section p { font-size: 15px; color: #7A7A72; margin-bottom: 28px; }
+  .cta-section { padding: 96px 64px; text-align: center; }
+  .cta-section h2 { font-family: var(--font-display); font-size: 40px; font-weight: 300; margin-bottom: 14px; letter-spacing: -1px; line-height: 1.1; }
+  .cta-section h2 em { font-style: italic; color: var(--forest-500); }
+  .cta-section p { font-size: 14px; color: #73736A; margin-bottom: 30px; }
+  .cta-section .btn-p { padding: 17px 32px; font-size: 15px; border-radius: var(--r-pill); }
 
-  .mk-footer { padding: 36px 64px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(0,0,0,0.07); background: #FFFFFF; }
-  .mk-footer-logo { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; color: #1C1C1C; }
+  .mk-footer { padding: 40px 64px 48px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(56,62,48,0.08); background: transparent; }
+  .mk-footer-logo { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--ink); }
   .mk-footer-note { font-size: 12px; color: #7A7A72; }
   .mk-footer-links { display: flex; gap: 20px; }
   .mk-footer-link { font-size: 12px; color: #7A7A72; cursor: pointer; }
   .mk-footer-link:hover { color: #1C1C1C; }
 
   .prob-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 40px; }
-  .prob-card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.07); border-radius: 14px; padding: 20px; }
-  .prob-t { font-size: 14px; font-weight: 500; margin-bottom: 7px; }
-  .prob-d { font-size: 13px; color: #7A7A72; line-height: 1.65; }
+  .prob-card { background: var(--paper); border-radius: var(--r-md); padding: 22px 20px; box-shadow: var(--shadow-1); }
+  .prob-t { font-family: var(--font-display); font-size: 18px; font-weight: 400; margin-bottom: 7px; }
+  .prob-d { font-size: 12.5px; color: #73736A; line-height: 1.65; }
+
+  /* ---- Scroll reveal (tiny IntersectionObserver adds .is-in) ---- */
+  [data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+  [data-reveal].is-in { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1; transform: none; transition: none; }
+    .mk-hero.dark .mk-hero-centered::before, .mk-hero-orb1, .fmcard-orb { animation: none; }
+    .mk-cta, .btn-p, .btn-g, .faq-item { transition: none; transform: none; }
+  }
 
   /* ── MOBILE ─────────────────────────────────────────── */
   @media (max-width: 600px) {
@@ -207,6 +227,9 @@ const css = `
     .mk-cta { padding: 8px 14px; font-size: 12px; flex-shrink: 0; }
     .mk-nav-right { gap: 4px; }
     .mk-hero { padding: 48px 22px 44px !important; }
+    .mk-hero.dark { padding: 20px 14px 36px !important; }
+    .mk-hero.dark .mk-hero-centered { padding: 52px 24px; }
+    .price-num { font-size: 56px; }
     .mk-hero .mk-h1 { font-size: 36px !important; }
     .mk-h1 { font-size: 36px !important; letter-spacing: -0.5px; }
     .mk-sub { font-size: 15px; }
@@ -231,8 +254,8 @@ const css = `
   @media (max-width: 500px) {
     .mk-tabs { display: none; }
     .mk-menu-btn { display: inline-block; flex-shrink: 0; font-size: 12px; padding: 7px 11px; }
-    .mk-nav-panel { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #FFFFFF; border-bottom: 1px solid rgba(0,0,0,0.07); box-shadow: 0 16px 32px rgba(0,0,0,0.08); padding: 6px 16px 10px; }
-    .mk-menu-link { font-family: 'DM Sans', sans-serif; font-size: 14px; color: #1C1C1C; background: none; border: none; border-bottom: 1px solid rgba(0,0,0,0.05); text-align: left; padding: 13px 4px; cursor: pointer; }
+    .mk-nav-panel { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #FFFFFF; border-radius: 0 0 16px 16px; box-shadow: 0 24px 44px -12px rgba(56,62,48,0.25); padding: 6px 16px 10px; }
+    .mk-menu-link { font-size: 14px; color: #20241F; background: none; border: none; border-bottom: 1px solid rgba(0,0,0,0.05); text-align: left; padding: 13px 4px; cursor: pointer; }
     .mk-menu-link:last-child { border-bottom: none; }
     .mk-menu-link.active { color: #3D5C3C; font-weight: 600; }
   }
@@ -340,13 +363,13 @@ function ShowcaseScreen({ tab }) {
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontFamily: serif, fontSize: 17, fontWeight: 300, color: '#8BAE8A', lineHeight: 1 }}>42</div>
-            <div style={{ fontSize: 7, color: 'rgba(250,248,244,0.45)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>day streak</div>
+            <div style={{ fontFamily: mono, fontSize: 7, color: 'rgba(250,248,244,0.45)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>day streak</div>
           </div>
         </div>
         <div style={{ position: 'relative', height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 3, margin: '9px 0 5px' }}><div style={{ width: '75%', height: 4, background: '#8BAE8A', borderRadius: 3 }} /></div>
         <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', fontSize: 7.5, color: 'rgba(250,248,244,0.45)' }}><span>Day 42</span><span>14 days to reintroduction</span></div>
       </div>
-      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 11, padding: 11, marginBottom: 9 }}>
+      <div style={{ background: '#FFFFFF', borderRadius: 16, boxShadow: '0 2px 10px rgba(56,62,48,0.09)', padding: 11, marginBottom: 9 }}>
         <div style={{ fontSize: 8.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 6 }}>Currently avoiding <span style={{ fontWeight: 400, color: '#A8A69E' }}>· 8 foods</span></div>
         <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
           {[['Gluten', '#C95B5B', '#FAEAEA'], ['Corn', '#C95B5B', '#FAEAEA'], ['Dairy', '#D4894A', '#FDF2EA'], ['Eggs', '#D4894A', '#FDF2EA'], ['Soy', '#3D5C3C', '#EDF3ED'], ['Almond', '#3D5C3C', '#EDF3ED']].map(([f, fg, bg]) => <span key={f} style={{ background: bg, color: fg, borderRadius: 12, padding: '3px 8px', fontSize: 8.5, fontWeight: 600 }}>{f}</span>)}
@@ -358,14 +381,14 @@ function ShowcaseScreen({ tab }) {
           <span style={{ fontSize: 6.5, color: '#3D5C3C' }}>● Low</span>
         </div>
       </div>
-      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 11, padding: 11, marginBottom: 9 }}>
+      <div style={{ background: '#FFFFFF', borderRadius: 16, boxShadow: '0 2px 10px rgba(56,62,48,0.09)', padding: 11, marginBottom: 9 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6 }}>
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2C9D8A' }} />
           <span style={{ fontFamily: mono, fontSize: 7, letterSpacing: '0.8px', color: '#3D5C3C', textTransform: 'uppercase' }}>Week 6 insight</span>
         </div>
         <div style={{ fontSize: 9.5, lineHeight: 1.65, color: '#1C1C1C' }}>Your bloating score has dropped for the third straight week, and your energy is holding above baseline. Six clean weeks is exactly the signal we need before testing begins.</div>
       </div>
-      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 11, padding: 11 }}>
+      <div style={{ background: '#FFFFFF', borderRadius: 16, boxShadow: '0 2px 10px rgba(56,62,48,0.09)', padding: 11 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
           <span style={{ fontSize: 9, fontWeight: 600, color: '#1C1C1C' }}>Symptom trends</span>
           <div style={{ display: 'flex', gap: 3 }}>
@@ -388,7 +411,7 @@ function ShowcaseScreen({ tab }) {
   if (tab === 'History') return (
     <>
       <TopBar />
-      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 13, padding: '13px 13px', marginBottom: 9 }}>
+      <div style={{ background: '#FFFFFF', borderRadius: 16, boxShadow: '0 2px 10px rgba(56,62,48,0.09)', padding: '13px 13px', marginBottom: 9 }}>
         <div style={{ fontFamily: mono, fontSize: 7.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', marginBottom: 8 }}>Symptom progress</div>
         <div style={{ display: 'flex', gap: 3, background: '#F0EEE7', borderRadius: 8, padding: 3, marginBottom: 10 }}>
           <div style={{ flex: 1, textAlign: 'center', fontSize: 9.5, fontWeight: 600, color: '#1C1C1C', background: '#fff', padding: '4px 0', borderRadius: 6, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>Overall average</div>
@@ -406,7 +429,7 @@ function ShowcaseScreen({ tab }) {
         </div>
         ))}
       </div>
-      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 13, padding: '13px 13px' }}>
+      <div style={{ background: '#FFFFFF', borderRadius: 16, boxShadow: '0 2px 10px rgba(56,62,48,0.09)', padding: '13px 13px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <span style={{ fontFamily: serif, fontSize: 14, color: '#1C1C1C' }}>Week 9</span>
           <span style={{ display: 'inline-block', background: '#EDF3ED', color: '#3D5C3C', borderRadius: 12, padding: '2px 8px', fontSize: 8, fontWeight: 600 }}>Fully compliant</span>
@@ -422,7 +445,7 @@ function ShowcaseScreen({ tab }) {
         </div>
         <div style={{ fontSize: 8, color: '#7A7A72', marginBottom: 8 }}>Context: normal week, nothing unusual flagged.</div>
         <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 8 }}>
-          <div style={{ fontSize: 7, fontWeight: 600, letterSpacing: '0.6px', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: 4 }}>Your week 9 insight</div>
+          <div style={{ fontFamily: mono, fontSize: 7, fontWeight: 500, letterSpacing: '0.12em', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: 4 }}>Your week 9 insight</div>
           <div style={{ fontSize: 8.5, color: '#4A4A45', lineHeight: 1.6 }}>Nine weeks in and both of your main symptoms are holding well below baseline, even with eggs mid-test. That is a strong signal.</div>
         </div>
       </div>
@@ -452,7 +475,7 @@ function ShowcaseScreen({ tab }) {
           <div style={{ fontSize: 8.5, color: 'rgba(250,248,244,0.8)', lineHeight: 1.6 }}>You ate eggs for 3 days. Now 11 clean days while your daily check-ins watch for a reaction. Day 14, eggs get their verdict.</div>
         </div>
       </div>
-      <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 13, padding: 13, marginBottom: 9 }}>
+      <div style={{ background: '#FFFFFF', borderRadius: 16, boxShadow: '0 2px 10px rgba(56,62,48,0.09)', padding: 13, marginBottom: 9 }}>
         <div style={{ fontSize: 9, fontWeight: 600, color: '#1C1C1C', marginBottom: 8 }}>Up next</div>
         {[['04', 'Almond'], ['05', 'Soy'], ['06', 'Tomato']].map(([n, f], i, arr) => (
           <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '6px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(0,0,0,0.04)' : 'none' }}>
@@ -511,7 +534,7 @@ function ShowcaseScreen({ tab }) {
         <div style={{ background: '#3D5C3C', color: '#fff', borderRadius: '14px 14px 4px 14px', padding: '9px 12px', fontSize: 10.5, lineHeight: 1.5, maxWidth: '85%' }}>Going to an Italian restaurant tonight. What can I actually order?</div>
       </div>
       <div style={{ marginBottom: 9 }}>
-        <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '14px 14px 14px 4px', padding: '11px 12px', maxWidth: '94%' }}>
+        <div style={{ background: '#FFFFFF', borderRadius: '14px 14px 14px 4px', boxShadow: '0 2px 10px rgba(56,62,48,0.09)', padding: '11px 12px', maxWidth: '94%' }}>
           <div style={{ fontFamily: mono, fontSize: 7, letterSpacing: '0.8px', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: 5 }}>Based on your elimination list</div>
           <div style={{ fontSize: 10.5, color: '#1C1C1C', lineHeight: 1.6, marginBottom: 8 }}>Plenty, even with gluten and chicken both out. Here's the play:</div>
           {[['SAFE TO ORDER', '#3D5C3C', 'Grilled branzino or steak, caprese salad, risotto, polenta dishes'], ['SKIP', '#C95B5B', 'Pasta, the bread basket, anything breaded, and the chicken dishes'], ['ASK THE KITCHEN', '#C9A227', 'Whether they have gluten-free pasta, and if any sauces are thickened with flour']].map(([label, color, text], i) => (
@@ -523,7 +546,7 @@ function ShowcaseScreen({ tab }) {
           <div style={{ fontSize: 9.5, color: '#4A4A45', lineHeight: 1.55, marginTop: 8 }}>If you want pasta specifically, most spots will do gluten-free penne with pomodoro or arrabbiata, both clean for your list.</div>
         </div>
       </div>
-      <div style={{ display: 'flex', gap: 6, alignItems: 'center', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 11, padding: '6px 6px 6px 12px' }}>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', background: '#FFFFFF', borderRadius: 16, boxShadow: '0 2px 10px rgba(56,62,48,0.09)', padding: '6px 6px 6px 12px' }}>
         <div style={{ flex: 1, fontSize: 10, color: '#A8A69E' }}>Ask about any food or menu</div>
         <div style={{ background: '#3D5C3C', color: '#fff', width: 28, height: 28, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>↑</div>
       </div>
@@ -569,6 +592,24 @@ export default function Marketing({ onGetStarted, onSignIn }) {
   const [showcaseTab, setShowcaseTab] = useState('Dashboard')
   React.useEffect(() => { window.scrollTo(0, 0) }, [tab])
 
+  // Presentation only: sections carrying data-reveal rise in as they enter the viewport.
+  React.useEffect(() => {
+    const els = Array.from(document.querySelectorAll('[data-reveal]'))
+    if (els.length === 0) return undefined
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce || typeof IntersectionObserver === 'undefined') {
+      els.forEach(el => el.classList.add('is-in'))
+      return undefined
+    }
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target) }
+      })
+    }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' })
+    els.forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [tab])
+
   if (tab === 'home') return (
     <div>
       <style>{css}</style>
@@ -577,20 +618,20 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-hero-centered" style={{ position: 'relative' }}>
           <div className="mk-hero-orb1"></div>
           <div className="mk-hero-orb2"></div>
-          <div className="mk-hero-eyebrow" style={{ position: 'relative' }}>Test. Eliminate. Reintroduce. Know.</div>
-          <div className="mk-h1 centered">Stop guessing what your body <em>can't handle.</em></div>
-          <div className="mk-sub centered">A lab test finds the suspects. Eight weeks of clean baseline, then a 14-day trial of every food, gives the verdicts.</div>
-          <div className="mk-actions centered">
-            <button className="btn-p" onClick={onGetStarted} style={{ background: '#8BAE8A', color: '#22301F', fontWeight: 600 }}>Start your program</button>
-            <button className="btn-g" onClick={() => setTab('how')} style={{ borderColor: 'rgba(250,248,244,0.25)', color: '#FAF8F4' }}>See how it works</button>
+          <div className="mk-hero-eyebrow sn-rise" style={{ position: 'relative' }}>Test. Eliminate. Reintroduce. Know.</div>
+          <div className="mk-h1 centered sn-rise-2" style={{ position: 'relative' }}>Stop guessing what your body <em>can't handle.</em></div>
+          <div className="mk-sub centered sn-rise-3" style={{ position: 'relative' }}>A lab test finds the suspects. Eight weeks of clean baseline, then a 14-day trial of every food, gives the verdicts.</div>
+          <div className="mk-actions centered sn-rise-4" style={{ position: 'relative' }}>
+            <button className="btn-p" onClick={onGetStarted} style={{ background: '#8BAE8A', color: '#22301F', boxShadow: '0 10px 24px -6px rgba(0,0,0,0.35)' }}>Start your program</button>
+            <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
           </div>
-          <div className="mk-price-line">$399 · lab test included · one payment</div>
-          <div style={{ fontSize: '11.5px', color: 'rgba(250,248,244,0.38)', marginTop: '7px', lineHeight: 1.6, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>Lab test, elimination protocol, daily and weekly check-ins, personalized insights, guided reintroductions, Ask Sensify, and your final verdicts.</div>
+          <div className="mk-price-line sn-rise-4" style={{ position: 'relative' }}>$399 · lab test included · one payment</div>
+          <div className="sn-rise-4" style={{ position: 'relative', fontSize: '11.5px', color: 'rgba(250,248,244,0.38)', marginTop: '7px', lineHeight: 1.6, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>Lab test, elimination protocol, daily and weekly check-ins, personalized insights, guided reintroductions, Ask Sensify, and your final verdicts.</div>
         </div>
       </div>
 
       {/* The Verdicts — its own showcase section */}
-      <div className="mk-section cream">
+      <div className="mk-section cream" data-reveal>
         <div className="mk-section-inner">
           <div className="ey">The problem</div>
           <div className="sh">Most people suspect food.<br />Almost none ever confirm it.</div>
@@ -603,7 +644,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="mk-section alt">
+      <div className="mk-section alt" data-reveal>
         <div className="mk-section-inner">
           <div className="ey">How it works</div>
           <div className="sh">Four steps to certainty.</div>
@@ -614,9 +655,9 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               { n: '03', t: 'Reintroduce', d: 'Each food returns one at a time in a controlled cycle while we track your response. Your body gives the real answer.' },
               { n: '04', t: 'Know', d: 'Every food lands where it belongs: Safe, Limit, or Avoid. Every verdict is earned and yours to keep.' },
             ].map((s, i) => (
-              <div key={i} style={{ background: '#FAF8F4', border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '20px 18px' }}>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: '#8BAE8A', letterSpacing: '1px', marginBottom: '10px' }}>{s.n}</div>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '19px', color: '#1C1C1C', marginBottom: '8px' }}>{s.t}</div>
+              <div key={i} className="sn-card-hov" style={{ background: '#FFFFFF', borderRadius: 16, padding: '22px 20px', boxShadow: 'var(--shadow-1)' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, color: '#8BAE8A', letterSpacing: '0.17em', marginBottom: '10px' }}>{s.n}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: '#20241F', marginBottom: '8px' }}>{s.t}</div>
                 <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>{s.d}</div>
               </div>
             ))}
@@ -628,22 +669,22 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       </div>
 
       {/* ===== INSIDE THE PROGRAM — tabbed product showcase (Format B) ===== */}
-      <div className="mk-section cream">
+      <div className="mk-section cream" data-reveal>
         <div className="mk-section-inner" style={{ textAlign: 'center' }}>
           <div className="ey">Inside the program</div>
           <div className="sh">A look at what you're getting.</div>
-          <div style={{ fontSize: '15px', color: '#7A7A72', lineHeight: 1.65, maxWidth: 520, margin: '10px auto 18px' }}>Thirty seconds a day. One real check-in a week. And every so often, a verdict you earned.</div>
+          <div style={{ fontSize: '14px', color: '#73736A', lineHeight: 1.65, maxWidth: 520, margin: '10px auto 18px' }}>Thirty seconds a day. One real check-in a week. And every so often, a verdict you earned.</div>
           <div style={{ fontSize: '12px', color: '#A8A69E', marginBottom: '14px' }}>Tap through the screens below.</div>
 
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 26, flexWrap: 'wrap' }}>
             {['Dashboard', 'History', 'Reintro', 'Verdicts', 'Ask Sensify'].map(t => (
-              <button key={t} onClick={() => setShowcaseTab(t)} style={{ background: showcaseTab === t ? '#22301F' : '#FFFFFF', color: showcaseTab === t ? '#FAF8F4' : '#5A5A52', border: showcaseTab === t ? '1px solid #22301F' : '1px solid rgba(0,0,0,0.14)', borderRadius: 20, padding: '9px 17px', fontSize: 13, fontWeight: showcaseTab === t ? 600 : 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.15s', boxShadow: showcaseTab === t ? 'none' : '0 1px 3px rgba(0,0,0,0.04)' }}>{t}</button>
+              <button key={t} onClick={() => setShowcaseTab(t)} className={showcaseTab === t ? 'sn-chip sn-chip-on' : 'sn-chip'}>{t}</button>
             ))}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div style={{ width: 310 }}>
-              <div style={{ background: '#1C1C1C', borderRadius: 26, padding: 8, boxShadow: '0 22px 48px rgba(0,0,0,0.2)' }}>
+              <div style={{ background: '#20241F', borderRadius: 28, padding: 8, boxShadow: 'var(--shadow-3)' }}>
                 <div key={showcaseTab} style={{ background: '#F7F5EF', borderRadius: 20, padding: '15px 13px', height: 560, overflow: 'hidden', textAlign: 'left', animation: 'mkFade 0.25s ease' }}>
                   <ShowcaseScreen tab={showcaseTab} />
                 </div>
@@ -656,12 +697,12 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="mk-section alt">
+      <div className="mk-section alt" data-reveal>
         <div className="mk-section-inner">
           <div className="fmshow">
             <div className="fmshow-copy">
               <div className="ey">The outcome</div>
-              <div className="sh" style={{ fontSize: '32px', marginBottom: '18px' }}>Verdicts that are actually earned.</div>
+              <div className="sh" style={{ marginBottom: '18px' }}>Verdicts that are actually earned.</div>
               <div className="ss" style={{ marginBottom: '22px' }}>No food gets labeled Safe without being tested. No food gets labeled Avoid without structured evidence. Everything you eat, sorted into three honest categories by your own body, and yours to keep.</div>
               <div>
                 {[
@@ -704,7 +745,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           </div>
         </div>
       </div>
-      <div className="mk-section cream">
+      <div className="mk-section cream" data-reveal>
         <div className="mk-section-inner">
           <div className="ey">Before you start</div>
           <div className="sh">The questions everyone asks.</div>
@@ -731,12 +772,12 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="cta-section">
+      <div className="cta-section" data-reveal>
         <h2>Stop guessing.<br />Start knowing.</h2>
         <p>A lab test alone costs $150 to $300 and hands you a guess. Sensify includes the lab <em style={{ fontStyle: 'normal', fontWeight: 600 }}>and</em> the months of structure that turn it into an answer. One price, nothing else to buy.</p>
         <button className="btn-p" onClick={onGetStarted}>Start your program</button>
         <div style={{ maxWidth: '480px', margin: '44px auto 0', paddingTop: '28px', borderTop: '1px solid rgba(0,0,0,0.07)', textAlign: 'left' }}>
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', letterSpacing: '1.6px', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: '10px' }}>A note from the founder</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, letterSpacing: '0.17em', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: '10px' }}>A note from the founder</div>
           <div style={{ fontSize: '13.5px', color: '#4A4A45', lineHeight: 1.75 }}>I built Sensify alone, after years of guessing at my own symptoms and getting nowhere. Every screen in the product shows you the evidence behind every verdict, because that is the standard I wanted for myself. And if the program turns out not to be for you, write to me and we will make it right.</div>
           <a href="mailto:alex@sensifyhealth.com" style={{ display: 'inline-block', marginTop: '12px', fontSize: '12.5px', color: '#3D5C3C', textDecoration: 'underline', textUnderlineOffset: '3px' }}>alex@sensifyhealth.com</a>
         </div>
@@ -750,7 +791,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <style>{css}</style>
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
-        <div className="mk-hero-inner">
+        <div className="mk-hero-inner sn-rise">
           <div className="mk-tag">The complete program</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>How Sensify works.</div>
           <div className="mk-sub" style={{ marginBottom: 0 }}>A structured system that takes you from suspecting a food trigger to having your verdicts: a personal, evidence-based ruling on every tested food.</div>
@@ -758,7 +799,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       </div>
 
       {/* PHASE 1 — SETUP */}
-      <div className="mk-section alt">
+      <div className="mk-section alt" data-reveal>
         <div className="mk-section-inner">
           <div className="ph-head">
             <span className="ph-badge">SETUP</span>
@@ -788,7 +829,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       </div>
 
       {/* PHASE 2 — ELIMINATION */}
-      <div className="mk-section">
+      <div className="mk-section" data-reveal>
         <div className="mk-section-inner">
           <div className="ph-head">
             <span className="ph-badge">ELIMINATION</span>
@@ -824,7 +865,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       </div>
 
       {/* PHASE 3 — REINTRODUCTION */}
-      <div className="mk-section alt">
+      <div className="mk-section alt" data-reveal>
         <div className="mk-section-inner">
           <div className="ph-head">
             <span className="ph-badge">REINTRODUCTION</span>
@@ -846,7 +887,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 <div className="cb-label">One 14-day cycle</div>
                 <div className="cb-dots">
                   {[...Array(14)].map((_, i) => (
-                    <div key={i} className="cb-dot" style={{ background: i < 3 ? '#6DBF8A' : '#E0A977', marginRight: i === 2 ? '6px' : undefined }}></div>
+                    <div key={i} className="cb-dot" style={{ background: i < 3 ? '#8BAE8A' : 'rgba(250,248,244,0.22)', boxShadow: i < 3 ? '0 0 10px rgba(139,174,138,0.6)' : 'none', marginRight: i === 2 ? '6px' : undefined }}></div>
                   ))}
                 </div>
                 <div className="cb-labels"><span style={{ flex: 3 }}>Exposure (days 1–3)</span><span style={{ flex: 11, textAlign: 'right' }}>Washout (days 4–14)</span></div>
@@ -868,7 +909,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      <div className="cta-section">
+      <div className="cta-section" data-reveal>
         <h2>Ready to start?</h2>
         <p>The complete system is $399, lab test included. Nothing else to buy.</p>
         <button className="btn-p" onClick={onGetStarted}>Get started today</button>
@@ -882,13 +923,13 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <style>{css}</style>
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
-        <div className="mk-hero-inner">
+        <div className="mk-hero-inner sn-rise">
           <div className="mk-tag">The science</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>Your lab test is a hypothesis.<br />Your body gives the verdict.</div>
           <div className="mk-sub" style={{ marginBottom: 0 }}>IgG tests measure exposure, not reaction. A high reading for eggs might just mean you eat eggs every day. Sensify confirms what's real by testing it in your actual life.</div>
         </div>
       </div>
-      <div className="mk-section alt">
+      <div className="mk-section alt" data-reveal>
         <div className="mk-section-inner">
           {/* Hypothesis vs verdict centerpiece */}
           <div className="sci-compare">
@@ -980,7 +1021,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           </div>
         </div>
       </div>
-      <div className="cta-section">
+      <div className="cta-section" data-reveal>
         <h2>Test the hypothesis.</h2>
         <p>Everything you need to go from suspicion to answer, in one program.</p>
         <button className="btn-p" onClick={onGetStarted}>Start your program</button>
@@ -994,13 +1035,13 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <style>{css}</style>
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
-        <div className="mk-hero-inner">
+        <div className="mk-hero-inner sn-rise">
           <div className="mk-tag">Simple pricing</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>One program, one price.</div>
           <div className="mk-sub" style={{ marginBottom: 0 }}>No hidden fees. One flat price for the complete system.</div>
         </div>
       </div>
-      <div className="mk-section alt">
+      <div className="mk-section alt" data-reveal>
         <div className="mk-section-inner">
           <div className="pricing-wrap">
             <div className="pricing-card">
@@ -1041,16 +1082,16 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <style>{css}</style>
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
-        <div className="mk-hero-inner">
+        <div className="mk-hero-inner sn-rise">
           <div className="mk-tag">Questions</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>Things people ask us.</div>
           <div className="mk-sub" style={{ marginBottom: 0 }}>Everything you might want to know before you start. Still curious about something? Reach out anytime.</div>
         </div>
       </div>
-      <div className="mk-section alt">
+      <div className="mk-section alt" data-reveal>
         <div className="mk-section-inner"><Faq /></div>
       </div>
-      <div className="cta-section">
+      <div className="cta-section" data-reveal>
         <h2>Stop guessing.<br />Start knowing.</h2>
         <p>One program, one price. The test, the protocol, and the answers it earns.</p>
         <button className="btn-p" onClick={onGetStarted}>Start your program</button>
@@ -1064,13 +1105,13 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <style>{css}</style>
       <Nav />
       <div className="mk-hero" style={{ padding: '64px 64px 48px' }}>
-        <div className="mk-hero-inner">
+        <div className="mk-hero-inner sn-rise">
           <div className="mk-tag">Our story</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>I spent years guessing.<br />Sensify exists so <span style={{ color: '#3D5C3C' }}>you don't have to.</span></div>
           <div className="mk-sub" style={{ marginBottom: 0 }}>Years of feeling off, a drawer of half-read lab reports, and nobody who could say which food was actually the problem. This company started as a stubborn refusal to keep guessing.</div>
         </div>
       </div>
-      <div className="mk-section alt">
+      <div className="mk-section alt" data-reveal>
         <div className="mk-section-inner">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '36px' }}>
             {[
@@ -1079,7 +1120,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               ['03 · THE SYSTEM', 'Running it properly', 'A real elimination. Foods tested back one at a time, logged daily, judged on evidence. It worked, and it was brutal to run alone. That became the product.'],
             ].map(([n, t, d]) => (
               <div key={n} style={{ borderTop: '2.5px solid #3D5C3C', paddingTop: '18px' }}>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', letterSpacing: '1.6px', color: '#8BAE8A', marginBottom: '10px' }}>{n}</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, letterSpacing: '0.17em', color: '#8BAE8A', marginBottom: '10px' }}>{n}</div>
                 <div style={{ fontFamily: 'Fraunces, serif', fontSize: '21px', color: '#1C1C1C', marginBottom: '10px', lineHeight: 1.2, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{t}</div>
                 <div style={{ fontSize: '13.5px', color: '#7A7A72', lineHeight: 1.75 }}>{d}</div>
               </div>
@@ -1087,10 +1128,10 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           </div>
         </div>
       </div>
-      <div style={{ background: '#22301F', padding: '56px 64px', textAlign: 'center' }}>
-        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '29px', fontWeight: 400, color: '#FAF8F4', lineHeight: 1.35, maxWidth: '620px', margin: '0 auto', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>The test was easy to buy. The answer took a system. <span style={{ color: '#8BAE8A' }}>So I built the system.</span></div>
+      <div data-reveal style={{ background: 'radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.22), transparent 55%), linear-gradient(160deg, #2A3D27 0%, #1E2A1C 70%)', padding: '72px 64px', textAlign: 'center', boxShadow: 'var(--shadow-3)' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '30px', fontWeight: 300, color: '#FAF8F4', lineHeight: 1.35, maxWidth: '620px', margin: '0 auto', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>The test was easy to buy. The answer took a system. <span style={{ color: '#8BAE8A' }}>So I built the system.</span></div>
       </div>
-      <div className="mk-section cream">
+      <div className="mk-section cream" data-reveal>
         <div className="mk-section-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '30px', flexWrap: 'wrap' }}>
           <div style={{ maxWidth: '460px' }}>
             <div style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', color: '#1C1C1C', lineHeight: 1.25, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Every verdict we issue is the one <span style={{ color: '#3D5C3C' }}>we never got.</span></div>

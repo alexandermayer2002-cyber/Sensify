@@ -11,23 +11,25 @@ import { supabase } from '../supabase'
 // ============================================================
 
 const css = `
-  .trk-card { background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 22px; margin-bottom: 14px; }
-  .trk-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #8BAE8A; margin-bottom: 10px; }
-  .trk-h { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 300; line-height: 1.2; margin-bottom: 14px; color: #1C1C1C; }
+  .trk-card { background: var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 24px; margin-bottom: 14px; }
+  .trk-eyebrow { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin-bottom: 10px; }
+  .trk-h { font-family: var(--font-display); font-size: 27px; font-weight: 300; line-height: 1.2; letter-spacing: -0.3px; margin-bottom: 14px; color: var(--ink); }
   .trk-h em { font-style: italic; color: #3D5C3C; }
-  .trk-p { font-size: 14.5px; line-height: 1.65; color: #4A4A45; margin-bottom: 14px; }
-  .trk-tools { background: #F2F5EF; border-radius: 12px; padding: 16px; margin: 16px 0; }
-  .trk-tools-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #3D5C3C; margin-bottom: 10px; }
-  .trk-tool-row { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #2A2A28; padding: 6px 0; }
-  .trk-tool-btn { width: 100%; background: transparent; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; text-align: left; padding: 9px 2px; border-radius: 8px; }
-  .trk-tool-btn:hover { background: rgba(61,92,60,0.06); }
-  .trk-tool-go { margin-left: auto; color: #3D5C3C; font-size: 14px; }
-  .trk-tool-dot { width: 6px; height: 6px; border-radius: 50%; background: #3D5C3C; flex-shrink: 0; }
-  .trk-revert { background: #1C1C1C; border-radius: 14px; padding: 18px; margin-bottom: 14px; }
-  .trk-revert-title { font-size: 14px; font-weight: 600; color: white; margin-bottom: 4px; }
-  .trk-revert-sub { font-size: 12.5px; color: rgba(255,255,255,0.55); line-height: 1.5; margin-bottom: 14px; }
-  .trk-revert-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #8BAE8A; color: #1C1C1C; font-size: 13.5px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-  .trk-revert-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .trk-p { font-size: 14px; line-height: 1.65; color: var(--ink-soft); margin-bottom: 14px; }
+  .trk-tools { background: rgba(139,174,138,0.08); border-radius: var(--r-md); padding: 16px; margin: 16px 0; }
+  .trk-tools-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin-bottom: 10px; }
+  .trk-tool-row { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--ink); padding: 12px 14px; }
+  .trk-tool-btn { width: 100%; background: var(--paper); border: none; cursor: pointer; text-align: left; border-radius: var(--r-sm); box-shadow: var(--shadow-1); margin-bottom: 8px; transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+  .trk-tool-btn:last-child { margin-bottom: 0; }
+  @media (hover: hover) { .trk-tool-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -8px rgba(56,62,48,0.18); } }
+  .trk-tool-go { margin-left: auto; color: var(--forest-500); font-size: 14px; }
+  .trk-tool-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--forest-300); flex-shrink: 0; }
+  .trk-revert { position: relative; overflow: hidden; color: #FAF8F4; border-radius: var(--r-lg); padding: 22px 20px; margin-bottom: 14px; background: radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.32), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%); box-shadow: var(--shadow-3); }
+  .trk-revert-title { font-family: var(--font-display); font-size: 20px; font-weight: 400; letter-spacing: -0.2px; color: #FAF8F4; margin-bottom: 4px; }
+  .trk-revert-sub { font-size: 12.5px; color: rgba(250,248,244,0.65); line-height: 1.5; margin-bottom: 14px; }
+  .trk-revert-btn { width: 100%; padding: 13px; border-radius: var(--r-md); border: none; background: var(--forest-300); color: var(--forest-900); font-size: 13.5px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 24px -6px rgba(139,174,138,0.4); transition: transform var(--t-fast) var(--ease); }
+  @media (hover: hover) { .trk-revert-btn:hover { transform: translateY(-1px); } }
+  .trk-revert-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 `
 
 export default function TrackingLanding({ session, profile, onReverted, onOpenDaily, onOpenAsk }) {
@@ -50,7 +52,7 @@ export default function TrackingLanding({ session, profile, onReverted, onOpenDa
     <>
       <style>{css}</style>
 
-      <div className="trk-card">
+      <div className="trk-card sn-rise">
         <div className="trk-eyebrow">Your path</div>
         <div className="trk-h">You're tracking, <em>not testing.</em></div>
         <p className="trk-p">
@@ -74,7 +76,7 @@ export default function TrackingLanding({ session, profile, onReverted, onOpenDa
         </div>
       </div>
 
-      <div className="trk-revert">
+      <div className="trk-revert sn-rise-2">
         <div className="trk-revert-title">Ready to find real answers?</div>
         <div className="trk-revert-sub">Whenever you're ready, you can begin the structured elimination protocol and start testing foods properly.</div>
         <button className="trk-revert-btn" disabled={reverting} onClick={revertToProtocol}>

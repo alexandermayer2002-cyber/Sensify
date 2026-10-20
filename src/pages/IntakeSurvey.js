@@ -71,52 +71,58 @@ const FREQ_FREQUENT = ['Daily', 'A few times a week', 'Regularly', 'Almost daily
 const isFrequent = (val) => val && FREQ_FREQUENT.some(f => val.includes(f.split(' ')[0]) || val === f)
 const isNever = (val) => !val || FREQ_NEVER.includes(val)
 
+const PAGE_CSS = `
+  .sn-input { background: #FFFFFF; border: none; box-shadow: var(--shadow-1), inset 0 1px 3px rgba(56,62,48,0.05); transition: box-shadow var(--t-fast) var(--ease); }
+  .sn-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(61,92,60,0.30), var(--shadow-1); }
+  .sn-pad button { min-height: 52px; transition: transform 120ms var(--ease), box-shadow 120ms var(--ease); }
+  .sn-pad button:active { transform: scale(0.94); }
+`
+
 const s = {
-  wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column', fontFamily: 'DM Sans, sans-serif' },
-  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: '#FFFFFF', borderBottom: '1px solid rgba(0,0,0,0.08)', position: 'sticky', top: 0, zIndex: 10 },
-  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#1C1C1C' },
+  wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column' },
+  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', boxShadow: 'var(--shadow-1)', position: 'sticky', top: 0, zIndex: 10 },
+  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#20241F' },
   logoEm: { color: '#3D5C3C' },
-  back: { fontSize: '13px', color: '#7A7A72', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'DM Sans, sans-serif' },
-  progress: { height: '3px', background: 'rgba(0,0,0,0.06)' },
-  progressFill: { height: '100%', background: '#3D5C3C', transition: 'width 0.4s ease' },
+  back: { fontSize: '13px', color: '#73736A', cursor: 'pointer', background: 'none', border: 'none' },
+  track: { margin: '14px 24px 0', maxWidth: '560px' },
   content: { flex: 1, padding: '32px 24px 100px', maxWidth: '560px', margin: '0 auto', width: '100%' },
-  eyebrow: { fontSize: '12px', fontWeight: 500, color: '#7A7A72', marginBottom: '10px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 400, lineHeight: 1.22, marginBottom: '8px', letterSpacing: '-0.4px' },
+  eyebrow: { display: 'block', marginBottom: '10px' },
+  title: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, lineHeight: 1.22, marginBottom: '8px', letterSpacing: '-0.4px' },
   titleEm: { fontStyle: 'normal', color: 'inherit' },
-  hint: { fontSize: '13px', color: '#7A7A72', marginBottom: '28px', lineHeight: 1.7 },
-  importantNote: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.6, marginBottom: '20px' },
+  hint: { fontSize: '13px', color: '#73736A', marginBottom: '28px', lineHeight: 1.7 },
+  importantNote: { fontSize: '12.5px', color: '#73736A', lineHeight: 1.6, marginBottom: '20px' },
   categoryGrid: { display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' },
-  categoryCard: { background: '#FFFFFF', border: '1.5px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '18px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'flex-start', gap: '14px' },
-  categoryCardOn: { background: '#EDF3ED', border: '1.5px solid #3D5C3C', borderRadius: '14px', padding: '18px', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: '14px' },
-  categoryCardDisabled: { background: '#FAF8F4', border: '1.5px solid rgba(0,0,0,0.05)', borderRadius: '14px', padding: '18px', cursor: 'not-allowed', display: 'flex', alignItems: 'flex-start', gap: '14px', opacity: 0.4 },
+  categoryCard: { background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1)', borderRadius: '16px', padding: '18px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'flex-start', gap: '14px' },
+  categoryCardOn: { background: '#EDF3ED', border: 'none', boxShadow: '0 0 0 1.5px #3D5C3C, var(--shadow-1)', borderRadius: '16px', padding: '18px', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: '14px' },
+  categoryCardDisabled: { background: '#FAF8F4', border: 'none', boxShadow: 'none', borderRadius: '16px', padding: '18px', cursor: 'not-allowed', display: 'flex', alignItems: 'flex-start', gap: '14px', opacity: 0.4 },
   categoryCheck: { width: '20px', height: '20px', borderRadius: '6px', border: '1.5px solid rgba(0,0,0,0.15)', background: '#FFFFFF', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '2px' },
   categoryCheckOn: { width: '20px', height: '20px', borderRadius: '6px', border: '1.5px solid #3D5C3C', background: '#3D5C3C', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '2px' },
-  categoryTitle: { fontSize: '15px', fontWeight: 500, color: '#1C1C1C', marginBottom: '3px' },
-  categoryTitleOn: { fontSize: '15px', fontWeight: 500, color: '#3D5C3C', marginBottom: '3px' },
-  categoryDesc: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.5 },
-  maxNote: { fontSize: '12px', color: '#7A7A72', textAlign: 'center', marginTop: '-8px', marginBottom: '20px' },
-  questionBlock: { marginBottom: '14px', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px' },
-  questionLabel: { fontFamily: 'Fraunces, serif', fontSize: '17.5px', fontWeight: 400, marginBottom: '12px', lineHeight: 1.3, color: '#1C1C1C' },
+  categoryTitle: { fontSize: '15px', fontWeight: 600, color: '#20241F', marginBottom: '3px' },
+  categoryTitleOn: { fontSize: '15px', fontWeight: 600, color: '#3D5C3C', marginBottom: '3px' },
+  categoryDesc: { fontSize: '13px', color: '#73736A', lineHeight: 1.5 },
+  maxNote: { fontSize: '12px', color: '#73736A', textAlign: 'center', marginTop: '-8px', marginBottom: '20px' },
+  questionBlock: { marginBottom: '14px', padding: '18px 16px' },
+  questionLabel: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, marginBottom: '12px', lineHeight: 1.3, color: '#20241F' },
   optionGrid: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  option: { padding: '13px 16px', borderRadius: '12px', border: 'none', background: '#F4F2EC', fontSize: '14px', cursor: 'pointer', color: '#3A3A35', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', transition: 'all 0.12s', lineHeight: 1.4 },
-  optionOn: { padding: '13px 16px', borderRadius: '12px', border: 'none', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', fontFamily: 'DM Sans, sans-serif', textAlign: 'left', fontWeight: 500, lineHeight: 1.4, boxShadow: '0 2px 8px rgba(61,92,60,0.28)' },
+  option: { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#F7F5EE', fontSize: '14px', cursor: 'pointer', color: '#3B4036', textAlign: 'left', transition: 'all 0.12s', lineHeight: 1.4 },
+  optionOn: { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', textAlign: 'left', fontWeight: 600, lineHeight: 1.4, boxShadow: 'var(--shadow-pill)' },
   sectionDivider: { display: 'flex', alignItems: 'center', gap: '12px', margin: '28px 0 24px' },
   sectionDividerLine: { flex: 1, height: '1px', background: 'rgba(0,0,0,0.07)' },
-  sectionDividerLabel: { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#7A7A72', whiteSpace: 'nowrap' },
+  sectionDividerLabel: { whiteSpace: 'nowrap' },
   scaleWrap: { marginBottom: '28px' },
-  scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#7A7A72', marginBottom: '8px' },
+  scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#73736A', marginBottom: '8px' },
   scaleRow: { display: 'flex', gap: '5px' },
-  sbt: { flex: 1, height: '44px', borderRadius: '9px', border: 'none', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', fontWeight: 400, color: '#5A5A52', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s' },
-  sbtOn: { flex: 1, height: '44px', borderRadius: '9px', border: 'none', background: '#3D5C3C', fontSize: '18px', cursor: 'pointer', fontWeight: 400, color: 'white', fontFamily: 'Fraunces, serif', boxShadow: '0 2px 8px rgba(61,92,60,0.3)' },
-  textarea: { width: '100%', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '14px 15px', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', background: '#FAF8F4', resize: 'none', height: '96px', outline: 'none', lineHeight: 1.5 },
+  sbt: { flex: 1, height: '44px', borderRadius: '10px', border: 'none', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', fontWeight: 400, color: '#5A5A52', transition: 'all 0.12s' },
+  sbtOn: { flex: 1, height: '44px', borderRadius: '10px', border: 'none', background: '#3D5C3C', fontSize: '18px', cursor: 'pointer', fontWeight: 400, color: 'white', fontFamily: 'Fraunces, serif', boxShadow: 'var(--shadow-pill)' },
+  textarea: { width: '100%', borderRadius: '14px', padding: '14px 15px', fontSize: '16px', color: '#20241F', resize: 'none', height: '96px', lineHeight: 1.5 },
   categoryTitle2: { fontFamily: 'Fraunces, serif', fontSize: '15px', fontWeight: 400, color: '#3D5C3C', margin: '22px 0 12px', letterSpacing: '-0.2px' },
   freqBtns: { display: 'flex', gap: '4px' },
-  freqBtn: { padding: '7px 11px', borderRadius: '8px', border: 'none', background: '#EDF3ED', fontSize: '12px', cursor: 'pointer', color: '#5A5A52', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.12s', whiteSpace: 'nowrap' },
-  freqBtnOn: { padding: '7px 11px', borderRadius: '8px', border: 'none', background: '#3D5C3C', fontSize: '12px', cursor: 'pointer', color: '#FFFFFF', fontWeight: 500, fontFamily: 'DM Sans, sans-serif', boxShadow: '0 2px 6px rgba(61,92,60,0.25)', whiteSpace: 'nowrap' },
-  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: '#FAF8F4', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  cta: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' },
-  ctaDisabled: { background: '#F4F2EC', color: 'rgba(28,28,28,0.38)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '12px', padding: '14px', width: '100%', fontSize: '14px', fontWeight: 500, cursor: 'not-allowed', fontFamily: 'DM Sans, sans-serif' },
-  padWarn: { marginTop: 8, padding: '8px 11px', background: '#FBF0DF', color: '#9A6212', borderRadius: 9, fontSize: '11.5px', fontFamily: 'DM Sans, sans-serif', lineHeight: 1.5 },
+  freqBtn: { padding: '7px 11px', borderRadius: '999px', border: 'none', background: '#FFFFFF', boxShadow: 'var(--shadow-1)', fontSize: '12px', cursor: 'pointer', color: '#73736A', fontWeight: 600, transition: 'all 0.12s', whiteSpace: 'nowrap' },
+  freqBtnOn: { padding: '7px 11px', borderRadius: '999px', border: 'none', background: '#3D5C3C', fontSize: '12px', cursor: 'pointer', color: '#FFFFFF', fontWeight: 600, boxShadow: 'var(--shadow-pill)', whiteSpace: 'nowrap' },
+  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: 'rgba(251,248,242,0.92)', backdropFilter: 'blur(8px)', boxShadow: '0 -8px 24px rgba(56,62,48,0.06)' },
+  cta: { width: '100%' },
+  ctaDisabled: { width: '100%' },
+  padWarn: { marginTop: 8, padding: '8px 11px', background: '#FBF0DF', color: '#9A6212', borderRadius: 10, fontSize: '11.5px', lineHeight: 1.5 },
 }
 
 export default function IntakeSurvey({ session, onComplete, onBack }) {
@@ -321,17 +327,18 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   // STEP -1 — Agreement
   if (step === -1) return (
     <div style={s.wrap}>
+      <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
         <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
-      <div style={{ ...s.content, paddingTop: '40px' }}>
-        <div style={s.eyebrow}>Before you begin</div>
+      <div className="sn-rise" key={step} style={{ ...s.content, paddingTop: '40px' }}>
+        <div className="sn-micro" style={s.eyebrow}>Before you begin</div>
         <div style={s.title}>A few things to<br /><em style={s.titleEm}>understand first.</em></div>
         <div style={s.hint}>Please read and agree to the following before starting your intake survey.</div>
 
-        <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
+        <div className="sn-card" style={{ padding: '20px', marginBottom: '20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {[
               {
@@ -365,7 +372,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
                 desc: 'Your program includes a quick daily check-in inside the app, plus weekly reviews. Staying consistent with check-ins is what makes your results trustworthy. We may send you email reminders to help you stay on track.'
               },
             ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', gap: '13px', alignItems: 'flex-start', paddingBottom: i < 5 ? '16px' : 0, borderBottom: i < 5 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
+              <div key={i} style={{ display: 'flex', gap: '13px', alignItems: 'flex-start' }}>
                 <div style={{ width: '32px', height: '32px', background: '#EDF3ED', borderRadius: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>{item.icon}</div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '4px', color: '#1C1C1C' }}>{item.title}</div>
@@ -392,7 +399,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         {/* Optional research consent: its own decision, visually subordinate,
             defaults off, and the program works identically either way. */}
         <div
-          style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '20px', cursor: 'pointer', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', padding: '12px 14px' }}
+          style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '20px', cursor: 'pointer', background: '#F7F5EE', borderRadius: '16px', padding: '12px 14px' }}
           onClick={() => setResearchOk(!researchOk)}
         >
           <div style={{ width: '22px', height: '22px', borderRadius: '6px', border: `1.5px solid ${researchOk ? '#3D5C3C' : 'rgba(0,0,0,0.15)'}`, background: researchOk ? '#3D5C3C' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px', transition: 'all 0.15s' }}>
@@ -408,7 +415,8 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           Type your full name as your signature
         </div>
         <input
-          style={{ width: '100%', height: 'auto', padding: '14px 16px', fontSize: '16px', marginBottom: '6px', fontFamily: 'Fraunces, serif', color: '#1C1C1C', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', outline: 'none', boxSizing: 'border-box' }}
+          className="sn-input"
+          style={{ width: '100%', height: 'auto', padding: '14px 16px', fontSize: '16px', marginBottom: '6px', fontFamily: 'Fraunces, serif', color: '#20241F', borderRadius: '14px', boxSizing: 'border-box' }}
           placeholder="Your full name"
           value={signatureName}
           onChange={e => setSignatureName(e.target.value)}
@@ -419,7 +427,8 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       </div>
       <div style={s.footer}>
         <button
-          style={canProceedFromAgreement ? s.cta : s.ctaDisabled}
+          className="sn-btn"
+          style={s.cta}
           disabled={!canProceedFromAgreement}
           onClick={() => setStep(0)}
         >
@@ -432,14 +441,20 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   // STEP 0 — Category selection
   if (step === 0) return (
     <div style={s.wrap}>
+      <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
         <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
-      <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
-      <div style={s.content}>
-        <div style={s.eyebrow}>Step 1 of 5</div>
+      <div style={{ padding: '14px 24px 2px' }}>
+        <div className="sn-track" style={{ maxWidth: '560px', margin: '0 auto' }}>
+          <div className="sn-fill" style={{ width: `${progressPct}%`, transition: 'width 0.4s var(--ease)' }} />
+          <div className="sn-dot" style={{ left: `${progressPct}%` }} />
+        </div>
+      </div>
+      <div className="sn-rise" key={step} style={s.content}>
+        <div className="sn-micro" style={s.eyebrow}>Step 1 of 5</div>
         <div style={s.title}>What are you hoping<br />to <em style={s.titleEm}>understand?</em></div>
         <div style={s.hint}>Select up to two. This shapes every question, baseline score, and weekly insight throughout your program.</div>
         <div style={s.categoryGrid}>
@@ -466,7 +481,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         {selectedCategories.length === 2 && <div style={s.maxNote}>Maximum 2 selected</div>}
       </div>
       <div style={s.footer}>
-        <button style={selectedCategories.length > 0 ? s.cta : s.ctaDisabled} disabled={selectedCategories.length === 0} onClick={() => setStep(1)}>Continue</button>
+        <button className="sn-btn" style={s.cta} disabled={selectedCategories.length === 0} onClick={() => setStep(1)}>Continue</button>
       </div>
     </div>
   )
@@ -474,14 +489,20 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   // STEP 1 — Adaptive symptom questions
   if (step === 1) return (
     <div style={s.wrap}>
+      <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={() => setStep(0)}>← Back</button>
         <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
-      <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
-      <div style={s.content}>
-        <div style={s.eyebrow}>Step 2 of 5</div>
+      <div style={{ padding: '14px 24px 2px' }}>
+        <div className="sn-track" style={{ maxWidth: '560px', margin: '0 auto' }}>
+          <div className="sn-fill" style={{ width: `${progressPct}%`, transition: 'width 0.4s var(--ease)' }} />
+          <div className="sn-dot" style={{ left: `${progressPct}%` }} />
+        </div>
+      </div>
+      <div className="sn-rise" key={step} style={s.content}>
+        <div className="sn-micro" style={s.eyebrow}>Step 2 of 5</div>
         <div style={s.title}>Tell us about<br /><em style={s.titleEm}>your symptoms.</em></div>
         <div style={s.hint}>Be honest. Not your best day, not your worst. Your typical reality. The more accurate your answers, the more useful your weekly insights will be.</div>
 
@@ -490,13 +511,13 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             {q.section && (
               <div style={s.sectionDivider}>
                 <div style={s.sectionDividerLine} />
-                <div style={s.sectionDividerLabel}>{q.section}</div>
+                <div className="sn-micro sn-micro-dim" style={s.sectionDividerLabel}>{q.section}</div>
                 <div style={s.sectionDividerLine} />
               </div>
             )}
             {(!q.type || q.type !== 'text') ? (
-              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px', marginBottom: '12px' }}>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17.5px', fontWeight: 400, color: '#1C1C1C', lineHeight: 1.3, marginBottom: '12px' }}>{q.label}</div>
+              <div className="sn-card" style={{ padding: '18px 16px', marginBottom: '12px' }}>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, color: '#20241F', lineHeight: 1.3, marginBottom: '12px' }}>{q.label}</div>
                 <div style={s.optionGrid}>
                   {q.options.map(opt => (
                     <button key={opt} style={answers[q.id] === opt ? s.optionOn : s.option} onClick={() => setAnswer(q.id, opt)}>{opt}</button>
@@ -504,16 +525,16 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
                 </div>
               </div>
             ) : (
-              <div style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px', marginBottom: '12px' }}>
-                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17.5px', fontWeight: 400, color: '#1C1C1C', lineHeight: 1.3, marginBottom: '12px' }}>{q.label} {q.optional && <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: '#A8A69E', fontWeight: 400 }}>(optional)</span>}</div>
-                <textarea style={s.textarea} placeholder={q.placeholder} value={answers[q.id] || ''} onChange={e => setAnswer(q.id, e.target.value)} />
+              <div className="sn-card" style={{ padding: '18px 16px', marginBottom: '12px' }}>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, color: '#20241F', lineHeight: 1.3, marginBottom: '12px' }}>{q.label} {q.optional && <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: '#A8A69E', fontWeight: 400 }}>(optional)</span>}</div>
+                <textarea className="sn-input" style={s.textarea} placeholder={q.placeholder} value={answers[q.id] || ''} onChange={e => setAnswer(q.id, e.target.value)} />
               </div>
             )}
           </div>
         ))}
       </div>
       <div style={s.footer}>
-        <button style={allSymptomAnswered ? s.cta : s.ctaDisabled} disabled={!allSymptomAnswered} onClick={() => setStep(2)}>Continue</button>
+        <button className="sn-btn" style={s.cta} disabled={!allSymptomAnswered} onClick={() => setStep(2)}>Continue</button>
       </div>
     </div>
   )
@@ -521,14 +542,20 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   // STEP 2 — Dynamic baseline scores
   if (step === 2) return (
     <div style={s.wrap}>
+      <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={() => setStep(1)}>← Back</button>
         <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
-      <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
-      <div style={s.content}>
-        <div style={s.eyebrow}>Step 3 of 5</div>
+      <div style={{ padding: '14px 24px 2px' }}>
+        <div className="sn-track" style={{ maxWidth: '560px', margin: '0 auto' }}>
+          <div className="sn-fill" style={{ width: `${progressPct}%`, transition: 'width 0.4s var(--ease)' }} />
+          <div className="sn-dot" style={{ left: `${progressPct}%` }} />
+        </div>
+      </div>
+      <div className="sn-rise" key={step} style={s.content}>
+        <div className="sn-micro" style={s.eyebrow}>Step 3 of 5</div>
         <div style={s.title}>Rate your symptoms<br /><em style={s.titleEm}>right now.</em></div>
         <div style={s.hint}>
           {baselineScales.length > 0
@@ -540,20 +567,19 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         </div>
 
         {baselineScales.length > 0 && (
-          <div style={{ position: 'relative', background: '#22301F', borderRadius: '18px', padding: '22px 20px', marginBottom: '18px', overflow: 'hidden', boxShadow: '0 16px 40px rgba(34,48,31,0.25)' }}>
-            <div style={{ position: 'absolute', top: -50, right: -50, width: 170, height: 170, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
-            <div style={{ position: 'relative', fontFamily: 'DM Mono, monospace', fontSize: '9px', letterSpacing: '1.5px', color: '#C9A227', textTransform: 'uppercase', marginBottom: '10px' }}>This part matters most</div>
+          <div className="sn-hero" style={{ borderRadius: '24px', padding: '22px 20px', marginBottom: '18px' }}>
+            <div className="sn-micro" style={{ position: 'relative', color: '#C9A227', marginBottom: '10px' }}>This part matters most</div>
             <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: '21px', fontWeight: 400, color: '#FAF8F4', lineHeight: 1.25, marginBottom: '8px' }}>Think about what's <em style={{ color: '#8BAE8A' }}>normal for you.</em></div>
             <div style={{ position: 'relative', fontSize: '12.5px', color: 'rgba(250,248,244,0.65)', lineHeight: 1.6 }}>A typical week over the past couple of months, not just how you feel today. This becomes your baseline, and everything you improve gets measured against it.</div>
           </div>
         )}
         {baselineScales.length > 0 ? baselineScales.map(scale => (
-          <div key={scale.id} style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '14px', padding: '18px 16px', marginBottom: '12px' }}>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '17.5px', fontWeight: 400, color: '#1C1C1C', lineHeight: 1.3 }}>{scale.label}</div>
+          <div key={scale.id} className="sn-card" style={{ padding: '18px 16px', marginBottom: '12px' }}>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, color: '#20241F', lineHeight: 1.3 }}>{scale.label}</div>
             <div style={{ ...s.scaleLabels, margin: '13px 0 8px' }}><span>{scale.low}</span><span>{scale.high}</span></div>
             <div style={s.scaleRow}>
               {[1,2,3,4,5,6,7,8,9,10].map(n => (
-                <button key={n} style={answers[scale.id] === n ? { ...s.sbtOn, fontFamily: 'DM Sans, sans-serif', fontSize: '16px', fontWeight: 600 } : s.sbt} onClick={() => setAnswer(scale.id, n)}>{n}</button>
+                <button key={n} style={answers[scale.id] === n ? { ...s.sbtOn, fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 600 } : s.sbt} onClick={() => setAnswer(scale.id, n)}>{n}</button>
               ))}
             </div>
           </div>
@@ -564,7 +590,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         )}
       </div>
       <div style={s.footer}>
-        <button style={allBaselinesAnswered ? s.cta : s.ctaDisabled} disabled={!allBaselinesAnswered} onClick={() => setStep(3)}>Continue</button>
+        <button className="sn-btn" style={s.cta} disabled={!allBaselinesAnswered} onClick={() => setStep(3)}>Continue</button>
       </div>
     </div>
   )
@@ -572,14 +598,20 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   // STEP 3 — Food frequency
   if (step === 3) return (
     <div style={s.wrap}>
+      <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={() => setStep(2)}>← Back</button>
         <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
-      <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
-      <div style={s.content}>
-        <div style={s.eyebrow}>Step 4 of 5</div>
+      <div style={{ padding: '14px 24px 2px' }}>
+        <div className="sn-track" style={{ maxWidth: '560px', margin: '0 auto' }}>
+          <div className="sn-fill" style={{ width: `${progressPct}%`, transition: 'width 0.4s var(--ease)' }} />
+          <div className="sn-dot" style={{ left: `${progressPct}%` }} />
+        </div>
+      </div>
+      <div className="sn-rise" key={step} style={s.content}>
+        <div className="sn-micro" style={s.eyebrow}>Step 4 of 5</div>
         <div style={s.title}>How often do you eat<br /><em style={s.titleEm}>these foods?</em></div>
         <div style={s.hint}>Only rate foods you actually eat. Leave anything blank and we'll assume you rarely or never eat it.</div>
         <div style={s.importantNote}>
@@ -591,9 +623,9 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             {cat.foods.map((food, foodIndex) => (
               <div
                 key={food}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '13px 15px', borderRadius: '12px', marginBottom: '7px', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '13px 15px', borderRadius: '16px', marginBottom: '7px', background: '#FFFFFF', boxShadow: 'var(--shadow-1)' }}
               >
-                <div style={{ fontSize: '14.5px', color: '#1C1C1C', fontWeight: 500 }}>{food}</div>
+                <div style={{ fontSize: '14.5px', color: '#20241F', fontWeight: 500 }}>{food}</div>
                 <div style={s.freqBtns}>
                   {FREQUENCY_OPTIONS.map(opt => (
                     <button key={opt.value} style={foodFrequency[food] === opt.value ? s.freqBtnOn : s.freqBtn} onClick={() => setFrequency(food, opt.value)}>{opt.label}</button>
@@ -605,7 +637,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         ))}
       </div>
       <div style={s.footer}>
-        <button style={s.cta} onClick={() => setStep(4)}>
+        <button className="sn-btn" style={s.cta} onClick={() => setStep(4)}>
           Continue
         </button>
       </div>
@@ -630,11 +662,11 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     }
     const NumField = ({ field, unit, decimals, maxDigits }) => (
       <>
-        <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === field ? null : field) }} style={{ width: '100%', textAlign: 'left', background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, padding: '13px 15px', fontSize: 15, fontFamily: 'DM Sans, sans-serif', color: !lifestyle[field] ? '#B8B6AE' : '#1C1C1C', cursor: 'pointer' }}>
+        <button type="button" onClick={() => { setPadWarning(null); setOpenPad(openPad === field ? null : field) }} style={{ width: '100%', textAlign: 'left', background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1), inset 0 1px 3px rgba(56,62,48,0.05)', borderRadius: 14, padding: '13px 15px', fontSize: 15, color: !lifestyle[field] ? '#B8B6AE' : '#20241F', cursor: 'pointer' }}>
           {!lifestyle[field] ? 'Tap to enter' : `${lifestyle[field]} ${unit}`}
         </button>
         {openPad === field && (
-          <div style={{ marginTop: 10 }}>
+          <div className="sn-pad" style={{ marginTop: 10 }}>
             <NumPad value={lifestyle[field] || ''} onChange={v => { setPadWarning(null); setLifestyle({ ...lifestyle, [field]: v }) }} decimals={decimals} maxDigits={maxDigits} unit={unit} onSubmit={() => confirmPad(field)} />
             {padWarning === field && <div style={s.padWarn}>{PAD_LIMITS[field].warn}</div>}
           </div>
@@ -652,38 +684,44 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     )
     return (
       <div style={s.wrap}>
+        <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => setStep(3)}>← Back</button>
           <div style={s.logo}>Sensify<span style={s.logoEm}>.</span></div>
           <div style={{ width: 40 }} />
         </div>
-        <div style={s.progress}><div style={{ ...s.progressFill, width: `${progressPct}%` }} /></div>
-        <div style={s.content}>
-          <div style={s.eyebrow}>Step 5 of 5</div>
+        <div style={{ padding: '14px 24px 2px' }}>
+        <div className="sn-track" style={{ maxWidth: '560px', margin: '0 auto' }}>
+          <div className="sn-fill" style={{ width: `${progressPct}%`, transition: 'width 0.4s var(--ease)' }} />
+          <div className="sn-dot" style={{ left: `${progressPct}%` }} />
+        </div>
+      </div>
+        <div className="sn-rise" key={step} style={s.content}>
+          <div className="sn-micro" style={s.eyebrow}>Step 5 of 5</div>
           <div style={s.title}>A bit about<br /><em style={s.titleEm}>your normal.</em></div>
           <div style={s.hint}>Sleep, stress, and a few habits shape how you feel as much as food does. Knowing your usual baseline lets us tell a real change from an ordinary day later on.</div>
 
-          <div style={s.questionBlock}>
+          <div className="sn-card" style={s.questionBlock}>
             <div style={s.questionLabel}>On a typical night, how many hours do you sleep? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>to the half hour is fine</span></div>
             <NumField field="avg_sleep" unit="hours" decimals maxDigits={2} />
           </div>
 
-          <div style={s.questionBlock}>
+          <div className="sn-card" style={s.questionBlock}>
             <div style={s.questionLabel}>How would you describe your usual stress level?</div>
             <Band field="avg_stress" options={STRESS_BANDS} />
           </div>
 
-          <div style={s.questionBlock}>
+          <div className="sn-card" style={s.questionBlock}>
             <div style={s.questionLabel}>On a typical day, how many cups of water do you drink?</div>
             <NumField field="avg_hydration" unit="cups" maxDigits={2} />
           </div>
 
-          <div style={s.questionBlock}>
+          <div className="sn-card" style={s.questionBlock}>
             <div style={s.questionLabel}>What's your sex? <span style={{ color: '#A0A096', fontWeight: 400 }}>(so we can account for cycle-related effects if relevant)</span></div>
             <Band field="gender" options={GENDER_OPTIONS} />
           </div>
 
-          <div style={s.questionBlock}>
+          <div className="sn-card" style={s.questionBlock}>
             <div style={s.questionLabel}>Do you drink alcohol?</div>
             <div style={s.freqBtns}>
               {[{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }].map(opt => (
@@ -695,14 +733,14 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           </div>
 
           {drinks === 'yes' && (
-            <div style={s.questionBlock}>
+            <div className="sn-card" style={s.questionBlock}>
               <div style={s.questionLabel}>About how many drinks per week, on average?</div>
               <NumField field="avg_drinks_week" unit="drinks / week" maxDigits={2} />
             </div>
           )}
         </div>
         <div style={s.footer}>
-          <button style={lifestyleComplete ? s.cta : s.ctaDisabled} disabled={!lifestyleComplete || saving} onClick={handleComplete}>
+          <button className="sn-btn" style={s.cta} disabled={!lifestyleComplete || saving} onClick={handleComplete}>
             {saving ? 'Saving your program...' : 'Complete intake →'}
           </button>
         </div>
