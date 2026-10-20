@@ -1,0 +1,189 @@
+/* ============================================================================
+   SENSIFY DESIGN SYSTEM — the single source of material truth.
+   Voice stays (serif verdicts, honest copy, earned color). Materials change:
+   borderless elevation, atmosphere, display-scale numbers, living progress,
+   restrained motion. Every screen consumes THESE tokens and classes; local
+   one-off hexes, hairline card borders, and per-file font imports are retired.
+   ========================================================================== */
+
+:root {
+  /* ---- Type ---- */
+  --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
+
+  /* ---- Ink + neutrals ---- */
+  --ink: #20241F;
+  --ink-soft: #3B4036;
+  --gray: #73736A;
+  --gray-faint: #A5A399;
+
+  /* ---- Forest ramp (brand) ---- */
+  --forest-900: #1E2A1C;
+  --forest-700: #2A3D27;
+  --forest-500: #3D5C3C;   /* primary actions, section labels */
+  --forest-300: #8BAE8A;   /* sage: fills, rings, live accents */
+  --forest-150: #C9D8C8;
+  --forest-100: #EDF3ED;   /* tint fills */
+  --forest-050: #F3F7F1;
+
+  /* ---- Warm neutrals / surfaces ---- */
+  --cream: #FBF8F2;
+  --stone: #F2EFE6;
+  --paper: #FFFFFF;
+  --tint-warm: #F7F5EE;    /* quiet row fill, replaces beige boxes */
+
+  /* ---- Verdict + status color (RESERVED: verdicts and true severity only) ---- */
+  --safe: #2C9D8A;
+  --safe-100: #E7F4F1;
+  --limit: #E8941F;
+  --limit-700: #9A5F1A;
+  --limit-100: #FDF2EA;
+  --avoid: #D64545;
+  --avoid-700: #8B2E2E;
+  --avoid-100: #FAEAEA;
+
+  /* ---- Elevation (borderless; cards LIFT, they do not outline) ---- */
+  --shadow-1: 0 2px 10px rgba(56, 62, 48, 0.07);
+  --shadow-2: 0 14px 36px -10px rgba(56, 62, 48, 0.14), 0 2px 8px rgba(56, 62, 48, 0.05);
+  --shadow-3: 0 24px 50px -12px rgba(30, 42, 28, 0.45), 0 4px 14px rgba(30, 42, 28, 0.22);
+  --shadow-pill: 0 10px 24px -6px rgba(61, 92, 60, 0.45);
+
+  /* ---- Radii (one scale) ---- */
+  --r-pill: 999px;
+  --r-lg: 24px;   /* cards */
+  --r-md: 16px;   /* inner panels, buttons */
+  --r-sm: 10px;   /* small controls */
+
+  /* ---- Motion ---- */
+  --ease: cubic-bezier(0.22, 0.8, 0.3, 1);
+  --t-fast: 160ms;
+  --t-med: 260ms;
+}
+
+/* ---- Atmosphere: the page is lit, never flat ---- */
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(130% 55% at 88% -5%, rgba(139, 174, 138, 0.20), transparent 60%),
+    radial-gradient(110% 45% at 0% 38%, rgba(232, 148, 31, 0.07), transparent 55%),
+    linear-gradient(175deg, var(--cream) 0%, var(--stone) 70%, #EFEFE4 100%);
+  background-attachment: fixed;
+}
+
+input, textarea, select, button { font-family: var(--font-body); }
+
+/* ---- Card: white, lifted, borderless ---- */
+.sn-card {
+  background: var(--paper);
+  border: none;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-2);
+  padding: 22px;
+}
+@media (hover: hover) {
+  .sn-card-hov { transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+  .sn-card-hov:hover { transform: translateY(-2px); box-shadow: 0 20px 44px -10px rgba(56,62,48,0.18), 0 3px 10px rgba(56,62,48,0.06); }
+}
+
+/* Dark hero surface */
+.sn-hero {
+  position: relative;
+  border-radius: 28px;
+  color: #FAF8F4;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 85% 0%, rgba(139, 174, 138, 0.32), transparent 55%),
+    linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%);
+  box-shadow: var(--shadow-3);
+}
+
+/* ---- THE one micro-label system (mono, wide, quiet) ---- */
+.sn-micro {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--forest-500);
+}
+.sn-micro-dim { color: var(--gray-faint); }
+.sn-micro-dark { color: rgba(250, 248, 244, 0.55); }
+
+/* ---- Display type ---- */
+.sn-headline { font-family: var(--font-display); font-weight: 300; letter-spacing: -0.3px; line-height: 1.2; color: var(--ink); }
+.sn-num { font-family: var(--font-display); font-weight: 300; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: lining-nums; }
+
+/* ---- Buttons ---- */
+.sn-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: none; cursor: pointer;
+  border-radius: var(--r-md);
+  padding: 14px 20px;
+  font-size: 14px; font-weight: 700; font-family: var(--font-body);
+  background: var(--forest-500); color: #fff;
+  box-shadow: var(--shadow-pill);
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease);
+}
+.sn-btn:active { transform: scale(0.985); }
+@media (hover: hover) { .sn-btn:hover { transform: translateY(-1px); } }
+.sn-btn-sage { background: var(--forest-300); color: var(--forest-900); }
+.sn-btn-quiet { background: var(--tint-warm); color: var(--ink-soft); box-shadow: none; font-weight: 600; }
+.sn-btn:disabled { background: #F0EEE6; color: rgba(32, 36, 31, 0.35); box-shadow: none; cursor: not-allowed; transform: none; }
+
+/* ---- Chips (filters and selections; NEVER verdict colors) ---- */
+.sn-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  border-radius: var(--r-pill);
+  padding: 8px 15px;
+  font-size: 12.5px; font-weight: 600;
+  background: var(--paper); color: var(--gray);
+  box-shadow: var(--shadow-1);
+  border: none; cursor: pointer;
+  transition: all var(--t-fast) var(--ease);
+}
+.sn-chip-on { background: var(--forest-500); color: #fff; box-shadow: var(--shadow-pill); }
+
+/* Verdict stamps: the ONLY place verdict colors appear as fills */
+.sn-stamp { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; border-radius: var(--r-pill); padding: 6px 12px; }
+.sn-stamp-safe { background: var(--safe-100); color: #1F7465; }
+.sn-stamp-limit { background: var(--limit-100); color: var(--limit-700); }
+.sn-stamp-avoid { background: var(--avoid-100); color: var(--avoid-700); }
+.sn-stamp-quiet { background: #EFEDE4; color: #8A887C; }
+.sn-stamp-live { background: var(--forest-500); color: #fff; box-shadow: var(--shadow-pill); }
+
+/* ---- Living progress ---- */
+.sn-track { position: relative; height: 9px; border-radius: 5px; background: #EDEBE0; overflow: visible; }
+.sn-track-dark { background: rgba(250, 248, 244, 0.13); }
+.sn-fill {
+  position: absolute; top: 0; bottom: 0; left: 0;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--forest-150), var(--forest-300));
+  box-shadow: 0 0 12px rgba(139, 174, 138, 0.75);
+}
+.sn-dot {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--forest-500); border: 3px solid #fff;
+  box-shadow: 0 3px 10px rgba(61, 92, 60, 0.4);
+}
+.sn-dot-dark { background: var(--forest-150); border-color: rgba(30,42,28,0.7); box-shadow: 0 0 0 4px rgba(201,216,200,0.22), 0 0 14px rgba(201,216,200,0.8); }
+
+/* ---- Quiet rows (replaces bordered/beige boxes) ---- */
+.sn-row { display: flex; align-items: center; gap: 13px; padding: 13px 14px; border-radius: var(--r-md); background: var(--tint-warm); }
+.sn-row-up { background: linear-gradient(135deg, rgba(139, 174, 138, 0.15), rgba(139, 174, 138, 0.05)); }
+
+/* ---- Motion: used by default on cards/sections as they enter ---- */
+@keyframes snRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes snDraw { from { stroke-dashoffset: var(--sn-draw-from, 200); } }
+@keyframes snWidth { from { width: 0; } }
+.sn-rise { animation: snRise 0.45s var(--ease) both; }
+.sn-rise-2 { animation: snRise 0.45s var(--ease) 0.08s both; }
+.sn-rise-3 { animation: snRise 0.45s var(--ease) 0.16s both; }
+.sn-rise-4 { animation: snRise 0.45s var(--ease) 0.24s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sn-rise, .sn-rise-2, .sn-rise-3, .sn-rise-4 { animation: none; }
+  .sn-fill, .sn-btn, .sn-chip, .sn-card-hov { transition: none; animation: none; }
+}
