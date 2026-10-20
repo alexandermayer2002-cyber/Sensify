@@ -6,10 +6,14 @@ across the whole two weeks and blames something else: expect the data verdict
 kept, context named, NO conflicted card, NO retest offer."""
 from robot import Robot
 from pathkit import srv_skip as _rawskip, signup_or_login, nav_tab, enter_intake, do_symptoms, do_baselines, do_freq, do_lifestyle, lab_manual
-import re, json, sys
+import re, json, sys, datetime
 
 WHICH = sys.argv[1] if len(sys.argv) > 1 else "A"
-EMAIL = f"alexandermayer2002+fable1{2 if WHICH == 'A' else 3}@gmail.com"
+# Fresh stamped account every run (the regression suite's pattern): a crashed
+# attempt otherwise strands an active cycle and every retry dies at the
+# missing Start button.
+STAMP = datetime.datetime.now().strftime("%y%m%d%H%M")
+EMAIL = f"alexandermayer2002+qan4{STAMP}{WHICH.lower()}@gmail.com"
 NAME, PW = f"Conflict {WHICH}", "RobotTester!2026"
 
 r = Robot(f"N4{WHICH}")

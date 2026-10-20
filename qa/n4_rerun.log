@@ -2,3 +2,6 @@
 N4A: 0/0 checks passed
 playwright._impl._errors.TimeoutError: Locator.click: Timeout 8000ms exceeded.
 === N4B rerun ===
+N4B: 0/0 checks passed
+playwright._impl._errors.TimeoutError: Locator.click: Timeout 8000ms exceeded.
+=== N4 RERUN DONE ===
