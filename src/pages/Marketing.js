@@ -33,7 +33,6 @@ const css = `
   .mk-tab { font-size: 13px; font-weight: 400; color: #7A7A72; padding: 6px 12px; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.15s; letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
   .mk-tab.active { color: #1C1C1C; font-weight: 500; border-bottom: 2px solid #3D5C3C; }
   .mk-tab:hover:not(.active) { color: #1C1C1C; }
-  .mk-tab:hover:not(.active) { color: #1C1C1C; }
   .mk-nav-right { display: flex; align-items: center; gap: 8px; }
   .mk-signin { font-size: 13px; color: #1C1C1C; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; padding: 8px 12px; }
   .mk-signin:hover { color: #3D5C3C; }
@@ -48,65 +47,37 @@ const css = `
   .mk-hero.dark .mk-hero-orb1 { position: absolute; top: -70px; left: -40px; width: 260px; height: 260px; border-radius: 50%; background: #8BAE8A; opacity: 0.12; pointer-events: none; animation: mkHeroGlow 6s ease-in-out infinite; }
   .mk-hero.dark .mk-hero-orb2 { position: absolute; bottom: -80px; right: -40px; width: 220px; height: 220px; border-radius: 50%; background: #E8941F; opacity: 0.06; pointer-events: none; }
   @keyframes mkHeroGlow { 0%, 100% { opacity: 0.07; } 50% { opacity: 0.14; } }
-  .mk-wordmark { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 500; color: #FAF8F4; letter-spacing: -0.5px; margin-bottom: 26px; }
-  .mk-wordmark .wl { display: inline-block; opacity: 0; animation: mkLetterRise 0.38s cubic-bezier(0.16,1,0.3,1) forwards; }
-  .mk-wordmark .wdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #8BAE8A; margin-left: 4px; opacity: 0; animation: mkDotStamp 0.42s cubic-bezier(0.34,1.56,0.64,1) forwards; animation-delay: 0.72s; }
-  @keyframes mkLetterRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes mkDotStamp { 0% { opacity: 0; transform: scale(0); } 60% { opacity: 1; transform: scale(1.55); } 100% { opacity: 1; transform: scale(1); } }
   .mk-hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 12.5px; letter-spacing: 2.5px; color: #E6C35C; text-transform: uppercase; margin-bottom: 22px; }
   .mk-price-line { font-size: 12.5px; color: rgba(250,248,244,0.5); margin-top: 14px; }
   .mk-hero-inner { max-width: 960px; margin: 0 auto; }
-  .mk-hero-split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; max-width: 1080px; margin: 0 auto; }
-  @media (max-width: 860px) { .mk-hero-split { grid-template-columns: 1fr; gap: 36px; } .mk-hero-fmcard { order: -1; } }
   .mk-hero-centered { max-width: 760px; margin: 0 auto; text-align: center; }
   .mk-h1.centered { max-width: 100%; margin-left: auto; margin-right: auto; }
   .mk-sub.centered { margin-left: auto; margin-right: auto; }
   .mk-actions.centered { justify-content: center; }
   .fmshow { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
   @media (max-width: 800px) { .fmshow { grid-template-columns: 1fr; gap: 32px; } }
-  .fmshow-points { display: flex; flex-direction: column; gap: 12px; }
-  .fmshow-point { display: flex; align-items: center; gap: 11px; font-size: 14px; color: #4A4A45; }
-  .fmshow-point strong { font-weight: 600; color: #1C1C1C; }
-  .fmshow-pdot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
   .mk-tag { display: inline-flex; align-items: center; font-size: 12.5px; color: #7A7A72; margin-bottom: 14px; }
-  .mk-tag-dot { display: none; }
   .mk-h1 { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 400; line-height: 1.06; margin-bottom: 16px; letter-spacing: -1px; max-width: 680px; color: #1C1C1C; }
   .mk-hero.dark .mk-h1 { color: #FAF8F4; }
   .mk-h1 em { font-style: italic; color: #3D5C3C; }
   .mk-hero.dark .mk-h1 em { color: #8BAE8A; }
   .mk-sub { font-size: 17px; color: #7A7A72; line-height: 1.7; margin-bottom: 30px; max-width: 520px; }
   .mk-hero.dark .mk-sub { color: rgba(250,248,244,0.68); font-weight: 300; }
-  .mk-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 36px; max-width: 580px; }
-  .mk-3c { background: #FAF8F4; border-radius: 13px; padding: 16px; }
-  .mk-3n { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; color: #3D5C3C; margin-bottom: 6px; }
-  .mk-3t { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
-  .mk-3d { font-size: 12px; color: #7A7A72; line-height: 1.6; }
   .mk-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
   .btn-p { background: #8BAE8A; color: #22301F; border: none; border-radius: 11px; padding: 14px 26px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
-  .mk-priceline { font-size: 12.5px; color: rgba(250,248,244,0.55); margin-top: 12px; }
   .mk-hero.dark .btn-g { border: 1px solid rgba(250,248,244,0.25); color: #FAF8F4; background: transparent; }
   .mk-hero.dark .mk-trust { color: rgba(250,248,244,0.5) !important; }
   .btn-p:hover { opacity: 0.87; }
   .btn-g { background: none; color: #1C1C1C; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 10px; padding: 13px 22px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
   .btn-g:hover { border-color: #3D5C3C; color: #3D5C3C; }
-  .mk-proof { display: flex; align-items: center; gap: 20px; padding-top: 32px; border-top: 1px solid rgba(0,0,0,0.07); flex-wrap: wrap; }
-  .mk-proof-num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; }
-  .mk-proof-label { font-size: 11px; color: #7A7A72; margin-top: 2px; }
-  .mk-proof-div { width: 1px; height: 38px; background: rgba(0,0,0,0.08); }
   .fmcard { background: #22301F; border-radius: 22px; padding: 24px; position: relative; overflow: hidden; box-shadow: 0 24px 60px rgba(34,48,31,0.35); }
   .fmcard-orb { position: absolute; top: -70px; right: -70px; width: 240px; height: 240px; border-radius: 50%; background: #8BAE8A; animation: mkGlow 5s ease-in-out infinite; pointer-events: none; }
   .fmcard-orb2 { position: absolute; bottom: -90px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: #E8941F; opacity: 0.05; pointer-events: none; }
   @keyframes mkGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
-  @keyframes mkChipIn { from { opacity: 0; transform: translateY(10px) scale(0.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
   .fmcard::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(139,174,138,0.14) 0%, transparent 65%); pointer-events: none; }
   .fmcard-eyebrow { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; color: rgba(139,174,138,0.7); margin-bottom: 7px; }
   .fmcard-title { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 300; color: white; margin-bottom: 18px; }
   .fmcard-title em { font-style: italic; color: #8BAE8A; }
-  .fmcard-cat { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-  .fmcard-catdot { width: 5px; height: 5px; border-radius: 50%; }
-  .fmcard-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 16px; }
-  .fmcard-chip { font-size: 11.5px; font-weight: 500; padding: 4px 12px; border-radius: 20px; border: 1px solid; opacity: 0; }
-  .fmcard.inview .fmcard-chip { animation: mkChipIn 0.55s ease both; }
   .fmcard-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
   .fmcard-verify { font-family: 'DM Mono', monospace; font-size: 8.5px; color: rgba(255,255,255,0.3); letter-spacing: 0.4px; }
 
@@ -120,23 +91,6 @@ const css = `
   .sh em { font-style: italic; color: #3D5C3C; }
   .ss { font-size: 16px; color: #7A7A72; line-height: 1.78; max-width: 560px; margin-bottom: 40px; }
 
-  .dark-strip { background: #1C1C1C; border-radius: 16px; padding: 36px; margin-bottom: 36px; }
-  .ds-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 20px; }
-  .ds-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.07); border-radius: 11px; overflow: hidden; }
-  .ds-step { background: #1C1C1C; padding: 20px; }
-  .ds-sl { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #8BAE8A; margin-bottom: 7px; }
-  .ds-st { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 300; color: white; margin-bottom: 6px; }
-  .ds-sd { font-size: 12px; color: rgba(255,255,255,0.42); line-height: 1.65; }
-
-  .outcome-list { display: flex; flex-direction: column; gap: 10px; max-width: 460px; }
-  .outcome-row { display: flex; align-items: center; gap: 14px; border-radius: 12px; padding: 15px 18px; }
-  .outcome-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-
-  .how-steps { display: flex; flex-direction: column; }
-  .how-step { display: flex; gap: 28px; padding: 28px 0; border-bottom: 1px solid rgba(0,0,0,0.06); align-items: flex-start; }
-  .how-step:last-child { border-bottom: none; }
-  .how-n { font-family: 'Fraunces', serif; font-size: 52px; font-weight: 300; color: #EDF3ED; line-height: 1; flex-shrink: 0; width: 64px; }
-  .how-content { padding-top: 8px; }
   .ph-head { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
   .ph-badge { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: white; background: #3D5C3C; padding: 6px 13px; border-radius: 8px; flex-shrink: 0; letter-spacing: 0.5px; }
   .ph-name { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1; }
@@ -160,11 +114,6 @@ const css = `
     .spine-desc, .cyclebox { max-width: 100%; }
     .ph-name { font-size: 22px; }
   }
-  .how-title { font-size: 16px; font-weight: 500; margin-bottom: 6px; color: #1C1C1C; }
-  .how-desc { font-size: 14px; color: #7A7A72; line-height: 1.75; margin-bottom: 0; }
-  .how-tag { display: inline-flex; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #3D5C3C; background: #EDF3ED; padding: 3px 9px; border-radius: 20px; margin-bottom: 8px; }
-  .how-tag.amber { color: #D4894A; background: #FDF2EA; }
-
   .sci-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .sci-card { background: #FAF8F4; border-radius: 14px; padding: 22px; }
   .sci-icon { width: 36px; height: 36px; border-radius: 11px; background: #EDF3ED; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
@@ -262,16 +211,12 @@ const css = `
     .mk-h1 { font-size: 36px !important; letter-spacing: -0.5px; }
     .mk-sub { font-size: 15px; }
     .mk-section { padding: 44px 22px !important; }
-    .mk-three { grid-template-columns: 1fr; }
-    .ds-grid { grid-template-columns: 1fr; }
-    .dark-strip { padding: 24px; }
     .sci-grid { grid-template-columns: 1fr; }
     .sci-disclaimers { grid-template-columns: 1fr; }
     .sci-compare-grid { grid-template-columns: 1fr; }
     .sci-arrow { transform: rotate(90deg); padding: 4px 0; }
     .sci-compare { padding: 24px; }
     .fmshow { grid-template-columns: 1fr; gap: 28px; }
-    .mk-hero-split { grid-template-columns: 1fr; gap: 28px; }
     .prob-grid { grid-template-columns: 1fr; }
     .cta-section { padding: 56px 22px !important; }
     .cta-section h2 { font-size: 32px; }
@@ -301,7 +246,7 @@ const FAQ_GROUPS = [
   {
     group: 'Getting started',
     items: [
-      { q: 'Do I need to already have a lab test?', a: 'No. Your test kit is included in the program and ships to your door after you purchase. There is no separate lab bill and nothing to order yourself. We walk you through completing it at home and sending it back.' },
+      { q: 'Do I need to already have a lab test?', a: 'No. A food sensitivity lab test is part of the program. You complete it from home, with no clinic visits, and once your results are in you upload them and they are read straight into your protocol. Already have recent results? You can use those instead.' },
       { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, pattern detection that learns your baseline, personalized insights, and your completed verdicts. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
       { q: 'How much time does it take each week?', a: 'The daily check-in takes about 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
     ],
@@ -312,7 +257,7 @@ const FAQ_GROUPS = [
       { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
       { q: 'How do the daily check-ins work?', a: 'Each day you log a quick snapshot: sleep, stress, hydration, whether you stayed on plan, and anything your body did that day. About 30 seconds. Every entry feeds a system that learns your patterns, cross-references your symptoms against your sleep and stress, and weighs all of it when your verdicts are decided.' },
       { q: 'Does Sensify actually analyze my data?', a: 'Yes, and it shows its work. Sensify learns your personal baseline during elimination, spots when a bad week lines up with bad sleep or high stress rather than food, and brings that context into every verdict, so a food never gets blamed for what your sleep did. No standalone lab test can do any of that.' },
-      { q: "What if I don't see improvement during elimination?", a: 'Your symptom trends are monitored every week and flagged when improvement is not occurring. We look at compliance, hidden ingredients, and stress, and our team reviews the situation personally before any plan changes are suggested.' },
+      { q: "What if I don't see improvement during elimination?", a: 'Your symptom trends are monitored every week and flagged when improvement is not occurring. We look at compliance, hidden ingredients, and stress, and every flagged case is reviewed personally before any plan changes are suggested.' },
       { q: 'Do I have to finish the whole protocol?', a: 'The full value comes from completing the protocol, since the reintroduction phase is where your verdicts are earned. You can stop anytime, but your verdicts are only complete once each food has been tested. We designed the program to keep each step light so finishing feels doable.' },
       { q: 'What happens when I finish?', a: 'You receive your completed verdicts, yours to keep. You can also continue with Maintain, an optional monthly plan that keeps your verdicts working for you every day, with Ask Sensify on hand to check any food, menu, or meal against your results whenever you need it. Maintain pricing is on the Pricing page.' },
     ],
@@ -590,17 +535,6 @@ export default function Marketing({ onGetStarted, onSignIn }) {
   const [tab, setTab] = useState('home')
   const [menuOpen, setMenuOpen] = useState(false)
   const [homeFaq, setHomeFaq] = useState(null)
-  const [mapInView, setMapInView] = useState(false)
-  const fmcardRef = React.useRef(null)
-  React.useEffect(() => {
-    const el = fmcardRef.current
-    if (!el || mapInView) return
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setMapInView(true); obs.disconnect() }
-    }, { threshold: 0.35 })
-    obs.observe(el)
-    return () => obs.disconnect()
-  })
 
   const tabs = ['home', 'how', 'science', 'pricing', 'faq', 'about']
   const tabLabel = t => t === 'home' ? 'Home' : t === 'how' ? 'How it works' : t === 'faq' ? 'FAQ' : t.charAt(0).toUpperCase() + t.slice(1)
@@ -645,7 +579,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="mk-hero-orb2"></div>
           <div className="mk-hero-eyebrow" style={{ position: 'relative' }}>Test. Eliminate. Reintroduce. Know.</div>
           <div className="mk-h1 centered">Stop guessing what your body <em>can't handle.</em></div>
-          <div className="mk-sub centered">A lab test finds the suspects. Eight structured weeks of real data give the verdicts.</div>
+          <div className="mk-sub centered">A lab test finds the suspects. Eight weeks of clean baseline, then a 14-day trial of every food, gives the verdicts.</div>
           <div className="mk-actions centered">
             <button className="btn-p" onClick={onGetStarted} style={{ background: '#8BAE8A', color: '#22301F', fontWeight: 600 }}>Start your program</button>
             <button className="btn-g" onClick={() => setTab('how')} style={{ borderColor: 'rgba(250,248,244,0.25)', color: '#FAF8F4' }}>See how it works</button>
@@ -743,7 +677,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               </div>
               <div style={{ fontSize: '13px', color: '#7A7A72', lineHeight: 1.7, marginTop: '18px', paddingTop: '16px', borderTop: '1px solid rgba(0,0,0,0.07)' }}>And sometimes the answer is that food was never the problem. That is a real result too, and knowing it saves you from years of cutting things out for nothing.</div>
             </div>
-            <div className={`fmcard${mapInView ? ' inview' : ''}`} ref={fmcardRef}>
+            <div className="fmcard">
               <div className="fmcard-orb" />
               <div className="fmcard-orb2" />
               <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Example · A finished program</div>
@@ -780,7 +714,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
               { q: 'How much time does it take each week?', a: 'The daily check-in takes about 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
               { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people finish the protocol and find their body tolerates everything well, which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. A clean result is still an answer you can trust.' },
-              { q: 'Do I need to already have a lab test?', a: 'No. When you purchase the program we guide you through ordering your food sensitivity test during onboarding. We tell you exactly which test to get and how to complete it from home.' },
+              { q: 'Do I need to already have a lab test?', a: 'No. A food sensitivity lab test is part of the program. You complete it from home, no clinic visits, then upload your results and they are read straight into your protocol. Already have recent results? You can use those instead.' },
             ].map((f, i) => {
               const isOpen = homeFaq === i
               return (
@@ -817,7 +751,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
         <div className="mk-hero-inner">
-          <div className="mk-tag"><div className="mk-tag-dot"></div>The complete program</div>
+          <div className="mk-tag">The complete program</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>How Sensify works.</div>
           <div className="mk-sub" style={{ marginBottom: 0 }}>A structured system that takes you from suspecting a food trigger to having your verdicts: a personal, evidence-based ruling on every tested food.</div>
         </div>
@@ -840,8 +774,8 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="spine-step">
               <div className="spine-dot"></div>
               <div className="spine-tag">Step 2</div>
-              <div className="spine-title">Your lab test ships to your door</div>
-              <div className="spine-desc">Your test kit is part of the $399, so there is no separate lab bill. It ships to your door from our certified lab partner, you complete it at home, and send it back. Results arrive in about a week. No clinic visits.</div>
+              <div className="spine-title">Complete your lab test from home</div>
+              <div className="spine-desc">Your lab test is part of the $399, so there is no separate lab bill. You complete it from home, with no clinic visits, and if you already have recent results you can use those instead.</div>
             </div>
             <div className="spine-step">
               <div className="spine-dot"></div>
@@ -883,7 +817,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="spine-dot"></div>
               <div className="spine-tag amber">If needed</div>
               <div className="spine-title">Compliance support, if you hit a wall</div>
-              <div className="spine-desc">If staying on plan gets hard, you tell us what's toughest, cravings, social situations, hidden ingredients, cost, and the app responds with specific guidance for your situation. Our team reviews every case personally before any plan recommendation is made.</div>
+              <div className="spine-desc">If staying on plan gets hard, you tell us what's toughest, cravings, social situations, hidden ingredients, cost, and the app responds with specific guidance for your situation. Every case is reviewed personally, by the founder, before any plan recommendation is made.</div>
             </div>
           </div>
         </div>
@@ -907,7 +841,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="spine-dot"></div>
               <div className="spine-tag">14 days each</div>
               <div className="spine-title">Each food gets a structured 14-day cycle</div>
-              <div className="spine-desc">Three days eating the food as you normally would, then eleven days off to let symptoms settle. This exposure-washout pattern is the clinically validated method for isolating how a single food affects you.</div>
+              <div className="spine-desc">Three days eating the food as you normally would, then eleven days off to let symptoms settle. This exposure-washout pattern is modeled on the clinical elimination-diet standard for isolating how a single food affects you.</div>
               <div className="cyclebox">
                 <div className="cb-label">One 14-day cycle</div>
                 <div className="cb-dots">
@@ -949,7 +883,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
         <div className="mk-hero-inner">
-          <div className="mk-tag"><div className="mk-tag-dot"></div>The science</div>
+          <div className="mk-tag">The science</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>Your lab test is a hypothesis.<br />Your body gives the verdict.</div>
           <div className="mk-sub" style={{ marginBottom: 0 }}>IgG tests measure exposure, not reaction. A high reading for eggs might just mean you eat eggs every day. Sensify confirms what's real by testing it in your actual life.</div>
         </div>
@@ -1034,7 +968,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="sci-disc">
               <div>
                 <div className="sci-disc-t">Human review for plan changes</div>
-                <div className="sci-disc-d">Insights are generated automatically, but any recommendation to change your protocol is reviewed by our team first. No automated plan decisions that bypass human judgment.</div>
+                <div className="sci-disc-d">Insights are generated automatically, but any recommendation to change your protocol is personally reviewed first. No automated plan decisions that bypass human judgment.</div>
               </div>
             </div>
             <div className="sci-disc">
@@ -1061,7 +995,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
         <div className="mk-hero-inner">
-          <div className="mk-tag"><div className="mk-tag-dot"></div>Simple pricing</div>
+          <div className="mk-tag">Simple pricing</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>One program, one price.</div>
           <div className="mk-sub" style={{ marginBottom: 0 }}>No hidden fees. One flat price for the complete system.</div>
         </div>
@@ -1077,11 +1011,12 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="price-div"></div>
               {[
                 'Intake survey: symptoms, baseline, and food frequency',
-                'Guided lab test ordering: we tell you exactly what to get',
+                'Your food sensitivity lab test, completed from home',
                 'Your results read and extracted automatically',
                 'Full structured elimination and reintroduction protocol',
                 'Quick daily check-ins right in the app',
                 '14-day reintroduction cycles with clear verdicts',
+                'Ask Sensify: check any food, menu, or meal against your results',
                 'Weekly symptom insights from your check-ins',
                 'Compliance audit system with human review',
                 'Every food ruled: your verdicts at completion',
@@ -1107,7 +1042,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
         <div className="mk-hero-inner">
-          <div className="mk-tag"><div className="mk-tag-dot"></div>Questions</div>
+          <div className="mk-tag">Questions</div>
           <div className="mk-h1" style={{ fontSize: '46px' }}>Things people ask us.</div>
           <div className="mk-sub" style={{ marginBottom: 0 }}>Everything you might want to know before you start. Still curious about something? Reach out anytime.</div>
         </div>
@@ -1130,8 +1065,8 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <Nav />
       <div className="mk-hero" style={{ padding: '64px 64px 48px' }}>
         <div className="mk-hero-inner">
-          <div className="mk-tag"><div className="mk-tag-dot"></div>Our story</div>
-          <div className="mk-h1" style={{ fontSize: '46px' }}>We spent years guessing.<br />Sensify exists so <span style={{ color: '#3D5C3C' }}>you don't have to.</span></div>
+          <div className="mk-tag">Our story</div>
+          <div className="mk-h1" style={{ fontSize: '46px' }}>I spent years guessing.<br />Sensify exists so <span style={{ color: '#3D5C3C' }}>you don't have to.</span></div>
           <div className="mk-sub" style={{ marginBottom: 0 }}>Years of feeling off, a drawer of half-read lab reports, and nobody who could say which food was actually the problem. This company started as a stubborn refusal to keep guessing.</div>
         </div>
       </div>
@@ -1153,7 +1088,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
       <div style={{ background: '#22301F', padding: '56px 64px', textAlign: 'center' }}>
-        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '29px', fontWeight: 400, color: '#FAF8F4', lineHeight: 1.35, maxWidth: '620px', margin: '0 auto', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>The test was easy to buy. The answer took a system. <span style={{ color: '#8BAE8A' }}>So we built the system.</span></div>
+        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '29px', fontWeight: 400, color: '#FAF8F4', lineHeight: 1.35, maxWidth: '620px', margin: '0 auto', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>The test was easy to buy. The answer took a system. <span style={{ color: '#8BAE8A' }}>So I built the system.</span></div>
       </div>
       <div className="mk-section cream">
         <div className="mk-section-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '30px', flexWrap: 'wrap' }}>
