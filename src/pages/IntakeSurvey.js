@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabase'
 import NumPad from '../components/NumPad'
+import { normalizeMilestones, serializeMilestones } from '../utils/aiInsights'
 
 const FOOD_CATEGORIES = [
   { category: 'Proteins', foods: ['Beef', 'Chicken', 'Pork', 'Lamb', 'Turkey', 'Egg White', 'Egg Yolk'] },
@@ -121,6 +122,10 @@ const s = {
 export default function IntakeSurvey({ session, onComplete, onBack }) {
   const [step, setStep] = useState(-1)
   const [agreed, setAgreed] = useState(false)
+  // Separate, optional research consent. Never required, never bundled into
+  // the service agreement: retrofitting consent is impossible, so this exists
+  // from day one even though nothing uses the data yet.
+  const [researchOk, setResearchOk] = useState(false)
   const [signatureName, setSignatureName] = useState('')
   const [selectedCategories, setSelectedCategories] = useState([])
   const [answers, setAnswers] = useState({})
@@ -296,6 +301,17 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       consent_name: signatureName,
       consent_timestamp: new Date().toISOString(),
     })
+    // Optional research consent rides the milestones KV (the column that
+    // accepts arrays), read-merge-write so nothing else is clobbered.
+    if (researchOk) {
+      try {
+        const { data: prof } = await supabase.from('profiles').select('shown_milestones').eq('id', session.user.id).single()
+        const current = normalizeMilestones(prof?.shown_milestones)
+        await supabase.from('profiles').update({
+          shown_milestones: serializeMilestones({ ...current, research_consent: new Date().toISOString() }),
+        }).eq('id', session.user.id)
+      } catch (e) { /* optional consent must never block intake */ }
+    }
     setSaving(false)
     onComplete()
   }
@@ -370,6 +386,20 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           </div>
           <div style={{ fontSize: '13px', color: '#1C1C1C', lineHeight: 1.65, paddingTop: '1px' }}>
             I understand that Sensify is a wellness program and not a medical service, that insights are for informational purposes only, and that my program data may be accessed by the Sensify team to support my program. I agree to receive program-related emails from Sensify, including check-in reminders and account notifications.
+          </div>
+        </div>
+
+        {/* Optional research consent: its own decision, visually subordinate,
+            defaults off, and the program works identically either way. */}
+        <div
+          style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '20px', cursor: 'pointer', background: '#FAF8F4', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', padding: '12px 14px' }}
+          onClick={() => setResearchOk(!researchOk)}
+        >
+          <div style={{ width: '22px', height: '22px', borderRadius: '6px', border: `1.5px solid ${researchOk ? '#3D5C3C' : 'rgba(0,0,0,0.15)'}`, background: researchOk ? '#3D5C3C' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px', transition: 'all 0.15s' }}>
+            {researchOk && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+          </div>
+          <div style={{ fontSize: '12.5px', color: '#5A5A52', lineHeight: 1.6, paddingTop: '1px' }}>
+            <span style={{ fontWeight: 600, color: '#1C1C1C' }}>Optional:</span> my de-identified program data, never my name or contact details, may be used to improve Sensify and for research. The program is exactly the same either way, and I can change my mind by contacting support.
           </div>
         </div>
 

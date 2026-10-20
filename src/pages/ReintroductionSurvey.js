@@ -197,6 +197,16 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
     } : null
     const conflicted = disagreeing && feltCause !== 'other'
 
+    // Existing cycle answers (exposure doses live here mid-cycle): read once,
+    // feed the ruling, and merge on write so nothing is clobbered.
+    let existing = {}
+    if (activeReintroId) {
+      try {
+        const { data: cyc2 } = await supabase.from('reintroduction_results').select('answers').eq('id', activeReintroId).single()
+        existing = cyc2?.answers || {}
+      } catch (e) {}
+    }
+
     // AI refines (may adjust by one level with reason) — never against data
     let aiReason = ''
     try {
@@ -209,6 +219,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         surveyAnswers: { accuracy, context },
         accuracyNote: accuracy,
         disagreeDetail: followup,
+        doses: existing.doses || null,
         dayGrainContext: [
           noiseFloor ? `Clean-baseline noise floor: during elimination this person logged symptoms on about ${noiseFloor.daysPerWeek} day(s) per week (${noiseFloor.totalDays} symptom days total). Weigh exposure symptoms against that background, and say so if the exposure pattern clearly exceeds it.` : null,
           sleepOverlap ? `Sleep cross-reference: ${sleepOverlap.overlap} of their ${sleepOverlap.symDays} symptom days in this cycle were also among their worst sleep nights. Mention this as honest context; it may inflate the signal.` : null,
@@ -222,10 +233,11 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
       aiReason = aiResult?.analysis || ''
     } catch (e) {}
 
-    // Update the EXISTING active row (don't insert a duplicate)
+    // Update the EXISTING active row (don't insert a duplicate). MERGE into
+    // answers: mid-cycle writers (exposure doses) store there too.
     if (activeReintroId) {
       await supabase.from('reintroduction_results').update({
-        answers: { accuracy, context, followup, conflicted },
+        answers: { ...existing, accuracy, context, followup, conflicted },
         verdict: computedVerdict,
         verdict_reason: aiReason,
         submitted_at: new Date().toISOString(),

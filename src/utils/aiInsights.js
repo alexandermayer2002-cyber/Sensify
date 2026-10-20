@@ -449,7 +449,23 @@ export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
 // based on logged daily data. The AI may CONFIRM it, or adjust by ONE
 // level with a stated reason. It never overrides the data wholesale.
 // Returns { verdict, analysis }.
-export const generateReintroVerdict = async ({ name, food, provisionalVerdict, signals, dailyLogs = [], surveyAnswers = {}, accuracyNote, contextNote, dayGrainContext, disagreeDetail }) => {
+// SYMPTOM-NIGHT RECALL PARSE: free text -> canonical foods, hidden forms
+// named. Returns [{ name, from }] or [] on any failure; the raw text is
+// stored regardless, so a failed parse loses nothing.
+export const parseRecallFoods = async (rawText) => {
+  try {
+    const prompt = `Extract the distinct foods and food ingredients from this meal description, including hidden forms (teriyaki or soy sauce contains wheat; parmesan is dairy; mayo contains egg). One per line, format: Canonical food | the phrase it came from. Canonical food should be the simple base food name (Wheat, Dairy, Eggs, Coffee, Tomato, Beef...). No other text.
+
+MEAL: "${String(rawText).slice(0, 400)}"`
+    const raw = await callClaude(prompt, 220)
+    return raw.split('\n').map(l => {
+      const [name, from] = l.split('|').map(s => (s || '').trim())
+      return name && name.length < 40 ? { name, from: from || name } : null
+    }).filter(Boolean).slice(0, 10)
+  } catch (e) { return [] }
+}
+
+export const generateReintroVerdict = async ({ name, food, provisionalVerdict, signals, dailyLogs = [], surveyAnswers = {}, accuracyNote, contextNote, dayGrainContext, disagreeDetail, doses }) => {
   const exposureSummary = dailyLogs
     .filter(l => l.phase === 'exposure')
     .map(l => `Day(ate:${l.ate_food ? 'yes' : 'no'}, symptoms:${(l.symptoms || []).map(s => typeof s === 'string' ? s : `${s?.name || 'symptom'}/${s?.intensity || 'logged'}`).join(',') || 'none'})`)
@@ -466,6 +482,7 @@ PROVISIONAL VERDICT (computed from logged data by a rule engine): ${provisionalV
 LOGGED EXPOSURE DAYS: ${exposureSummary || 'no daily logs'}
 LOGGED WASHOUT SYMPTOMS: ${washoutSummary || 'none logged'}
 SIGNALS: ${JSON.stringify(signals || {})}
+${doses && Object.keys(doses).length > 0 ? `EXPOSURE SERVING SIZES (user-reported per day): ${Object.entries(doses).map(([d, p]) => `${d}: ${p}`).join(', ')}. If the verdict is Limit, cite the serving pattern when it is informative (reactions only at large servings is a different Limit than reactions at every size). Never invent amounts beyond small/normal/large.` : ''}
 USER CONFIRMED ACCURACY: ${accuracyNote === 'accurate' ? 'says the logged data is accurate' : accuracyNote === 'worse' ? 'says it actually felt WORSE than logged' : accuracyNote === 'milder' ? 'says it actually felt MILDER than logged' : 'no response'}
 ${disagreeDetail ? `DISAGREEMENT DETAIL (asked only because the testimony disputes the logs):
 - What they felt: ${[...(disagreeDetail.felt || []), disagreeDetail.feltText].filter(Boolean).join(', ') || 'not specified'}

@@ -17,6 +17,7 @@ export default function ReintroDailyCheckin({ session, profile, reintro, phase, 
 
   const [step, setStep] = useState(phase === 'exposure' ? 'ate' : 'symptoms')
   const [ateFood, setAteFood] = useState(null)
+  const [portion, setPortion] = useState(null) // 'small' | 'normal' | 'large'
   const [hadSymptoms, setHadSymptoms] = useState(null)
   const [symptomIntensities, setSymptomIntensities] = useState({}) // { name: intensity }
   const [saving, setSaving] = useState(false)
@@ -57,6 +58,18 @@ export default function ReintroDailyCheckin({ session, profile, reintro, phase, 
       stopped_early: stoppedEarly,
     }, { onConflict: 'user_id,reintro_id,log_date' })
 
+    // Dose rides the cycle's answers jsonb, keyed by date (read-merge-write;
+    // the verdict survey merges rather than replaces, so doses survive).
+    if (!error && phase === 'exposure' && ateFood && portion) {
+      try {
+        const { data: cyc } = await supabase.from('reintroduction_results').select('answers').eq('id', reintro.id).single()
+        const a = cyc?.answers || {}
+        await supabase.from('reintroduction_results').update({
+          answers: { ...a, doses: { ...(a.doses || {}), [today]: portion } },
+        }).eq('id', reintro.id)
+      } catch (e) { /* dose is enrichment; never blocks the log */ }
+    }
+
     setSaving(false)
     if (error) { alert(`Could not save: ${error.message}`); return }
 
@@ -92,11 +105,24 @@ export default function ReintroDailyCheckin({ session, profile, reintro, phase, 
                 <h2 style={s.q}>Did you eat <em style={s.em}>{food}</em> today?</h2>
                 <p style={s.sub}>The test only works when you actually eat it. No judgment if today didn't work out.</p>
                 <div style={s.btnRow}>
-                  <button style={s.choiceBtn} onClick={() => { setAteFood(true); setStep('symptoms') }}>Yes, I ate it</button>
+                  <button style={s.choiceBtn} onClick={() => { setAteFood(true) }}>Yes, I ate it</button>
                   <button style={s.choiceBtnAlt} onClick={() => { setAteFood(false); save(false) }} disabled={saving}>
                     {saving ? 'Saving...' : 'Not today'}
                   </button>
                 </div>
+                {/* DOSE: one tap, exposure days only. This is what lets a
+                    Limit verdict cite an actual serving size later. */}
+                {ateFood === true && (
+                  <div style={{ marginTop: '16px', animation: 'fadeUp 0.3s ease' }}>
+                    <p style={{ ...s.sub, marginBottom: '8px' }}>Roughly how much?</p>
+                    <div style={s.btnRow}>
+                      {[['small', 'A little'], ['normal', 'A normal serving'], ['large', 'A lot']].map(([id, label]) => (
+                        <button key={id} style={portion === id ? s.choiceBtn : s.choiceBtnAlt}
+                          onClick={() => { setPortion(id); setStep('symptoms') }}>{label}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

@@ -241,9 +241,10 @@ export function classifyFood(foodName, mapContext) {
   return { mapStatus: 'unknown' }
 }
 
-// Persist a meal log
-export async function saveMealLog({ userId, rawText, foods, mapContext }) {
-  const classified = foods.map(name => ({ name, ...classifyFood(name, mapContext) }))
+// Persist a meal log. `source: 'recall'` marks entries typed from memory on a
+// symptom night: kept forever as leads, never weighed like prospective logs.
+export async function saveMealLog({ userId, rawText, foods, mapContext, source }) {
+  const classified = foods.map(name => ({ name, ...classifyFood(name, mapContext), ...(source ? { source } : {}) }))
   const flagged = classified.some(f => f.mapStatus === 'avoid' || f.mapStatus === 'limit')
   try {
     await supabase.from('meal_logs').insert({

@@ -4,7 +4,7 @@ import { getTestingOrder } from '../utils/protocolEngine'
 import ReintroDailyCheckin from './ReintroDailyCheckin'
 import { computeProvisionalVerdict } from '../utils/verdictEngine'
 import { todayLocal, localDateString } from '../utils/dateUtils'
-import { generateReintroFoodBriefing, generateProgramCompleteMessage } from '../utils/aiInsights'
+import { generateReintroFoodBriefing, generateProgramCompleteMessage, normalizeMilestones, serializeMilestones } from '../utils/aiInsights'
 
 // Offered to a common-track Test-2 user who finished without a clear trigger.
 // Lets them escalate to Test 8 (the full panel) or accept the result and finish.
@@ -212,6 +212,59 @@ function ProgramComplete({ session, profile, labResult, completedFoods }) {
           <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.45, marginTop: '3px' }}>Avoid</div>
         </div>
       </div>
+      <OutcomeQuestion session={session} profile={profile} />
+    </div>
+  )
+}
+
+// THE OUTCOME QUESTION: one number the whole program exists to produce.
+// Asked once, at completion, stored in the milestones KV with a timestamp.
+// Honest by construction: it never suggests an answer and 0-10 includes
+// "no better at all", because a recorded disappointment is real data too.
+function OutcomeQuestion({ session, profile }) {
+  const already = normalizeMilestones(profile?.shown_milestones).outcome_score
+  const [score, setScore] = useState(null)
+  const [note, setNote] = useState('')
+  const [saved, setSaved] = useState(false)
+  const [busy, setBusy] = useState(false)
+  if (already !== undefined && !saved) return null
+
+  const save = async () => {
+    if (score === null || busy) return
+    setBusy(true)
+    try {
+      const { data } = await supabase.from('profiles').select('shown_milestones').eq('id', session.user.id).single()
+      const current = normalizeMilestones(data?.shown_milestones)
+      const next = { ...current, outcome_score: String(score), outcome_at: new Date().toISOString() }
+      if (note.trim()) next.outcome_note = note.trim().slice(0, 500)
+      await supabase.from('profiles').update({ shown_milestones: serializeMilestones(next) }).eq('id', session.user.id)
+      setSaved(true)
+    } catch (e) {}
+    setBusy(false)
+  }
+
+  if (saved) return (
+    <div style={{ marginTop: 18, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.12)', fontSize: 12.5, opacity: 0.6, lineHeight: 1.6 }}>
+      Recorded. Thank you for the honest number; it is the one result the whole program was for.
+    </div>
+  )
+
+  return (
+    <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.12)' }}>
+      <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', opacity: 0.45, marginBottom: 8 }}>One last measurement</div>
+      <div style={{ fontSize: 13.5, lineHeight: 1.6, marginBottom: 12 }}>Compared to day 1, how are your symptoms now? 0 means no better at all, 10 means gone.</div>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 12, flexWrap: 'wrap' }}>
+        {Array.from({ length: 11 }).map((_, i) => (
+          <button key={i} onClick={() => setScore(i)}
+            style={{ flex: '1 0 26px', minWidth: 26, height: 36, borderRadius: 7, border: score === i ? '1.5px solid #8BAE8A' : '1px solid rgba(255,255,255,0.18)', background: score === i ? '#8BAE8A' : 'transparent', color: score === i ? '#1C1C1C' : 'rgba(255,255,255,0.75)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{i}</button>
+        ))}
+      </div>
+      <input value={note} onChange={e => setNote(e.target.value)} placeholder="Anything worth adding, in a sentence (optional)"
+        style={{ width: '100%', boxSizing: 'border-box', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '11px 13px', fontSize: 13, color: 'white', fontFamily: 'DM Sans, sans-serif', outline: 'none', marginBottom: 12 }} />
+      <button onClick={save} disabled={score === null || busy}
+        style={{ width: '100%', border: 'none', borderRadius: 10, padding: 13, background: score === null ? 'rgba(255,255,255,0.12)' : '#8BAE8A', color: score === null ? 'rgba(255,255,255,0.4)' : '#1C1C1C', fontSize: 13.5, fontWeight: 600, cursor: score === null ? 'not-allowed' : 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+        {busy ? 'Saving...' : 'Record it'}
+      </button>
     </div>
   )
 }

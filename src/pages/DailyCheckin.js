@@ -95,6 +95,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   const [activeReintro, setActiveReintro] = useState(null)
   const [reintroLoggedToday, setReintroLoggedToday] = useState(false)
   const [ateFood, setAteFood] = useState(null)
+  const [portion, setPortion] = useState(null) // 'small' | 'normal' | 'large', exposure days only
   const [hadSymptoms, setHadSymptoms] = useState(null)
   const [symptomIntensities, setSymptomIntensities] = useState({})
   const [otherText, setOtherText] = useState('')
@@ -166,6 +167,10 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   const [offToday, setOffToday] = useState(null)          // null | 'fine' | 'mild' | 'notable'
   const [elimSymptoms, setElimSymptoms] = useState({})    // { name: true }
   const [elimTiming, setElimTiming] = useState(null)      // 'morning' | 'after a meal' | 'evening' | 'all day'
+  // Symptom-night recall (optional free text + parsed tags)
+  const [recallText, setRecallText] = useState('')
+  const [recallTags, setRecallTags] = useState(null)      // null = not parsed yet, [] = parsed empty
+  const [recallBusy, setRecallBusy] = useState(false)
   const toggleElimSymptom = (nm) => setElimSymptoms(prev => { const n = { ...prev }; if (n[nm]) delete n[nm]; else n[nm] = true; return n })
 
   const toggleSymptom = (nm) => setSymptomIntensities(prev => { const n = { ...prev }; if (n[nm]) delete n[nm]; else n[nm] = 'mild'; return n })
@@ -179,6 +184,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   // Core required: sleep, stress, hydration. Compliance required only if on protocol.
   const reintroComplete = !showReintroBlock || (
     (reintroPhase === 'washout' || ateFood !== null) &&
+    (ateFood !== true || portion !== null) &&
     (hadSymptoms !== null) &&
     (hadSymptoms === false || Object.keys(symptomIntensities).length > 0)
   )
@@ -226,6 +232,15 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           const newCount = (activeReintro.exposure_days_completed || 0) + 1
           const updates = { exposure_days_completed: newCount }
           if (newCount >= 3) updates.washout_started_at = today
+          // Dose rides the cycle's answers jsonb, keyed by date; the verdict
+          // survey merges rather than replaces, so doses survive to ruling.
+          if (portion) {
+            try {
+              const { data: cyc } = await supabase.from('reintroduction_results').select('answers').eq('id', activeReintro.id).single()
+              const a = cyc?.answers || {}
+              updates.answers = { ...a, doses: { ...(a.doses || {}), [today]: portion } }
+            } catch (e) {}
+          }
           await supabase.from('reintroduction_results').update(updates).eq('id', activeReintro.id)
         }
       } catch (e) { console.error('reintro save error:', e) }
@@ -250,6 +265,27 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           else if (timeCount > 1) pieces.push(`your ${ord(timeCount)} ${elimTiming} event this month`)
           else pieces.push('first of its kind on your record')
           onRecord = pieces.join(' \u00b7 ')
+        }
+        // Symptom-night recall: raw words + parsed foods, tagged as recall.
+        // A lead, never a ruling; stored even when the parse fails.
+        if (recallText.trim().length > 2) {
+          try {
+            let tags = recallTags
+            if (tags === null) {
+              try {
+                const { parseRecallFoods } = await import('../utils/aiInsights')
+                tags = await parseRecallFoods(recallText)
+              } catch (e2) { tags = [] }
+            }
+            const { saveMealLog } = await import('../utils/askSensify')
+            await saveMealLog({
+              userId: session.user.id,
+              rawText: recallText.trim().slice(0, 400),
+              foods: (tags || []).map(t => t.name),
+              mapContext: { safe: [], limit: [], avoid: [] },
+              source: 'recall',
+            })
+          } catch (e2) { /* recall is enrichment; never blocks */ }
         }
       }
     } catch (e) { /* events never block the check-in */ }
@@ -398,8 +434,18 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                 <div style={s.label}>Did you eat {activeReintro.food.toLowerCase()} today?</div>
                 <div style={s.yn}>
                   <button style={ateFood === true ? s.ynYes : s.ynBtn} onClick={() => setAteFood(true)}>Yes</button>
-                  <button style={ateFood === false ? { ...s.ynYes, background: '#7A7A72', borderColor: '#7A7A72' } : s.ynBtn} onClick={() => { setAteFood(false); setHadSymptoms(null); setSymptomIntensities({}) }}>Not today</button>
+                  <button style={ateFood === false ? { ...s.ynYes, background: '#7A7A72', borderColor: '#7A7A72' } : s.ynBtn} onClick={() => { setAteFood(false); setHadSymptoms(null); setSymptomIntensities({}); setPortion(null) }}>Not today</button>
                 </div>
+                {ateFood === true && (
+                  <div style={{ marginTop: 12 }}>
+                    <div style={s.label}>Roughly how much?</div>
+                    <div style={s.yn}>
+                      {[['small', 'A little'], ['normal', 'Normal serving'], ['large', 'A lot']].map(([id, label]) => (
+                        <button key={id} style={portion === id ? s.ynYes : s.ynBtn} onClick={() => setPortion(id)}>{label}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {(reintroPhase === 'washout' || ateFood !== null) && (
@@ -534,6 +580,47 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                   {['morning', 'after a meal', 'evening', 'all day'].map(t => (
                     <button key={t} style={elimTiming === t ? { ...s.optOn, flex: 'none' } : { ...s.opt, flex: 'none' }} onClick={() => setElimTiming(t)}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>
                   ))}
+                </div>
+
+                {/* SYMPTOM-NIGHT RECALL: free text in their own words, no
+                    suggested foods (suggestion biases memory). Parsed on
+                    demand into removable tags; raw text stored either way.
+                    Always skippable: a blank is honest data too. */}
+                <div style={{ marginTop: '14px' }}>
+                  <div style={{ fontSize: '12.5px', color: '#7A7A72', marginBottom: '8px' }}>What have you eaten in the last few hours? (optional, your own words)</div>
+                  <textarea
+                    value={recallText}
+                    onChange={e => { setRecallText(e.target.value); setRecallTags(null) }}
+                    rows={2}
+                    placeholder=""
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.09)', background: '#FFFFFF', fontSize: '16px', fontFamily: 'DM Sans, sans-serif', color: '#1C1C1C', resize: 'vertical', lineHeight: 1.5 }}
+                  />
+                  {recallText.trim().length > 2 && recallTags === null && (
+                    <button type="button" disabled={recallBusy} onClick={async () => {
+                      setRecallBusy(true)
+                      try {
+                        const { parseRecallFoods } = await import('../utils/aiInsights')
+                        setRecallTags(await parseRecallFoods(recallText))
+                      } catch (e) { setRecallTags([]) }
+                      setRecallBusy(false)
+                    }} style={{ marginTop: '8px', background: 'none', border: 'none', padding: 0, fontSize: '12px', fontWeight: 600, color: '#3D5C3C', textDecoration: 'underline', textUnderlineOffset: 2, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                      {recallBusy ? 'Reading...' : 'Check what we read from it'}
+                    </button>
+                  )}
+                  {recallTags && recallTags.length > 0 && (
+                    <div style={{ marginTop: '10px' }}>
+                      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8.5px', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#9A927E', marginBottom: '6px' }}>We read it as · tap anything we got wrong</div>
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {recallTags.map((t, i) => (
+                          <button key={i} type="button" onClick={() => setRecallTags(recallTags.filter((_, j) => j !== i))}
+                            style={{ ...s.optOn, flex: 'none', fontSize: '12px' }}>
+                            {t.name}{t.from && t.from.toLowerCase() !== t.name.toLowerCase() ? ` · ${t.from}` : ''} ×
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div style={{ fontSize: '10.5px', color: '#A8A69E', marginTop: '8px', lineHeight: 1.5 }}>Memory after a symptom is a lead, never a ruling. Skipping is fine; an honest blank beats a guess.</div>
                 </div>
               </div>
             )}

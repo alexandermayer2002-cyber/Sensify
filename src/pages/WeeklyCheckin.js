@@ -150,6 +150,40 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
             }
           }
         } catch (e) { /* alignment never blocks the insight */ }
+
+        // ---- Recall leads (symptom-night food memory, last 30 days) ------
+        // Recalled-after-symptom foods are the weakest evidence species, so
+        // the bar is high: a food must appear on 3+ symptom nights and on no
+        // clear night to even be mentioned, and only ever as a lead.
+        try {
+          const since30 = new Date(Date.now() - 30 * 86400000).toISOString()
+          const { data: recalls } = await supabase.from('meal_logs')
+            .select('raw_text, foods, created_at')
+            .eq('user_id', session.user.id)
+            .gte('created_at', since30)
+          const recallRows = (recalls || []).filter(m => (m.foods || []).some(f => f?.source === 'recall'))
+          if (recallRows.length >= 3) {
+            const { data: evs30 } = await supabase.from('symptom_logs').select('logged_at').eq('user_id', session.user.id).gte('logged_at', since30)
+            const sympDays30 = new Set((evs30 || []).map(e => String(e.logged_at).split('T')[0]))
+            const counts = {}
+            for (const m of recallRows) {
+              const day = String(m.created_at).split('T')[0]
+              for (const f of (m.foods || [])) {
+                if (!f?.name) continue
+                const k = f.name.toLowerCase()
+                counts[k] = counts[k] || { name: f.name, symp: 0, clear: 0 }
+                if (sympDays30.has(day)) counts[k].symp += 1
+                else counts[k].clear += 1
+              }
+            }
+            const leads = Object.values(counts).filter(c => c.symp >= 3 && c.clear === 0)
+            if (leads.length > 0) {
+              const l = leads.sort((a, b) => b.symp - a.symp)[0]
+              eventsLine += `\nRECALL LEAD (from the user's own symptom-night food notes, the weakest evidence species): ${l.name} appeared in their eaten-recently notes on ${l.symp} symptom nights this month and on no clear night.`
+                + `\nRECALL RULE: you may name this once as a lead worth watching, in their own record's words, stamped as a lead and never a ruling. It must never sound like a verdict, never recommend removing the food, and if it is already on their protocol, say its 14 day trial will give the real answer.`
+            }
+          }
+        } catch (e) { /* recall leads never block the insight */ }
       }
     } catch (e) {}
   }
