@@ -1,1 +1,93 @@
 === N4A take3 ===
+Su
+✓
+Mo
+✓
+Tu
+✓
+On plan
+✗
+Slipped
+–
+No check-in
+What do these mean?
+Sleep
+norm 7 hrs · this week 7 hrs
+Stress
+norm moderate · this week low
+Water
+norm 6 cups · this week 6 cups
+CURRENTLY AVOIDING
+1 foods total
+HIGH SENSITIVITY
+1
+Cow Milk
+TEST MODE · TIME MACHINE
++1d
++7d
++11d
++43d
+HOUSEHOLD CARD
+A link for whoever cooks for you: what is off the plate right now, nothing else.
+Create link
+SYMPTOM TRENDS
+Your symptom trends will appear here after your first weekly check-in.
+==end verdicts_after_retest==
+FAIL A.verdict_replaced | Sensify.
+Sign out
+Home
+Reintro
+Verdicts
+Ask
+More
+Good evening, Conflict
+Choose your next f
+PASS A.retest_offer_gone
+N4A: 6/8 checks passed
+=== N4B take3 ===
+Safe.
+No meaningful symptom correlation detected. Cow Milk has been added to your Safe list.
+ENTERED IN YOUR VERDICTS
+Cow Milk
+NO REACTION
+THE ANALYSIS
+Your logs showed zero symptom days across all three exposure days and no washout flare, which is a clean signal against this food being a trigger, and your baseline during elimination was equally symptom free so there is no elevated noise floor to account for. The bloating you recall was spread across the full two weeks rather than concentrated on exposure days, which fits a background cause at least as well as the food itself. You also noted a brutal week of poor sleep as the likely explanation, and since that kind of stress is a well known driver of digestive discomfort, the logged data remains the stronger guide here.
+WORTH KNOWING
+This isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food and update its verdict.
+View your verdicts →
+==end RULING==
+shot: N4B_05_ruling_visual.png
+PASS B.kept_safe
+PASS B.no_conflicted_card
+==[reintro_after]==
+Sensify.
+Sign out
+Home
+Reintro
+Verdicts
+Ask
+More
+Reintroduction.
+One food at a time. 14 days per cycle. Every answer earns a verdict.
+CYCLE COMPLETE · 1 VERDICT EARNED
+Choose your next food.
+Your cow milk verdict is entered in your verdicts. Pick the next food below to start a fresh 14-day cycle, day 1 starts when you do.
+YOUR FOODS · UNLOCKED · NONE TO TEST
+TESTED · 1 FOOD
+Cow Milk
+DAY 57
+Safe
+▾
+PROGRAM COMPLETE
+Reintroduction complete.
+Generating your program summary...
+1
+SAFE
+0
+LIMIT
+0
+AVOID
+==end reintro_after==
+PASS B.no_retest_offer
+N4B: 5/5 checks passed
+=== N4 TAKE3 DONE ===

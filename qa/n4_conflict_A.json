@@ -1,9 +1,66 @@
 {
  "findings": [],
  "console": [
-  "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 406 (Not Acceptable)",
+  "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
  ],
- "screens": {},
- "shots": [],
- "checks": []
+ "screens": {
+  "survey": "\u2190 Back\nSensify.\nDay 14\nCow Milk\nYour cow milk results.\nOne last step before we map Cow Milk on your Food Map. Confirm what you logged, and tell us if anything unusual happened.\nWHAT YOU LOGGED\nYou ate cow milk on 3 days and noted no symptoms on any of them.\nDoes that sound right?\nThis is what you told us day by day. If anything looks off, let us know and we'll factor it in.\nYes, that's accurate\nNot quite, it felt worse than that\nNot quite, it felt milder than that\nWas anything else going on? (optional)\nThings outside of cow milk can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.\nGet my verdict \u2192",
+  "followup_open": "\u2190 Back\nSensify.\nDay 14\nCow Milk\nYour cow milk results.\nOne last step before we map Cow Milk on your Food Map. Confirm what you logged, and tell us if anything unusual happened.\nWHAT YOU LOGGED\nYou ate cow milk on 3 days and noted no symptoms on any of them.\nDoes that sound right?\nThis is what you told us day by day. If anything looks off, let us know and we'll factor it in.\nYes, that's accurate\nNot quite, it felt worse than that\nNot quite, it felt milder than that\nTell us about the gap.\nYour logs and what you just said disagree. That is worth getting right, so three quick questions. The ruling weighs your answers.\nWhat did you feel that the logs missed? (optional)\nBloating\nGas\nStomach pain\nReflux\nHeadache\nFatigue\nBrain fog\nSkin\nWhen was it strongest?\nOn the days I ate cow milk\nIn the days after\nThe whole two weeks, evenly\nDo you think cow milk was behind it?\nYes, I think it was the cow milk\nNot sure\nProbably something else going on\nWas anything else going on? (optional)\nThings outside of cow milk can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.\nGet my verdict \u2192",
+  "followup_answered": "\u2190 Back\nSensify.\nDay 14\nCow Milk\nYour cow milk results.\nOne last step before we map Cow Milk on your Food Map. Confirm what you logged, and tell us if anything unusual happened.\nWHAT YOU LOGGED\nYou ate cow milk on 3 days and noted no symptoms on any of them.\nDoes that sound right?\nThis is what you told us day by day. If anything looks off, let us know and we'll factor it in.\nYes, that's accurate\nNot quite, it felt worse than that\nNot quite, it felt milder than that\nTell us about the gap.\nYour logs and what you just said disagree. That is worth getting right, so three quick questions. The ruling weighs your answers.\nWhat did you feel that the logs missed? (optional)\nBloating\nGas\nStomach pain\nReflux\nHeadache\nFatigue\nBrain fog\nSkin\nWhen was it strongest?\nOn the days I ate cow milk\nIn the days after\nThe whole two weeks, evenly\nDo you think cow milk was behind it?\nYes, I think it was the cow milk\nNot sure\nProbably something else going on\nWas anything else going on? (optional)\nThings outside of cow milk can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.\nGet my verdict \u2192",
+  "RULING": "Sensify.\nVERDICT ENTERED \u00b7 DAY 14 OF 14\nCow Milk\nLimit.\nMild or dose-dependent symptoms detected. Cow Milk has been added to your Limit list.\nENTERED IN YOUR VERDICTS\nCow Milk\nMILD, DOSE-LINKED\nTHE ANALYSIS\nThe logs show no symptoms recorded across all three exposure days, which would ordinarily confirm a safe result, but your account describes bloating and a heavy, off feeling within a couple of hours of eating the milk each time, concentrated specifically on the exposure days and attributed to the food. That pattern, symptoms tied to each exposure and absent during washout, is the strongest basis for adjusting the verdict one level from Safe to Limit. There is a meaningful gap between what was logged and what you reported experiencing, and both pieces of information are noted here so you have the full picture.\nRULED ON CONFLICTING EVIDENCE\nYour logs and what you told us disagreed, so this verdict moved one careful step and no further. When you want a firmer answer, you can re-run this trial from your Reintro tab; the newest verdict replaces this one.\nWORTH KNOWING\nThis isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food and update its verdict.\nView your verdicts \u2192",
+  "reintro_after": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nCYCLE COMPLETE \u00b7 1 VERDICT EARNED\nChoose your next food.\nYour cow milk verdict is entered in your verdicts. Pick the next food below to start a fresh 14-day cycle, day 1 starts when you do.\nYOUR FOODS \u00b7 UNLOCKED \u00b7 NONE TO TEST\nRETEST AVAILABLE \u00b7 RULED ON CONFLICTING EVIDENCE\n\u21bb\nCow Milk\nRuled Limit \u00b7 your logs and your account of it disagreed\nA re-run replaces this verdict with whatever the new trial earns\nRetest \u2192\nTESTED \u00b7 1 FOOD\nCow Milk\nDAY 57\nLimit\n\u25be\nPROGRAM COMPLETE\nReintroduction complete.\nGenerating your program summary...\n0\nSAFE\n1\nLIMIT\n0\nAVOID",
+  "retest_survey": "\u2190 Back\nSensify.\nDay 14\nCow Milk\nYour cow milk results.\nOne last step before we map Cow Milk on your Food Map. Confirm what you logged, and tell us if anything unusual happened.\nWHAT YOU LOGGED\nYou ate cow milk on 3 days and noted no symptoms on any of them.\nDoes that sound right?\nThis is what you told us day by day. If anything looks off, let us know and we'll factor it in.\nYes, that's accurate\nNot quite, it felt worse than that\nNot quite, it felt milder than that\nWas anything else going on? (optional)\nThings outside of cow milk can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.\nGet my verdict \u2192",
+  "RETEST_RULING": "Sensify.\nVERDICT ENTERED \u00b7 DAY 14 OF 14\nCow Milk\nSafe.\nNo meaningful symptom correlation detected. Cow Milk has been added to your Safe list.\nENTERED IN YOUR VERDICTS\nCow Milk\nNO REACTION\nTHE ANALYSIS\nAcross all three exposure days, no symptoms were logged, and no washout flare appeared after stopping, which matches a baseline of zero symptom days per week during elimination. The exposure pattern showed no signal above background noise. The logged data consistently points to cow milk as well tolerated during this reintroduction.\nWORTH KNOWING\nThis isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food and update its verdict.\nView your verdicts \u2192",
+  "verdicts_after_retest": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening, Conflict\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 27 \u00b7 CYCLE COMPLETE\nPick your next food\n\u2192\n83 day streak, unbroken\nTesting foods, one at a time\nPROTOCOL \u00b7 DAY 83\n\nYou're on day 27 of your reintroduction phase. Your first weekly insight will appear here after your first weekly check-in, drawn from how your symptoms change.\n\nWeekly check-in\nCatch up, your data still matters\nStart \u2192\nDAYS 78\u201384\n83\nDAY STREAK\nWe\n\u2713\nTh\n\u2713\nFr\n\u2713\nSa\n\u2713\nSu\n\u2713\nMo\n\u2713\nTu\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nSleep\nnorm 7 hrs \u00b7 this week 7 hrs\nStress\nnorm moderate \u00b7 this week low\nWater\nnorm 6 cups \u00b7 this week 6 cups\nCURRENTLY AVOIDING\n1 foods total\nHIGH SENSITIVITY\n1\nCow Milk\nTEST MODE \u00b7 TIME MACHINE\n+1d\n+7d\n+11d\n+43d\nHOUSEHOLD CARD\nA link for whoever cooks for you: what is off the plate right now, nothing else.\nCreate link\nSYMPTOM TRENDS\nYour symptom trends will appear here after your first weekly check-in."
+ },
+ "shots": [
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/N4A_02_survey.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/N4A_03_followup_open.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/N4A_04_followup_answered.png",
+  "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa/N4A_07_retest_survey.png"
+ ],
+ "checks": [
+  {
+   "check": "followup_appears",
+   "ok": true,
+   "detail": "\u2190 Back\nSensify.\nDay 14\nCow Milk\nYour cow milk results.\nOne last step before we map Cow Milk on your Food Map. Confirm what you logged, and tell us if anything u"
+  },
+  {
+   "check": "cta_blocked_until_answered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "shifted_to_limit",
+   "ok": true,
+   "detail": "Sensify.\nVERDICT ENTERED \u00b7 DAY 14 OF 14\nCow Milk\nLimit.\nMild or dose-dependent symptoms detected. Cow Milk has been added to your Limit list.\nENTERED IN YOUR VE"
+  },
+  {
+   "check": "conflicted_card",
+   "ok": true,
+   "detail": "Sensify.\nVERDICT ENTERED \u00b7 DAY 14 OF 14\nCow Milk\nLimit.\nMild or dose-dependent symptoms detected. Cow Milk has been added to your Limit list.\nENTERED IN YOUR VE"
+  },
+  {
+   "check": "retest_offered",
+   "ok": false,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nCYCLE COMPLETE \u00b7 1 VERDICT"
+  },
+  {
+   "check": "retest_safe",
+   "ok": true,
+   "detail": "Sensify.\nVERDICT ENTERED \u00b7 DAY 14 OF 14\nCow Milk\nSafe.\nNo meaningful symptom correlation detected. Cow Milk has been added to your Safe list.\nENTERED IN YOUR VE"
+  },
+  {
+   "check": "verdict_replaced",
+   "ok": false,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening, Conflict\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 27 \u00b7 CYCLE COMPLETE\nPick your next food\n\u2192\n83"
+  },
+  {
+   "check": "retest_offer_gone",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nCYCLE COMPLETE \u00b7 2 VERDICT"
+  }
+ ]
 }
