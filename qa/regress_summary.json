@@ -1,5 +1,5 @@
 {
- "date": "2610192301",
+ "date": "2610200325",
  "passed": 20,
  "total": 20,
  "results": [
@@ -16,7 +16,7 @@
   {
    "check": "p1.intake",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour intake is complete. Upload your lab results to begin.\n\nACTION NEEDED\nUpload y"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood morning,\nQA.\n\nYour intake is complete. Upload your lab results to begin.\n\nACTION NEEDED\nUpload y"
   },
   {
    "check": "p1.readback",
@@ -26,12 +26,12 @@
   {
    "check": "p1.flagged_autostart",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nELIMINATION PHASE\nStarts tomorrow.\nYour elimination phas"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood morning,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nELIMINATION PHASE\nStarts tomorrow.\nYour elimination phas"
   },
   {
    "check": "p1.unlock_hero",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening, QA\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 1 OF 28 \u00b7 TESTING OPEN\nPick your next food\n\u2192\n57 da"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood morning, QA\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 1 OF 28 \u00b7 TESTING OPEN\nPick your next food\n\u2192\nor lo"
   },
   {
    "check": "p1.no_false_complete",
@@ -66,7 +66,7 @@
   {
    "check": "p2.no_premature_protocol",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour results are in. Choose your path.\n\nChoose your path\n\u25be\nHow thorough do you want to go?\nT"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood morning,\nQA.\n\nYour results are in. Choose your path.\n\nChoose your path\n\u25be\nHow thorough do you want to go?\nT"
   },
   {
    "check": "p2.decision_present",
@@ -81,7 +81,7 @@
   {
    "check": "p3.popup_flagged_script",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour results are in. Choose your path.\n\n\u2715\nYOUR RESULTS ARE IN\nYour flags are real. So is wha"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood morning,\nQA.\n\nYour results are in. Choose your path.\n\n\u2715\nYOUR RESULTS ARE IN\nYour flags are real. So is wha"
   },
   {
    "check": "p3.union_banner",
