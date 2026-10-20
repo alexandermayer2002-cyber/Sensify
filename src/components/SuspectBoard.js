@@ -184,7 +184,7 @@ export default function SuspectBoard({ session, profile, labResult, onOpenReintr
                 <div style={{ flex: 1, minWidth: 0, opacity: r.done ? 0.62 : 1 }}>
                   <div style={s.nameLine}>
                     <span style={s.name}>{r.name}</span>
-                    {r.next && <span style={s.nextTag}>UP NEXT</span>}
+                    {r.next && <span className="sn-micro" style={s.nextTag}>UP NEXT</span>}
                   </div>
                   <div style={s.sub}>
                     <span style={{ color: r.origin.color }}>{r.origin.text}</span>
@@ -273,10 +273,7 @@ const s = {
     textOverflow: 'ellipsis',
   },
   nextTag: {
-    fontFamily: 'DM Mono, monospace',
     fontSize: 8,
-    letterSpacing: '0.8px',
-    color: '#3D5C3C',
     background: 'var(--forest-100)',
     borderRadius: 999,
     padding: '2px 7px',

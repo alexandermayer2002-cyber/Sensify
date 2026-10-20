@@ -278,7 +278,7 @@ export default function MapHealth({ session, profile }) {
           <div style={st.rowTop}>
             <span style={st.food}>{f.food}</span>
             <span className={`sn-stamp sn-stamp-${String(f.verdict).toLowerCase()}`}>{f.verdict}</span>
-            <span style={{ ...st.state, color: STATE_COLORS[f.state], marginLeft: 'auto' }}>
+            <span className="sn-micro" style={{ color: STATE_COLORS[f.state], marginLeft: 'auto' }}>
               {STATE_LABELS[f.state]}
             </span>
           </div>

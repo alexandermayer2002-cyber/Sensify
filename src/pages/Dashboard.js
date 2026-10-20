@@ -35,9 +35,6 @@ import {
 } from '../utils/aiInsights'
 
 const css = `
-  @keyframes obsType { from { max-width: 0; } to { max-width: 100%; } }
-  @keyframes obsEye { 0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(44,157,138,0.8); } 50% { opacity: 0.45; box-shadow: 0 0 3px rgba(44,157,138,0.4); } }
-  .obs-line { overflow: hidden; white-space: nowrap; max-width: 0; animation: obsType 0.9s steps(34, end) forwards; }
   .snfy-app { min-height: 100vh; color: var(--ink); }
 
   .snfy-nav {
@@ -101,6 +98,10 @@ const css = `
   @media (min-width: 900px) {
     .snfy-heroband { padding: 24px 28px 0; }
     .snfy-hero-big { font-size: 38px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .snfy-hero-ring { animation: none !important; }
+    .snfy-pfill { transition: none; }
   }
 
   .snfy-layout { padding: 20px 16px 40px; max-width: 1140px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
@@ -209,7 +210,7 @@ const css = `
   .snfy-avoid-group { margin-bottom: 18px; }
   .snfy-avoid-group:last-child { margin-bottom: 0; }
   .snfy-avoid-group-head { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
-  .snfy-avoid-level-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .snfy-avoid-level-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
   .snfy-avoid-chips { display: flex; flex-wrap: wrap; gap: 7px; }
   .snfy-avoid-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; padding: 7px 13px; border-radius: var(--r-sm); font-weight: 500; }
 
@@ -461,7 +462,7 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
         </div>
         <div style={{ display: 'flex', gap: 4, marginTop: 6, marginBottom: 4 }}>
           {[['all', 'Both phases'], ['elimination', 'Elimination'], ['reintroduction', 'Reintro']].map(([key, label]) => (
-            <button key={key} onClick={() => setPhaseLens(key)} style={{ flex: 1, textAlign: 'center', fontSize: '10.5px', fontWeight: phaseLens === key ? 600 : 400, color: phaseLens === key ? '#1C1C1C' : '#8A8A82', background: phaseLens === key ? '#fff' : 'transparent', padding: '4px 0', borderRadius: '6px', border: phaseLens === key ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent', cursor: 'pointer' }}>{label}</button>
+            <button key={key} onClick={() => setPhaseLens(key)} style={{ flex: 1, textAlign: 'center', fontSize: '10.5px', fontWeight: phaseLens === key ? 600 : 400, color: phaseLens === key ? '#1C1C1C' : '#8A8A82', background: phaseLens === key ? '#fff' : 'transparent', padding: '4px 0', borderRadius: '6px', border: 'none', boxShadow: phaseLens === key ? '0 1px 2px rgba(0,0,0,0.08)' : 'none', cursor: 'pointer' }}>{label}</button>
           ))}
         </div>
       </>)}
@@ -645,7 +646,7 @@ function WeekFactorCards({ days, factors, profile }) {
               background: isOpen ? 'var(--forest-100)' : 'var(--tint-warm)', borderRadius: 10,
               padding: '9px 4px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
             }}>
-              <span className="sn-micro sn-micro-dim" style={{ fontSize: 8.5 }}>{def.name}</span>
+              <span className="sn-micro sn-micro-dim">{def.name}</span>
               <span style={{ fontSize: 11.5, fontWeight: 600, color: isOpen ? 'var(--forest-500)' : 'var(--ink-soft)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{weekAvg.toLowerCase()}</span>
             </button>
           )
@@ -1525,7 +1526,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                   <svg width="62" height="62" viewBox="0 0 62 62" aria-hidden="true">
                     <circle cx="31" cy="31" r="26" fill="none" stroke="rgba(250,248,244,0.14)" strokeWidth="5" />
-                    <circle cx="31" cy="31" r="26" fill="none" stroke="#8BAE8A" strokeWidth="5" strokeLinecap="round" strokeDasharray="163.4" strokeDashoffset="0" transform="rotate(-90 31 31)" style={{ '--sn-draw-from': 163.4, animation: 'snDraw 1.1s var(--ease) both' }} />
+                    <circle className="snfy-hero-ring" cx="31" cy="31" r="26" fill="none" stroke="#8BAE8A" strokeWidth="5" strokeLinecap="round" strokeDasharray="163.4" strokeDashoffset="0" transform="rotate(-90 31 31)" style={{ '--sn-draw-from': 163.4, animation: 'snDraw 1.1s var(--ease) both' }} />
                     <text x="31" y="38" textAnchor="middle" fontFamily="Fraunces, Georgia, serif" fontWeight="300" fontSize="22" fill="#FAF8F4">{cleanDays}</text>
                   </svg>
                   <span className="sn-micro sn-micro-dark" style={{ textAlign: 'center', maxWidth: 86 }}>day streak{cleanDays >= 3 ? ', unbroken' : ''}</span>
@@ -1847,7 +1848,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {/* AWAY GATE (finding #7): honest interception after a silent stretch mid-elimination */}
             {awayGap && (
               <div style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.5)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18 }}>
-                <div style={{ background: '#FAF8F4', borderRadius: 18, padding: '26px 24px', maxWidth: 430, width: '100%', boxShadow: '0 30px 80px rgba(0,0,0,0.3)' }}>
+                <div style={{ background: '#FAF8F4', borderRadius: 'var(--r-lg)', padding: '26px 24px', maxWidth: 430, width: '100%', boxShadow: '0 30px 80px rgba(0,0,0,0.3)' }}>
                   <div className="sn-micro" style={{ marginBottom: 8 }}>Welcome back · {awayGap.days} days away</div>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: '#1C1C1C', marginBottom: 8, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{awayGap.hard ? 'Let\u2019s restart your clock.' : 'Were you on your plan?'}</div>
                   <div style={{ fontSize: 13.5, color: '#5A5A52', lineHeight: 1.65, marginBottom: 18 }}>
@@ -2044,7 +2045,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                             { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', title: 'No check-in', text: 'The day went unlogged with no explanation, so there is no data and no word. This is the one that resets your streak. A slip we can work with. A blank we cannot.' },
                             { bg: 'transparent', bd: '1.5px solid #8BAE8A', fg: '#3D5C3C', m: '\u25cb', title: 'Away, on plan', text: 'You were away for a stretch, and when you returned you told us you stayed on your plan. We take your word for the days, so your streak pauses instead of resetting. But only a check-in creates data, so these days stay out of your analysis.' },
                           ].map((l, i) => (
-                            <div key={i} style={{ display: 'flex', gap: '10px', background: '#FAF9F5', borderRadius: '10px', padding: '10px 12px' }}>
+                            <div key={i} style={{ display: 'flex', gap: '10px', background: 'var(--tint-warm)', borderRadius: 'var(--r-sm)', padding: '10px 12px' }}>
                               <span style={{ width: '18px', height: '18px', borderRadius: '5px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0, marginTop: '1px' , border: l.bd || 'none' }}>{l.m}</span>
                               <div>
                                 <div style={{ fontSize: '12px', fontWeight: 600, color: '#1C1C1C', marginBottom: '2px' }}>{l.title}</div>
@@ -2083,7 +2084,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
                   {guideOpen && (
                     <div onClick={() => setGuideOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,28,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18 }}>
-                      <div onClick={e => e.stopPropagation()} style={{ background: '#FAF8F4', borderRadius: 18, padding: '20px 18px', maxWidth: 420, width: '100%', maxHeight: '86vh', overflowY: 'auto', boxShadow: '0 30px 80px rgba(0,0,0,0.25)' }}>
+                      <div onClick={e => e.stopPropagation()} style={{ background: '#FAF8F4', borderRadius: 'var(--r-lg)', padding: '20px 18px', maxWidth: 420, width: '100%', maxHeight: '86vh', overflowY: 'auto', boxShadow: '0 30px 80px rgba(0,0,0,0.25)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                           <div>
                             <div className="sn-micro" style={{ marginBottom: 6 }}>Week one · Day {currentDay} of 7</div>
@@ -2154,9 +2155,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               {showAvoidingList && avoidedFoods.length > 0 ? (
                 <>
                   {(() => {
+                    // Severity stays semantic but quiet: saturated color lives only in the
+                    // small group dots; the bar uses the 100-tints and chips are neutral,
+                    // so earned verdict stamps keep the loudest color on the panel.
                     const colors = { High: '#D64545', Moderate: '#E8941F', Low: '#2C9D8A', Common: '#8BAE8A' }
-                    const textColors = { High: '#A32D2D', Moderate: '#8A5410', Low: '#1A6256', Common: '#3D5C3C' }
-                    const chipBg = { High: '#FBE9E9', Moderate: '#FCEFD9', Low: '#DEF2EE', Common: '#EDF3ED' }
+                    const barTints = { High: 'var(--avoid-100)', Moderate: 'var(--limit-100)', Low: 'var(--safe-100)', Common: 'var(--forest-100)' }
                     const order = ['High', 'Moderate', 'Low', 'Common']
                     const grouped = order.map(level => ({
                       level,
@@ -2168,7 +2171,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                         {/* Proportion bar — whole sensitivity profile at a glance */}
                         <div className="snfy-avoid-bar">
                           {grouped.map(g => (
-                            <div key={g.level} className="snfy-avoid-bar-seg" style={{ flex: g.foods.length, background: colors[g.level] }} />
+                            <div key={g.level} className="snfy-avoid-bar-seg" style={{ flex: g.foods.length, background: barTints[g.level] }} />
                           ))}
                         </div>
 
@@ -2176,7 +2179,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           <div key={g.level} className="snfy-avoid-group">
                             <div className="snfy-avoid-group-head">
                               <div className="snfy-avoid-level-dot" style={{ background: colors[g.level] }}></div>
-                              <div className="sn-micro" style={{ color: textColors[g.level] }}>{g.level === 'Common' ? 'Common triggers \u00b7 not lab-flagged' : `${g.level} sensitivity`}</div>
+                              <div className="sn-micro sn-micro-dim">{g.level === 'Common' ? 'Common triggers \u00b7 not lab-flagged' : `${g.level} sensitivity`}</div>
                               <div className="sn-micro sn-micro-dim" style={{ marginLeft: 'auto' }}>{g.foods.length}</div>
                             </div>
                             <div className="snfy-avoid-chips">
@@ -2190,7 +2193,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                                     </span>
                                   )
                                 }
-                                return <span key={i} className="snfy-avoid-chip" style={{ background: chipBg[g.level], color: textColors[g.level] }}>{food.name}</span>
+                                return <span key={i} className="snfy-avoid-chip" style={{ background: 'var(--tint-warm)', color: 'var(--ink)' }}>{food.name}</span>
                               })}
                             </div>
                           </div>
