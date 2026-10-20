@@ -186,8 +186,10 @@ class Robot:
             self.find(f"[{self.tag}] cta /{pattern}/: {str(e)[:70]}"); return False
 
     def consent(self, full_name):
-        """The pre-intake 'Before you begin' gate: typed-name signature + agree."""
-        if "Before you begin" not in self.text():
+        """The pre-intake 'Before you begin' gate: typed-name signature + agree.
+        Case-insensitive: design-system labels are CSS-uppercased, and
+        innerText reflects text-transform."""
+        if "before you begin" not in self.text().lower():
             return False
         try:
             self.page.get_by_placeholder("Your full name").first.fill(full_name); self.sleep(0.3)

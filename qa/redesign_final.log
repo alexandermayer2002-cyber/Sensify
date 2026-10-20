@@ -1,1 +1,18 @@
 not yet 0
+DEPLOY9 LIVE: /static/js/main.f721f20d.js
+=== REDESIGN REGRESSION ===
+PASS mkt.example_labels
+PASS mkt.console_clean
+FAIL p1.intake | ← Back
+FAIL p1.walk | one
+PASS p2.clean_toggle_visible
+FAIL p2.clean_readback | 
+PASS p2.no_premature_protocol
+FAIL p2.decision_present | 
+FAIL p2.walk |  Timeout 6000ms exceeded.
+FAIL p3.walk | one
+FAIL p4.tracking_landing | 
+FAIL p4.verdicts_tracking_state | Sensify.
+FAIL p4.reintro_tracking_state | 
+REGRESSION: 4/13 checks passed
+=== REDESIGN DONE ===

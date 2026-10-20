@@ -28,8 +28,8 @@ def enter_intake(r, name):
             try: r.page.get_by_text("Start intake survey", exact=False).last.click(timeout=4000)
             except Exception: pass
             r.sleep(1.8); r.wait_ready(12)
-            if "Before you begin" in r.text() or "What are you hoping" in r.text(): break
-    if "Before you begin" in r.text():
+            if "before you begin" in r.text().lower() or "What are you hoping" in r.text(): break
+    if "before you begin" in r.text().lower():
         r.consent(name)
 
 def do_symptoms(r, plan):

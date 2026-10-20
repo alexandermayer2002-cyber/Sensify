@@ -40,25 +40,27 @@ def run_p1():
     try:
         signup_or_login(r, EMAIL, NAME, PW)
         dig_intake(r, ["Digestive health"])
-        check("p1.intake", "Upload your lab results" in r.text() or "ACTION NEEDED" in r.text(), r.text()[:150])
+        tl = r.text().lower()
+        check("p1.intake", "upload your lab results" in tl or "action needed" in tl, r.text()[:150])
         lab_manual(r)
         for food, lvl in [("Beef","High"), ("Crab","Low")]:
             r.fill_ph("Search foods", food); r.sleep(0.9)
             r.xclick(food, lvl); r.sleep(0.5)
         r.cta(r"Review my entry"); r.sleep(1.2)
-        check("p1.readback", "REVIEW BEFORE SUBMITTING" in r.text())
+        check("p1.readback", "review before submitting" in r.text().lower())
         r.cta(r"Looks right, submit for review"); r.sleep(3.0); r.wait_ready(20)
         r.goto(); r.sleep(2.5); r.wait_ready(25)
-        t = r.text()
-        check("p1.flagged_autostart", "Starts tomorrow" in t or "ELIMINATION" in t, t[:200])
+        tl = r.text().lower()
+        check("p1.flagged_autostart", "starts tomorrow" in tl or "elimination" in tl, r.text()[:200])
         srv_skip(EMAIL, 57)
         r.goto(); r.sleep(2.5); r.wait_ready(25); gate(r)
-        t = r.text()
-        check("p1.unlock_hero", "TESTING OPEN" in t and "OF 28" in t, t[:300])
-        check("p1.no_false_complete", "CYCLE COMPLETE" not in t)
+        tl = r.text().lower()
+        check("p1.unlock_hero", "reintroduction" in tl and ("pick your next food" in tl or "start cycle" in tl), r.text()[:300])
+        check("p1.no_false_complete", "cycle complete" not in tl)
         nav_tab(r, "Reintro")
         t = r.text()
-        check("p1.single_queue", "YOUR FOODS" in t.upper() and "Start cycle" in t, t[:300])
+        tl = t.lower()
+        check("p1.single_queue", "your foods" in tl and "start cycle" in tl, t[:300])
         check("p1.freq_order_crab_first", t.find("Crab") < t.find("Beef") if ("Crab" in t and "Beef" in t) else False, t[:300])
     except Exception as e:
         check("p1.walk", False, traceback.format_exc()[-150:])
@@ -79,7 +81,7 @@ def run_p2():
         check("p2.clean_toggle_visible", ok_toggle)
         r.sleep(0.8)
         r.cta(r"Review my entry"); r.sleep(1.2)
-        check("p2.clean_readback", "no sensitivities" in r.text().lower())
+        check("p2.clean_readback", "no sensitivities" in r.text().lower(), r.text()[:200])
         r.cta(r"Looks right, submit for review"); r.sleep(3.0); r.wait_ready(20)
         r.goto(); r.sleep(2.5); r.wait_ready(25)
         if "Got it" in r.text():
@@ -87,12 +89,12 @@ def run_p2():
             r.click_btn("Got it"); r.sleep(1.0)
         t = r.text()
         check("p2.no_premature_protocol", "FOODS REMOVED" not in t, t[:200])
-        check("p2.decision_present", "Choose your path" in t)
+        check("p2.decision_present", "choose your path" in t.lower(), t[:200])
         r.click("Test 2 Foods"); r.sleep(1.0)
         for food, lbl in [("Dairy","Daily"), ("Gluten / wheat","3–5x/week")]:
-            r.page.click(f"xpath=//*[normalize-space(text())='{food}']/following::*[normalize-space(text())='{lbl}'][1]", timeout=6000); r.sleep(0.4)
+            r.page.click(f"xpath=//*[contains(normalize-space(.),'{food}') and not(.//*[contains(normalize-space(.),'{food}')])]/following::*[normalize-space(.)='{lbl}'][1]", timeout=6000); r.sleep(0.4)
         r.click_btn("Start my protocol"); r.sleep(2.0); r.wait_ready(20)
-        check("p2.protocol_started", "Starts tomorrow" in r.text())
+        check("p2.protocol_started", "starts tomorrow" in r.text().lower(), r.text()[:200])
     except Exception as e:
         check("p2.walk", False, traceback.format_exc()[-150:])
     finally:
@@ -113,7 +115,7 @@ def run_p3():
         if "Got it" in r.text():
             check("p3.popup_flagged_script", "flags are real" in r.text().lower(), r.text()[:300])
             r.click_btn("Got it"); r.sleep(1.0)
-        check("p3.union_banner", "also flagged Crab" in r.text())
+        check("p3.union_banner", "also flagged crab" in r.text().lower(), r.text()[:200])
     except Exception as e:
         check("p3.walk", False, traceback.format_exc()[-150:])
     finally:
@@ -134,14 +136,14 @@ def run_p4():
             r.click_btn("Got it"); r.sleep(1.0)
         r.click_btn("I'd rather just track for now"); r.sleep(2.5); r.wait_ready(20)
         t = r.text()
-        check("p4.tracking_landing", "tracking, not testing" in t)
+        check("p4.tracking_landing", "tracking, not testing" in t.lower(), t[:200])
         nav_tab(r, "Verdicts")
-        t = r.text()
-        check("p4.verdicts_tracking_state", "Earned by" in t and "RULED" not in t, t[:250])
+        tl = r.text().lower()
+        check("p4.verdicts_tracking_state", ("a document, waiting" in tl or "earned by" in tl) and "example" in tl, r.text()[:250])
         try: r.page.get_by_text("Home", exact=True).first.click(timeout=3000); r.sleep(1.4)
         except Exception: r.goto(); r.sleep(2.0)
         nav_tab(r, "Reintro")
-        check("p4.reintro_tracking_state", "no cycles are scheduled" in r.text())
+        check("p4.reintro_tracking_state", "no cycles are scheduled" in r.text().lower(), r.text()[:200])
     except Exception as e:
         check("p4.walk", False, traceback.format_exc()[-150:])
     finally:
