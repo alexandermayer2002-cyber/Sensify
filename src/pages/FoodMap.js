@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { protocolDay } from '../utils/protocolDay'
 import { getProtocolFoods, getTestingOrder } from '../utils/protocolEngine'
-import FoodMapPrint, { printFoodMap } from '../components/FoodMapPrint'
+// The Food Map download is a real generated PDF (vector, full color, no print
+// dialog). jsPDF and the embedded fonts load only when the button is tapped.
 
 // THE FOOD MAP — the trial-strip ledger. Every food is one row: its name, its real
 // 14-day trial rendered mark by mark from reintro_daily_logs, and the verdict it
@@ -29,6 +30,7 @@ export default function FoodMap({ session, profile, labResult }) {
   const [logs, setLogs] = useState([])
   const [openRow, setOpenRow] = useState(null)
   const [loaded, setLoaded] = useState(false)
+  const [pdfBusy, setPdfBusy] = useState(false)
 
   useEffect(() => {
     if (!session?.user?.id) return
@@ -270,7 +272,27 @@ export default function FoodMap({ session, profile, labResult }) {
 
         {labResult && ruledCount > 0 && (
           <div style={s.printRow}>
-            <button type="button" style={s.printBtn} onClick={printFoodMap}>Download your Food Map</button>
+            <button
+              type="button"
+              style={{ ...s.printBtn, opacity: pdfBusy ? 0.6 : 1 }}
+              disabled={pdfBusy}
+              onClick={async () => {
+                if (pdfBusy) return
+                setPdfBusy(true)
+                try {
+                  const { generateFoodMapPdf } = await import('../utils/foodMapPdf')
+                  generateFoodMapPdf({
+                    firstName: name,
+                    protocolStart: profile?.protocol_start_date,
+                    entries: ruled.map(f => { const c = byFood[f.name.toLowerCase()]; return { name: f.name, cycle: c, logs: logsFor(c) } }),
+                    untested: [...testing, ...queue].map(f => f.name),
+                  })
+                } catch (e) { /* download is a convenience; never break the page */ }
+                setPdfBusy(false)
+              }}
+            >
+              {pdfBusy ? 'Preparing your Food Map...' : 'Download your Food Map'}
+            </button>
           </div>
         )}
 
@@ -306,14 +328,6 @@ export default function FoodMap({ session, profile, labResult }) {
       </div>
       {labResult && (ruled.length > 0 || testing.length > 0) && (
         <div style={s.tapNote}>Tap any trial for its full record.</div>
-      )}
-      {labResult && ruledCount > 0 && (
-        <FoodMapPrint
-          firstName={name}
-          protocolStart={profile?.protocol_start_date}
-          entries={ruled.map(f => { const c = byFood[f.name.toLowerCase()]; return { name: f.name, cycle: c, logs: logsFor(c) } })}
-          untested={[...testing, ...queue].map(f => f.name)}
-        />
       )}
     </div>
   )
