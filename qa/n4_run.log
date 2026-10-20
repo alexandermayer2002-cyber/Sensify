@@ -1,1 +1,9 @@
 === N4A ===
+N4A: 0/0 checks passed
+Traceback (most recent call last):
+playwright._impl._errors.TimeoutError: Locator.click: Timeout 8000ms exceeded.
+=== N4B ===
+N4B: 0/0 checks passed
+Traceback (most recent call last):
+playwright._impl._errors.TimeoutError: Locator.click: Timeout 8000ms exceeded.
+=== REGRESS ===

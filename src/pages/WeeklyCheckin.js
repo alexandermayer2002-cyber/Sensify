@@ -422,9 +422,9 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         // Generate streak congratulations message
         const STREAK_MSGS = {
           1: `Week one done. That's the hardest stretch, and your body is already adjusting. Keep the same energy next week.`,
-          2: `Two weeks of elimination. Most people don't make it this far. You're building real data now.`,
+          2: `Two weeks of elimination on your record. The habit is set and the data is starting to mean something.`,
           3: `Three weeks in. This is where the signal starts getting clearer. Whatever you're noticing this week, that's real.`,
-          4: `One month of compliance. That's rare. The data you're building over the next four weeks will tell you everything.`,
+          4: `One month of compliance, every week of it on your record. The data you build over the next four weeks is what your verdicts get measured against.`,
           5: `Five weeks. You're deep into elimination now. The patterns are forming, and your AI insights are getting more accurate every check-in.`,
           6: `Six weeks. Two more and reintroduction begins. You're closer to your Food Map than you've ever been.`,
           7: `Seven weeks clean. Almost there. The last stretch of elimination is the most important. Stay sharp.`,

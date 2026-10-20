@@ -973,7 +973,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               {(() => {
                 const nsCount = (labResult?.foods || []).filter(f => foodFrequency[f.name] === 'never' && f.level !== 'No sensitivity').length
                 return nsCount > 0 ? (
-                  <div style={{ fontSize: '11px', color: '#8A8A82', margin: '2px 0 8px', lineHeight: 1.55, animation: 'rtNodeIn 0.5s ease 0.55s both' }}>{nsCount} flagged food{nsCount !== 1 ? 's aren\'t' : ' isn\'t'} scheduled because you never eat {nsCount !== 1 ? 'them' : 'it'}. You can add {nsCount !== 1 ? 'them' : 'it'} from your Verdicts.</div>
+                  <div style={{ fontSize: '11px', color: '#8A8A82', margin: '2px 0 8px', lineHeight: 1.55, animation: 'rtNodeIn 0.5s ease 0.55s both' }}>{nsCount} flagged food{nsCount !== 1 ? 's aren\'t' : ' isn\'t'} scheduled because you never eat {nsCount !== 1 ? 'them' : 'it'}. A food that is not part of your diet has nothing to teach a trial.</div>
                 ) : null
               })()}
               <div className="rt-lk-timeline">

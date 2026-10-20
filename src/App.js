@@ -101,10 +101,12 @@ export default function App() {
       })
   }, [session])
 
-  // 24 hour inactivity logout
+  // 30 day inactivity logout. 24 hours put a password wall up on exactly
+  // the morning after a missed day, the worst possible moment for friction
+  // in a daily-logging product (the utility audit's top friction finding).
   useEffect(() => {
     if (!session) return
-    const INACTIVITY_LIMIT = 24 * 60 * 60 * 1000
+    const INACTIVITY_LIMIT = 30 * 24 * 60 * 60 * 1000
     const lastActivity = localStorage.getItem('sensify_last_activity')
     const now = Date.now()
 

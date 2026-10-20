@@ -1207,8 +1207,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
   const today = todayLocal()
   const todayEntry = complianceData.find(c => c.date === today)
-  const showSlipupCard = todayEntry?.response === 'NO' && !pendingAudit
+  // One compassion card at a time: once three days off plan trigger the
+  // audit, it subsumes the daily slip-up card instead of stacking on it.
   const showAuditCard = consecutiveNOs >= 3 && !pendingAudit
+  const showSlipupCard = todayEntry?.response === 'NO' && !pendingAudit && !showAuditCard
   const showIntakeCard = !profile?.intake_completed_at
   const showLabCard = profile?.intake_completed_at && !labResult
   const showPendingLabCard = labResult?.status === 'pending_review'
@@ -1742,7 +1744,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Results under review</div>
-                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>We'll notify you within 24 hours once approved.</div>
+                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Reviewed within 24 hours. Your dashboard updates the moment it's approved.</div>
                 </div>
               </div>
             )}
@@ -1769,11 +1771,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
 
             {showSlipupCard && (
-              <div className="snfy-action red">
-                <div className="snfy-action-tag red">Slip-up logged today</div>
-                <h2>What <em className="red">happened today?</em></h2>
+              <div className="snfy-action amber">
+                <div className="snfy-action-tag amber">Slip-up logged today</div>
+                <h2>What <em className="amber">happened today?</em></h2>
                 <p>Takes 60 seconds. No judgment, just data that makes your weekly insights more accurate.</p>
-                <button className="snfy-btn red" onClick={() => setScreen('slipup')}>Tell us what happened →</button>
+                <button className="snfy-btn amber" onClick={() => setScreen('slipup')}>Tell us what happened →</button>
               </div>
             )}
 

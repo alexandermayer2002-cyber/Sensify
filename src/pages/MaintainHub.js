@@ -232,12 +232,9 @@ function MaintainHubInner({ session, profile }) {
           </div>
         </div>
 
-        {/* Refer a friend */}
-        <div style={s.sectionLabel}>Refer a friend</div>
-        <div style={s.referCard}>
-          <div style={s.referText}>Know someone who's tired of guessing what their body can't handle? Send them your Food Map. They get 10% off the program, and you get a free month of Maintain when they join.</div>
-          <button style={s.referBtn}>Share your Food Map</button>
-        </div>
+        {/* The referral card is gone on purpose: it promised 10% off and a
+            free month with no referral system behind it and a button that
+            did nothing. It returns when referrals are real. */}
 
         {/* Recent activity */}
         <div style={s.sectionLabel}>Recent activity</div>
@@ -464,9 +461,6 @@ const s = {
   tileT: { fontSize: '13px', fontWeight: 600, marginBottom: '3px' },
   tileD: { fontSize: '11px', color: '#7A7A72', lineHeight: 1.4 },
 
-  referCard: { background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '13px', padding: '16px' },
-  referText: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.5, marginBottom: '13px' },
-  referBtn: { width: '100%', padding: '11px', borderRadius: '10px', border: 'none', background: '#3D5C3C', color: 'white', fontSize: '13px', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', cursor: 'pointer' },
 
   activity: { background: 'white', border: '1px solid rgba(0,0,0,0.07)', borderRadius: '13px', padding: '4px 16px' },
   actRow: { display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' },
