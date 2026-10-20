@@ -38,8 +38,16 @@ def home():
     r.sleep(1.8); r.wait_ready(15); gate()
 
 def expo_day(idx):
-    home()
-    r.page.get_by_text(re.compile(r"(Today|Tonight)'s check-in")).first.click(timeout=8000)
+    # The day-57 time machine backfills TODAY as already logged, so on cycle
+    # day 1 the home hero hides its check-in CTA (test-rig artifact, not a
+    # product state real users reach). The Reintro tab's own check-in button
+    # works regardless; fall back to home's CTA when the tab lacks it.
+    nav_tab(r, "Reintro"); r.sleep(1.5)
+    try:
+        r.page.get_by_text(re.compile(r"Log (today|tonight).s check-in|Log washout check")).first.click(timeout=6000)
+    except Exception:
+        home()
+        r.page.get_by_text(re.compile(r"(Today|Tonight)'s check-in")).first.click(timeout=8000)
     r.sleep(1.8); r.wait_ready(10)
     r.page.locator("xpath=//*[contains(normalize-space(text()),'Did you eat')]/following::button[normalize-space(.)='Yes'][1]").first.click(timeout=5000); r.sleep(0.8)
     r.click("No, felt fine", exact=False, required=False)
@@ -62,7 +70,11 @@ def clean_cycle(start_label):
     expo_day(1); skip(1)
     expo_day(2); skip(1)
     expo_day(3); skip(11)
-    r.page.get_by_text("verdict is ready", exact=False).first.click(timeout=8000)
+    try:
+        r.page.get_by_text("verdict is ready", exact=False).first.click(timeout=8000)
+    except Exception:
+        nav_tab(r, "Reintro"); r.sleep(1.5)
+        r.page.get_by_text(re.compile(r"Get my verdict")).first.click(timeout=8000)
     r.sleep(2.0); r.wait_ready(15)
     if "Does that sound right" not in r.text():
         r.cta(r"Get my verdict"); r.sleep(2.0); r.wait_ready(15)
