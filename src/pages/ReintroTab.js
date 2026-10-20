@@ -147,6 +147,16 @@ function ProgramComplete({ session, profile, labResult, completedFoods }) {
   const [loading, setLoading] = useState(true)
   const name = session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there'
 
+  // AUTO-COMPLETION: the program marks itself complete the moment the
+  // finisher sees this screen, instead of waiting for an admin button
+  // (the audit's P1: revenue dead-ending in a manual queue). Idempotent,
+  // own-profile write; also retro-fixes finishers from before tonight.
+  // The Maintain BILLING handoff stays admin-side until the Stripe call.
+  useEffect(() => {
+    if (!session?.user?.id || profile?.program_phase === 'complete') return
+    supabase.from('profiles').update({ program_phase: 'complete' }).eq('id', session.user.id).then(() => {})
+  }, [session?.user?.id])
+
   useEffect(() => {
     const generate = async () => {
       try {

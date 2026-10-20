@@ -1493,7 +1493,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14, marginBottom: 16 }}>
                 <div>
                   <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.5)', marginBottom: 3 }}>{getGreeting()}, {name}</div>
-                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.1 }}>{betweenCycles ? 'Choose your next food.' : `Day ${calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.`}</div>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 28, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.1 }}>{profile?.program_phase === 'complete' ? 'Every verdict, earned.' : betweenCycles ? 'Choose your next food.' : `Day ${calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.`}</div>
                   {cycleLine && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>{cycleLine}</div>}
                   {betweenCycles && <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.1px', color: '#8BAE8A', marginTop: 7 }}>REINTRODUCTION · DAY {currentDay - 56}{(currentDay - 56) <= (labResult?.foods?.length || 8) * 14 ? ` OF ${(labResult?.foods?.length || 8) * 14}` : ''} · {reintroRows.some(r => r.verdict) ? 'CYCLE COMPLETE' : 'TESTING OPEN'}</div>}
                 </div>
@@ -1518,6 +1518,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     </button>
                     {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11.5, color: 'rgba(250,248,244,0.55)', textDecoration: 'underline', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
                   </div>
+                ) : profile?.program_phase === 'complete' ? (
+                  <button onClick={() => goTab('Verdicts')} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Your Food Map is complete</span>
+                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
+                  </button>
                 ) : betweenCycles ? (
                   <div>
                     <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 12, padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
@@ -1910,22 +1915,18 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 {(() => {
                   const now = new Date()
                   const todayStr = localDateString(now)
-                  // Anchor the week to PROTOCOL DAY 1, not calendar Monday, so a user
-                  // who starts mid-week gets a full 7-day week from their day 1.
-                  let weekStart
-                  let startDayNum = 1
+                  // TRAILING 7 DAYS, ending today. A protocol-week window made
+                  // the row contradict the streak the morning after a week
+                  // rolled over ("5 day streak" above one filled dot). The
+                  // trailing window always shows the streak's own recent days.
+                  const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+                  const weekStart = new Date(todayLocal)
+                  weekStart.setDate(todayLocal.getDate() - 6)
+                  let startDayNum = null
                   if (profile?.protocol_start_date) {
                     const [yy, mm, dd] = profile.protocol_start_date.split('T')[0].split('-').map(Number)
                     const protoStart = new Date(yy, mm - 1, dd)
-                    const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-                    const daysSince = Math.max(0, Math.round((todayLocal - protoStart) / (1000 * 60 * 60 * 24)))
-                    const weekIndex = Math.floor(daysSince / 7)
-                    weekStart = new Date(protoStart)
-                    weekStart.setDate(protoStart.getDate() + weekIndex * 7)
-                    startDayNum = weekIndex * 7 + 1
-                  } else {
-                    weekStart = new Date(now)
-                    weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7))
+                    startDayNum = Math.round((weekStart - protoStart) / (1000 * 60 * 60 * 24)) + 1
                   }
                   const dowLabels = ['Su','Mo','Tu','We','Th','Fr','Sa']
                   const days = Array.from({ length: 7 }).map((_, i) => {
@@ -1946,7 +1947,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     else { cls = 'missed'; mark = '\u2013' }  // forgot — the only streak-breaker
                     return { day, cls: cls + (isToday ? ' today' : ''), mark, dateStr, isFuture }
                   })
-                  const weekLabel = profile?.protocol_start_date ? `Days ${startDayNum}\u2013${startDayNum + 6}` : 'This week'
+                  // Early in the protocol the trailing window reaches before day 1;
+                  // pre-protocol dots already render blank, so clamp the label.
+                  const weekLabel = startDayNum !== null
+                    ? (startDayNum >= 1 ? `Days ${startDayNum}\u2013${startDayNum + 6}` : `Days 1\u2013${startDayNum + 6}`)
+                    : 'Last 7 days'
                   return (
                     <>
                       <div className="snfy-comp-top">

@@ -22,6 +22,9 @@ def CHECK(name, ok, detail=""):
 def gate():
     if "Were you on your plan" in r.text():
         r.click("Yes, I stayed on my plan"); r.sleep(2.0)
+    if "Got it" in r.text():
+        try: r.click_btn("Got it"); r.sleep(1.0)
+        except Exception: pass
 def skip(d):
     _rawskip(EMAIL, d)
     r.goto(); r.sleep(2.6); r.wait_ready(25); gate()
@@ -63,26 +66,26 @@ def clean_cycle(start_label):
 try:
     signup_or_login(r, EMAIL, NAME, PW)
     gate()
-    if "What are you hoping" in r.text() or "Tell me your name" in r.text() or "Upload your lab results" in r.text() or True:
-        t = r.text()
-        if "Upload your lab results" not in t and "ELIMINATION" not in t and "check-in" not in t:
-            enter_intake(r, NAME.split()[0])
-            if "What are you hoping" in r.text():
-                r.click("Digestive health"); r.click_btn("Continue"); r.sleep(1.2)
-            if "Tell us about" in r.text():
-                do_symptoms(r, [("Daily",0), ("After specific foods",0), ("A few times a week",1),
-                                ("Occasionally",1), ("Often irregular or uncomfortable",0), ("More than 3 years",0)])
-            if "In a typical week" in r.text():
-                do_baselines(r, ["6","5","5","5"])
-            do_freq(r, [("Cow Milk","Daily"), ("Wheat","3–5x/week"), ("Crab","1–2x/week")])
-            do_lifestyle(r, sex="Male")
-        if "Upload your lab results" in r.text() or "ACTION NEEDED" in r.text():
-            lab_manual(r)
-            r.fill_ph("Search foods", "Cow Milk"); r.sleep(0.9)
-            r.xclick("Cow Milk", "High"); r.sleep(0.5)
-            r.cta(r"Review my entry"); r.sleep(1.2)
-            r.cta(r"Looks right, submit for review"); r.sleep(3.0); r.wait_ready(20)
-            r.goto(); r.sleep(2.5); r.wait_ready(25)
+    # Setup mirrors regress_all's proven p1 walk exactly, resumable at each gate.
+    if "Start your intake survey" in r.text() or "Before you begin" in r.text() or "What are you hoping" in r.text():
+        enter_intake(r, NAME)
+        if "What are you hoping" in r.text():
+            r.click("Digestive health"); r.click_btn("Continue"); r.sleep(1.2)
+        if "Tell us about" in r.text():
+            do_symptoms(r, [("Daily",0), ("After specific foods",0), ("A few times a week",1),
+                            ("Occasionally",1), ("Often irregular or uncomfortable",0), ("More than 3 years",0)])
+        if "In a typical week" in r.text():
+            do_baselines(r, ["6","5","5","5"])
+        do_freq(r, [("Cow Milk","Daily"), ("Wheat","3–5x/week"), ("Crab","1–2x/week")])
+        do_lifestyle(r, sex="Male")
+        r.goto(); r.sleep(2.5); r.wait_ready(25)
+    if "Upload your lab results" in r.text() or "ACTION NEEDED" in r.text():
+        lab_manual(r)
+        r.fill_ph("Search foods", "Cow Milk"); r.sleep(0.9)
+        r.xclick("Cow Milk", "High"); r.sleep(0.5)
+        r.cta(r"Review my entry"); r.sleep(1.2)
+        r.cta(r"Looks right, submit for review"); r.sleep(3.0); r.wait_ready(20)
+        r.goto(); r.sleep(2.5); r.wait_ready(25)
 
     skip(57)
     home()
