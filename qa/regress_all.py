@@ -91,8 +91,11 @@ def run_p2():
         check("p2.no_premature_protocol", "FOODS REMOVED" not in t, t[:200])
         check("p2.decision_present", "choose your path" in t.lower(), t[:200])
         r.click("Test 2 Foods"); r.sleep(1.0)
+        # Deploy 9's tier cards list the food names ("Dairy, Gluten / wheat"), so an
+        # anchor on contains() grabs the card and the 'following' pill lands in the
+        # wrong food's row. Anchor on the freq-section heading (exact text node).
         for food, lbl in [("Dairy","Daily"), ("Gluten / wheat","3–5x/week")]:
-            r.page.click(f"xpath=//*[contains(normalize-space(.),'{food}') and not(.//*[contains(normalize-space(.),'{food}')])]/following::*[normalize-space(.)='{lbl}'][1]", timeout=6000); r.sleep(0.4)
+            r.page.locator(f"xpath=//*[normalize-space(text())='{food}']/following::button[normalize-space(.)='{lbl}'][1]").last.click(timeout=6000); r.sleep(0.4)
         r.click_btn("Start my protocol"); r.sleep(2.0); r.wait_ready(20)
         check("p2.protocol_started", "starts tomorrow" in r.text().lower(), r.text()[:200])
     except Exception as e:
