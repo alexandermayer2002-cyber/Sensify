@@ -109,3 +109,15 @@ All seven findings from 2026-10-20 (marketing) remain open — no product commit
 deploy 9, only QA. Tonight's #6 is the in-product sibling of marketing #2 (phantom
 SMS/email reminders), and the pre-intake dashboard's "YOUR LAB KIT — Done with your
 test?" card reinforces marketing #1's unresolved kit-fulfillment story.
+
+---
+
+> **Resolved 2026-10-23 (Deploy 10, approved by Alex):** #1 freq pills now stack
+> and wrap (430px verified live), #4 Onboarding wired into signup, #5 intake
+> drafts persist in localStorage (refresh verified live), #6 consent email-
+> reminder promise trimmed, #7 dead read + triplicate copy removed. #2 partially
+> done: Google removed from Signup and PAYMENT_GATE_MIGRATION.sql written —
+> **the trigger takes effect only when Alex runs it in Supabase**; #3 likewise
+> waits on Alex turning on "Confirm email" in the Supabase dashboard. Correction:
+> the "all 7 from 10-20 remain open" line above was stale — those were already
+> implemented in a652103 and shipped with Deploy 9.

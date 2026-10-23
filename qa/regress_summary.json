@@ -1,7 +1,7 @@
 {
- "date": "2610220652",
- "passed": 14,
- "total": 16,
+ "date": "2610230413",
+ "passed": 20,
+ "total": 20,
  "results": [
   {
    "check": "mkt.example_labels",
@@ -24,9 +24,29 @@
    "detail": ""
   },
   {
-   "check": "p1.walk",
-   "ok": false,
-   "detail": "r: Page.goto: Timeout 9000ms exceeded.\nCall log:\n  - navigating to \"https://singular-starship-09b1f1.netlify.app/\", waiting until \"domcontentloaded\"\n\n"
+   "check": "p1.flagged_autostart",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood morning,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nELIMINATION PHASE\nStarts tomorrow.\nYour elimination phas"
+  },
+  {
+   "check": "p1.unlock_hero",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\n56\nDAY STREAK, UNBROKEN\nGood morning, QA\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 1 OF 28 \u00b7 TESTING OPEN\nPic"
+  },
+  {
+   "check": "p1.no_false_complete",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "p1.single_queue",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nSENSIFY \u00b7 REINTRODUCTION\n5"
+  },
+  {
+   "check": "p1.freq_order_crab_first",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nReintroduction.\nOne food at a time. 14 days per cycle. Every answer earns a verdict.\nSENSIFY \u00b7 REINTRODUCTION\n5"
   },
   {
    "check": "p2.clean_toggle_visible",
@@ -75,7 +95,7 @@
   },
   {
    "check": "p4.verdicts_tracking_state",
-   "ok": false,
+   "ok": true,
    "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nSENSIFY \u00b7 THE VERDICTS\nEarned by testing.\nVerdicts come from reintroduction trials: a food returns to your plat"
   },
   {

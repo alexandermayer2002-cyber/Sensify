@@ -133,3 +133,14 @@ Tonight's #3 is the third sighting of the phantom-notification family
 #5/#6 extend 10-21's theme that failure paths fail silently. The
 `p4.verdicts_tracking_state` harness/product mismatch from 10-21 is unchanged
 and still awaits a ruling.
+
+---
+
+> **Resolved 2026-10-23 (Deploy 10, approved by Alex):** #2 add-your-own-food
+> row (verified live), #3 softer pending copy + refetch-on-focus, #4 extracted
+> names canonicalized, #5 upload failures now stop and surface + admin card
+> fixed + legacy file_url writes removed, #6 image downscale + PDF size cap,
+> #7 glyph fixed (verified live), plus the minors (badge folded into tinted
+> select, no-sensitivities toggle mutually exclusive with flags). With #1 and
+> the p4 ruling from earlier today, every item in this report is closed.
+> Post-deploy regression: 20/20.
