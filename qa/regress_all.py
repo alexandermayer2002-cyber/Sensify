@@ -168,11 +168,20 @@ def run_marketing():
         r.close()
 
 if __name__ == "__main__":
+    import sys
     run_marketing()
     run_p1()
     run_p2()
     run_p3()
     run_p4()
+    # DEPTH LAYER (2026-10-23): aged-persona fleet + invariant sweep. Guarded so
+    # a fleet crash can never take down the base suite. --no-fleet skips it.
+    if "--no-fleet" not in sys.argv:
+        try:
+            from fleetkit import run_fleet
+            run_fleet(check)
+        except Exception:
+            check("fleet.boot", False, traceback.format_exc()[-150:])
     passed = sum(1 for x in RESULTS if x["ok"])
     summary = {"date": STAMP, "passed": passed, "total": len(RESULTS), "results": RESULTS}
     with open("regress_summary.json", "w") as f:
