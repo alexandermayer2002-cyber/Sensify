@@ -181,9 +181,6 @@ const css = `
   .snfy-dot.away { background: transparent; border: 1.5px solid #8BAE8A; }
   .snfy-dot.away .snfy-dot-day { color: #3D5C3C; }
   .snfy-dot.away .snfy-dot-mark { color: #8BAE8A; }
-  .snfy-dot.logged { background: #C9D8C4; }
-  .snfy-dot.logged .snfy-dot-day { color: #3D5C3C; }
-  .snfy-dot.logged .snfy-dot-mark { color: #3D5C3C; }
   .snfy-dot.today { box-shadow: 0 0 0 2px var(--forest-500); }
   .snfy-dot-day { font-size: 8px; font-weight: 700; letter-spacing: 0.3px; }
   .snfy-dot.yes .snfy-dot-day, .snfy-dot.no .snfy-dot-day { color: rgba(255,255,255,0.85); }
@@ -226,13 +223,6 @@ const css = `
 
   .snfy-loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; font-size: 14px; color: var(--gray); }
 `
-
-const BADGE = {
-  High: { bg: '#FBE9E9', color: '#A32D2D', dot: '#D64545', cls: 'high' },
-  Moderate: { bg: '#FCEFD9', color: '#8A5410', dot: '#E8941F', cls: 'moderate' },
-  Low: { bg: '#DEF2EE', color: '#1A6256', dot: '#2C9D8A', cls: 'low' },
-}
-
 // Confetti overlay — brand colors, 3.5 seconds, fades out
 function ConfettiOverlay() {
   const canvasRef = React.useRef(null)
@@ -299,85 +289,6 @@ function ConfettiOverlay() {
       ref={canvasRef}
       style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 999 }}
     />
-  )
-}
-
-// Interactive symptom graph
-
-function YourNumbers({ profile, weekFactors }) {
-  const [cat, setCat] = useState('sleep')
-  const STRESS_SCALE = { low: 1, mild: 2, moderate: 3, high: 4, severe: 5 }
-  const STRESS_NAMES = ['', 'Low', 'Mild', 'Moderate', 'High', 'Severe']
-  const CATS = {
-    sleep: { label: 'Sleep', unit: 'hours', field: 'sleep', baseline: parseFloat(profile?.baseline_avg_sleep), higherIsBetter: true, decimals: 1 },
-    hydration: { label: 'Water', unit: 'cups', field: 'hydration', baseline: parseFloat(profile?.baseline_avg_hydration), higherIsBetter: true, decimals: 1 },
-    stress: { label: 'Stress', unit: '', field: 'stress', baseline: STRESS_SCALE[profile?.baseline_avg_stress], higherIsBetter: false, decimals: 1, ordinal: true },
-    drinks: { label: 'Alcohol', unit: 'drinks / week', field: 'drinks', baseline: parseFloat(profile?.baseline_avg_drinks_week), higherIsBetter: false, decimals: 1, weeklyTotal: true },
-  }
-  const cfg = CATS[cat]
-  const nums = (rows) => rows.map(r => cfg.ordinal ? STRESS_SCALE[r[cfg.field]] : parseFloat(r[cfg.field])).filter(n => n != null && !isNaN(n))
-  const avg = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null
-  const today = new Date(); today.setHours(0,0,0,0)
-  const wk = (weekFactors || []).filter(r => {
-    const [y, m, d] = r.log_date.split('-').map(Number)
-    return (today - new Date(y, m - 1, d)) / 86400000 <= 6
-  })
-  let weekAvg = avg(nums(wk))
-  let protoAvg = avg(nums(weekFactors || []))
-  if (cfg.weeklyTotal) {
-    const wkVals = nums(wk)
-    weekAvg = wkVals.length ? wkVals.reduce((a, b) => a + b, 0) : null
-    const allVals = nums(weekFactors || [])
-    const weeks = Math.max(1, Math.ceil((weekFactors || []).length / 7))
-    protoAvg = allVals.length ? allVals.reduce((a, b) => a + b, 0) / weeks : null
-  }
-  const baseline = isNaN(cfg.baseline) ? null : cfg.baseline
-  const bars = [
-    { label: 'Baseline', sub: 'from intake', v: baseline, color: '#E0DED6', tcolor: '#7A7A72' },
-    { label: 'This week', sub: `${wk.length} check-in${wk.length !== 1 ? 's' : ''}`, v: weekAvg, color: '#8BAE8A', tcolor: '#3D5C3C' },
-    { label: 'Protocol', sub: `${(weekFactors || []).length} days`, v: protoAvg, color: '#3D5C3C', tcolor: '#3D5C3C' },
-  ]
-  const present = bars.filter(b => b.v != null)
-  if (present.length < 2) return null
-  const max = Math.max(...present.map(b => b.v), 1)
-  const ref = weekAvg != null ? weekAvg : protoAvg
-  const delta = baseline != null && ref != null ? ref - baseline : null
-  const improving = delta != null && (cfg.higherIsBetter ? delta >= 0 : delta <= 0)
-  const fmt = (v) => {
-    if (v == null) return '—'
-    if (cfg.ordinal) return STRESS_NAMES[Math.min(5, Math.max(1, Math.round(v)))]
-    return (Math.round(v * 10) / 10).toFixed(cfg.decimals).replace(/\.0$/, '')
-  }
-  return (
-    <div className="snfy-card" style={{ marginTop: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#1C1C1C' }}>Your numbers</div>
-        <select value={cat} onChange={e => setCat(e.target.value)} style={{ background: '#F4F2EC', border: 'none', borderRadius: 10, padding: '7px 11px', fontSize: 12, color: '#1C1C1C', cursor: 'pointer', outline: 'none' }}>
-          {Object.entries(CATS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-        </select>
-      </div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 20, height: 108, padding: '0 6px', marginBottom: 6 }}>
-        {bars.map(b => (
-          <div key={b.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, height: '100%', justifyContent: 'flex-end' }}>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 14, color: b.v == null ? '#C8C6BE' : b.tcolor }}>{fmt(b.v)}</div>
-            <div style={{ width: '100%', maxWidth: 50, height: b.v == null ? 3 : `${Math.max((b.v / max) * 78, 5)}%`, background: b.v == null ? '#EFEDE6' : b.color, borderRadius: '8px 8px 3px 3px' }} />
-          </div>
-        ))}
-      </div>
-      <div style={{ display: 'flex', gap: 20, padding: '0 6px', marginBottom: 12 }}>
-        {bars.map(b => (
-          <div key={b.label} style={{ flex: 1, textAlign: 'center', fontSize: 9.5, color: '#8A8A82', lineHeight: 1.4 }}>{b.label}<br /><span style={{ color: '#B8B6AE' }}>{b.sub}</span></div>
-        ))}
-      </div>
-      {delta != null && Math.abs(delta) >= 0.05 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: improving ? '#EDF3ED' : '#FDF2EA', borderRadius: 10, padding: '9px 12px' }}>
-          <span style={{ fontSize: 13, color: improving ? '#3D5C3C' : '#8A5410' }}>{delta >= 0 ? '↑' : '↓'}</span>
-          <span style={{ fontSize: 11.5, color: improving ? '#3D5C3C' : '#8A5410', lineHeight: 1.5 }}>
-            <strong>{cfg.ordinal ? `${fmt(ref)} this week vs ${fmt(baseline)} baseline.` : `${delta >= 0 ? '+' : '−'}${fmt(Math.abs(delta))} ${cfg.unit} vs baseline.`}</strong> {improving ? (cfg.higherIsBetter ? `More ${cfg.label.toLowerCase()} is exactly the right direction.` : cfg.ordinal ? 'Calmer than your baseline. Good.' : 'Lower is the right direction here.') : 'Worth keeping an eye on.'}
-          </span>
-        </div>
-      )}
-    </div>
   )
 }
 
@@ -996,26 +907,25 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           : 0
 
         if (protocolDayNum >= 28 && c && c.length >= 4) {
+          // Measure only dimensions with BOTH a baseline and a latest reading
+          // (QA 2026-10-23 #6): the old `: 100` fallbacks scored missing data
+          // as 100% improvement, so sparse-data users — the exact customers
+          // this net exists for — could never trip it. No measurable
+          // dimension at all = insufficient data, not improvement.
+          const dims = []
           const baselineBloating = p?.baseline_bloating
           const baselineEnergy = p?.baseline_energy
           const latestBloating = c[0]?.answers?.bloating
           const latestEnergy = c[0]?.answers?.energy
-
-          const bloatingImprovement = baselineBloating && latestBloating
-            ? ((baselineBloating - latestBloating) / baselineBloating) * 100
-            : 100
-
-          const energyImprovement = baselineEnergy && latestEnergy
-            ? ((latestEnergy - baselineEnergy) / baselineEnergy) * 100
-            : 100
-
-          const avgImprovement = (bloatingImprovement + energyImprovement) / 2
+          if (baselineBloating && latestBloating) dims.push(((baselineBloating - latestBloating) / baselineBloating) * 100)
+          if (baselineEnergy && latestEnergy) dims.push(((latestEnergy - baselineEnergy) / baselineEnergy) * 100)
+          const avgImprovement = dims.length ? dims.reduce((a, b) => a + b, 0) / dims.length : null
 
           const highComplianceCount = c.filter(checkin =>
             checkin.answers?.compliance === 'Fully' || checkin.answers?.compliance === 'Mostly'
           ).length
 
-          if (avgImprovement < 15 && highComplianceCount >= 3) {
+          if (avgImprovement !== null && avgImprovement < 15 && highComplianceCount >= 3) {
             const { data: existingAudit } = await supabase
               .from('compliance_audit')
               .select('id')
@@ -1097,21 +1007,22 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         }
       } catch (e) {}
     }
-    // Day 3
-    else if (day === 3) {
+    // Windows, not exact days (QA 2026-10-23 #1): a customer who doesn't open
+    // the app on precisely day 3/14/28 used to lose that milestone forever.
+    // Each window still fires once (the shown-once guard), on the first visit
+    // inside it — the same pattern day 57 already used.
+    else if (day >= 3 && day < 14) {
       const shown = await checkMilestoneShown(supabase, session.user.id, 'day3')
       if (!shown) {
         try {
-          const { generateDay3Message: gen } = await import('../utils/aiInsights')
-          const msg = await gen({ name, profile: p, labResult: lab })
+          const msg = await generateDay3Message({ name, profile: p, labResult: lab })
           setMilestoneMessage(msg)
           setMilestoneKey('day3')
           await markMilestoneShown(supabase, session.user.id, 'day3')
         } catch (e) {}
       }
     }
-    // Day 14
-    else if (day === 14) {
+    else if (day >= 14 && day < 28) {
       const shown = await checkMilestoneShown(supabase, session.user.id, 'day14')
       if (!shown) {
         try {
@@ -1123,8 +1034,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         } catch (e) {}
       }
     }
-    // Day 28
-    else if (day === 28) {
+    else if (day >= 28 && day < 57) {
       const shown = await checkMilestoneShown(supabase, session.user.id, 'day28')
       if (!shown) {
         try {
@@ -1234,18 +1144,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     } catch (e) { return null }
   })()
 
-  const cycleStaleLite = (() => {
-    try {
-      if (!activeCycleLite?.started_at || activeCycleLite.washout_started_at) return false
-      if ((activeCycleLite.exposure_days_completed || 0) >= 3) return false
-      const [y, m, d] = String(activeCycleLite.started_at).split('T')[0].split('-').map(Number)
-      const cs = new Date(y, m - 1, d)
-      const now = new Date()
-      return Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - cs) / 86400000) + 1 > 5
-    } catch (e) { return false }
-  })()
-
-  const cycleStaleFood = (() => {
+  // One stale-cycle fact (QA 2026-10-23 #3 folded the twin IIFEs that computed
+  // this twice): the active cycle's food when it stalled pre-washout (>5 days
+  // without 3 exposures), else null.
+  const cycleStale = (() => {
     try {
       if (!activeCycleLite?.started_at || activeCycleLite.washout_started_at) return null
       if ((activeCycleLite.exposure_days_completed || 0) >= 3) return null
@@ -1269,7 +1171,6 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       const cd = Math.min(rawCd, 14)
       if (cd < 1) return `${activeCycleLite.food.toUpperCase()} CYCLE · STARTS TOMORROW`
       if (cd > 5 && (activeCycleLite.exposure_days_completed || 0) < 3 && !activeCycleLite.washout_started_at) return `${activeCycleLite.food.toUpperCase()} CYCLE · NEEDS A RESTART · SEE THE REINTRO TAB`
-      if (!activeCycleLite.washout_started_at && (activeCycleLite.exposure_days_completed || 0) < 3 && rawCd > 5) return `${activeCycleLite.food.toUpperCase()} CYCLE · PAUSED · RESTART FROM THE REINTRO TAB`
       const ph = activeCycleLite.washout_started_at ? 'WASHOUT' : 'EXPOSURE'
       return `${activeCycleLite.food.toUpperCase()} CYCLE · DAY ${cd} OF 14 · ${ph}`
     } catch (e) { return null }
@@ -1288,8 +1189,6 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     : profile?.program_phase === 'pending_review' ? 'Awaiting Approval'
     : 'Setup in progress'
 
-  const highFoods = labResult?.foods?.filter(f => f.level === 'High') || []
-  const moderateFoods = labResult?.foods?.filter(f => f.level === 'Moderate') || []
   const showAvoidingList = labResult?.foods && labResult.status !== 'pending_review'
 
   // Exposure-honest avoiding list (mirrors netlify/functions/household-card.js):
@@ -1513,7 +1412,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           // cycles keep their existing micro-line messaging.
           const runningCycle = (() => {
             try {
-              if (!activeCycleLite?.started_at || cycleStaleLite || cycleStaleFood) return null
+              if (!activeCycleLite?.started_at || cycleStale) return null
               const [y, m, d] = String(activeCycleLite.started_at).split('T')[0].split('-').map(Number)
               const cs = new Date(y, m - 1, d)
               const nowD = new Date()
@@ -1537,9 +1436,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <svg width="62" height="62" viewBox="0 0 62 62" aria-hidden="true">
                     <circle cx="31" cy="31" r="26" fill="none" stroke="rgba(250,248,244,0.14)" strokeWidth="5" />
                     <circle className="snfy-hero-ring" cx="31" cy="31" r="26" fill="none" stroke="#8BAE8A" strokeWidth="5" strokeLinecap="round" strokeDasharray="163.4" strokeDashoffset="0" transform="rotate(-90 31 31)" style={{ '--sn-draw-from': 163.4, animation: 'snDraw 1.1s var(--ease) both' }} />
-                    <text x="31" y="38" textAnchor="middle" fontFamily="Fraunces, Georgia, serif" fontWeight="300" fontSize="22" fill="#FAF8F4">{cleanDays}</text>
+                    <text x="31" y="38" textAnchor="middle" fontFamily="Fraunces, Georgia, serif" fontWeight="300" fontSize="22" fill="#FAF8F4">{cleanDays > 0 ? cleanDays : '–'}</text>
                   </svg>
-                  <span className="sn-micro sn-micro-dark" style={{ textAlign: 'center', maxWidth: 86 }}>day streak{cleanDays >= 3 ? ', unbroken' : ''}</span>
+                  {/* A celebrated zero reads as a bug (QA 2026-10-23 #5): before the
+                      first check-in the ring shows a dash and names what starts it. */}
+                  <span className="sn-micro sn-micro-dark" style={{ textAlign: 'center', maxWidth: 86 }}>{cleanDays > 0 ? <>day streak{cleanDays >= 3 ? ', unbroken' : ''}</> : 'streak starts with tonight’s check-in'}</span>
                 </div>
                 <div style={{ flex: 1, minWidth: 220 }}>
                   <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.5)', marginBottom: 4 }}>{getGreeting()}, {name}</div>
@@ -1558,18 +1459,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Your {verdictReadyFood} verdict is ready</span>
                     <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                   </button>
-                ) : cycleStaleLite ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
-                    <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#8BAE8A', border: 'none', borderRadius: 'var(--r-md)', padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-                      <span style={{ fontSize: 13, color: '#22301F', fontWeight: 600 }}>Restart the {activeCycleLite.food.toLowerCase()} cycle</span>
-                      <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
-                    </button>
-                    {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11.5, color: 'rgba(250,248,244,0.55)', textDecoration: 'underline', cursor: 'pointer' }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
-                  </div>
-                ) : cycleStaleFood ? (
+                ) : cycleStale ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
                     <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#D4894A', border: 'none', borderRadius: 'var(--r-md)', padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', boxShadow: '0 0 20px rgba(212,137,74,0.3)' }}>
-                    <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Restart your {cycleStaleFood.toLowerCase()} cycle</span>
+                      <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>Restart your {cycleStale.toLowerCase()} cycle</span>
                       <span style={{ fontSize: 13, color: '#22301F', fontWeight: 700 }}>{'\u2192'}</span>
                     </button>
                     {!dailyDone && <button onClick={() => setScreen('daily-checkin')} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11.5, color: 'rgba(250,248,244,0.55)', textDecoration: 'underline', cursor: 'pointer' }}>{new Date().getHours() >= 17 ? 'or log tonight\u2019s check-in' : 'or log today\u2019s check-in'}</button>}
@@ -1671,7 +1564,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {milestoneMessage && (
               <div className="snfy-action sn-rise" style={{ background: 'linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', boxShadow: 'var(--shadow-3)', color: 'white', position: 'relative' }}>
                 <div className="sn-micro sn-micro-dark" style={{ marginBottom: '10px' }}>
-                  {milestoneKey === 'day1' ? 'Day 1' : milestoneKey === 'day3' ? 'Day 3' : milestoneKey === 'day14' ? '2 week milestone' : milestoneKey === 'day28' ? 'One month in' : milestoneKey === 'day57' ? 'Reintroduction begins' : milestoneKey === 'day113' ? 'Moderate tier unlocked' : milestoneKey === 'day169' ? 'Final tier unlocked' : 'Milestone'}
+                  {milestoneKey === 'day1' ? 'Day 1' : milestoneKey === 'day3' ? 'Day 3' : milestoneKey === 'day14' ? '2 week milestone' : milestoneKey === 'day28' ? 'One month in' : milestoneKey === 'day57' ? 'Reintroduction begins' : 'Milestone'}
                 </div>
                 {(() => {
                   // Day-1 briefings arrive in three labeled sections; render
@@ -1830,7 +1723,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Guidance being prepared</div>
-                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Your personalized guidance will be ready within 24 hours.</div>
+                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Usually ready within a day — it will meet you here.</div>
                 </div>
               </div>
             )}
@@ -2015,16 +1908,16 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   // Early in the protocol the trailing window reaches before day 1;
                   // pre-protocol dots already render blank, so clamp the label.
                   const weekLabel = startDayNum !== null
-                    ? (startDayNum >= 1 ? `Days ${startDayNum}\u2013${startDayNum + 6}` : `Days 1\u2013${startDayNum + 6}`)
+                    ? (startDayNum >= 1 ? `Days ${startDayNum}\u2013${startDayNum + 6}`
+                      : startDayNum + 6 <= 1 ? 'Day 1'   // day one: never "Days 1\u20131" (QA 2026-10-23 #5)
+                      : `Days 1\u2013${startDayNum + 6}`)
                     : 'Last 7 days'
                   return (
                     <>
                       <div className="snfy-comp-top">
                         <div className="sn-micro">{weekLabel}</div>
-                        <div className="snfy-comp-streak-wrap">
-                          <div className="snfy-comp-streak-num">{cleanDays}</div>
-                          <div className="sn-micro sn-micro-dim">day streak</div>
-                        </div>
+                        {/* The streak number lives in the hero ring only (QA
+                            2026-10-23 #5): this card keeps the dots + window. */}
                       </div>
                       <div className="snfy-comp-dots">
                         {days.map((d, i) => (
@@ -2249,8 +2142,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               // Away-on-plan nights hang stars too (Alex's ruling): your word counts in the sky.
               // They render as hollow rings — same ○ language as the week calendar — so the
               // record stays legible: filled = logged, ring = on your word.
-              const starCount = preP ? 0 : Math.max(0, Math.min(recordStats.days + awayN, currentDay, 28))
-              const ringCount = Math.min(awayN, starCount)
+              // Only LOGGED nights advance the 28 (QA 2026-10-23 #4): pattern
+              // detection needs real data, and the compliance legend already
+              // says away days stay out of the analysis. Away nights still get
+              // a mention in the copy, but hang no counted star.
+              const starCount = preP ? 0 : Math.max(0, Math.min(recordStats.days, currentDay, 28))
               const complete = starCount >= 28
               // 28 fixed anchors of the leaf (x, y, r)
               const A = [[140,186,2],[140,177,1.5],[140,168,2.2],[106,146,1.7],[174,146,1.7],[86,116,1.7],[194,116,1.7],[81,86,1.7],[199,86,1.7],[92,52,1.7],[188,52,1.7],[112,26,1.7],[168,26,1.7],[126,14,1.5],[154,14,1.5],[140,8,2.2],[140,140,1.6],[140,108,1.6],[140,76,1.6],[100,106,1.4],[180,106,1.4],[106,74,1.4],[174,74,1.4],[118,42,1.4],[162,42,1.4],[122,122,1.3],[158,122,1.3],[140,58,1.3]]
@@ -2275,7 +2171,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#3D5C3C' }}>took shape.</span></> : starCount < 8 ? <>Every check-in <span style={{ color: '#3D5C3C' }}>hangs a star.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
                   </div>
                   <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginBottom: 10 }}>
-                    {preP ? <>Every day you log becomes a star. At 28 nights they form a constellation, and pattern detection unlocks. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <b style={{ color: '#1C1C1C', fontWeight: 600 }}>Pattern detection is live</b>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{ringCount > 0 ? <> ({ringCount} on your word while away)</> : ''}{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <b style={{ color: '#1C1C1C', fontWeight: 600 }}>pattern detection unlocks</b>: sleep, stress, and symptoms, cross-referenced for connections.</>}
+                    {preP ? <>Every day you log becomes a star. At 28 nights they form a constellation, and pattern detection unlocks. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <b style={{ color: '#1C1C1C', fontWeight: 600 }}>Pattern detection is live</b>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{awayN > 0 ? <> ({awayN} away night{awayN === 1 ? '' : 's'} on your word, held out of the count)</> : ''}{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <b style={{ color: '#1C1C1C', fontWeight: 600 }}>pattern detection unlocks</b>: sleep, stress, and symptoms, cross-referenced for connections.</>}
                   </div>
                   <svg width="100%" viewBox="0 0 280 195" style={{ display: 'block', borderRadius: 14 }}>
                     <defs>
@@ -2314,14 +2210,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           </g>
                         )}
                         <g filter="url(#lcGlow)">
-                          {(() => {
-                            const ringSet = new Set(order.slice(Math.max(0, starCount - ringCount), starCount))
-                            return P.map(([x, y, r], i) => present.has(i)
-                              ? (ringSet.has(i)
-                                ? <circle key={i} cx={x} cy={y} r={r} fill="none" stroke="#FAF8F4" strokeWidth="1" opacity="0.85" style={{ animation: `lcTw 3.4s ease-in-out ${(i % 3) * 1.1}s infinite` }} />
-                                : <circle key={i} cx={x} cy={y} r={r} fill="#FAF8F4" style={{ animation: `lcTw 3.4s ease-in-out ${(i % 3) * 1.1}s infinite` }} />)
-                              : null)
-                          })()}
+                          {P.map(([x, y, r], i) => present.has(i)
+                            ? <circle key={i} cx={x} cy={y} r={r} fill="#FAF8F4" style={{ animation: `lcTw 3.4s ease-in-out ${(i % 3) * 1.1}s infinite` }} />
+                            : null)}
                         </g>
                       </>
                     )}
