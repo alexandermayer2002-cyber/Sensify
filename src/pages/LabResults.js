@@ -72,6 +72,34 @@ const COMMON_FOODS = [
   'Coffee', 'Tea', 'Cocoa', 'Vanilla', 'Cane Sugar', 'Honey', 'Sesame', 'Sunflower Seed', 'Flaxseed',
 ]
 
+// Canonicalize extracted food names to the app's vocabulary (QA 2026-10-22 #4):
+// getTestingOrder looks up intake frequency by exact name, so "Cow's Milk" from
+// a lab PDF silently loses its "Cow Milk — Daily" rating and drops to the back
+// of the frequency-first testing order. Normalize before anything is saved.
+const CANON_BY_KEY = COMMON_FOODS.reduce((m, f) => { m[f.toLowerCase()] = f; return m }, {})
+const FOOD_ALIASES = {
+  'milk': 'Cow Milk', 'cow milk': 'Cow Milk', 'cows milk': 'Cow Milk', 'whole milk': 'Cow Milk', 'dairy milk': 'Cow Milk',
+  'egg whites': 'Egg White', 'egg yolks': 'Egg Yolk', 'eggs': 'Egg White', 'egg': 'Egg White',
+  'wheat gluten': 'Gluten', 'soybean': 'Soy', 'soya': 'Soy', 'peanuts': 'Peanut', 'almonds': 'Almond',
+  'cashews': 'Cashew', 'walnuts': 'Walnut', 'tomatoes': 'Tomato', 'potatoes': 'Potato', 'carrots': 'Carrot',
+  'onions': 'Onion', 'mushrooms': 'Mushroom', 'apples': 'Apple', 'bananas': 'Banana', 'oranges': 'Orange',
+  'strawberries': 'Strawberry', 'blueberries': 'Blueberry', 'grapes': 'Grape', 'lemons': 'Lemon',
+  'shrimps': 'Shrimp', 'scallops': 'Scallop', 'sugar': 'Cane Sugar', 'sesame seed': 'Sesame', 'sesame seeds': 'Sesame',
+  'sunflower seeds': 'Sunflower Seed', 'flax': 'Flaxseed', 'flax seed': 'Flaxseed', 'flax seeds': 'Flaxseed',
+}
+const canonFoodName = (raw) => {
+  const cleaned = String(raw || '').trim().replace(/\s+/g, ' ')
+  if (!cleaned) return cleaned
+  // strip possessives and parentheticals: "Cow's Milk" -> "cow milk", "Wheat (gluten)" -> "wheat"
+  const key = cleaned.toLowerCase().replace(/[’']s\b/g, '').replace(/[’']/g, '').replace(/\s*\(.*\)\s*/g, ' ').replace(/\s+/g, ' ').trim()
+  const tryKeys = [key, key.endsWith('s') ? key.slice(0, -1) : key + 's']
+  for (const k of tryKeys) {
+    if (CANON_BY_KEY[k]) return CANON_BY_KEY[k]
+    if (FOOD_ALIASES[k]) return FOOD_ALIASES[k]
+  }
+  return cleaned // off-list food: keep it as the report names it
+}
+
 const SENSITIVITY_COLORS = {
   High: { bg: '#FBE9E9', color: '#A32D2D', dot: '#D64545' },
   Moderate: { bg: '#FCEFD9', color: '#8A5410', dot: '#E8941F' },
@@ -88,6 +116,9 @@ export default function LabResults({ session, onComplete, onBack }) {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [manualFoods, setManualFoods] = useState({})
+  // Off-list foods the user added by hand (QA 2026-10-22 #2): real lab panels
+  // run 96–200+ foods, so the fixed picker list needs an escape hatch.
+  const [customFoods, setCustomFoods] = useState([])
   const [saving, setSaving] = useState(false)
   const [noSensitivities, setNoSensitivities] = useState(false)
   const fileRef = useRef()
@@ -109,15 +140,58 @@ export default function LabResults({ session, onComplete, onBack }) {
     reader.readAsDataURL(file)
   })
 
+  // Downscale/re-encode a photo to a JPEG the pipeline can carry (QA 2026-10-22
+  // #6): the proxy function caps request bodies around 6MB and base64 adds a
+  // third, so an un-shrunk phone photo fails at the transport layer; HEIC and
+  // other formats the vision API can't take get converted by the canvas here.
+  const shrinkImage = (f) => new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(f)
+    const img = new Image()
+    img.onload = () => {
+      try {
+        const maxSide = 1600
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.max(1, Math.round(img.width * scale))
+        canvas.height = Math.max(1, Math.round(img.height * scale))
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+        URL.revokeObjectURL(url)
+        resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1])
+      } catch (e) { URL.revokeObjectURL(url); reject(e) }
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('unreadable image')) }
+    img.src = url
+  })
+
   const analyzeFile = async () => {
     if (!file) return
     setProcessing(true)
     setError('')
 
+    const isPDF = file.type === 'application/pdf'
+    if (isPDF && file.size > 4.5 * 1024 * 1024) {
+      setError('That PDF is too large to read automatically (over 4.5MB). Try exporting a smaller copy, or enter your results manually — it only takes a minute.')
+      setProcessing(false)
+      return
+    }
+
+    let base64, mediaType
     try {
       setProcessingMsg('Reading your results...')
-      const base64 = await toBase64(file)
-      const isPDF = file.type === 'application/pdf'
+      if (isPDF) {
+        base64 = await toBase64(file)
+        mediaType = file.type
+      } else {
+        base64 = await shrinkImage(file)
+        mediaType = 'image/jpeg'
+      }
+    } catch (err) {
+      setError("We couldn't read that photo format. Take the photo again with your camera app set to a standard format, upload a PDF, or enter your results manually.")
+      setProcessing(false)
+      return
+    }
+
+    try {
 
       setTimeout(() => setProcessingMsg('Identifying flagged foods...'), 1200)
       setTimeout(() => setProcessingMsg('Categorizing sensitivity levels...'), 2400)
@@ -129,7 +203,7 @@ export default function LabResults({ session, onComplete, onBack }) {
                 type: isPDF ? 'document' : 'image',
                 source: {
                   type: 'base64',
-                  media_type: file.type,
+                  media_type: mediaType,
                   data: base64,
                 },
               },
@@ -160,10 +234,11 @@ Rules:
       const clean = text.replace(/```json|```/g, '').trim()
       const parsed = JSON.parse(clean)
 
-      setExtractedFoods(parsed.foods)
+      const foods = (parsed.foods || []).map(f => ({ ...f, name: canonFoodName(f.name) }))
+      setExtractedFoods(foods)
       setProcessingMsg('')
     } catch (err) {
-      setError('Something went wrong reading your file. Please try manual entry instead.')
+      setError('Something went wrong reading your file. Please try again, or enter your results manually instead.')
     }
 
     setProcessing(false)
@@ -184,6 +259,9 @@ Rules:
       }
       return { ...prev, [food]: level }
     })
+    // Flagging a food contradicts "my report shows no sensitivities" — clear
+    // the toggle instead of silently ignoring it at submit.
+    if (manualFoods[food] !== level) setNoSensitivities(false)
   }
 
   const getManualFoodsAsArray = () => {
@@ -191,7 +269,8 @@ Rules:
   }
 
   const [reviewing, setReviewing] = useState(false)
-  const handleSave = async () => {
+  const [uploadFailed, setUploadFailed] = useState(false)
+  const handleSave = async (skipFile = false) => {
     // Manual entry gets a review gate: first press shows the read-back, second confirms (finding #16)
     if (method === 'manual' && !reviewing) {
       const list = getManualFoodsAsArray()
@@ -208,9 +287,8 @@ Rules:
       }
     }
 
-    let file_url = null
     let file_path = null
-    if (uploadedFile) {
+    if (uploadedFile && !skipFile) {
       const fileExt = uploadedFile.name?.split('.').pop() || 'jpg'
       const fileName = `${session.user.id}-${Date.now()}.${fileExt}`
       const { data: storageData, error: storageError } = await supabase.storage
@@ -220,6 +298,14 @@ Rules:
         // Store only the path. The bucket is private; the admin dashboard
         // generates short-lived signed URLs for viewing. Never a public URL.
         file_path = fileName
+      } else {
+        // A failed upload used to be swallowed: the submission went through
+        // file-less and nobody — user or reviewer — learned the original
+        // document was lost (QA 2026-10-22 #5). Stop and say so instead.
+        setUploadFailed(true)
+        setError("Your reviewed foods are ready, but uploading the original file didn't go through, so we stopped before submitting. Tap submit to try again, or submit without the original file below.")
+        setSaving(false)
+        return
       }
     }
 
@@ -227,7 +313,6 @@ Rules:
       user_id: session.user.id,
       user_name: session.user.user_metadata?.full_name || session.user.email,
       foods,
-      file_url,
       file_path,
       submitted_at: new Date().toISOString(),
       status: 'pending_review',
@@ -256,15 +341,31 @@ Rules:
 
   // Search-first (#14): with an empty search, show only foods already flagged
   // (kept visible so entries remain reviewable/editable). Typing reveals matches.
+  const allPickableFoods = [...COMMON_FOODS, ...customFoods.filter(c => !COMMON_FOODS.includes(c))]
   const filteredFoods = search.trim()
-    ? COMMON_FOODS.filter(f => f.toLowerCase().includes(search.toLowerCase()))
-    : COMMON_FOODS.filter(f => manualFoods[f])
+    ? allPickableFoods.filter(f => f.toLowerCase().includes(search.toLowerCase()))
+    : allPickableFoods.filter(f => manualFoods[f])
+  const addCustomFood = () => {
+    const nm = search.trim().replace(/\s+/g, ' ').replace(/\w\S*/g, t => t[0].toUpperCase() + t.slice(1).toLowerCase())
+    if (!nm) return
+    setCustomFoods(prev => prev.includes(nm) ? prev : [...prev, nm])
+    // Keep the search as-is: the new food matches it, so its pill row appears right here.
+  }
 
   // Rendered in manual entry and in the upload path when extraction finds zero foods.
+  // Mutually exclusive with flagged foods: flagging clears it, and while foods
+  // are flagged it reads as unavailable instead of silently losing at submit.
+  const hasManualFlags = Object.keys(manualFoods).length > 0 && method === 'manual'
   const noSensitivitiesToggle = (
-    <button onClick={() => { setNoSensitivities(v => !v); setError('') }} style={{ width: '100%', textAlign: 'left', background: noSensitivities ? '#EDF3ED' : '#F7F5EE', border: 'none', boxShadow: noSensitivities ? '0 0 0 1.5px #3D5C3C, var(--shadow-1)' : 'none', borderRadius: '16px', padding: '13px 15px', fontSize: '13.5px', color: '#20241F', cursor: 'pointer', marginBottom: '10px', fontWeight: noSensitivities ? 600 : 400 }}>
+    <button
+      onClick={() => { if (hasManualFlags) return; setNoSensitivities(v => !v); setError('') }}
+      style={{ width: '100%', textAlign: 'left', background: noSensitivities ? '#EDF3ED' : '#F7F5EE', border: 'none', boxShadow: noSensitivities ? '0 0 0 1.5px #3D5C3C, var(--shadow-1)' : 'none', borderRadius: '16px', padding: '13px 15px', fontSize: '13.5px', color: '#20241F', cursor: hasManualFlags ? 'default' : 'pointer', marginBottom: '10px', fontWeight: noSensitivities ? 600 : 400, opacity: hasManualFlags ? 0.45 : 1 }}>
       My report shows no sensitivities
-      <div style={{ fontSize: '12px', color: '#73736A', fontWeight: 400, marginTop: '3px', lineHeight: 1.5 }}>That's a real result. We'll review it and recommend the right path, often testing common trigger foods instead.</div>
+      <div style={{ fontSize: '12px', color: '#73736A', fontWeight: 400, marginTop: '3px', lineHeight: 1.5 }}>
+        {hasManualFlags
+          ? "You've flagged foods above — clear them first if your report truly shows none."
+          : "That's a real result. We'll review it and recommend the right path, often testing common trigger foods instead."}
+      </div>
     </button>
   )
 
@@ -304,10 +405,15 @@ Rules:
         </div>
 
         {error && <div style={s.errorCard}>{error}</div>}
+        {uploadFailed && !saving && (
+          <button className="sn-btn sn-btn-quiet" style={{ width: '100%', marginBottom: '16px' }} onClick={() => { setUploadFailed(false); setError(''); handleSave(true) }}>
+            Submit without the original file
+          </button>
+        )}
 
         {(method === 'pdf' || method === 'photo') && !extractedFoods && !processing && (
           <div style={{ background: '#22301F', borderRadius: 16, boxShadow: 'var(--shadow-3)', padding: '13px 15px', display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 16 }}>
-            <span style={{ color: '#8BAE8A', fontSize: 14, flexShrink: 0, marginTop: 1 }}>\u2726</span>
+            <span style={{ color: '#8BAE8A', fontSize: 14, flexShrink: 0, marginTop: 1 }}>{'\u2726'}</span>
             <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.75)', lineHeight: 1.55 }}>We read the reacted foods automatically. You review and confirm before anything is saved.</div>
           </div>
         )}
@@ -385,18 +491,17 @@ Rules:
                         <div style={{ ...s.resultDot, background: colors.dot }}></div>
                         {food.name}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <div style={{ ...s.badge, background: colors.bg, color: colors.color }}>{level}</div>
-                        <select
-                          style={s.editSelect}
-                          value={food.level}
-                          onChange={e => updateFoodLevel(extractedFoods.indexOf(food), e.target.value)}
-                        >
-                          <option>High</option>
-                          <option>Moderate</option>
-                          <option>Low</option>
-                        </select>
-                      </div>
+                      {/* One control, not a badge + a matching dropdown: the
+                          select IS the level display, tinted like the old badge. */}
+                      <select
+                        style={{ ...s.editSelect, background: colors.bg, color: colors.color, fontWeight: 600 }}
+                        value={food.level}
+                        onChange={e => updateFoodLevel(extractedFoods.indexOf(food), e.target.value)}
+                      >
+                        <option>High</option>
+                        <option>Moderate</option>
+                        <option>Low</option>
+                      </select>
                     </div>
                   ))}
                 </div>
@@ -405,7 +510,7 @@ Rules:
 
             {extractedFoods.length === 0 && noSensitivitiesToggle}
 
-            <button className="sn-btn" style={s.cta} onClick={handleSave} disabled={saving}>
+            <button className="sn-btn" style={s.cta} onClick={() => handleSave()} disabled={saving}>
               {saving ? 'Submitting...' : 'Looks right, submit for review →'}
             </button>
             <button className="sn-btn sn-btn-quiet" style={s.secBtn} onClick={() => setExtractedFoods(null)}>Re-analyze</button>
@@ -456,6 +561,13 @@ Rules:
                   </div>
                 )
               })}
+              {search.trim() && filteredFoods.length === 0 && (
+                <div style={{ background: '#FFFFFF', boxShadow: 'var(--shadow-1)', borderRadius: 16, padding: '15px', marginBottom: 9 }}>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: '#20241F', marginBottom: 4 }}>No match for “{search.trim()}”</div>
+                  <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.55, marginBottom: 11 }}>Lab reports sometimes flag foods beyond our common list. Add it exactly as your report names it, then tap its level like any other food.</div>
+                  <button className="sn-btn sn-btn-quiet" style={{ width: '100%' }} onClick={addCustomFood}>Add “{search.trim()}” as a food</button>
+                </div>
+              )}
             </div>
 
             {noSensitivitiesToggle}
@@ -475,7 +587,7 @@ Rules:
             <button
               className="sn-btn"
               style={s.cta}
-              onClick={handleSave}
+              onClick={() => handleSave()}
               disabled={saving || (Object.keys(manualFoods).length === 0 && !noSensitivities)}
             >
               {saving ? 'Submitting...' : !reviewing ? 'Review my entry →' : 'Looks right, submit for review →'}

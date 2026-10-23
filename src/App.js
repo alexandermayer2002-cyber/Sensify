@@ -70,7 +70,10 @@ export default function App() {
         // too, and routing on them YANKED people off intake, onboarding, and any
         // other in-app page mid-flow, wiping their in-progress answers. Robot QA
         // found this by losing its intake twice. In-app pages now stay put.
-        setPage(prev => (prev === 'marketing' || prev === 'login' || prev === 'signup') ? 'dashboard' : prev)
+        // A sign-in from the signup page is a brand-new account: route it to
+        // onboarding (the check-in-ritual education) instead of straight to the
+        // dashboard — QA 2026-10-21 #4 found onboarding was unreachable.
+        setPage(prev => prev === 'signup' ? 'onboarding' : (prev === 'marketing' || prev === 'login') ? 'dashboard' : prev)
       } else if (event === 'SIGNED_OUT') {
         // A SIGNED_OUT can be a lie: a stale tab's doomed background token-refresh
         // (from a weeks-old expired session) can report sign-out AFTER the user has

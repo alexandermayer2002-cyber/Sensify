@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import NumPad from '../components/NumPad'
 import { normalizeMilestones, serializeMilestones } from '../utils/aiInsights'
@@ -116,7 +116,7 @@ const s = {
   sbtOn: { flex: 1, height: '44px', borderRadius: '10px', border: 'none', background: '#3D5C3C', fontSize: '18px', cursor: 'pointer', fontWeight: 400, color: 'white', fontFamily: 'Fraunces, serif', boxShadow: 'var(--shadow-pill)' },
   textarea: { width: '100%', borderRadius: '14px', padding: '14px 15px', fontSize: '16px', color: '#20241F', resize: 'none', height: '96px', lineHeight: 1.5 },
   categoryTitle2: { fontFamily: 'Fraunces, serif', fontSize: '15px', fontWeight: 400, color: '#3D5C3C', margin: '22px 0 12px', letterSpacing: '-0.2px' },
-  freqBtns: { display: 'flex', gap: '4px' },
+  freqBtns: { display: 'flex', flexWrap: 'wrap', gap: '4px' },
   freqBtn: { padding: '7px 11px', borderRadius: '999px', border: 'none', background: '#FFFFFF', boxShadow: 'var(--shadow-1)', fontSize: '12px', cursor: 'pointer', color: '#73736A', fontWeight: 600, transition: 'all 0.12s', whiteSpace: 'nowrap' },
   freqBtnOn: { padding: '7px 11px', borderRadius: '999px', border: 'none', background: '#3D5C3C', fontSize: '12px', cursor: 'pointer', color: '#FFFFFF', fontWeight: 600, boxShadow: 'var(--shadow-pill)', whiteSpace: 'nowrap' },
   footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: 'rgba(251,248,242,0.92)', backdropFilter: 'blur(8px)', boxShadow: '0 -8px 24px rgba(56,62,48,0.06)' },
@@ -142,6 +142,39 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   const [openPad, setOpenPad] = useState(null)
   const [padWarning, setPadWarning] = useState(null)
   const [saving, setSaving] = useState(false)
+
+  // Draft persistence (QA 2026-10-21 #5): all intake state was in-memory only,
+  // so a mid-intake refresh (or a phone discarding the backgrounded tab) lost
+  // everything including the signed consent. Mirror the draft to localStorage
+  // on change, rehydrate on mount, clear on completion. Best-effort: storage
+  // can be unavailable (private mode), so every touch is wrapped.
+  const draftKey = `sensify.intakeDraft.${session?.user?.id || 'anon'}`
+  const [hydrated, setHydrated] = useState(false)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(draftKey)
+      if (raw) {
+        const d = JSON.parse(raw)
+        if (d && typeof d.step === 'number') {
+          setStep(d.step)
+          setAgreed(!!d.agreed)
+          setResearchOk(!!d.researchOk)
+          setSignatureName(d.signatureName || '')
+          setSelectedCategories(Array.isArray(d.selectedCategories) ? d.selectedCategories : [])
+          setAnswers(d.answers || {})
+          setFoodFrequency(d.foodFrequency || {})
+          setLifestyle(d.lifestyle || {})
+        }
+      }
+    } catch (e) { /* storage unavailable — intake still works, just unsaved */ }
+    setHydrated(true)
+  }, [])
+  useEffect(() => {
+    if (!hydrated) return
+    try {
+      localStorage.setItem(draftKey, JSON.stringify({ step, agreed, researchOk, signatureName, selectedCategories, answers, foodFrequency, lifestyle }))
+    } catch (e) { /* best-effort */ }
+  }, [hydrated, step, agreed, researchOk, signatureName, selectedCategories, answers, foodFrequency, lifestyle])
 
   const hasDigestive = selectedCategories.includes('digestive')
   const hasEnergy = selectedCategories.includes('energy')
@@ -239,7 +272,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       if (!isNever(a.brain_fog_freq)) {
         scales.push({ id: 'baseline_clarity', label: 'In a typical week, how would you rate your mental clarity?', low: 'Very foggy', high: 'Crystal clear' })
       }
-      if (isFrequent(a.crashes_freq) || isFrequent(a.general_crashes)) {
+      if (isFrequent(a.crashes_freq)) {
         scales.push({ id: 'baseline_afternoon', label: 'In a typical week, how would you rate your afternoon energy?', low: 'Severe crash', high: 'Sustained energy' })
       }
       if (a.sleep_quality && a.sleep_quality !== 'Restful and consistent') {
@@ -319,6 +352,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       } catch (e) { /* optional consent must never block intake */ }
     }
     setSaving(false)
+    try { localStorage.removeItem(draftKey) } catch (e) { /* best-effort */ }
     onComplete()
   }
 
@@ -369,7 +403,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
               {
                 icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
                 title: 'Daily check-ins are part of the program',
-                desc: 'Your program includes a quick daily check-in inside the app, plus weekly reviews. Staying consistent with check-ins is what makes your results trustworthy. We may send you email reminders to help you stay on track.'
+                desc: 'Your program includes a quick daily check-in inside the app, plus weekly reviews. Staying consistent with check-ins is what makes your results trustworthy.'
               },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', gap: '13px', alignItems: 'flex-start' }}>
@@ -392,7 +426,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             {agreed && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
           </div>
           <div style={{ fontSize: '13px', color: '#1C1C1C', lineHeight: 1.65, paddingTop: '1px' }}>
-            I understand that Sensify is a wellness program and not a medical service, that insights are for informational purposes only, and that my program data may be accessed by the Sensify team to support my program. I agree to receive program-related emails from Sensify, including check-in reminders and account notifications.
+            I understand that Sensify is a wellness program and not a medical service, that insights are for informational purposes only, and that my program data may be accessed by the Sensify team to support my program. I agree to receive account and program notifications from Sensify.
           </div>
         </div>
 
@@ -559,11 +593,11 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         <div style={s.title}>Rate your symptoms<br /><em style={s.titleEm}>right now.</em></div>
         <div style={s.hint}>
           {baselineScales.length > 0
-            ? `Based on what you told us, we're asking about ${baselineScales.length} symptom${baselineScales.length !== 1 ? 's' : ''}. These scores become your starting point. Every improvement will be measured against them.`
+            ? `Based on what you told us, we're asking about ${baselineScales.length} symptom${baselineScales.length !== 1 ? 's' : ''}.`
             : 'Rate how you\'re feeling overall today. This becomes your baseline.'}
         </div>
         <div style={s.importantNote}>
-          These scores become your starting point. Every improvement we track will be measured against what you enter here, so be honest, not hopeful.
+          Be honest, not hopeful — these scores only help you if they're real.
         </div>
 
         {baselineScales.length > 0 && (
@@ -623,9 +657,11 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             {cat.foods.map((food, foodIndex) => (
               <div
                 key={food}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '13px 15px', borderRadius: '16px', marginBottom: '7px', background: '#FFFFFF', boxShadow: 'var(--shadow-1)' }}
+                style={{ padding: '13px 15px', borderRadius: '16px', marginBottom: '7px', background: '#FFFFFF', boxShadow: 'var(--shadow-1)' }}
               >
-                <div style={{ fontSize: '14.5px', color: '#20241F', fontWeight: 500 }}>{food}</div>
+                {/* Stacked: name above a wrapping pill row, so all six options
+                    stay on-screen at phone width (QA 2026-10-21 #1). */}
+                <div style={{ fontSize: '14.5px', color: '#20241F', fontWeight: 500, marginBottom: '9px' }}>{food}</div>
                 <div style={s.freqBtns}>
                   {FREQUENCY_OPTIONS.map(opt => (
                     <button key={opt.value} style={foodFrequency[food] === opt.value ? s.freqBtnOn : s.freqBtn} onClick={() => setFrequency(food, opt.value)}>{opt.label}</button>

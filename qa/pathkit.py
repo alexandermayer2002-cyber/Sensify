@@ -21,6 +21,10 @@ def signup_or_login(r, email, name, pw):
         r.fill_ph("At least 8 characters", pw)
         r.fill_ph("Re-enter your password", pw)
         r.click_btn("Create"); r.sleep(2.0); r.wait_ready(25)
+    # New accounts land on the check-in-ritual onboarding screen (wired back
+    # in on 2026-10-23, QA 10-21 #4); click through to the dashboard.
+    if "check-in ritual" in r.text().lower():
+        r.click_btn("Go to my dashboard"); r.sleep(1.5); r.wait_ready(20)
 
 def enter_intake(r, name):
     if "Start your intake survey" in r.text():

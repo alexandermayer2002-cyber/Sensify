@@ -801,7 +801,10 @@ export default function AdminDashboard({ session, onBack }) {
                             )}
                           </div>
                         )}
-                        {!lab.file_url && (
+                        {/* view_url, not the legacy file_url (always null since the
+                            private-bucket change): testing file_url stamped every
+                            uploaded PDF "manually entered" too (QA 2026-10-22 #5). */}
+                        {!lab.view_url && (
                           <div style={{ marginBottom: '14px', fontSize: '12px', color: '#7A7A72', fontStyle: 'italic' }}>Manually entered — no file uploaded</div>
                         )}
                         {highFoods.length > 0 && (

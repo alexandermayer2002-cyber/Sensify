@@ -816,6 +816,16 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
   useEffect(() => { loadData() }, [screen])
 
+  // Pick up server-side changes (lab approval, track assignment) when the
+  // user returns to the tab — there is no realtime subscription, so without
+  // this the "under review" card survives an approval until a full reload
+  // (QA 2026-10-22 #3).
+  useEffect(() => {
+    const onVisible = () => { if (document.visibilityState === 'visible') loadData() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [])
+
   const loadData = async () => {
     setLoading(true)
     try {
@@ -1799,7 +1809,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Results under review</div>
-                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Reviewed within 24 hours. Your dashboard updates the moment it's approved.</div>
+                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Usually reviewed within a day. Check back here — this page updates when it's approved.</div>
                 </div>
               </div>
             )}
