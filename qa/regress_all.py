@@ -142,7 +142,10 @@ def run_p4():
         check("p4.tracking_landing", "tracking, not testing" in t.lower(), t[:200])
         nav_tab(r, "Verdicts")
         tl = r.text().lower()
-        check("p4.verdicts_tracking_state", ("a document, waiting" in tl or "earned by" in tl) and "example" in tl, r.text()[:250])
+        # Aligned 2026-10-23: the tracking state intentionally has NO example
+        # wall (Alex's ruling) — it explains verdicts in text and points back
+        # to the protocol. Check that copy instead.
+        check("p4.verdicts_tracking_state", "earned by" in tl and "no trials are scheduled" in tl, r.text()[:250])
         try: r.page.get_by_text("Home", exact=True).first.click(timeout=3000); r.sleep(1.4)
         except Exception: r.goto(); r.sleep(2.0)
         nav_tab(r, "Reintro")

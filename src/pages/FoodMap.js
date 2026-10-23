@@ -171,8 +171,9 @@ export default function FoodMap({ session, profile, labResult }) {
   }
 
   // Tracking mode: the user declined the protocol. No queue, no promised
-  // cycles. The example wall stays (clearly labeled) so the tab still
-  // teaches what verdicts are; the door back to the protocol is named.
+  // cycles, no example wall (intentional cut, ruled 2026-10-23): the tab
+  // explains what verdicts are in text and names the door back to the
+  // protocol, assuming nothing about the user's foods.
   if (profile?.track_decision === 'declined' && loaded) {
     return (
       <div style={s.page}>

@@ -18,6 +18,13 @@ tracking branch still claims it stays); still open for Alex to rule on, nothing
 new tonight. Effective product state: everything the suite can reach is green
 except that one known mismatch.
 
+> **Ruled 2026-10-23 (Alex):** the missing example wall is an intentional cut.
+> Harness check realigned to the tracking-state copy, stale FoodMap.js comment
+> rewritten — this FAIL is resolved, not open. Finding #1 below (admin-decline
+> dead end) was approved and fixed the same day (`track_decision: 'declined'`
+> added to approveLab's declined branch, awaiting next deploy); findings #2–#7
+> remain open.
+
 ## What's solid
 
 The happy path is genuinely good. The synthetic PDF went through the real

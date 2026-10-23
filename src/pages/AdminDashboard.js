@@ -349,11 +349,15 @@ export default function AdminDashboard({ session, onBack }) {
     setApproving(prev => ({ ...prev, [labId]: true }))
 
     // Declining: mark the lab reviewed but do NOT start a protocol.
+    // track_decision is what every user-side tracking surface keys on
+    // (Dashboard isTracking, TrackingLanding, FoodMap tracking state) —
+    // without it the user lands on a blank dashboard (QA 2026-10-22 #1).
     if (track === 'declined') {
       const { error: labError } = await supabase.from('lab_results').update({ status: 'approved' }).eq('id', labId)
       const { error: profileError, data: updated } = await supabase.from('profiles').update({
         program_phase: 'declined',
         protocol_track: 'declined',
+        track_decision: 'declined',
         track_assigned_at: new Date().toISOString(),
         track_note: trackNote || null,
       }).eq('id', userId).select()
