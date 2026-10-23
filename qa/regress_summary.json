@@ -1,7 +1,7 @@
 {
- "date": "2610230413",
- "passed": 20,
- "total": 20,
+ "date": "2610230701",
+ "passed": 54,
+ "total": 54,
  "results": [
   {
    "check": "mkt.example_labels",
@@ -102,6 +102,176 @@
    "check": "p4.reintro_tracking_state",
    "ok": true,
    "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nReintroduction.\nThe testing phase of the structured protocol.\nYOU'RE TRACKING, NOT TESTING\nReintroduction cycle"
+  },
+  {
+   "check": "fleet.elimearly.no_overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.elimearly.screens_render",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.elimearly.no_dead_end",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.elimearly.seeded",
+   "ok": true,
+   "detail": "{\"protocol_start_date\": \"2026-10-22\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+  },
+  {
+   "check": "fleet.elimearly.day_logged",
+   "ok": true,
+   "detail": "no daily_factors row for 2026-10-23"
+  },
+  {
+   "check": "fleet.elimearly.day_counter",
+   "ok": true,
+   "detail": "shown=2 expected=2 start=2026-10-22"
+  },
+  {
+   "check": "fleet.elimearly.console_clean",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "check": "fleet.elimlate.no_overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.elimlate.screens_render",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.elimlate.no_dead_end",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.elimlate.seeded",
+   "ok": true,
+   "detail": "{\"protocol_start_date\": \"2026-09-12\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+  },
+  {
+   "check": "fleet.elimlate.day_logged",
+   "ok": true,
+   "detail": "no daily_factors row for 2026-10-23"
+  },
+  {
+   "check": "fleet.elimlate.day_counter",
+   "ok": true,
+   "detail": "shown=42 expected=42 start=2026-09-12"
+  },
+  {
+   "check": "fleet.elimlate.console_clean",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "check": "fleet.audit.no_overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.audit.screens_render",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.audit.no_dead_end",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.audit.seeded",
+   "ok": true,
+   "detail": "{\"protocol_start_date\": \"2026-10-19\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+  },
+  {
+   "check": "fleet.audit.day_logged",
+   "ok": true,
+   "detail": "no daily_factors row for 2026-10-23"
+  },
+  {
+   "check": "fleet.audit.day_counter",
+   "ok": true,
+   "detail": "shown=5 expected=5 start=2026-10-19"
+  },
+  {
+   "check": "fleet.audit.console_clean",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "check": "fleet.reintro.no_overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.reintro.screens_render",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.reintro.no_dead_end",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.reintro.seeded",
+   "ok": true,
+   "detail": "{\"protocol_start_date\": \"2026-08-28\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+  },
+  {
+   "check": "fleet.reintro.day_logged",
+   "ok": true,
+   "detail": "no daily_factors row for 2026-10-23"
+  },
+  {
+   "check": "fleet.reintro.verdict_count",
+   "ok": true,
+   "detail": "shown=0 / 3\nRULED db_ruled=0"
+  },
+  {
+   "check": "fleet.reintro.console_clean",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "check": "fleet.tracking.no_overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.tracking.screens_render",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.tracking.no_dead_end",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.tracking.seeded",
+   "ok": true,
+   "detail": "{\"protocol_start_date\": null, \"program_phase\": \"tracking\", \"protocol_track\": \"common\", \"track_decision\": \"declined\"}"
+  },
+  {
+   "check": "fleet.tracking.day_logged",
+   "ok": true,
+   "detail": "no daily_factors row for 2026-10-23"
+  },
+  {
+   "check": "fleet.tracking.console_clean",
+   "ok": true,
+   "detail": "[]"
   }
  ]
 }
