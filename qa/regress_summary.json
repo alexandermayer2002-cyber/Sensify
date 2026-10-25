@@ -1,5 +1,5 @@
 {
- "date": "2610240651",
+ "date": "2610250651",
  "passed": 54,
  "total": 54,
  "results": [
@@ -126,12 +126,12 @@
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-10-24"
+   "detail": "no daily_factors row for 2026-10-25"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=3 expected=3 start=2026-10-22"
+   "detail": "shown=4 expected=4 start=2026-10-22"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -161,12 +161,12 @@
   {
    "check": "fleet.elimlate.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-10-24"
+   "detail": "no daily_factors row for 2026-10-25"
   },
   {
    "check": "fleet.elimlate.day_counter",
    "ok": true,
-   "detail": "shown=43 expected=43 start=2026-09-12"
+   "detail": "shown=44 expected=44 start=2026-09-12"
   },
   {
    "check": "fleet.elimlate.console_clean",
@@ -191,17 +191,17 @@
   {
    "check": "fleet.audit.seeded",
    "ok": true,
-   "detail": "{\"protocol_start_date\": \"2026-10-19\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+   "detail": "{\"protocol_start_date\": \"2026-10-21\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
   },
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-10-24"
+   "detail": "no daily_factors row for 2026-10-25"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=6 expected=6 start=2026-10-19"
+   "detail": "shown=5 expected=5 start=2026-10-21"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -231,7 +231,7 @@
   {
    "check": "fleet.reintro.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-10-24"
+   "detail": "no daily_factors row for 2026-10-25"
   },
   {
    "check": "fleet.reintro.verdict_count",
@@ -266,7 +266,7 @@
   {
    "check": "fleet.tracking.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-10-24"
+   "detail": "no daily_factors row for 2026-10-25"
   },
   {
    "check": "fleet.tracking.console_clean",
