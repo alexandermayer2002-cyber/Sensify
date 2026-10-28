@@ -61,3 +61,18 @@ Tonight's #2 extends the silent-write family into its 9th sighting and #5/#7 the
 copy-promise family into its 9th and 10th — all three in askSensify.js/AskSensify.js,
 the one surface the sweep didn't touch. CONFOUND thresholds and verdictEngine.js
 remain flagged in-code as physician-review items.
+
+---
+
+> **Resolved 2026-10-28 (Deploy 13, approved by Alex):** all seven findings
+> closed, with #1/#4/#5 built out as one design rather than patched —
+> observation mode now returns a complete map context (logging works, verified
+> live: meal row landed in meal_logs), classification knows 'eliminated', and
+> every observation turn carries a 30-day digest of the user's own meal and
+> symptom logs, so pattern-reflection is real (verified live: the assistant
+> named the just-logged foods back, no invented verdicts). Meal/message saves
+> checked with inline retry (#2), AVOID reserved for confirmed verdicts with a
+> HOLD remap + gold styling (#3), photo path hardened like the lab flow (#6),
+> phase-aware status/disclaimer (#7), plus the load-speed, history-ordering
+> and prompt-opener minors. Post-deploy suite: 54/54. Remaining for Alex:
+> the two Supabase actions (payment-gate SQL, Confirm email) — eighth night.
