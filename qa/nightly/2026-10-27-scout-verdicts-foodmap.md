@@ -63,3 +63,14 @@ document that leaves the product. The 10-26 #1 severe-off-ramp safety finding
 remains the most urgent open item overall. One approved batch across the
 silent-write family (10-24 #3, 10-25 #1, 10-26 #2, tonight's #4) could close
 four nights' findings together.
+
+---
+
+> **Resolved 2026-10-28 (Deploy 12, approved by Alex):** every finding in this
+> report was implemented and deployed in one batch — all 28 open items across
+> the 10-24/10-25/10-26/10-27 reports, including the severe off-ramp, the
+> write-first pattern across every silent write, the PDF provenance lines, and
+> the dashboard guidance card. Post-deploy suite: 54/54 (one environmental goto
+> flake, retried green). One regression introduced and caught by the suite the
+> same hour (ReintroTab crash from a dead-var removal) — hotfixed in 6325a07.
+> Still with Alex: PAYMENT_GATE_MIGRATION.sql + Supabase "Confirm email".

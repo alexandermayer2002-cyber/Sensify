@@ -54,3 +54,14 @@ on 10-23); tonight's #1/#2 deepen the same silent-write + unkeepable-promise
 families, so one approved batch could close 10-24 #1/#3 and tonight's #1/#2 together.
 CONFOUND thresholds remain flagged in-code as physician-review items (gate flipped
 8/27/26 on Alex's word). The 10-23 promises-sweep recommendation stands.
+
+---
+
+> **Resolved 2026-10-28 (Deploy 12, approved by Alex):** every finding in this
+> report was implemented and deployed in one batch — all 28 open items across
+> the 10-24/10-25/10-26/10-27 reports, including the severe off-ramp, the
+> write-first pattern across every silent write, the PDF provenance lines, and
+> the dashboard guidance card. Post-deploy suite: 54/54 (one environmental goto
+> flake, retried green). One regression introduced and caught by the suite the
+> same hour (ReintroTab crash from a dead-var removal) — hotfixed in 6325a07.
+> Still with Alex: PAYMENT_GATE_MIGRATION.sql + Supabase "Confirm email".

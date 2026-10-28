@@ -61,3 +61,14 @@ sighting and the first with a safety edge. CONFOUND thresholds remain flagged
 in-code as physician-review items; verdictEngine.js carries the same "NOT a
 clinical standard until reviewed" banner and tonight's #3 shows the shadow copy of
 those thresholds already drifting.
+
+---
+
+> **Resolved 2026-10-28 (Deploy 12, approved by Alex):** every finding in this
+> report was implemented and deployed in one batch — all 28 open items across
+> the 10-24/10-25/10-26/10-27 reports, including the severe off-ramp, the
+> write-first pattern across every silent write, the PDF provenance lines, and
+> the dashboard guidance card. Post-deploy suite: 54/54 (one environmental goto
+> flake, retried green). One regression introduced and caught by the suite the
+> same hour (ReintroTab crash from a dead-var removal) — hotfixed in 6325a07.
+> Still with Alex: PAYMENT_GATE_MIGRATION.sql + Supabase "Confirm email".

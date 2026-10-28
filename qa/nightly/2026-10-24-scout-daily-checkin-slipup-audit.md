@@ -115,3 +115,14 @@ family (10-20 #2 SMS, 10-21 #6 consent emails, 10-22 #3 lab-review SLA, 10-23 #2
 audit card) — and the first where the promise is structurally undeliverable rather
 than merely unsent; the 10-23 recommendation of a single promises-sweep stands,
 with #1's delivery card as its natural first piece.
+
+---
+
+> **Resolved 2026-10-28 (Deploy 12, approved by Alex):** every finding in this
+> report was implemented and deployed in one batch — all 28 open items across
+> the 10-24/10-25/10-26/10-27 reports, including the severe off-ramp, the
+> write-first pattern across every silent write, the PDF provenance lines, and
+> the dashboard guidance card. Post-deploy suite: 54/54 (one environmental goto
+> flake, retried green). One regression introduced and caught by the suite the
+> same hour (ReintroTab crash from a dead-var removal) — hotfixed in 6325a07.
+> Still with Alex: PAYMENT_GATE_MIGRATION.sql + Supabase "Confirm email".
