@@ -56,7 +56,7 @@ const PHOTO_DISCIPLINE = `[PHOTO ATTACHED — read it and respond using the rule
 - If you cannot read the photo clearly, say so and ask them to retake it rather than guessing.
 - Never claim to have read something you can't actually see in the image.`
 
-const SYSTEM_PROMPT = `You are Ask Sensify, a food assistant inside the Sensify wellness app. The user has completed a food sensitivity program and has a personal Food Map sorting foods into Safe, Limit, and Avoid.
+const SYSTEM_PROMPT = `You are Ask Sensify, a food assistant inside the Sensify wellness app. The user is in (or has completed) a food sensitivity program; the Food Map context below says exactly where they stand — foods sorted into Safe, Limit, Avoid, and still-eliminated.
 
 YOUR JOB:
 1. Answer "can I eat this?" questions by checking foods against their Food Map.
@@ -91,7 +91,7 @@ VERDICT (for "can I eat this specific food/dish" questions):
 - When the user asks whether they can eat a specific food or dish, append a metadata line at the very end like:
 [[META: verdict=SAFE|LIMIT|HOLD|AVOID; checked=N; flags=ingredient1, ingredient2; detail=short phrase]]
 where:
-  - verdict = your overall call. SAFE if nothing is a concern, LIMIT if it involves a Limit food, HOLD if it involves a flagged-but-not-yet-tested food (still in elimination), AVOID if it involves a confirmed Avoid food.
+  - verdict = your overall call. SAFE if nothing is a concern, LIMIT if it involves a Limit food, HOLD if it involves a flagged-but-not-yet-tested food (still in elimination), AVOID if it involves a confirmed Avoid food. AVOID is RESERVED for foods on the CONFIRMED AVOID list — an eliminated-but-untested food is ALWAYS verdict=HOLD, never AVOID (example: dairy on the eliminated list, user asks about cheese → verdict=HOLD).
   - checked = the number of ingredients you considered.
   - flags = the specific ingredients that triggered caution (empty if none).
   - detail = a very short phrase naming what to watch and any swap, e.g. "Soy sauce, swap for tamari" or "Macaroni (gluten), check fry oil". Keep it under 8 words. Omit if nothing to watch.
@@ -115,6 +115,51 @@ GENERAL RULES FOR THESE TAGS:
 - Use at most ONE of META, GUIDE, or LOG per reply, matching what the user did. A specific-food question gets META. A broad "what can I eat" gets GUIDE. Describing a meal eaten gets LOG. General chat gets none.
 - Always put the tag on its very last line. Your conversational reply comes first, then the tag.`
 
+// An empty-but-complete map shape: observation mode has no verdicts, but every
+// downstream consumer (classifyFood, saveMealLog) must still get a real object.
+// (QA 2026-10-28 #1: the observation branch used to return NO mapContext, and
+// classifyFood dereferenced it — every tracking-mode meal log crashed unsaved.)
+export const EMPTY_MAP_CONTEXT = { safe: [], limit: [], avoid: [], notYetTested: [], labClean: [] }
+
+// THE OBSERVATION LOG DIGEST (QA 2026-10-28 #5): the product sells "Ask Sensify
+// helps you notice patterns over time," but the model used to see only the last
+// 12 messages of the current session — meal logs were written and never read
+// back. This feeds a compact, factual digest of the last 30 days into every
+// observation-mode turn, so "reflect back what they have told you" is real.
+export async function buildObservationDigest(userId) {
+  try {
+    const since = new Date(Date.now() - 30 * 86400000).toISOString()
+    const [{ data: meals }, { data: syms }] = await Promise.all([
+      supabase.from('meal_logs').select('raw_text, foods, created_at').eq('user_id', userId).gte('created_at', since).order('created_at', { ascending: false }).limit(150),
+      supabase.from('symptom_logs').select('symptom, severity, note, logged_at').eq('user_id', userId).gte('logged_at', since).order('logged_at', { ascending: false }).limit(60),
+    ])
+    const day = (iso) => String(iso || '').split('T')[0]
+    const byFood = {}
+    for (const m of (meals || [])) {
+      for (const f of (Array.isArray(m.foods) ? m.foods : [])) {
+        const nm = (f?.name || '').trim()
+        if (!nm) continue
+        const k = nm.toLowerCase()
+        if (!byFood[k]) byFood[k] = { name: nm, count: 0, last: day(m.created_at), dates: new Set() }
+        byFood[k].count++
+        byFood[k].dates.add(day(m.created_at))
+      }
+    }
+    const foodLines = Object.values(byFood)
+      .sort((a, b) => b.count - a.count).slice(0, 20)
+      .map(f => `${f.name} x${f.count} (last ${f.last})`)
+    const symLines = (syms || []).slice(0, 12)
+      .map(sy => `${day(sy.logged_at)}: ${sy.symptom}${sy.severity ? ` (${sy.severity})` : ''}${sy.note ? `, ${sy.note}` : ''}`)
+    const mealCount = (meals || []).length
+    return `THEIR TRACKING LOG, LAST 30 DAYS (this is the ONLY record you may reflect back — never invent beyond it):
+MEALS LOGGED: ${mealCount}${foodLines.length ? `\nFOODS (by frequency): ${foodLines.join('; ')}` : ''}
+SYMPTOM EVENTS: ${symLines.length ? symLines.join('; ') : 'none logged'}
+${mealCount === 0 ? 'Nothing logged yet — encourage the first log, promise nothing about patterns.' : 'When a symptom date sits near a logged food, you may gently name the co-occurrence as worth watching — never as a verdict or cause. If a watch-worthy co-occurrence keeps repeating, you can mention that the full protocol exists to actually test it.'}`
+  } catch (e) {
+    return ''
+  }
+}
+
 // Observation mode: for users who declined the protocol and are self-tracking.
 // They have NO Food Map and NO confirmed verdicts, so the assistant must never
 // claim a food is a trigger or safe-for-them. It helps them log and reflect.
@@ -122,14 +167,14 @@ const OBSERVATION_PROMPT = `You are Ask Sensify, a food companion inside the Sen
 
 YOUR JOB:
 1. Help them log what they eat. When they describe a meal, acknowledge it warmly and log it.
-2. Help them notice patterns over time by reflecting back what they have told you (e.g. "you have mentioned bloating after dairy a couple of times now, that might be worth watching").
+2. Help them notice patterns over time by reflecting back their tracking log (provided below as THEIR TRACKING LOG) and this conversation (e.g. "you have mentioned bloating after dairy a couple of times now, that might be worth watching").
 3. Answer general food questions with normal, common-sense nutrition knowledge.
 
 CRITICAL — WHAT YOU MUST NOT DO:
 - You have NO Food Map for this user. NEVER tell them a food is "safe for you" or "a trigger for you" or give them a verdict. You do not have the data to know that, and claiming it would be wrong and potentially harmful.
 - Never say "you can eat this" or "avoid this" as if it is confirmed for them. Instead, speak in terms of what is worth watching or noticing.
 - If they ask "can I eat X," do not give a verdict. Explain you are not testing foods for them right now, but you can help them notice how they feel after eating it, and that if they want real answers they can start the full protocol anytime.
-- Do not invent patterns. Only reflect back what they have actually logged. If there is not enough data yet, say so honestly ("we do not have enough logged yet to see a pattern, keep tracking").
+- Do not invent patterns. Only reflect back what THEIR TRACKING LOG below and this conversation actually contain. If there is not enough data yet, say so honestly ("we do not have enough logged yet to see a pattern, keep tracking"). A co-occurrence is "worth watching," never a trigger or a verdict.
 
 SAFETY RULES (critical):
 - You are not a doctor. Do not diagnose, do not give medical or treatment advice.
@@ -145,7 +190,7 @@ LOGGING (for "I ate / I had ___"):
 [[LOG: food1, food2, food3]]
 listing the individual foods. Use this whenever they describe eating something. Never use META or GUIDE verdict tags in this mode, since there are no verdicts.`
 
-export async function askSensify({ userMessage, foodMap, labFoods = [], history = [], observationMode = false, image = null, activeTrial = null }) {
+export async function askSensify({ userMessage, foodMap, labFoods = [], history = [], observationMode = false, image = null, activeTrial = null, userId = null }) {
   // When a photo is attached, the user message becomes a content array with an
   // image block. Anthropic reads it natively; the proxy passes it through.
   const buildUserContent = (text) => {
@@ -160,10 +205,12 @@ export async function askSensify({ userMessage, foodMap, labFoods = [], history 
   }
 
   if (observationMode) {
-    // Tracking user: no Food Map, observation-only behavior.
+    // Tracking user: no Food Map, observation-only behavior — but WITH their
+    // own tracking log in context, so pattern-noticing is real (#5).
+    const digest = userId ? await buildObservationDigest(userId) : ''
     const messages = [
-      { role: 'user', content: OBSERVATION_PROMPT },
-      { role: 'assistant', content: 'Understood. I will help them log meals and notice patterns over time, and I will never give a verdict or claim a food is safe or a trigger for them, since they have no Food Map.' },
+      { role: 'user', content: digest ? `${OBSERVATION_PROMPT}\n\n${digest}` : OBSERVATION_PROMPT },
+      { role: 'assistant', content: 'Understood. I will help them log meals and notice patterns from their actual tracking log, and I will never give a verdict or claim a food is safe or a trigger for them, since they have no Food Map.' },
       ...history.map(m => ({ role: m.role, content: m.content })),
       { role: 'user', content: buildUserContent(userMessage) },
     ]
@@ -175,7 +222,8 @@ export async function askSensify({ userMessage, foodMap, labFoods = [], history 
       foodsToLog = logMatch[1].split(',').map(s => s.trim()).filter(Boolean)
       reply = reply.replace(/\[\[LOG:[^\]]+\]\]/i, '').trim()
     }
-    return { reply, foodsToLog, verdict: null, guide: null }
+    // A complete (empty) map context, so logging downstream never crashes (#1).
+    return { reply, foodsToLog, verdict: null, guide: null, mapContext: EMPTY_MAP_CONTEXT }
   }
 
   const mapContext = buildFoodMapContext(foodMap, labFoods, activeTrial)
@@ -214,6 +262,16 @@ export async function askSensify({ userMessage, foodMap, labFoods = [], history 
       detail: dMatch ? dMatch[1].trim() : '',
     }
     reply = reply.replace(/\[\[META:[^\]]+\]\]/i, '').trim()
+    // AVOID means tested-and-confirmed, everywhere in the product (QA
+    // 2026-10-28 #3). If the model said AVOID but nothing on the confirmed
+    // Avoid list appears in the flags/reply while an eliminated food does,
+    // the honest label is HOLD.
+    if (verdict.label === 'AVOID') {
+      const txt = (verdict.flags.join(' ') + ' ' + reply).toLowerCase()
+      const hitsConfirmed = mapContext.avoid.some(f => f && txt.includes(f.toLowerCase()))
+      const hitsEliminated = mapContext.notYetTested.some(f => f && txt.includes(f.toLowerCase()))
+      if (!hitsConfirmed && hitsEliminated) verdict.label = 'HOLD'
+    }
   }
 
   // Extract the [[GUIDE: ...]] line if present
@@ -232,48 +290,64 @@ export async function askSensify({ userMessage, foodMap, labFoods = [], history 
   return { reply, foodsToLog, verdict, guide, mapContext }
 }
 
-// Classify a logged food against the map for storage + flagging
+// Classify a logged food against the map for storage + flagging.
+// Tolerates a missing/partial map (observation mode) and knows about
+// eliminated foods (QA 2026-10-28 #1/#4: a crash on absent mapContext killed
+// every tracking-mode log, and mid-elimination trigger foods landed as
+// clean "unknown" rows that the recall/health readers trusted).
 export function classifyFood(foodName, mapContext) {
+  const ctx = mapContext || EMPTY_MAP_CONTEXT
   const lower = foodName.toLowerCase()
-  if (mapContext.avoid.some(f => lower.includes(f.toLowerCase()) || f.toLowerCase().includes(lower))) return { mapStatus: 'avoid' }
-  if (mapContext.limit.some(f => lower.includes(f.toLowerCase()) || f.toLowerCase().includes(lower))) return { mapStatus: 'limit' }
-  if (mapContext.safe.some(f => lower.includes(f.toLowerCase()) || f.toLowerCase().includes(lower))) return { mapStatus: 'safe' }
+  const hits = (list) => (list || []).some(f => f && (lower.includes(f.toLowerCase()) || f.toLowerCase().includes(lower)))
+  if (hits(ctx.avoid)) return { mapStatus: 'avoid' }
+  if (hits(ctx.limit)) return { mapStatus: 'limit' }
+  if (hits(ctx.safe)) return { mapStatus: 'safe' }
+  if (hits(ctx.notYetTested)) return { mapStatus: 'eliminated' }
   return { mapStatus: 'unknown' }
 }
 
 // Persist a meal log. `source: 'recall'` marks entries typed from memory on a
 // symptom night: kept forever as leads, never weighed like prospective logs.
+// Returns { saved } so the UI never claims "Added to today's log" over a
+// failed insert (QA 2026-10-28 #2, the write-first family).
 export async function saveMealLog({ userId, rawText, foods, mapContext, source }) {
   const classified = foods.map(name => ({ name, ...classifyFood(name, mapContext), ...(source ? { source } : {}) }))
-  const flagged = classified.some(f => f.mapStatus === 'avoid' || f.mapStatus === 'limit')
+  const flagged = classified.some(f => f.mapStatus === 'avoid' || f.mapStatus === 'limit' || f.mapStatus === 'eliminated')
+  let saved = false
   try {
-    await supabase.from('meal_logs').insert({
+    const { error } = await supabase.from('meal_logs').insert({
       user_id: userId,
       raw_text: rawText,
       foods: classified,
       flagged,
     })
-  } catch (e) {}
-  return { classified, flagged }
+    saved = !error
+  } catch (e) { saved = false }
+  return { classified, flagged, saved }
 }
 
-// Persist a chat message
+// Persist a chat message — checked, with one quiet retry (history is context
+// for future pattern-noticing, so a lost message is a real loss).
 export async function saveMessage({ userId, role, content }) {
   try {
-    await supabase.from('ask_sensify_messages').insert({ user_id: userId, role, content })
-  } catch (e) {}
+    const { error } = await supabase.from('ask_sensify_messages').insert({ user_id: userId, role, content })
+    if (!error) return true
+    const { error: e2 } = await supabase.from('ask_sensify_messages').insert({ user_id: userId, role, content })
+    return !e2
+  } catch (e) { return false }
 }
 
-// Load recent chat history
+// Load recent chat history — the LATEST messages (QA 2026-10-28 minor: oldest
+// 30 ascending meant "View earlier conversation" showed week-one chat forever).
 export async function loadHistory(userId, limit = 30) {
   try {
     const { data } = await supabase
       .from('ask_sensify_messages')
       .select('role, content, created_at')
       .eq('user_id', userId)
-      .order('created_at', { ascending: true })
+      .order('created_at', { ascending: false })
       .limit(limit)
-    return data || []
+    return (data || []).reverse()
   } catch (e) {
     return []
   }

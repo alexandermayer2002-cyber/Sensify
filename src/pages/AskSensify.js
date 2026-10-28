@@ -19,42 +19,35 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
 
   useEffect(() => {
     const load = async () => {
-      // Load the user's Food Map if not passed in
-      if (!foodMapProp) {
-        try {
-          const { data } = await supabase.from('food_map').select('*').eq('user_id', session.user.id)
-          if (data) setFoodMap(data)
-        } catch (e) {}
-      }
-      // Load lab results so the assistant knows flagged vs clean foods
+      // One round trip, not five sequential awaits (QA 2026-10-28 minor: the
+      // tab sat blank for ~3s; these queries never depended on each other).
+      const uid = session.user.id
+      const [fmRes, labRes, profRes, acRes, history] = await Promise.all([
+        foodMapProp ? Promise.resolve(null) : supabase.from('food_map').select('*').eq('user_id', uid),
+        supabase.from('lab_results').select('foods').eq('user_id', uid).order('submitted_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('profiles').select('protocol_track, track_decision, protocol_tier, track_foods').eq('id', uid).single(),
+        supabase.from('reintroduction_results').select('food, washout_started_at').eq('user_id', uid).is('verdict', null).order('started_at', { ascending: false }).limit(1).maybeSingle(),
+        loadHistory(uid),
+      ]).catch(() => [null, null, null, null, []])
       try {
-        const { data: lab } = await supabase.from('lab_results').select('foods').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).maybeSingle()
+        if (fmRes?.data) setFoodMap(fmRes.data)
+        const lab = labRes?.data
+        const prof = profRes?.data
         // Track seam: common-track users' protocol foods are the chosen tier's, not the raw lab's
-        const { data: prof } = await supabase.from('profiles').select('protocol_track, track_decision, protocol_tier, track_foods').eq('id', session.user.id).single()
         if (prof?.protocol_track === 'common' && prof?.track_decision === 'active') {
           const { getProtocolFoods } = await import('../utils/protocolEngine')
           const resolved = getProtocolFoods(prof, lab)
           setLabFoods(resolved.foods || [])
         } else if (lab?.foods) setLabFoods(lab.foods)
-      } catch (e) {}
-      // Detect observation mode: a user who declined the protocol and is
-      // self-tracking has no Food Map and should get observation-only behavior.
-      try {
-        const { data: prof } = await supabase.from('profiles').select('track_decision').eq('id', session.user.id).single()
+        // Observation mode: a user who declined the protocol is self-tracking.
         if (prof?.track_decision === 'declined') setObservationMode(true)
-      } catch (e) {}
-      // The elimination guard needs to know the one food allowed back right now.
-      try {
-        const { data: ac } = await supabase.from('reintroduction_results')
-          .select('food, washout_started_at').eq('user_id', session.user.id)
-          .is('verdict', null).order('started_at', { ascending: false }).limit(1).maybeSingle()
+        const ac = acRes?.data
         if (ac) setActiveTrial({ food: ac.food, phase: ac.washout_started_at ? 'washout' : 'exposure' })
       } catch (e) {}
-      const history = await loadHistory(session.user.id)
       // Fresh view: past conversation is preserved but tucked away, not shown on
       // open. The session starts clean (premium feel); the user can reveal earlier
       // messages on demand.
-      setPriorMessages(history)
+      setPriorMessages(history || [])
       setMessages([])
       setLoaded(true)
     }
@@ -84,17 +77,22 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         history: messages.slice(-12),
         observationMode,
         activeTrial,
+        userId: session.user.id,
         image: sentImage ? { data: sentImage.data, mediaType: sentImage.mediaType } : null,
       })
 
-      // Log any meal the assistant detected
+      // Log any meal the assistant detected — CHECKED (QA 2026-10-28 #1/#2):
+      // the confirmation card renders only when the row truly landed, and a
+      // failure shows an inline retry instead of confident success copy.
       let logged = null
+      let logRetry = null
       if (foodsToLog.length > 0) {
-        await saveMealLog({ userId: session.user.id, rawText: text, foods: foodsToLog, mapContext })
-        logged = foodsToLog
+        const res = await saveMealLog({ userId: session.user.id, rawText: text, foods: foodsToLog, mapContext })
+        if (res.saved) logged = foodsToLog
+        else logRetry = { rawText: text, foods: foodsToLog, mapContext }
       }
 
-      const aiMsg = { role: 'assistant', content: reply, verdict, guide, logged }
+      const aiMsg = { role: 'assistant', content: reply, verdict, guide, logged, logRetry }
       setMessages(prev => [...prev, aiMsg])
       saveMessage({ userId: session.user.id, role: 'assistant', content: reply })
     } catch (e) {
@@ -110,19 +108,47 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
   }
 
+  // Same hardening as the lab upload (QA 2026-10-28 #6): downscale/re-encode
+  // to JPEG via canvas so HEIC and oversized photos survive the pipeline, and
+  // say why when a photo can't be read instead of a generic sorry later.
   const pickImage = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { alert('Please choose an image.'); return }
-    if (file.size > 5 * 1024 * 1024) { alert('That image is a bit large — please use one under 5MB.'); return }
-    const reader = new FileReader()
-    reader.onload = () => {
-      const dataUrl = reader.result
-      const base64 = String(dataUrl).split(',')[1]
-      setImage({ data: base64, mediaType: file.type, preview: dataUrl })
+    if (file.size > 15 * 1024 * 1024) { alert('That image is very large — please use one under 15MB.'); return }
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      try {
+        const maxSide = 1600
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.max(1, Math.round(img.width * scale))
+        canvas.height = Math.max(1, Math.round(img.height * scale))
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+        URL.revokeObjectURL(url)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85)
+        setImage({ data: dataUrl.split(',')[1], mediaType: 'image/jpeg', preview: dataUrl })
+      } catch (err) {
+        URL.revokeObjectURL(url)
+        alert("That photo format couldn't be read. Try taking it again with your camera app set to a standard format.")
+      }
     }
-    reader.readAsDataURL(file)
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      alert("That photo format couldn't be read. Try taking it again with your camera app set to a standard format.")
+    }
+    img.src = url
     e.target.value = ''  // allow re-picking the same file
+  }
+
+  const retryLog = async (msgIndex) => {
+    const m = messages[msgIndex]
+    if (!m?.logRetry) return
+    const res = await saveMealLog({ userId: session.user.id, ...m.logRetry })
+    setMessages(prev => prev.map((mm, i) => i === msgIndex
+      ? { ...mm, logged: res.saved ? m.logRetry.foods : null, logRetry: res.saved ? null : mm.logRetry }
+      : mm))
   }
 
   const capabilities = [
@@ -136,10 +162,15 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
       <style>{css}</style>
       <div style={s.header}>
         <div style={s.headerTitle}>Ask <em style={s.em}>Sensify</em></div>
-        <div style={s.headerStatus}><span style={s.statusDot}></span><span style={s.statusText}>READING YOUR VERDICTS · LIVE</span></div>
+        {/* Phase-aware status (QA 2026-10-28 #7): "READING YOUR VERDICTS" was
+            false for tracking users and pre-verdict eliminators. */}
+        <div style={s.headerStatus}><span style={s.statusDot}></span><span style={s.statusText}>{observationMode ? 'TRACKING MODE · LOGGING LIVE' : foodMap.some(f => f.verdict) ? 'READING YOUR VERDICTS · LIVE' : 'READING YOUR MAP · LIVE'}</span></div>
       </div>
 
       <div style={s.thread} ref={scrollRef}>
+        {!loaded && (
+          <div style={{ margin: 'auto', textAlign: 'center' }}><span style={s.dots}>•••</span></div>
+        )}
         {/* Earlier conversation, tucked away for a fresh open */}
         {loaded && priorMessages.length > 0 && (
           showPrior ? (
@@ -219,7 +250,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                   </div>
                 )}
 
-                {/* Type C — log confirmation */}
+                {/* Type C — log confirmation (only when the row truly saved) */}
                 {m.logged && m.logged.length > 0 && (
                   <div style={s.log}>
                     <div style={s.logCheck}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -228,6 +259,12 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                       <div style={s.logFoods}>{m.logged.join(' · ')}</div>
                     </div>
                   </div>
+                )}
+                {/* Save failed: honest + retryable, never silent (#2) */}
+                {m.logRetry && (
+                  <button onClick={() => retryLog(i)} style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', borderRadius: '16px', background: '#FAEAEA', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+                    <span style={{ fontSize: '12.5px', color: '#8B2E2E', fontWeight: 600 }}>Couldn't add this to your log — tap to retry</span>
+                  </button>
                 )}
               </div>
             </div>
@@ -250,7 +287,9 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         </div>
       )}
       <div style={s.inputBar}>
-        <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={pickImage} style={{ display: 'none' }} />
+        {/* No capture attr (QA 2026-10-28 #6): forcing the camera made saved
+            menu screenshots unpickable on phones. */}
+        <input ref={fileRef} type="file" accept="image/*" onChange={pickImage} style={{ display: 'none' }} />
         <button style={s.camera} onClick={() => fileRef.current?.click()} title="Upload a menu or label photo">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         </button>
@@ -266,7 +305,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
-      <div style={s.disclaimer}>Ask Sensify uses your verdicts for guidance. It is not medical advice. When unsure about an ingredient, double-check.</div>
+      <div style={s.disclaimer}>{observationMode ? 'Ask Sensify helps you log meals and notice what might be worth watching. It is not medical advice and gives no verdicts.' : 'Ask Sensify uses your map for guidance. It is not medical advice. When unsure about an ingredient, double-check.'}</div>
     </div>
   )
 }
@@ -287,11 +326,13 @@ const css = `
 function verdictLabel(label) {
   return { SAFE: 'Safe to eat', LIMIT: 'Limit', HOLD: 'Hold for now', AVOID: 'Avoid' }[label] || label
 }
+// HOLD reads gold (still eliminated, trial pending) — red is reserved for
+// confirmed AVOID, matching the rest of the product (QA 2026-10-28 #3).
 function verdictColor(label) {
-  return { SAFE: '#2C9D8A', LIMIT: '#E8941F', HOLD: '#D64545', AVOID: '#D64545' }[label] || '#E8941F'
+  return { SAFE: '#2C9D8A', LIMIT: '#E8941F', HOLD: '#C9A227', AVOID: '#D64545' }[label] || '#E8941F'
 }
 function verdictTextColor(label) {
-  return { SAFE: '#1A6256', LIMIT: '#8A5410', HOLD: '#A32D2D', AVOID: '#A32D2D' }[label] || '#8A5410'
+  return { SAFE: '#1A6256', LIMIT: '#8A5410', HOLD: '#8A6B10', AVOID: '#A32D2D' }[label] || '#8A5410'
 }
 
 const s = {
