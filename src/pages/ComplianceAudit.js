@@ -87,7 +87,7 @@ RULES:
 - Never diagnose or make medical claims
 - Sound like a warm, smart health coach
 - Reference what they actually said, never generic
-- Do NOT give a plan recommendation. End by saying guidance is coming within 24 hours
+- Do NOT give a plan recommendation. End by saying personal guidance usually lands on their dashboard within a day
 - Do not start with "Great" or "Well done"
 
 Write only the message text, no labels or formatting.`
@@ -95,7 +95,7 @@ Write only the message text, no labels or formatting.`
   try {
     return await aiPrompt(prompt, 200)
   } catch (e) {
-    return "Thank you for sharing what's been going on. We're reviewing everything you told us and will have your personalized guidance ready within 24 hours."
+    return "Thank you for sharing what's been going on. We're reviewing everything you told us — personal guidance usually lands on your dashboard within a day."
   }
 }
 
@@ -112,6 +112,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
   const [aiMessage, setAiMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [generating, setGenerating] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const name = session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there'
 
@@ -137,7 +138,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
 
   const handleSubmit = async () => {
     setSubmitting(true)
-    setGenerating(true)
+    setSubmitError('')
 
     const allAnswers = {
       ...branchAnswers,
@@ -148,27 +149,39 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       other_text: otherText,
     }
 
+    // THE CONFESSION LANDS FIRST (QA 2026-10-24 #3): the insert used to run
+    // after the slow AI call, unchecked — a failure showed the full success
+    // screen while Alex's review queue stayed empty. Insert, verify, then
+    // generate the acknowledgment (cosmetic) and backfill it.
+    const { data: inserted, error: insErr } = await supabase.from('compliance_audit').insert({
+      user_id: session.user.id,
+      triggered_at: new Date().toISOString(),
+      hardest_parts: selectedReasons,
+      branch_responses: allAnswers,
+      ai_acknowledgment: '',
+      status: 'pending_admin_review',
+    }).select().single()
+    if (insErr || !inserted) {
+      setSubmitError("That didn't send — your answers are all still here, nothing was lost.")
+      setPhase('submit_error')
+      setSubmitting(false)
+      return
+    }
+
+    setGenerating(true)
+    setPhase('submitted')
+
     const insight = await generateAuditInsight({
       name,
       selectedReasons,
       branchAnswers: allAnswers,
       eliminatedFoods,
     })
-
     setAiMessage(insight)
-
-    await supabase.from('compliance_audit').insert({
-      user_id: session.user.id,
-      triggered_at: new Date().toISOString(),
-      hardest_parts: selectedReasons,
-      branch_responses: allAnswers,
-      ai_acknowledgment: insight,
-      status: 'pending_admin_review',
-    })
+    try { await supabase.from('compliance_audit').update({ ai_acknowledgment: insight }).eq('id', inserted.id) } catch (e) {}
 
     setGenerating(false)
     setSubmitting(false)
-    setPhase('submitted')
   }
 
   // OPENING SCREEN
@@ -567,6 +580,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         />
       </div>
       <div style={s.footer}>
+        {submitError && <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 12, padding: '10px 13px', fontSize: 12.5, lineHeight: 1.55, marginBottom: 10 }}>{submitError}</div>}
         <button
           className="sn-btn"
           style={s.cta}
@@ -580,6 +594,25 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
   )
 
   // SUBMITTED SCREEN
+  // Insert failure gets its own screen with a retry (QA 2026-10-24 #3):
+  // every answer is still in state, so Try again re-sends the same audit.
+  if (phase === 'submit_error') return (
+    <div style={s.wrap}>
+      <style>{PAGE_CSS}</style>
+      <div style={s.topBar}>
+        <div style={{ width: 40 }} />
+        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={{ width: 40 }} />
+      </div>
+      <div className="sn-rise" style={s.content}>
+        <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 16, padding: '14px 16px', fontSize: 13.5, lineHeight: 1.6, marginBottom: 16 }}>{submitError}</div>
+        <button className="sn-btn" style={s.cta} disabled={submitting} onClick={handleSubmit}>
+          {submitting ? 'Sending...' : 'Try again →'}
+        </button>
+      </div>
+    </div>
+  )
+
   if (phase === 'submitted') return (
     <div style={s.wrap}>
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }` + PAGE_CSS}</style>
@@ -603,7 +636,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             <div style={s.submittedMsg}>{aiMessage}</div>
             <div style={{ ...s.pendingCard, marginBottom: '12px' }}>
               <div className="sn-micro" style={s.pendingLabel}>What happens next</div>
-              <div style={s.pendingText}>We're reviewing everything you shared and will have your personalized guidance ready within 24 hours. You'll see it right here on your dashboard.</div>
+              <div style={s.pendingText}>We're reviewing everything you shared. Personal guidance usually lands within a day — it will meet you right here on your dashboard.</div>
             </div>
           </>
         )}

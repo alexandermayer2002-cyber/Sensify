@@ -50,22 +50,6 @@ const s = {
   footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: 'rgba(251,248,242,0.92)', backdropFilter: 'blur(8px)', boxShadow: '0 -8px 24px rgba(56,62,48,0.06)' },
   cta: { width: '100%' },
   ctaDisabled: { width: '100%' },
-  successCard: { background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '24px', padding: '28px 24px', textAlign: 'center', margin: '8px 0 16px' },
-  successIcon: { width: '52px', height: '52px', background: '#EDF3ED', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' },
-  successTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '6px' },
-  successTitleEm: { fontStyle: 'italic', color: '#3D5C3C' },
-  successSub: { fontSize: '13px', color: '#73736A', lineHeight: 1.65 },
-  insightCard: { background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '16px', padding: '18px', marginBottom: '12px' },
-  insightTag: { fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#3D5C3C', background: '#EDF3ED', padding: '3px 8px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' },
-  insightText: { fontSize: '14px', color: '#20241F', lineHeight: 1.75 },
-  statsRow: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' },
-  statCard: { background: '#F7F5EE', borderRadius: '16px', padding: '14px', textAlign: 'center' },
-  statVal: { fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, color: '#20241F', lineHeight: 1 },
-  statLabel: { fontSize: '11px', color: '#73736A', marginTop: '4px' },
-  statChange: { fontSize: '11px', fontWeight: 500, marginTop: '2px' },
-  loadingCard: { background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '16px', padding: '24px', textAlign: 'center', marginBottom: '12px' },
-  spinner: { width: '28px', height: '28px', border: '2.5px solid #EDF3ED', borderTopColor: '#3D5C3C', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' },
-  loadingText: { fontSize: '13px', color: '#73736A', fontFamily: 'Fraunces, serif', fontStyle: 'italic' },
 }
 
 // Build adaptive symptom scales based on what the user has baseline scores for
@@ -216,14 +200,24 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
         .select('log_date, sleep, stress, hydration, drinks, followed_protocol')
         .eq('user_id', session.user.id)
       const { data: pastCheckins } = await supabase.from('weekly_checkins')
-        .select('answers, submitted_at').eq('user_id', session.user.id)
+        .select('answers, submitted_at, week_number').eq('user_id', session.user.id)
 
       const mondayOf = (dt) => { const d = new Date(dt); const day = (d.getDay() + 6) % 7; const m = new Date(d); m.setDate(d.getDate() - day); return m.toISOString().split('T')[0] }
+      // A check-in describes the PRECEDING protocol week (QA 2026-10-25 #5):
+      // bucketing by submit date landed worse-weeks one Monday late against the
+      // daily-factor weeks they describe. Key each one to the Monday of the
+      // middle of the week it covers.
+      const coveredWeekMonday = (weekNum, fallbackDate) => {
+        const start = profile?.protocol_start_date
+        if (!start || !weekNum) return mondayOf(fallbackDate || new Date())
+        const [sy, sm, sd] = String(start).split('T')[0].split('-').map(Number)
+        return mondayOf(new Date(sy, sm - 1, sd + (weekNum - 1) * 7 + 3))
+      }
       const weeklySymptoms = (pastCheckins || []).map(c => ({
-        weekStart: mondayOf(c.submitted_at),
+        weekStart: coveredWeekMonday(c.week_number, c.submitted_at),
         worseThanUsual: c.answers?.overall_feeling === 'Worse',
       }))
-      weeklySymptoms.push({ weekStart: mondayOf(new Date()), worseThanUsual: answers.overall_feeling === 'Worse' })
+      weeklySymptoms.push({ weekStart: coveredWeekMonday(weekNumber), worseThanUsual: answers.overall_feeling === 'Worse' })
 
       const confoundResult = analyzeConfounds({ profile, dailyRows: dailyRows || [], weeklySymptoms })
       confoundFragment = confoundPromptFragment(confoundResult?.observation)
@@ -232,13 +226,16 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
         const obs = confoundResult.observation
         await supabase.from('confound_observations').insert({
           user_id: session.user.id,
-          week_start: mondayOf(new Date()),
+          week_start: coveredWeekMonday(weekNumber),
           engine: obs.kind,
           factor: obs.factor,
           direction: obs.direction || null,
           repeats: obs.repeats || null,
           confidence: obs.confidence || null,
-          surfaced: true,
+          // OFFERED to the AI, not yet surfaced (QA 2026-10-25 #6): the prompt
+          // may omit it. handleSubmit flips this true only when the final
+          // insight detectably carries the factor.
+          surfaced: false,
           sufficiency: confoundResult.sufficiency?.state || null,
           detail: obs,
         })
@@ -371,6 +368,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
   const [insight, setInsight] = useState('')
   const [previousAnswers, setPreviousAnswers] = useState(null)
   const [insightError, setInsightError] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [showConfetti, setShowConfetti] = useState(false)
   const [streakMessage, setStreakMessage] = useState('')
   const [showStreakCard, setShowStreakCard] = useState(false)
@@ -413,19 +411,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
   const handleSubmit = async () => {
     if (!allRequiredAnswered()) return
     setSubmitting(true)
-    setSubmitted(true)
-    setGeneratingInsight(true)
-
-    let aiInsight = ''
-    try {
-      aiInsight = await generateInsight({ name, weekNumber, profile, answers, previousAnswers, currentFoods, phase, session })
-      if (!aiInsight || aiInsight.trim().length === 0) throw new Error('empty insight')
-      setInsight(aiInsight)
-    } catch (e) {
-      aiInsight = '' // never persist junk
-      setInsightError(true)
-    }
-    setGeneratingInsight(false)
+    setSubmitError('')
 
     // Stamp the cycle context onto the record at write time. Context not captured
     // now is unrecoverable later; this is what makes honest filtering possible.
@@ -438,22 +424,79 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       if (tagCycle) cycleTag = { food: tagCycle.food, phase: tagCycle.washout_started_at ? 'washout' : 'exposure' }
     } catch (e) {}
 
-    await supabase.from('weekly_checkins').insert({
+    // THE WEEK'S DATA LANDS FIRST (QA 2026-10-25 #1): the insert used to run
+    // after the slow AI call with its result unchecked — a failure showed
+    // "on the record" while the week silently vanished. Now the row is written
+    // and verified before anything celebrates; the insight backfills after.
+    const { data: inserted, error: insErr } = await supabase.from('weekly_checkins').insert({
       user_id: session.user.id,
       week_number: weekNumber,
       answers: { ...answers, _cycle: cycleTag, _phase: (phase === 'reintroduction' ? 'reintroduction' : 'elimination') },
-      ai_insight: aiInsight,
+      ai_insight: '',
       submitted_at: new Date().toISOString(),
-    })
+    }).select().single()
+    if (insErr || !inserted) {
+      setSubmitError("Your check-in didn't save — your answers are still here. Tap Submit to try again.")
+      setSubmitting(false)
+      return
+    }
+    setSubmitted(true)
+    setGeneratingInsight(true)
 
     await supabase.from('profiles').update({
-      ...(aiInsight ? { latest_insight: aiInsight, latest_insight_week: weekNumber } : {}),
       last_checkin_at: new Date().toISOString(),
       current_week: weekNumber,
     }).eq('id', session.user.id)
 
-    // Fire confetti if compliance was good
+    let aiInsight = ''
+    try {
+      aiInsight = await generateInsight({ name, weekNumber, profile, answers, previousAnswers, currentFoods, phase, session })
+      if (!aiInsight || aiInsight.trim().length === 0) throw new Error('empty insight')
+      setInsight(aiInsight)
+      // Backfill the saved row + the dashboard pointer — cosmetic, best-effort.
+      try {
+        await supabase.from('weekly_checkins').update({ ai_insight: aiInsight }).eq('id', inserted.id)
+        await supabase.from('profiles').update({ latest_insight: aiInsight, latest_insight_week: weekNumber }).eq('id', session.user.id)
+      } catch (e) {}
+      // Mark this week's confound observation surfaced only if the insight
+      // detectably carries it (QA 2026-10-25 #6: it used to claim surfaced on
+      // merely being offered to a prompt allowed to omit it).
+      try {
+        const { data: obsRows } = await supabase.from('confound_observations')
+          .select('id, factor, week_start').eq('user_id', session.user.id)
+          .order('created_at', { ascending: false }).limit(1)
+        const obs = obsRows && obsRows[0]
+        if (obs) {
+          const pat = obs.factor === 'alcohol' ? /alcohol|drink/i : new RegExp(obs.factor, 'i')
+          if (pat.test(aiInsight)) {
+            await supabase.from('confound_observations').update({ surfaced: true }).eq('id', obs.id)
+          }
+        }
+      } catch (e) {}
+    } catch (e) {
+      aiInsight = '' // never persist junk
+      setInsightError(true)
+    }
+    setGeneratingInsight(false)
+
+    // Streak copy must be earned (QA 2026-10-25 #4): "N weeks clean" only when
+    // the record actually shows N consecutive compliant check-ins.
     const goodCompliance = answers.compliance === 'Fully' || answers.compliance === 'Mostly'
+    let consecutiveCompliant = 0
+    try {
+      const { data: hist } = await supabase.from('weekly_checkins')
+        .select('week_number, answers').eq('user_id', session.user.id)
+        .order('week_number', { ascending: false }).limit(12)
+      let expect = weekNumber
+      for (const row of (hist || [])) {
+        if (row.week_number !== expect) break
+        const comp = row.answers?.compliance
+        if (comp === 'Fully' || comp === 'Mostly') { consecutiveCompliant++; expect-- } else break
+      }
+    } catch (e) { consecutiveCompliant = goodCompliance ? 1 : 0 }
+    const earnedStreak = consecutiveCompliant >= weekNumber
+
+    // Fire confetti if compliance was good
     if (goodCompliance) {
       setShowConfetti(true)
       setTimeout(() => {
@@ -464,12 +507,14 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
           2: `Two weeks of elimination on your record. The habit is set and the data is starting to mean something.`,
           3: `Three weeks in. This is where the signal starts getting clearer. Whatever you're noticing this week, that's real.`,
           4: `One month of compliance, every week of it on your record. The data you build over the next four weeks is what your verdicts get measured against.`,
-          5: `Five weeks. You're deep into elimination now. The patterns are forming, and your AI insights are getting more accurate every check-in.`,
+          5: `Five weeks. You're deep into elimination now. The patterns are forming, and every logged week sharpens the picture.`,
           6: `Six weeks. Two more and reintroduction begins. You're closer to your Food Map than you've ever been.`,
           7: `Seven weeks clean. Almost there. The last stretch of elimination is the most important. Stay sharp.`,
           8: `Eight weeks done. Elimination complete. Everything you've built over the last two months is about to pay off.`,
         }
-        const msg = STREAK_MSGS[weekNumber] || `Week ${weekNumber} done. Keep going. Every check-in makes your Food Map more accurate.`
+        const msg = earnedStreak
+          ? (STREAK_MSGS[weekNumber] || `Week ${weekNumber} done, every week of it compliant. Keep going.`)
+          : `Week ${weekNumber} logged — this one was a good week. Every honest check-in counts, compliant or not.`
         setStreakMessage(msg)
         setShowStreakCard(true)
       }, 3500)
@@ -565,7 +610,9 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
                     <div style={{ fontSize: 13.5, color: '#FAF8F4', lineHeight: 1.7, fontWeight: 300 }}>{insight}</div>
                   </div>
                 ) : insightError ? (
-                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontSize: 13.5, color: 'rgba(250,248,244,0.85)', lineHeight: 1.7, fontWeight: 300 }}>Your scores are saved. Your insight will appear on your dashboard shortly.</div>
+                  // Honest failure copy (QA 2026-10-25 #2): nothing retries or
+                  // backfills a missed insight, so nothing is promised.
+                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontSize: 13.5, color: 'rgba(250,248,244,0.85)', lineHeight: 1.7, fontWeight: 300 }}>Your scores are saved and your trends updated. The written insight didn't generate this time — next week's will read this week's data too.</div>
                 ) : null}
               </div>
             )
@@ -675,6 +722,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       </div>
 
       <div style={s.footer}>
+        {submitError && <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 12, padding: '10px 13px', fontSize: 12.5, lineHeight: 1.55, marginBottom: 10 }}>{submitError}</div>}
         <button
           className="sn-btn"
           style={s.cta}

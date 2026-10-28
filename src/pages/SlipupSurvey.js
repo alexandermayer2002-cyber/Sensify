@@ -70,6 +70,7 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
   const [reason, setReason] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [aiMessage, setAiMessage] = useState('')
   const [loadingAi, setLoadingAi] = useState(false)
 
@@ -83,13 +84,16 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
     setSelectedFoods(prev => prev.includes(food) ? prev.filter(f => f !== food) : [...prev, food])
   }
 
-  const canSubmit = reason !== ''
+  // A slip-up without the food is a survey without its data (QA 2026-10-24 #6).
+  const canSubmit = reason !== '' && selectedFoods.length > 0
 
   const handleSubmit = async () => {
     setSubmitting(true)
+    setSubmitError('')
     const today = todayLocal()
 
-    await supabase.from('daily_compliance').upsert({
+    // Checked write (QA 2026-10-24 #3 family): a failed save says so.
+    const { error: upErr } = await supabase.from('daily_compliance').upsert({
       user_id: session.user.id,
       date: today,
       response: 'NO',
@@ -97,6 +101,11 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
       slip_up_reason: reason,
       logged_at: new Date().toISOString(),
     }, { onConflict: 'user_id,date' })
+    if (upErr) {
+      setSubmitError("That didn't save — your answers are still here. Tap Submit to try again.")
+      setSubmitting(false)
+      return
+    }
 
     setSubmitting(false)
     setSubmitted(true)
@@ -104,8 +113,11 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
     // Generate AI slip-up acknowledgment
     setLoadingAi(true)
     try {
-      const topFood = selectedFoods[0] || 'a flagged food'
-      const foodLevel = labResult?.foods?.find(f => f.name === topFood)?.level || 'flagged'
+      const topFood = selectedFoods[0]
+      // Never claim an off-list food is "a flagged sensitivity" (QA 2026-10-24
+      // #2) — the prompt gets the honest provenance instead.
+      const foodLevel = labResult?.foods?.find(f => f.name.toLowerCase() === topFood.toLowerCase())?.level
+        || 'not on their flagged list — a food they chose to log anyway'
       const msg = await generateSlipupMessage({
         name,
         food: topFood,
@@ -234,9 +246,11 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
           style={s.cta}
           disabled={!canSubmit || submitting}
           onClick={handleSubmit}
+          title={!canSubmit ? (selectedFoods.length === 0 ? 'Add the food you ate above first' : 'Pick how it happened above first') : undefined}
         >
           {submitting ? 'Logging...' : 'Submit →'}
         </button>
+        {submitError && <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 12, padding: '10px 13px', fontSize: 12.5, lineHeight: 1.55, marginTop: 10 }}>{submitError}</div>}
       </div>
     </div>
   )

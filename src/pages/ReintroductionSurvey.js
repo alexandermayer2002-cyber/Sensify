@@ -128,6 +128,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
   const [logsLoaded, setLogsLoaded] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [verdict, setVerdict] = useState(null)
+  const [submitError, setSubmitError] = useState('')
   const [wasConflicted, setWasConflicted] = useState(false)
   const [noiseFloor, setNoiseFloor] = useState(null)
   const [sleepOverlap, setSleepOverlap] = useState(null)
@@ -232,33 +233,47 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
       aiReason = aiResult?.analysis || ''
     } catch (e) {}
 
+    // THE VERDICT WRITE IS CHECKED (QA 2026-10-26 #2): a failed save used to
+    // show the full verdict screen anyway, stranding the cycle verdict-null
+    // ("Verdict ready" forever) while food_map might already disagree. Now a
+    // failure returns to the survey with a retry message and writes nothing else.
     // Update the EXISTING active row (don't insert a duplicate). MERGE into
     // answers: mid-cycle writers (exposure doses) store there too.
+    let writeFailed = false
     if (activeReintroId) {
-      await supabase.from('reintroduction_results').update({
+      const { error, data: up } = await supabase.from('reintroduction_results').update({
         answers: { ...existing, accuracy, context, followup, conflicted },
         verdict: computedVerdict,
         verdict_reason: aiReason,
         submitted_at: new Date().toISOString(),
-      }).eq('id', activeReintroId)
+      }).eq('id', activeReintroId).select()
+      writeFailed = !!error || !up || up.length === 0
     } else {
-      await supabase.from('reintroduction_results').insert({
+      const { error } = await supabase.from('reintroduction_results').insert({
         user_id: session.user.id, food, cycle_number: cycleNumber,
         answers: { accuracy, context, followup, conflicted },
         verdict: computedVerdict, submitted_at: new Date().toISOString(),
       })
+      writeFailed = !!error
+    }
+    if (writeFailed) {
+      setSubmitError("Your verdict couldn't be saved — nothing was lost, and your answers are still here. Tap “Get my verdict” to try again.")
+      setSubmitting(false)
+      return
     }
     setWasConflicted(conflicted)
 
-    // Clear the active-cycle pointer on the profile
-    await supabase.from('profiles').update({
+    // Secondary writes, checked with one retry each: the verdict row above is
+    // the source of truth, so a persistent failure here degrades gracefully
+    // (the picker/ledger already read the union) instead of blocking the result.
+    const retryOnce = async (fn) => { const r1 = await fn(); if (r1?.error) { const r2 = await fn(); if (r2?.error) console.error('secondary verdict write failed:', r2.error.message) } }
+    await retryOnce(() => supabase.from('profiles').update({
       current_reintro_food: null, current_reintro_day: null, reintro_started_at: null,
-    }).eq('id', session.user.id)
-
-    await supabase.from('food_map').upsert({
+    }).eq('id', session.user.id))
+    await retryOnce(() => supabase.from('food_map').upsert({
       user_id: session.user.id, food, verdict: computedVerdict,
       updated_at: new Date().toISOString(),
-    }, { onConflict: 'user_id,food' })
+    }, { onConflict: 'user_id,food' }))
 
     setAnalysis(aiReason || `This verdict reflects your logged response to ${food} across the exposure and washout days, not your original lab sensitivity level.`)
     setVerdict(computedVerdict)
@@ -295,7 +310,14 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, color: 'var(--ink)', marginBottom: 2 }}>{food}</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '56px', fontWeight: 300, letterSpacing: '-0.02em', color: config.color, lineHeight: 1.1, textShadow: config.glow.replace('0 0 24px', '0 0 38px') }}>{verdict}.</div>
             <div style={{ width: '38px', height: '2px', background: config.color, opacity: 0.45, margin: '14px auto 12px' }} />
-            <div style={{ fontSize: '13.5px', color: '#5A5A52', lineHeight: 1.6, maxWidth: 420, margin: '0 auto' }}>{config.sub.replace(/{food}/g, food)}</div>
+            {/* Honest sub-copy by provenance (QA 2026-10-26 #4): the canned
+                "clear, repeatable pattern" line must never ship on a verdict
+                the testimony earned — the analysis below tells that story. */}
+            <div style={{ fontSize: '13.5px', color: '#5A5A52', lineHeight: 1.6, maxWidth: 420, margin: '0 auto' }}>
+              {accuracy && accuracy !== 'accurate'
+                ? `Your daily logs and your account of the two weeks were weighed together. ${food} has been added to your ${verdict} list.`
+                : config.sub.replace(/{food}/g, food)}
+            </div>
           </div>
 
           <div style={{ background: 'linear-gradient(180deg, #FDFBF6, #F8F4EA)', border: 'none', borderRadius: 'var(--r-md)', padding: '14px 16px', marginBottom: '14px', boxShadow: '0 10px 26px -8px rgba(60,50,30,0.16), 0 2px 6px rgba(60,50,30,0.05), inset 0 0 30px rgba(201,162,39,0.03)' }}>
@@ -305,7 +327,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
                 <span style={{ width: 8, height: 8, borderRadius: 2, background: verdict === 'Safe' ? '#2C9D8A' : verdict === 'Limit' ? '#E8941F' : '#D64545', flexShrink: 0 }}></span>
                 <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C' }}>{food}</span>
               </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{verdict === 'Safe' ? 'NO REACTION' : verdict === 'Limit' ? 'MILD, DOSE-LINKED' : 'SYMPTOMS CONFIRMED'}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{accuracy && accuracy !== 'accurate' ? 'RULED WITH YOUR ACCOUNT' : verdict === 'Safe' ? 'NO REACTION' : verdict === 'Limit' ? 'MILD, DOSE-LINKED' : 'SYMPTOMS CONFIRMED'}</span>
             </div>
           </div>
 
@@ -446,11 +468,12 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
       </div>
 
       <div style={s.footer}>
+        {submitError && <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 12, padding: '10px 13px', fontSize: 12.5, lineHeight: 1.55, marginBottom: 10 }}>{submitError}</div>}
         <button
           style={allAnswered() ? s.cta : { ...s.cta, background: '#F0EEE6', color: 'rgba(32,36,31,0.35)', border: 'none', boxShadow: 'none', cursor: 'not-allowed' }}
           disabled={!allAnswered()}
           title={!allAnswered() ? (disagreeing ? 'Answer the follow-up questions above first' : 'Answer the accuracy question above first') : undefined}
-          onClick={handleSubmit}
+          onClick={() => { setSubmitError(''); handleSubmit() }}
         >
           Get my verdict →
         </button>

@@ -107,7 +107,7 @@ function SymptomProgress({ profile, checkins }) {
         <span style={pg.big}>{avgImprovement > 0 ? '+' : ''}{avgImprovement}%</span>
         <span style={pg.bigsub}>{avgImprovement > 0 ? 'better than baseline' : avgImprovement < 0 ? 'change to watch' : 'holding at baseline'}</span>
       </div>
-      <div style={pg.weeks}>{lens === 'average' ? `averaged across all ${weekCount} week${weekCount !== 1 ? 's' : ''}` : 'this week vs. baseline'}</div>
+      <div style={pg.weeks}>{lens === 'average' ? (weekCount === 1 ? 'this first week' : `averaged across all ${weekCount} weeks`) : 'this week vs. baseline'}</div>
 
       {showReassurance && (
         <div style={pg.reassure}>One rough week doesn't erase your trend. You're still ahead of where you started.</div>
@@ -418,12 +418,19 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
     setLoading(false)
   }
 
+  // One clock everywhere (QA 2026-10-25 #3): windows open on PROTOCOL days
+  // (7, 14, 21...), same math the Dashboard uses — never submitted_at + 7,
+  // which drifted with every late check-in.
   const daysUntilNext = () => {
-    if (checkins.length === 0) return 0
-    const last = new Date(checkins[0].submitted_at)
-    const next = new Date(last.getTime() + 7 * 24 * 60 * 60 * 1000)
-    const diff = Math.ceil((next - new Date()) / (1000 * 60 * 60 * 24))
-    return Math.max(0, diff)
+    const start = profile?.protocol_start_date
+    if (!start) return 0
+    const [sy, sm, sd] = String(start).split('T')[0].split('-').map(Number)
+    const startDate = new Date(sy, sm - 1, sd)
+    const now = new Date()
+    const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const daysSinceStart = Math.round((todayLocal - startDate) / 86400000) + 1
+    const nextWindowDay = (Math.floor(daysSinceStart / 7) + 1) * 7
+    return Math.max(0, nextWindowDay - daysSinceStart)
   }
 
   const formatDate = (dateStr) => {
@@ -498,7 +505,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
                       <div style={{ fontSize: 8, color: 'rgba(250,248,244,0.55)', fontFamily: 'DM Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.6px', marginTop: 3 }}>{remaining === 1 ? 'day to go' : 'days to go'}</div>
                     </div>
                   </div>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: 8, position: 'relative', animation: 'chLkIn 0.6s ease 0.5s both' }}>Weekly cycle · Day {dayOfCycle} of 7</div>
+                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: 8, position: 'relative', animation: 'chLkIn 0.6s ease 0.5s both' }}>Weekly cycle · {dayOfCycle === 0 ? 'Fresh week' : `Day ${dayOfCycle} of 7`}</div>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 300, color: '#FAF8F4', position: 'relative', animation: 'chLkIn 0.6s ease 0.6s both' }}>Next check-in <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>coming soon.</em></div>
                   <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65, maxWidth: 300, margin: '8px auto 0', position: 'relative', fontWeight: 300, animation: 'chLkIn 0.6s ease 0.75s both' }}>Weekly check-ins unlock every 7 days to keep your symptom data consistent and your insights accurate.</div>
                 </div>

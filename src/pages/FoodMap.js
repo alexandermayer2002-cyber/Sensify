@@ -13,7 +13,13 @@ import { getProtocolFoods, getTestingOrder } from '../utils/protocolEngine'
 // stays visible. Nothing on this document is assumed.
 
 const V_COLOR = { Safe: '#3D5C3C', Limit: '#C07A28', Avoid: '#C0392B' }
-const FREQ_RANK = { 'daily': 1, '3-5x': 2, '1-2x': 3, 'rarely': 4, 'almost-never': 5, 'never': 6 }
+
+// 1ST/2ND/3RD/4TH… (QA 2026-10-27 #3: "3TH TRIAL" shipped on the trophy case)
+const ordinal = (n) => {
+  const rem100 = n % 100
+  if (rem100 >= 11 && rem100 <= 13) return `${n}TH`
+  return `${n}${({ 1: 'ST', 2: 'ND', 3: 'RD' }[n % 10]) || 'TH'}`
+}
 
 const localDate = (d) => {
   const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), dd = String(d.getDate()).padStart(2, '0')
@@ -30,21 +36,26 @@ export default function FoodMap({ session, profile, labResult }) {
   const [logs, setLogs] = useState([])
   const [openRow, setOpenRow] = useState(null)
   const [loaded, setLoaded] = useState(false)
+  const [loadError, setLoadError] = useState(false)
   const [pdfBusy, setPdfBusy] = useState(false)
+  const [pdfError, setPdfError] = useState(false)
 
-  useEffect(() => {
+  // Named + retryable (QA 2026-10-27 #4): a failed fetch used to render a
+  // confident "0 / N RULED" board — earned verdicts shown as nothing.
+  const loadVerdicts = async () => {
     if (!session?.user?.id) return
-    ;(async () => {
-      try {
-        const [{ data: rr }, { data: rl }] = await Promise.all([
-          supabase.from('reintroduction_results').select('*').eq('user_id', session.user.id).order('started_at', { ascending: true }),
-          supabase.from('reintro_daily_logs').select('food, log_date, phase, ate_food, had_symptoms, symptoms').eq('user_id', session.user.id),
-        ])
-        setCycles(rr || []); setLogs(rl || [])
-      } catch (e) {}
-      setLoaded(true)
-    })()
-  }, [session?.user?.id])
+    setLoadError(false)
+    try {
+      const [{ data: rr, error: e1 }, { data: rl, error: e2 }] = await Promise.all([
+        supabase.from('reintroduction_results').select('*').eq('user_id', session.user.id).order('started_at', { ascending: true }),
+        supabase.from('reintro_daily_logs').select('reintro_id, food, log_date, phase, ate_food, had_symptoms, symptoms').eq('user_id', session.user.id),
+      ])
+      if (e1 || e2) throw new Error((e1 || e2).message)
+      setCycles(rr || []); setLogs(rl || [])
+    } catch (e) { setLoadError(true) }
+    setLoaded(true)
+  }
+  useEffect(() => { loadVerdicts() }, [session?.user?.id])  // eslint-disable-line
 
   const name = profile?.full_name?.split(' ')[0]
   const currentDay = profile?.protocol_start_date ? protocolDay(profile.protocol_start_date) : 0
@@ -65,7 +76,9 @@ export default function FoodMap({ session, profile, labResult }) {
     trialCount[k] = (trialCount[k] || 0) + 1
     byFood[k] = c
   }
-  const logsFor = (cycle) => logs.filter(l => (l.food || '').toLowerCase() === (cycle.food || '').toLowerCase())
+  // Per-trial, not per-food (QA 2026-10-27 #2): matching by name merged every
+  // retest's history into one record and let the PDF mix trials.
+  const logsFor = (cycle) => logs.filter(l => l.reintro_id === cycle.id || (!l.reintro_id && (l.food || '').toLowerCase() === (cycle.food || '').toLowerCase()))
 
   const V_ORDER = { Safe: 1, Limit: 2, Avoid: 3 }
   const ruled = universe.filter(f => byFood[f.name.toLowerCase()]?.verdict)
@@ -150,7 +163,11 @@ export default function FoodMap({ session, profile, labResult }) {
       const b = new Date(String(iso).split('T')[0] + 'T12:00:00')
       return Math.max(1, Math.round((b - a) / 86400000) + 1)
     }
-    const ruledDay = cycle?.verdict ? dayOf(addDays(String(cycle.started_at).split('T')[0], 13)) : null
+    // Stamp the day the verdict actually landed (QA 2026-10-27 #6): a severe
+    // stop on day 2 or an extended trial never saw day 14.
+    const ruledDay = cycle?.verdict
+      ? dayOf(cycle.submitted_at ? String(cycle.submitted_at).split('T')[0] : addDays(String(cycle.started_at).split('T')[0], 13))
+      : null
     const dayStamp = cycle?.verdict
       ? (ruledDay ? `DAY ${ruledDay}` : null)
       : live && cycle ? `DAY ${Math.min(14, Math.max(1, Math.round((new Date(today + 'T12:00:00') - new Date(String(cycle.started_at).split('T')[0] + 'T12:00:00')) / 86400000) + 1))} OF 14` : null
@@ -158,7 +175,7 @@ export default function FoodMap({ session, profile, labResult }) {
       <div className={canOpen ? 'sn-card-hov' : undefined} style={{ ...s.card, background: bg, border: ghost ? `1.5px dashed ${bd}` : 'none', cursor: canOpen ? 'pointer' : 'default', gridColumn: open ? '1 / -1' : 'auto' }} onClick={() => canOpen && setOpenRow(open ? null : k)}>
         {dayStamp && <div style={s.dayStamp}>{dayStamp}</div>}
         <div>
-          <div style={{ ...s.fname, color: ghost ? 'rgba(122,122,114,0.5)' : '#7A7A72' }}>{food.name}{trials > 1 && <span style={{ marginLeft: 6, opacity: 0.7 }}>{trials === 2 ? '2ND' : trials + 'TH'} TRIAL</span>}</div>
+          <div style={{ ...s.fname, color: ghost ? 'rgba(122,122,114,0.5)' : '#7A7A72' }}>{food.name}{trials > 1 && <span style={{ marginLeft: 6, opacity: 0.7 }}>{ordinal(trials)} TRIAL</span>}</div>
           <div style={{ ...s.vword, ...(ghost ? s.vGhost : {}), color: ghost ? 'rgba(28,28,28,0.2)' : live ? '#2C9D8A' : (V_COLOR[cycle?.verdict] || '#1C1C1C'), animation: live ? 'fmPl 2s infinite' : 'none' }}>
             {ghost ? (tag === 'NEXT' || tag === 'DAY 57' ? 'Next.' : 'Awaiting.') : live ? 'On trial.' : `${cycle.verdict}.`}
           </div>
@@ -251,6 +268,20 @@ export default function FoodMap({ session, profile, labResult }) {
     )
   }
 
+  // Load failure never masquerades as an empty board (QA 2026-10-27 #4).
+  if (loaded && loadError) {
+    return (
+      <div style={s.page}>
+        <div className="sn-rise" style={{ ...s.doc, padding: '26px 24px', textAlign: 'center' }}>
+          <div style={s.kicker}>SENSIFY · THE VERDICTS</div>
+          <div style={{ ...s.title, marginTop: 6 }}>Couldn't load your <span style={{ color: '#3D5C3C' }}>verdicts.</span></div>
+          <div style={{ fontSize: 12.5, color: '#5A5A52', lineHeight: 1.6, margin: '10px 0 16px' }}>Your earned verdicts are safe — this page just couldn't reach them. Check your connection and try again.</div>
+          <button className="sn-btn" style={{ width: '100%' }} onClick={() => { setLoaded(false); loadVerdicts() }}>Try again</button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={s.page}>
       <style>{`@keyframes fmPl { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }`}</style>
@@ -281,20 +312,24 @@ export default function FoodMap({ session, profile, labResult }) {
               onClick={async () => {
                 if (pdfBusy) return
                 setPdfBusy(true)
+                setPdfError(false)
                 try {
                   const { generateFoodMapPdf } = await import('../utils/foodMapPdf')
                   generateFoodMapPdf({
                     firstName: name,
                     protocolStart: profile?.protocol_start_date,
                     entries: ruled.map(f => { const c = byFood[f.name.toLowerCase()]; return { name: f.name, cycle: c, logs: logsFor(c) } }),
-                    untested: [...testing, ...queue].map(f => f.name),
+                    // On-trial foods are not "untested" (QA 2026-10-27 #5).
+                    untested: queue.map(f => f.name),
+                    onTrial: testing.map(f => f.name),
                   })
-                } catch (e) { /* download is a convenience; never break the page */ }
+                } catch (e) { setPdfError(true) /* QA 2026-10-27 #4: never fail mutely */ }
                 setPdfBusy(false)
               }}
             >
               {pdfBusy ? 'Preparing your Food Map...' : 'Download your Food Map'}
             </button>
+            {pdfError && <div style={{ fontSize: 12, color: '#C0392B', marginTop: 6 }}>The download didn't start — try again.</div>}
           </div>
         )}
 
@@ -353,18 +388,12 @@ const s = {
   vword: { fontFamily: 'Fraunces, serif', fontSize: 32, lineHeight: 1, marginTop: 7, fontWeight: 400, fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
   vGhost: { fontSize: 20 },
   ghostCorner: { position: 'absolute', top: 12, right: 13, fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.1px', color: 'rgba(122,122,114,0.55)' },
-  row: { display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0' },
-  food: { fontFamily: 'Fraunces, serif', fontSize: 16, width: 86, flexShrink: 0, lineHeight: 1.25 },
-  trialTag: { display: 'block', fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1px', color: '#9A927E', marginTop: 2 },
   strip: { display: 'flex', gap: 4, alignItems: 'center', flex: 1, flexWrap: 'wrap' },
   sq: { width: 10, height: 10, borderRadius: 3, flexShrink: 0, boxShadow: '0 1px 3px rgba(32,36,31,0.16)' },
   ci: { width: 9, height: 9, borderRadius: '50%', flexShrink: 0, boxShadow: '0 1px 3px rgba(32,36,31,0.16)' },
   symSize: { width: 12, height: 12 },
   todayMark: { background: '#2C9D8A', animation: 'fmPl 1.6s infinite', boxShadow: '0 0 7px rgba(44,157,138,0.5)', width: 11, height: 11 },
   speck: { width: 4, height: 4, borderRadius: '50%', background: 'rgba(0,0,0,0.12)', margin: '0 2px', flexShrink: 0 },
-  verdict: { width: 68, textAlign: 'right', flexShrink: 0 },
-  verdictWord: { fontFamily: 'Fraunces, serif', fontSize: 17, fontWeight: 400 },
-  ghostTag: { fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.2px', color: 'rgba(28,28,28,0.25)' },
   record: { padding: '10px 0 2px', borderTop: '1px dashed rgba(0,0,0,0.12)', marginTop: 2 },
   recNote: { fontSize: 11, color: '#9A927E', lineHeight: 1.6, padding: '10px 0 8px' },
   recLine: { fontSize: 12, color: '#1C1C1C', lineHeight: 2 },

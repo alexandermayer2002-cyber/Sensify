@@ -703,6 +703,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [weekFactors, setWeekFactors] = useState([])
   const [consecutiveNOs, setConsecutiveNOs] = useState(0)
   const [pendingAudit, setPendingAudit] = useState(false)
+  const [auditGuidance, setAuditGuidance] = useState(null)
   const [dailyDone, setDailyDone] = useState(false)
   const [unreadMsgs, setUnreadMsgs] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -847,16 +848,42 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
       if (comp) {
         setComplianceData(comp)
+        // Consecutive CALENDAR days, not consecutive rows (QA 2026-10-24 #5):
+        // unlogged gap days have no rows, so 3 NOs spread across weeks used to
+        // read as "three days in a row". Adjacent dates only.
         let nos = 0
+        let expected = null
         for (const entry of comp) {
-          if (entry.response === 'NO') nos++
-          else break
+          if (entry.response !== 'NO') break
+          if (expected && entry.date !== expected) break
+          nos++
+          const [ey, em, ed] = String(entry.date).split('-').map(Number)
+          const prev = new Date(ey, em - 1, ed - 1)
+          expected = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}-${String(prev.getDate()).padStart(2, '0')}`
         }
         setConsecutiveNOs(nos)
       }
 
-      const { data: audit } = await supabase.from('compliance_audit').select('*').eq('user_id', session.user.id).eq('status', 'pending_admin_review').maybeSingle()
-      setPendingAudit(!!audit)
+      // Newest pending audit, never maybeSingle (QA 2026-10-24 #4): two pending
+      // rows made maybeSingle error -> the pending card vanished AND the 3-NOs
+      // card re-armed, inviting duplicate audits.
+      const { data: audits } = await supabase.from('compliance_audit').select('*').eq('user_id', session.user.id).eq('status', 'pending_admin_review').order('triggered_at', { ascending: false }).limit(1)
+      setPendingAudit(!!(audits && audits.length))
+
+      // The guidance loop closes here (QA 2026-10-24 #1): when Alex responds
+      // to an audit, his outcome + note surface as a dashboard card instead of
+      // the pending card silently vanishing into nothing. Shown for 7 days.
+      try {
+        const { data: resp } = await supabase.from('compliance_audit')
+          .select('admin_outcome, admin_note, responded_at, trigger_type')
+          .eq('user_id', session.user.id).eq('status', 'responded')
+          .or('trigger_type.is.null,trigger_type.neq.away_gap_attested')
+          .order('responded_at', { ascending: false }).limit(1)
+        const r = resp && resp[0]
+        if (r && r.responded_at && (Date.now() - new Date(r.responded_at).getTime()) < 7 * 86400000) {
+          setAuditGuidance(r)
+        } else setAuditGuidance(null)
+      } catch (e) { setAuditGuidance(null) }
 
       if (p?.program_phase === 'elimination' || p?.program_phase === 'reintroduction') {
         const { data: c } = await supabase.from('weekly_checkins').select('submitted_at, answers, week_number').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(8)
@@ -1725,6 +1752,22 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Guidance being prepared</div>
                   <div style={{ fontSize: '12px', color: '#7A7A72' }}>Usually ready within a day — it will meet you here.</div>
                 </div>
+              </div>
+            )}
+
+            {/* THE GUIDANCE ARRIVES (QA 2026-10-24 #1): the promised response
+                used to be written by the review and read by nothing — the
+                pending card just vanished. Alex's outcome + note, 7 days. */}
+            {!pendingAudit && auditGuidance && (
+              <div className="sn-card sn-rise-2" style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.14), rgba(139,174,138,0.04)), var(--paper)', marginTop: 14 }}>
+                <div className="sn-micro" style={{ marginBottom: 8 }}>Your guidance is in</div>
+                {auditGuidance.admin_outcome && (
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>{auditGuidance.admin_outcome === 'Reset clock' ? 'Fresh start: your elimination clock has been reset.' : auditGuidance.admin_outcome}</div>
+                )}
+                <div style={{ fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.65 }}>
+                  {auditGuidance.admin_note?.trim() || 'Reviewed personally. Keep logging exactly as you have been — honest days, on-plan or not, are what make your results trustworthy.'}
+                </div>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1.2px', color: '#9A927E', marginTop: 10 }}>REVIEWED PERSONALLY · {auditGuidance.responded_at ? new Date(auditGuidance.responded_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase() : ''}</div>
               </div>
             )}
 

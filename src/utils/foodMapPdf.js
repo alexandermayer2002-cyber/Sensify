@@ -33,8 +33,22 @@ const addDays = (iso, n) => {
 const isoDay = (v) => (v ? String(v).split('T')[0] : null)
 const reacted = (l) => l.had_symptoms || (l.symptoms || []).length > 0
 
-// One honest evidence line per ruled food, read straight from the daily logs.
+// One honest evidence line per ruled food.
+// Three provenances, three sentences (QA 2026-10-27 #1: the log-only line used
+// to print "Avoid. / No reaction across 14 days" on testimony-adjusted rulings
+// — on the one document a customer hands a doctor):
+//   severe stop      -> says so
+//   testimony-adjusted (answers.accuracy !== 'accurate') -> the stored
+//                       verdict_reason, which already tells the honest story
+//   data-ruled       -> read straight from the daily logs, as before
 function evidenceLine(cycle, logs) {
+  if (cycle?.stopped_early) return 'Stopped early after a severe reaction'
+  const acc = cycle?.answers?.accuracy
+  if (acc && acc !== 'accurate') {
+    const reason = String(cycle?.verdict_reason || '').trim()
+    if (reason) return reason
+    return `Ruled ${cycle?.verdict || ''} with their own account of the two weeks weighed alongside the logs`.trim()
+  }
   const logged = (logs || []).filter(l => l.log_date)
   if (logged.length > 0) {
     const exposure = logged.filter(l => l.ate_food === true)
@@ -55,8 +69,11 @@ function evidenceLine(cycle, logs) {
 }
 
 function daysOfTesting(protocolStart, entries) {
+  // "Days of testing" counts the TESTING era only (QA 2026-10-27 #5): trials
+  // begin at day 57, so the 56 elimination days never inflate the claim.
   const start = isoDay(protocolStart)
   if (!start) return null
+  const trialsStart = addDays(start, 56)
   let latest = null
   for (const e of entries) {
     const c = e.cycle
@@ -65,7 +82,7 @@ function daysOfTesting(protocolStart, entries) {
     if (end && (!latest || end > latest)) latest = end
   }
   if (!latest) return null
-  const n = Math.round((new Date(latest + 'T12:00:00') - new Date(start + 'T12:00:00')) / 86400000) + 1
+  const n = Math.round((new Date(latest + 'T12:00:00') - new Date(trialsStart + 'T12:00:00')) / 86400000) + 1
   return n >= 1 ? n : null
 }
 
@@ -74,7 +91,7 @@ const paintPage = (doc) => {
   doc.rect(0, 0, PAGE_W, PAGE_H, 'F')
 }
 
-export function generateFoodMapPdf({ firstName, protocolStart, entries, untested }) {
+export function generateFoodMapPdf({ firstName, protocolStart, entries, untested, onTrial }) {
   const doc = new jsPDF({ unit: 'pt', format: 'letter' })
   doc.addFileToVFS('DMSans-400.ttf', DM400); doc.addFont('DMSans-400.ttf', 'DMSans', 'normal')
   doc.addFileToVFS('DMSans-500.ttf', DM500); doc.addFont('DMSans-500.ttf', 'DMSans', 'bold')
@@ -144,19 +161,23 @@ export function generateFoodMapPdf({ firstName, protocolStart, entries, untested
     y += rowH + GAP
   }
 
-  // ---- Untested foods: named without verdict language ----
-  if (untested && untested.length > 0) {
+  // ---- On trial now + untested: named without verdict language ----
+  // (QA 2026-10-27 #5: the live trial used to be listed as "not yet tested".)
+  const plainList = (label, names) => {
+    if (!names || names.length === 0) return
     y += 8
     if (y > PAGE_H - 110) { doc.addPage(); paintPage(doc); y = M }
     doc.setFont('DMSans', 'bold'); doc.setFontSize(6.5); doc.setTextColor(GRAY); doc.setCharSpace(1.2)
-    doc.text('NOT YET TESTED', M, y)
+    doc.text(label, M, y)
     doc.setCharSpace(0)
     y += 11
     doc.setFont('DMSans', 'normal'); doc.setFontSize(8); doc.setTextColor(GRAY)
-    const ulines = doc.splitTextToSize(untested.join(', '), CONTENT_W)
+    const ulines = doc.splitTextToSize(names.join(', '), CONTENT_W)
     doc.text(ulines, M, y)
     y += ulines.length * 11
   }
+  plainList('ON TRIAL NOW', onTrial)
+  plainList('NOT YET TESTED', untested)
 
   // ---- Footer: the doctrine, pinned to the bottom of the last page ----
   const fy = PAGE_H - 64

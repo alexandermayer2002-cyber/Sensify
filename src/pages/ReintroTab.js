@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { getTestingOrder } from '../utils/protocolEngine'
-import ReintroDailyCheckin from './ReintroDailyCheckin'
 import { computeProvisionalVerdict } from '../utils/verdictEngine'
 import { todayLocal, localDateString } from '../utils/dateUtils'
 import { generateReintroFoodBriefing, generateProgramCompleteMessage, normalizeMilestones, serializeMilestones } from '../utils/aiInsights'
@@ -103,6 +102,7 @@ function TestedLedger({ cycles, protocolStartDate }) {
 
 function TierEscalation({ session, profile, completedFoods, onFinish }) {
   const [saving, setSaving] = useState(false)
+  const [confirming, setConfirming] = useState(false)
   const avoids = completedFoods.filter(f => f.verdict === 'Avoid').length
   const name = session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there'
 
@@ -131,13 +131,31 @@ function TierEscalation({ session, profile, completedFoods, onFinish }) {
           ? "You tested dairy and gluten and neither came back as a clear trigger. That's useful to know. But if you're still dealing with symptoms, the next step is to test more of the common culprits, including foods that often cause issues but rarely show up on a lab."
           : "You've finished testing dairy and gluten. If you're still dealing with symptoms beyond what you've found, you can go deeper and test more of the common triggers."}
       </div>
-      <div className="rt-esc-foods">The full panel adds: eggs, soy, tree nuts, corn, onion and garlic, and legumes.</div>
-      <button className="rt-esc-go" disabled={saving} onClick={escalate}>
-        {saving ? 'Setting up...' : 'Test the full panel →'}
-      </button>
-      <button className="rt-esc-finish" disabled={saving} onClick={onFinish}>
-        I'm good with my results
-      </button>
+      <div className="rt-esc-foods">The full panel adds: eggs, soy, tree nuts, corn, onion and garlic, and legumes. Testing them starts with a fresh elimination — about 8 weeks of clean baseline before the new foods unlock.</div>
+      {/* Confirm step (QA 2026-10-26 #5): escalating restarts the whole program
+          clock; nobody should re-enter 8 weeks of elimination on one tap. */}
+      {!confirming ? (
+        <>
+          <button className="rt-esc-go" disabled={saving} onClick={() => setConfirming(true)}>
+            Test the full panel →
+          </button>
+          <button className="rt-esc-finish" disabled={saving} onClick={onFinish}>
+            I'm good with my results
+          </button>
+        </>
+      ) : (
+        <>
+          <div style={{ fontSize: '12.5px', lineHeight: 1.6, background: 'rgba(255,255,255,0.09)', borderRadius: 'var(--r-sm)', padding: '12px 14px', margin: '0 0 10px' }}>
+            Just so it's said plainly: this restarts elimination. Roughly 8 weeks of clean baseline come first, then the new foods unlock for trials. Your earned verdicts stay yours.
+          </div>
+          <button className="rt-esc-go" disabled={saving} onClick={escalate}>
+            {saving ? 'Setting up...' : 'Yes — restart with the full panel'}
+          </button>
+          <button className="rt-esc-finish" disabled={saving} onClick={() => setConfirming(false)}>
+            Not now
+          </button>
+        </>
+      )}
     </div>
   )
 }
@@ -227,19 +245,27 @@ function OutcomeQuestion({ session, profile }) {
   const [note, setNote] = useState('')
   const [saved, setSaved] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [saveErr, setSaveErr] = useState('')
   if (already !== undefined && !saved) return null
 
   const save = async () => {
     if (score === null || busy) return
     setBusy(true)
+    setSaveErr('')
+    // Checked write (QA 2026-10-26 #6): this is the one number the whole
+    // program was for — a failed save keeps the scale on screen with a retry,
+    // never a false "Recorded".
     try {
       const { data } = await supabase.from('profiles').select('shown_milestones').eq('id', session.user.id).single()
       const current = normalizeMilestones(data?.shown_milestones)
       const next = { ...current, outcome_score: String(score), outcome_at: new Date().toISOString() }
       if (note.trim()) next.outcome_note = note.trim().slice(0, 500)
-      await supabase.from('profiles').update({ shown_milestones: serializeMilestones(next) }).eq('id', session.user.id)
+      const { error, data: updated } = await supabase.from('profiles').update({ shown_milestones: serializeMilestones(next) }).eq('id', session.user.id).select()
+      if (error || !updated || updated.length === 0) throw new Error(error?.message || 'no row updated')
       setSaved(true)
-    } catch (e) {}
+    } catch (e) {
+      setSaveErr("That didn't save — your number is still selected, tap Record it to try again.")
+    }
     setBusy(false)
   }
 
@@ -261,6 +287,7 @@ function OutcomeQuestion({ session, profile }) {
       </div>
       <input value={note} onChange={e => setNote(e.target.value)} placeholder="Anything worth adding, in a sentence (optional)"
         style={{ width: '100%', boxSizing: 'border-box', border: 'none', background: 'rgba(255,255,255,0.09)', borderRadius: 'var(--r-sm)', padding: '12px 13px', fontSize: 13, color: 'white', outline: 'none', marginBottom: 12 }} />
+      {saveErr && <div style={{ fontSize: 12.5, color: '#F0B9A9', lineHeight: 1.5, marginBottom: 10 }}>{saveErr}</div>}
       <button onClick={save} disabled={score === null || busy}
         style={{ width: '100%', border: 'none', borderRadius: 'var(--r-md)', padding: 13, background: score === null ? 'rgba(255,255,255,0.12)' : '#8BAE8A', color: score === null ? 'rgba(255,255,255,0.4)' : 'var(--forest-900)', fontSize: 13.5, fontWeight: 700, cursor: score === null ? 'not-allowed' : 'pointer', boxShadow: score === null ? 'none' : '0 10px 24px -6px rgba(139,174,138,0.4)' }}>
         {busy ? 'Saving...' : 'Record it'}
@@ -491,27 +518,14 @@ function EvidenceNeedle({ logs = [], cycleStartStr }) {
     if (typeof syms === 'string') { try { syms = JSON.parse(syms) } catch (e) { syms = null } }
     return Array.isArray(syms) ? syms : []
   }
-  const dayIntensity = (log) => {
-    if (!log.had_symptoms) return 0
-    let max = 1 // had_symptoms with no readable intensity counts as mild
-    for (const s of parseSyms(log)) { const r = RANK[s && s.intensity] || 1; if (r > max) max = r }
-    return max
-  }
 
-  const exposureEaten = logs.filter(l => l.phase === 'exposure' && l.ate_food)
-  const washoutLogs = logs.filter(l => l.phase === 'washout')
-  const sympDays = exposureEaten.filter(l => l.had_symptoms)
-  const symptomExposureDays = sympDays.length
-  const moderatePlusDays = sympDays.filter(l => dayIntensity(l) >= 2).length
-  const severeAny = logs.some(l => dayIntensity(l) >= 3)
-  const washoutFlare = washoutLogs.some(l => l.had_symptoms)
-
-  let position
-  if (symptomExposureDays >= 3 && moderatePlusDays >= 1) position = 88
-  else if (moderatePlusDays >= 2 || severeAny || washoutFlare) position = 72
-  else if (moderatePlusDays === 1 || symptomExposureDays >= 2) position = 55
-  else if (symptomExposureDays === 1) position = 38
-  else position = 12
+  // ONE ENGINE, TWO DISPLAYS (QA 2026-10-26 #3): the needle used to run its
+  // own heuristic and could hold Limit for two weeks on facts the real engine
+  // rules Avoid. It now sits inside the zone computeProvisionalVerdict — the
+  // brain that writes the actual ruling — picks from the same logs.
+  const provisional = computeProvisionalVerdict(logs)
+  const pv = provisional?.verdict || 'Safe'
+  const position = pv === 'Avoid' ? 86 : pv === 'Limit' ? 55 : (logs.length ? 16 : 12)
 
   // Caption: the latest mover, stated factually from the most recent log.
   const dayNum = (log) => {
@@ -592,7 +606,8 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const [dailyLogs, setDailyLogs] = useState([])
   const [completedCycles, setCompletedCycles] = useState([])
   const [logExpanded, setLogExpanded] = useState(false)
-  const [showDailyCheckin, setShowDailyCheckin] = useState(false)
+  const [confirmStop, setConfirmStop] = useState(false)
+  const [stopErr, setStopErr] = useState('')
   const [restartNotice, setRestartNotice] = useState(false)
   const [showComplete, setShowComplete] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -706,48 +721,44 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
     setLoadingBriefing(false)
   }
 
-  // Handle a completed daily check-in
-  const handleDailyComplete = async ({ ateFood, symptoms }) => {
-    if (!activeReintro) return
-    const wasExposure = (activeReintro.exposure_days_completed || 0) < 3
+  // A severe day anywhere on this cycle's log (QA 2026-10-26 #1): the clear
+  // answer that ends the cycle as Avoid, and the fact the restart gate must
+  // never delete or re-expose past.
+  const hasSevereLog = (dailyLogs || []).some(l => (l.symptoms || []).some(s => String(s?.intensity || '').toLowerCase() === 'severe'))
 
-    try {
-      if (wasExposure && ateFood) {
-        const newCount = (activeReintro.exposure_days_completed || 0) + 1
-        const updates = { exposure_days_completed: newCount }
-        if (newCount >= 3) {
-          updates.washout_started_at = todayLocal()
-        }
-        await supabase.from('reintroduction_results').update(updates).eq('id', activeReintro.id)
-      }
-      await loadData()
-    } catch (e) {
-      console.error('handleDailyComplete error:', e)
-    } finally {
-      setShowDailyCheckin(false)
-    }
-  }
-
-  // Severe reaction -> stop cycle, auto-verdict Avoid
+  // Severe reaction -> stop cycle, auto-verdict Avoid. Checked writes: a failed
+  // stop must say so, never silently leave the cycle running.
   const handleStopCycle = async () => {
     if (!activeReintro) return
-    await supabase.from('reintroduction_results')
+    setStopErr('')
+    const { error, data: updated } = await supabase.from('reintroduction_results')
       .update({ stopped_early: true, verdict: 'Avoid', verdict_reason: 'Cycle stopped early due to a severe reaction.' })
-      .eq('id', activeReintro.id)
-    await supabase.from('food_map').upsert({
-      user_id: session.user.id,
-      food: activeReintro.food,
-      verdict: 'Avoid',
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'user_id,food' })
-    setShowDailyCheckin(false)
+      .eq('id', activeReintro.id).select()
+    if (error || !updated || updated.length === 0) {
+      setStopErr("That didn't save — please try again. If it keeps failing, your logs are safe and you can stop the cycle later.")
+      return
+    }
+    // Legacy mirror; reintroduction_results above is the source of truth.
+    try {
+      await supabase.from('food_map').upsert({
+        user_id: session.user.id,
+        food: activeReintro.food,
+        verdict: 'Avoid',
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,food' })
+    } catch (e) {}
+    setConfirmStop(false)
     setActiveReintro(null)
     await loadData()
   }
 
-  // Restart cycle after exceeding the 5-day exposure cap
+  // Restart cycle after exceeding the 5-day exposure cap.
+  // SEVERE GATE (QA 2026-10-26 #1): a cycle with a logged severe day is never
+  // restarted — restarting would invite re-exposure and used to DELETE the
+  // severe record. It routes to the Avoid stop instead, logs intact.
   const handleRestartCycle = async (startDate) => {
     if (!activeReintro) return
+    if (hasSevereLog) { await handleStopCycle(); return }
     const today = startDate || todayLocal()
     await supabase.from('reintro_daily_logs').delete().eq('reintro_id', activeReintro.id)
     await supabase.from('reintroduction_results').update({
@@ -837,7 +848,6 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
   const exposureDaysCompleted = activeReintro?.exposure_days_completed || 0
   const inExposure = exposureDaysCompleted < EXPOSURE_TARGET
-  const phase = inExposure ? 'exposure' : 'washout'
 
   // Restart trigger: too many calendar days without hitting exposure target
   const needsRestart = inExposure && calDaysSinceStart > EXPOSURE_CALENDAR_CAP && exposureDaysCompleted < EXPOSURE_TARGET
@@ -857,8 +867,6 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   const isVerdictDay = !inExposure && washoutDay > WASHOUT_LENGTH
 
   // For the timeline display: total planned days floats with skips
-  const skippedSoFar = Math.max(0, calDaysSinceStart - exposureDaysCompleted - 1)
-  const totalPlannedDays = EXPOSURE_TARGET + skippedSoFar + WASHOUT_LENGTH
   const cycleDay = calDaysSinceStart
   const isExposure = phase === 'exposure'
 
@@ -890,18 +898,28 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
     )
   }
 
-  // Daily check-in screen for the active cycle
-  if (showDailyCheckin && activeReintro) {
+  // Restart notice after exceeding 5-day exposure cap.
+  // A logged SEVERE day takes a different door (QA 2026-10-26 #1): the answer
+  // is already in — offer the Avoid stop, never re-exposure, and keep the logs.
+  if (restartNotice && activeReintro && hasSevereLog) {
     return (
-      <ReintroDailyCheckin
-        session={session}
-        profile={profile}
-        reintro={activeReintro}
-        phase={phase}
-        exposureNumber={nextExposureNumber}
-        onComplete={handleDailyComplete}
-        onStopCycle={handleStopCycle}
-      />
+      <div className="rt-wrap">
+        <style>{css}</style>
+        <div className="rt-content">
+          <div style={{ maxWidth: '460px', margin: '40px auto', background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '28px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, letterSpacing: '0.17em', textTransform: 'uppercase', color: 'var(--avoid-700)', marginBottom: '10px' }}>Severe reaction on the record</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 300, letterSpacing: '-0.3px', marginBottom: '12px' }}>This cycle already gave its <em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>answer.</em></div>
+            <p style={{ fontSize: '14px', color: 'var(--gray)', lineHeight: 1.7, marginBottom: '20px' }}>
+              You logged a severe reaction to {activeReintro.food.toLowerCase()} during this cycle. That is a clear result — there is no need to eat it again. We'll close the cycle, rule {activeReintro.food.toLowerCase()} Avoid, and keep every day you logged on the record. If symptoms feel serious, please seek medical care.
+            </p>
+            {stopErr && <div style={{ fontSize: '12.5px', color: 'var(--avoid-700)', lineHeight: 1.5, marginBottom: '12px' }}>{stopErr}</div>}
+            <button onClick={handleStopCycle}
+              style={{ width: '100%', background: 'var(--forest-500)', color: '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '14px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)' }}>
+              Close the cycle — rule {activeReintro.food} Avoid
+            </button>
+          </div>
+        </div>
+      </div>
     )
   }
 
@@ -1144,7 +1162,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                     <div style={{ marginTop: '14px', fontSize: '12px', color: '#AECDAD', fontWeight: 600 }}>✓ Logged for today. See you tomorrow.</div>
                   ) : (
                     <button
-                      onClick={() => onOpenDailyCheckin ? onOpenDailyCheckin() : setShowDailyCheckin(true)}
+                      onClick={() => onOpenDailyCheckin && onOpenDailyCheckin()}
                       style={{ marginTop: '14px', background: 'var(--forest-300)', color: 'var(--forest-900)', border: 'none', borderRadius: 'var(--r-sm)', padding: '12px 20px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 10px 24px -6px rgba(139,174,138,0.4)' }}
                     >
                       {isExposure ? 'Log today\u2019s check-in \u2192' : 'Log washout check \u2192'}
@@ -1208,6 +1226,36 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             {!isVerdictDay && cycleDay >= 1 && (
               <div className="sn-rise-4">
                 <EvidenceNeedle logs={dailyLogs} cycleStartStr={activeReintro.started_at} />
+              </div>
+            )}
+
+            {/* THE SEVERE OFF-RAMP (QA 2026-10-26 #1): the daily check-in has
+                always SAID a severe reaction can stop the cycle from this tab.
+                This is the control that makes it true — loud when a severe day
+                is on the log, a quiet door otherwise. */}
+            {!isVerdictDay && cycleDay >= 1 && (
+              <div className="sn-rise-4" style={{ marginTop: 14 }}>
+                {confirmStop ? (
+                  <div style={{ background: 'var(--paper)', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>Stop the {activeReintro.food.toLowerCase()} cycle?</div>
+                    <div style={{ fontSize: 12.5, color: 'var(--gray)', lineHeight: 1.6, marginBottom: 12 }}>It will be ruled Avoid on the strength of this cycle, every day you logged stays on the record, and nothing gets eaten again. This can't be undone from here (a future retest can).</div>
+                    {stopErr && <div style={{ fontSize: 12.5, color: 'var(--avoid-700)', lineHeight: 1.5, marginBottom: 10 }}>{stopErr}</div>}
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={handleStopCycle} style={{ flex: 1, background: 'var(--avoid-700)', color: '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '12px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Stop — rule it Avoid</button>
+                      <button onClick={() => { setConfirmStop(false); setStopErr('') }} style={{ flex: 1, background: 'var(--tint-warm)', color: 'var(--ink)', border: 'none', borderRadius: 'var(--r-md)', padding: '12px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Keep the cycle going</button>
+                    </div>
+                  </div>
+                ) : hasSevereLog ? (
+                  <div style={{ background: 'var(--avoid-100)', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '16px 18px' }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--avoid-700)', marginBottom: 6 }}>You logged a severe reaction</div>
+                    <div style={{ fontSize: 12.5, color: '#1C1C1C', lineHeight: 1.6, marginBottom: 12 }}>A severe response is a clear answer on its own. You can stop this cycle now and {activeReintro.food.toLowerCase()} will be ruled Avoid — no more exposures needed. If symptoms feel serious, please seek medical care.</div>
+                    <button onClick={() => setConfirmStop(true)} style={{ width: '100%', background: 'var(--avoid-700)', color: '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '13px', fontSize: 13.5, fontWeight: 700, cursor: 'pointer' }}>Stop this cycle — rule {activeReintro.food} Avoid</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setConfirmStop(true)} style={{ width: '100%', textAlign: 'center', background: 'transparent', border: 'none', padding: '6px', fontSize: 12, color: 'var(--gray)', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer' }}>
+                    Severe reaction? You can stop this cycle →
+                  </button>
+                )}
               </div>
             )}
 

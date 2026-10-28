@@ -125,18 +125,6 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
     loadReintro()
   }, [session.user.id])
 
-  const cycleStale = (() => {
-    try {
-      if (!activeReintro?.started_at) return false
-      const done = activeReintro.exposure_days_completed || 0
-      if (done >= 3) return false
-      const [y, m, d] = String(activeReintro.started_at).split('T')[0].split('-').map(Number)
-      const start = new Date(y, m - 1, d)
-      const now = new Date()
-      const cd = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - start) / 86400000) + 1
-      return cd > 5  // mirrors ReintroTab's EXPOSURE_CALENDAR_CAP restart rule
-    } catch (e) { return false }
-  })()
   const reintroPhase = activeReintro ? ((activeReintro.exposure_days_completed || 0) < 3 ? 'exposure' : 'washout') : null
   const reintroStarted = (() => {
     try {
@@ -149,6 +137,8 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   })()
   // Stale cycle: >5 calendar days without reaching 3 exposures means the reintro tab
   // is asking for a restart. The check-in must agree, plain factors only until restarted.
+  // (QA 2026-10-24 #7: this and the old cycleStale were twins computing the
+  // same rule; one survives.)
   const reintroStale = (() => {
     try {
       if (!activeReintro?.started_at || activeReintro.washout_started_at) return false
@@ -160,7 +150,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       return cd > 5
     } catch (e) { return false }
   })()
-  const showReintroBlock = !!activeReintro && !reintroLoggedToday && reintroStarted && !cycleStale && !reintroStale
+  const showReintroBlock = !!activeReintro && !reintroLoggedToday && reintroStarted && !reintroStale
   const reintroSymptoms = (() => {
     const list = []
     const sym = profile?.symptoms || []
@@ -318,7 +308,9 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
 
     // ---- Build the completion payoff (streak + week + a gentle, safe reflection) ----
     try {
-      const since = new Date(); since.setDate(since.getDate() - 30)
+      // Fetch window covers the whole program (QA 2026-10-24 #7): a 30-day
+      // fetch under a 60-day loop silently capped every long streak at ~31.
+      const since = new Date(); since.setDate(since.getDate() - 200)
       const { data: recent } = await supabase.from('daily_factors')
         .select('log_date, sleep, stress')
         .eq('user_id', session.user.id)
@@ -327,7 +319,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       const logged = new Set((recent || []).map(r => r.log_date))
       // Streak: consecutive days back from today that have a log
       let streak = 0
-      for (let i = 0; i < 60; i++) {
+      for (let i = 0; i < 200; i++) {
         const d = new Date(); d.setDate(d.getDate() - i)
         if (logged.has(localDateString(d))) streak++
         else break
@@ -567,7 +559,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           </div>
         )}
       </div>
-      {!showReintroBlock && activeReintro !== undefined && (
+      {!showReintroBlock && (
         <div style={{ maxWidth: '560px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
           <div className="sn-card" style={s.block}>
             <div style={s.label}>Anything off today? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>optional</span></div>
