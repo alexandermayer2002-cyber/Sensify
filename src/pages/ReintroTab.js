@@ -868,7 +868,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
   // For the timeline display: total planned days floats with skips
   const cycleDay = calDaysSinceStart
-  const isExposure = phase === 'exposure'
+  const isExposure = inExposure
 
   if (loading) return (
     <div className="rt-wrap">
