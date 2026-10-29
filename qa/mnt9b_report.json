@@ -1,0 +1,10 @@
+{
+ "on_maintain": true,
+ "maintain_text": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nAFTER MONTH SIX\nThe map is yours.\nKeeping it alive is Maintain.\n01\nAsk Sensify, unlimited\nAny food, menu, label, or photo, checked against your map.\n02\nContinuous logging\nMeals and symptoms tracked, so the map stays honest.\n03\nDrift detection\nOld symptoms creeping back get flagged before they take over.\n04\nRe-testing cycles\nBodies change. Re-run any food and update its verdict.\n$12.99\n/MO\nCANCEL ANYTIME\nReserve Maintain, $0 today\nSaves your card securely with Stripe. Nothing is charged until your protocol completes, and you can cancel anytime before then.\nWHAT DRIFT DETECTION LOOKS LIKE\nMAP HEALTH \u00b7 LAST 30 DAYS\nWhether the foods you cleared are still behaving, checked against your own quiet weeks. How this works\nYour map is holding. Nothing is drifting.\n16 check-ins and 0 symptom logs in the last 30 days.\nDairy\nLIMIT\nWITHIN BAND\n0.0 events a week, was 0.0 during the program. Logged 0 times in the last 30 days.\nGluten / wheat\nSAFE\nWITHIN BAND\n0.0 events a week, was 0.0 during the program. Logged 0 times in the last 30 days.\nYour completed Food Map is yours forever, subscription or not.",
+ "overflow": 430,
+ "unlimited": true,
+ "maphealth": true,
+ "thin_copy": false,
+ "link_off": true,
+ "console": []
+}
