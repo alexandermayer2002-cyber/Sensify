@@ -1,6 +1,6 @@
 {
- "date": "2610290652",
- "passed": 50,
+ "date": "2610300652",
+ "passed": 54,
  "total": 54,
  "results": [
   {
@@ -126,12 +126,12 @@
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-10-29"
+   "detail": "no daily_factors row for 2026-10-30"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=2 expected=2 start=2026-10-28"
+   "detail": "shown=3 expected=3 start=2026-10-28"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -145,8 +145,8 @@
   },
   {
    "check": "fleet.elimlate.screens_render",
-   "ok": false,
-   "detail": "Home Reintro Verdicts Ask More"
+   "ok": true,
+   "detail": ""
   },
   {
    "check": "fleet.elimlate.no_dead_end",
@@ -160,18 +160,18 @@
   },
   {
    "check": "fleet.elimlate.day_logged",
-   "ok": false,
-   "detail": "no daily_factors row for 2026-10-29"
+   "ok": true,
+   "detail": "no daily_factors row for 2026-10-30"
   },
   {
    "check": "fleet.elimlate.day_counter",
-   "ok": false,
-   "detail": "shown=none expected=42 start=2026-09-18"
+   "ok": true,
+   "detail": "shown=43 expected=43 start=2026-09-18"
   },
   {
    "check": "fleet.elimlate.console_clean",
-   "ok": false,
-   "detail": "['ReferenceError: ringCount is not defined\\n    at https://singular-starship-09b1f1.netlify.app/static/js/main.c3267bbc.js:2:1059608\\n    at https://singular-st"
+   "ok": true,
+   "detail": "[]"
   },
   {
    "check": "fleet.audit.no_overflow",
@@ -196,12 +196,12 @@
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-10-29"
+   "detail": "no daily_factors row for 2026-10-30"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=9 expected=9 start=2026-10-21"
+   "detail": "shown=10 expected=10 start=2026-10-21"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -231,7 +231,7 @@
   {
    "check": "fleet.reintro.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-10-29"
+   "detail": "no daily_factors row for 2026-10-30"
   },
   {
    "check": "fleet.reintro.verdict_count",
@@ -266,7 +266,7 @@
   {
    "check": "fleet.tracking.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-10-29"
+   "detail": "no daily_factors row for 2026-10-30"
   },
   {
    "check": "fleet.tracking.console_clean",
