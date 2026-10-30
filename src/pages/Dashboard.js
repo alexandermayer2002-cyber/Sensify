@@ -2234,13 +2234,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           <path d="M140 108 C156 100 168 88 174 74" strokeWidth="0.65" opacity="0.42" />
                           <path d="M140 76 C152 66 160 54 162 42" strokeWidth="0.65" opacity="0.42" />
                         </g>
+                        {/* All 28 counted stars are logged nights now (Deploy 11
+                            retired away-ring markers); the second ringSet here
+                            survived that pass and crashed Home for every
+                            complete-constellation user (QA 2026-10-29). */}
                         <g filter="url(#lcGlow)">
-                          {(() => {
-                            const ringSet = new Set(order.slice(Math.max(0, 28 - ringCount), 28))
-                            return P.map(([x, y, r], i) => ringSet.has(i)
-                              ? <circle key={i} cx={x} cy={y} r={r} fill="none" stroke="#8BAE8A" strokeWidth="1.1" />
-                              : <circle key={i} cx={x} cy={y} r={r} fill="#8BAE8A" />)
-                          })()}
+                          {P.map(([x, y, r], i) => <circle key={i} cx={x} cy={y} r={r} fill="#8BAE8A" />)}
                         </g>
                       </g>
                     ) : (
