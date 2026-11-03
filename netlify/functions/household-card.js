@@ -81,8 +81,15 @@ exports.handler = async (event) => {
       .order('started_at', { ascending: false }),
   ])
 
-  // Foods with an earned verdict have left the elimination list.
-  const settled = new Set((cycles || []).filter(c => c.verdict).map(c => (c.food || '').toLowerCase()))
+  // Only a SAFE verdict takes a food off the cook's card (QA 2026-10-29 #1:
+  // counting any verdict as settled told the household "nothing is off the
+  // plate" while the user's own app said AVOID dairy). Limit/Avoid verdicts
+  // stay listed, labeled with their ruling.
+  const latestVerdict = {}
+  for (const c of [...(cycles || [])].reverse()) {           // cycles arrive newest-first; reverse so later trials win
+    if (c.verdict) latestVerdict[(c.food || '').toLowerCase()] = c.verdict
+  }
+  const settled = new Set(Object.keys(latestVerdict).filter(k => latestVerdict[k] === 'Safe'))
 
   // The active cycle (no verdict yet) is this week's trial.
   const active = (cycles || []).find(c => !c.verdict) || null
@@ -101,6 +108,9 @@ exports.handler = async (event) => {
     if (settled.has(key)) return false
     if (trial && trial.phase === 'exposure' && key === (trial.food || '').toLowerCase()) return false
     return true
+  }).map(name => {
+    const v = latestVerdict[name.toLowerCase()]
+    return { name, status: v === 'Avoid' ? 'avoid' : v === 'Limit' ? 'limit' : 'eliminated' }
   })
 
   return reply(200, {

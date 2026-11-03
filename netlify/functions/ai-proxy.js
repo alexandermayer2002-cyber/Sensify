@@ -56,9 +56,19 @@ exports.handler = async (event) => {
     const { data: count, error: rlError } = await supabase.rpc('increment_ai_usage', { p_user_id: userId })
     if (!rlError && typeof count === 'number') {
       if (feature === 'ask' && count > ASK_DAILY_LIMIT) {
-        return {
-          statusCode: 429,
-          body: JSON.stringify({ error: "You've reached today's limit for Ask Sensify. It'll reset tomorrow." }),
+        // Maintain subscribers are sold "Ask Sensify, unlimited" (QA 2026-10-29
+        // #2): exempt them from the conversational cap. The TOTAL ceiling below
+        // still stands for everyone — abuse protection, not a user limit.
+        let maintainActive = false
+        try {
+          const { data: prof } = await supabase.from('profiles').select('maintain_active').eq('id', userId).maybeSingle()
+          maintainActive = prof?.maintain_active === true
+        } catch (e) {}
+        if (!maintainActive) {
+          return {
+            statusCode: 429,
+            body: JSON.stringify({ error: "You've reached today's limit for Ask Sensify. It'll reset tomorrow." }),
+          }
         }
       }
       if (count > TOTAL_DAILY_LIMIT) {

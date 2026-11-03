@@ -24,7 +24,9 @@ exports.handler = async (event) => {
             currency: 'usd',
             product_data: {
               name: 'Sensify — Complete 6-Month Program',
-              description: 'Lab test, physician-reviewed elimination & reintroduction protocol, daily guidance, and your personal Food Map.',
+              // The payment surface carries the site's own claims, no stronger
+              // (QA 2026-10-30 #2: "physician-reviewed" was never backed).
+              description: 'Lab test, founder-reviewed elimination & reintroduction protocol built on the clinical standard, daily guidance, and your personal Food Map.',
             },
             unit_amount: 39900, // $399.00 in cents
           },

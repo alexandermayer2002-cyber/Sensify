@@ -118,7 +118,11 @@ function computeMapHealth(verdictRows, symptomRows, factorRows, mealRows, protoc
 
     const checkins = (factorRows || []).filter(r => r && r.log_date).length
     const symptomCount = recentSymptoms.length
-    const thin = (checkins + symptomCount) < MIN_DATA_POINTS
+    // Meals count toward richness (QA 2026-10-29 #4): post-completion there
+    // IS no daily check-in, so a subscriber logging meals every day used to
+    // read "too little recent data" forever, with nothing loggable to fix it.
+    const mealCount = (mealRows || []).length
+    const thin = (checkins + symptomCount + mealCount) < MIN_DATA_POINTS
 
     const recentRate = symptomCount / WINDOW_WEEKS
 
@@ -172,6 +176,7 @@ function computeMapHealth(verdictRows, symptomRows, factorRows, mealRows, protoc
       thin,
       checkins,
       symptomCount,
+      mealCount,
       recentRate,
       floorRate,
       hasMealLogs,
@@ -239,11 +244,11 @@ export default function MapHealth({ session, profile }) {
 
   if (!report) return null
 
-  const { thin, checkins, symptomCount, recentRate, floorRate, foods, driftingFoods, watchingFoods } = report
+  const { thin, checkins, symptomCount, mealCount = 0, recentRate, floorRate, foods, driftingFoods, watchingFoods } = report
 
   let summary
   if (thin) {
-    summary = 'Too little recent data to judge drift. Log a few days and this report sharpens.'
+    summary = 'Too little recent data to judge drift. Log a few meals with Ask Sensify (or note any symptoms) and this report sharpens.'
   } else if (driftingFoods.length > 0) {
     summary = driftingFoods.join(' and ') + (driftingFoods.length === 1 ? ' is drifting. Worth a closer look.' : ' are drifting. Worth a closer look.')
   } else if (watchingFoods.length > 0) {
@@ -270,8 +275,11 @@ export default function MapHealth({ session, profile }) {
       )}
       <div style={st.summary}>{summary}</div>
       <div style={st.vitality}>
-        {checkins} check-in{checkins === 1 ? '' : 's'} and {symptomCount} symptom log{symptomCount === 1 ? '' : 's'} in the last 30 days.
+        {mealCount} meal{mealCount === 1 ? '' : 's'}, {checkins} check-in{checkins === 1 ? '' : 's'} and {symptomCount} symptom log{symptomCount === 1 ? '' : 's'} in the last 30 days.
       </div>
+      {/* The symptom rate is one global number (QA 2026-10-29 minor): said
+          once here, not repeated under every food as if it were per-food. */}
+      {!thin && <div style={{ ...st.rateLine, marginTop: 2, marginBottom: 10 }}>{rateLine}</div>}
 
       {!thin && foods.map((f, i) => (
         <div key={f.food} className="sn-row" style={{ ...st.row, display: 'block', marginTop: i === 0 ? 0 : 8 }}>
@@ -282,12 +290,11 @@ export default function MapHealth({ session, profile }) {
               {STATE_LABELS[f.state]}
             </span>
           </div>
-          <div style={st.rateLine}>
-            {rateLine}
-            {f.exposures != null && (
-              <span style={st.exposure}> Logged {f.exposures} time{f.exposures === 1 ? '' : 's'} in the last 30 days.</span>
-            )}
-          </div>
+          {f.exposures != null && (
+            <div style={st.rateLine}>
+              <span style={st.exposure}>Logged {f.exposures} time{f.exposures === 1 ? '' : 's'} in the last 30 days.</span>
+            </div>
+          )}
           {(f.state === 'watch' || f.state === 'drift') && (
             <div style={st.retest}>
               <span style={st.retestLine}>A fresh 14 day trial would update this verdict.</span>

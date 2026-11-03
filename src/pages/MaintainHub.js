@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import MapHealth from '../components/MapHealth'
 import AskSensify from './AskSensify'
+import { HouseholdShareCard } from './HouseholdCard'
 
 // ── Tier colors (matches the rest of the app) ──
 const TIER = {
@@ -149,12 +150,19 @@ function MaintainHubInner({ session, profile }) {
 
   const load = async () => {
     try {
-      const [fm, ml, sl] = await Promise.all([
+      const [fm, rr, ml, sl] = await Promise.all([
         supabase.from('food_map').select('*').eq('user_id', session.user.id),
+        supabase.from('reintroduction_results').select('food, verdict, started_at').eq('user_id', session.user.id).not('verdict', 'is', null).order('started_at', { ascending: true }),
         supabase.from('meal_logs').select('*').eq('user_id', session.user.id).order('logged_at', { ascending: false }).limit(50),
         supabase.from('symptom_logs').select('*').eq('user_id', session.user.id).order('logged_at', { ascending: false }).limit(50),
       ])
-      setFoodMap(fm.data || [])
+      // The map subscribers pay for reads the UNION (QA 2026-10-29 #3):
+      // reintroduction_results is the source of truth, legacy food_map the
+      // best-effort mirror — a silently failed upsert must never blank this.
+      const byFood = {}
+      for (const row of (fm.data || [])) if (row.verdict) byFood[(row.food || '').toLowerCase()] = { food: row.food, verdict: row.verdict }
+      for (const cy of (rr.data || [])) byFood[(cy.food || '').toLowerCase()] = { food: cy.food, verdict: cy.verdict }  // ascending: latest trial wins
+      setFoodMap(Object.values(byFood))
       setMeals(ml.data || [])
       setSymptoms(sl.data || [])
     } catch (e) {}
@@ -190,7 +198,7 @@ function MaintainHubInner({ session, profile }) {
       <style>{css}</style>
       <div style={s.body}>
         <div className="sn-rise" style={s.greet}>Hi, <em style={s.em}>{firstName}.</em></div>
-        <div className="sn-rise" style={s.subgreet}>Your Food Map is up to date. Here's your kit for today.</div>
+        <div className="sn-rise" style={s.subgreet}>{foodMap.length > 0 ? "Your Food Map is loaded. Here's your kit for today." : "Here's your kit for today."}</div>
 
         {/* Ask Sensify hero */}
         <div className="sn-hero sn-card-hov sn-rise-2" style={s.hero} onClick={() => setView('ask')}>
@@ -246,6 +254,12 @@ function MaintainHubInner({ session, profile }) {
           ))}
           {meals.length === 0 && symptoms.length === 0 && <div style={{ ...s.muted, padding: '12px 0' }}>Nothing logged yet. Try asking Sensify about a meal.</div>}
         </div>
+
+        {/* Household link stays manageable after completion (QA 2026-10-29 #5:
+            it only rendered mid-protocol, stranding live links). */}
+        <div className="sn-rise-4" style={{ marginTop: 14 }}>
+          <HouseholdShareCard session={session} profile={profile} />
+        </div>
       </div>
     </div>
   )
@@ -296,14 +310,22 @@ function SymptomReport({ session, onBack }) {
   const [saving, setSaving] = useState(false)
   const [done, setDone] = useState(false)
 
+  const [saveErr, setSaveErr] = useState('')
   const save = async () => {
     if (!symptom || !severity) return
     setSaving(true)
-    try {
-      await supabase.from('symptom_logs').insert({ user_id: session.user.id, symptom, severity, note: note || null })
-      setDone(true)
-      setTimeout(onBack, 1100)
-    } catch (e) { setSaving(false) }
+    setSaveErr('')
+    // Checked write (QA 2026-10-29 #6, 10th silent-write sighting): symptom
+    // logs are drift detection's only signal — a lost one must never read as
+    // "Logged. Thanks."
+    const { error } = await supabase.from('symptom_logs').insert({ user_id: session.user.id, symptom, severity, note: note || null })
+    if (error) {
+      setSaveErr("That didn't save — your note is still here, tap Log it to try again.")
+      setSaving(false)
+      return
+    }
+    setDone(true)
+    setTimeout(onBack, 1100)
   }
 
   if (done) return (
@@ -337,7 +359,8 @@ function SymptomReport({ session, onBack }) {
         <div style={{ ...s.qLabel, marginTop: '24px' }}>Anything to add? <span style={{ fontWeight: 400, color: '#A8A69E' }}>(optional)</span></div>
         <textarea style={s.textarea} rows={3} value={note} onChange={e => setNote(e.target.value)} placeholder="" />
 
-        <button className="sn-btn" style={{ width: '100%', marginTop: '24px' }} disabled={!symptom || !severity || saving} onClick={save}>
+        {saveErr && <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 12, padding: '10px 13px', fontSize: 12.5, lineHeight: 1.55, marginTop: 16 }}>{saveErr}</div>}
+        <button className="sn-btn" style={{ width: '100%', marginTop: saveErr ? '10px' : '24px' }} disabled={!symptom || !severity || saving} onClick={save}>
           {saving ? 'Saving…' : 'Log symptom'}
         </button>
         <div style={s.disclaimer}>For severe or concerning symptoms, contact a healthcare provider. This log helps spot patterns, it is not medical care.</div>
@@ -427,8 +450,15 @@ function fmtDate(dateStr) {
 }
 function groupByDate(items) {
   const groups = {}
+  // Timestamps group by LOCAL date (QA 2026-10-29 minor: splitting the ISO
+  // string grouped late-evening US logs under tomorrow's UTC header).
+  const localDay = (iso) => {
+    const d = new Date(iso)
+    if (isNaN(d)) return String(iso || '').split('T')[0]
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  }
   for (const it of items) {
-    const d = it.log_date || (it.logged_at || '').split('T')[0]
+    const d = it.log_date || localDay(it.logged_at)
     if (!groups[d]) groups[d] = []
     groups[d].push(it)
   }

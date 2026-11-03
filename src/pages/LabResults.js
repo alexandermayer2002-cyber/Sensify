@@ -56,7 +56,6 @@ const s = {
   checkIcon: { width: '16px', height: '16px', background: '#3D5C3C', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   errorCard: { background: '#FAEAEA', borderRadius: '16px', padding: '14px', marginBottom: '16px', fontSize: '13px', color: '#C95B5B', lineHeight: 1.6 },
   cta: { width: '100%', marginBottom: '10px' },
-  ctaDisabled: { width: '100%', marginBottom: '10px' },
   secBtn: { width: '100%' },
 }
 
@@ -212,33 +211,39 @@ export default function LabResults({ session, onComplete, onBack }) {
                 text: `This is a food sensitivity lab result. Extract all flagged foods and their sensitivity levels. 
                 
 Return ONLY a JSON object with this exact structure, no other text:
-{
-  "foods": [
-    { "name": "Food Name", "level": "High" },
-    { "name": "Food Name", "level": "Moderate" },
-    { "name": "Food Name", "level": "Low" }
-  ]
-}
+{"foods":[["Food Name","High"],["Food Name","Moderate"],["Food Name","Low"]]}
 
 Rules:
 - Only include foods that showed a reaction (High, Moderate, or Low)
 - Do not include foods with no reaction or foods not tested
-- Level must be exactly "High", "Moderate", or "Low"
+- The second element must be exactly "High", "Moderate", or "Low"
 - Food names should be clean and capitalized (e.g. "Cow Milk" not "cow's milk IgG")
-- Return only the JSON, no markdown, no explanation`
+- Return only the JSON, compact, one line if possible, no markdown, no explanation`
               }
             ]
           }]
 
-      const text = await aiCall(messages, 1000)
+      // 1500 tokens + the compact pair format (QA 2026-11-02 #2): real panels
+      // flag 60-100+ foods, and the old verbose JSON truncated at 1000 tokens,
+      // throwing at JSON.parse with a generic error.
+      const text = await aiCall(messages, 1500)
       const clean = text.replace(/```json|```/g, '').trim()
       const parsed = JSON.parse(clean)
 
-      const foods = (parsed.foods || []).map(f => ({ ...f, name: canonFoodName(f.name) }))
+      const VALID_LEVELS = ['High', 'Moderate', 'Low']
+      const foods = (parsed.foods || []).map(f => {
+        // Accept both the compact pair shape and the legacy object shape.
+        const name = Array.isArray(f) ? f[0] : f.name
+        let level = Array.isArray(f) ? f[1] : f.level
+        // Coerce out-of-vocabulary levels (QA 2026-11-02 #6: they used to count
+        // in the banner, render in no section, and submit invisibly).
+        level = VALID_LEVELS.find(v => v.toLowerCase() === String(level || '').toLowerCase()) || 'Moderate'
+        return { name: canonFoodName(name), level }
+      }).filter(f => f.name)
       setExtractedFoods(foods)
       setProcessingMsg('')
     } catch (err) {
-      setError('Something went wrong reading your file. Please try again, or enter your results manually instead.')
+      setError("That report couldn't be read in one pass — long multi-page panels sometimes overflow the reader. Try one page at a time, or enter the flagged foods manually (it only takes a minute).")
     }
 
     setProcessing(false)
@@ -288,7 +293,10 @@ Rules:
     }
 
     let file_path = null
-    if (uploadedFile && !skipFile) {
+    // Manual entry never carries a file (QA 2026-11-02 #3: a stale abandoned
+    // upload used to block manual submits with copy about a file the user
+    // never meant to send).
+    if (uploadedFile && !skipFile && method !== 'manual') {
       const fileExt = uploadedFile.name?.split('.').pop() || 'jpg'
       const fileName = `${session.user.id}-${Date.now()}.${fileExt}`
       const { data: storageData, error: storageError } = await supabase.storage
@@ -299,6 +307,31 @@ Rules:
         // generates short-lived signed URLs for viewing. Never a public URL.
         file_path = fileName
       } else {
+        // Direct upload blocked (the bucket's RLS rejects client INSERTs — QA
+        // 2026-11-02 #1): route the file through the service-role function,
+        // which verifies the session server-side and writes on our behalf.
+        try {
+          const { data: { session: auth } } = await supabase.auth.getSession()
+          // Big photos get re-encoded down before the trip (function body cap);
+          // PDFs ride as-is and oversized ones fall through to the error path.
+          let b64, ctype, extx
+          if (uploadedFile.type.startsWith('image/') && uploadedFile.size > 2.5 * 1024 * 1024) {
+            b64 = await shrinkImage(uploadedFile); ctype = 'image/jpeg'; extx = 'jpg'
+          } else {
+            b64 = await toBase64(uploadedFile); ctype = uploadedFile.type; extx = fileExt
+          }
+          if (b64 && b64.length < 5.4 * 1024 * 1024) {
+            const res = await fetch('/.netlify/functions/upload-lab-file', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', ...(auth?.access_token ? { Authorization: `Bearer ${auth.access_token}` } : {}) },
+              body: JSON.stringify({ data: b64, contentType: ctype, ext: extx }),
+            })
+            const out = await res.json().catch(() => ({}))
+            if (res.ok && out.file_path) file_path = out.file_path
+          }
+        } catch (e) {}
+      }
+      if (!file_path) {
         // A failed upload used to be swallowed: the submission went through
         // file-less and nobody — user or reviewer — learned the original
         // document was lost (QA 2026-10-22 #5). Stop and say so instead.
@@ -345,7 +378,13 @@ Rules:
   const filteredFoods = search.trim()
     ? allPickableFoods.filter(f => f.toLowerCase().includes(search.toLowerCase()))
     : allPickableFoods.filter(f => manualFoods[f])
+  // The canonicalizer guards this door too (QA 2026-11-02 #4: "Cows Milk"
+  // used to add a duplicate beside canonical "Cow Milk", breaking the
+  // frequency-ordering and verdict-keying the aliases exist to protect).
+  const canonOfSearch = canonFoodName(search.trim())
+  const searchResolvesToKnown = !!search.trim() && COMMON_FOODS.includes(canonOfSearch) && filteredFoods.length === 0
   const addCustomFood = () => {
+    if (searchResolvesToKnown) { setSearch(canonOfSearch); return }
     const nm = search.trim().replace(/\s+/g, ' ').replace(/\w\S*/g, t => t[0].toUpperCase() + t.slice(1).toLowerCase())
     if (!nm) return
     setCustomFoods(prev => prev.includes(nm) ? prev : [...prev, nm])
@@ -384,19 +423,20 @@ Rules:
         <div style={s.sub}>Enter only the foods that showed a reaction. Anything you leave out is treated as clear.</div>
 
         <div style={s.methodRow}>
-          <div style={method === 'pdf' ? s.methodBtnActive : s.methodBtn} onClick={() => { setMethod('pdf'); setExtractedFoods(null); setError('') }}>
+          {/* Method switches clear any abandoned file (QA 2026-11-02 #3). */}
+          <div style={method === 'pdf' ? s.methodBtnActive : s.methodBtn} onClick={() => { setMethod('pdf'); setExtractedFoods(null); setFile(null); setUploadedFile(null); setUploadFailed(false); setError('') }}>
             <div style={s.methodIcon}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             </div>
             <div style={s.methodLabel}>Upload PDF</div>
           </div>
-          <div style={method === 'photo' ? s.methodBtnActive : s.methodBtn} onClick={() => { setMethod('photo'); setExtractedFoods(null); setError('') }}>
+          <div style={method === 'photo' ? s.methodBtnActive : s.methodBtn} onClick={() => { setMethod('photo'); setExtractedFoods(null); setFile(null); setUploadedFile(null); setUploadFailed(false); setError('') }}>
             <div style={s.methodIcon}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
             </div>
             <div style={s.methodLabel}>Take photo</div>
           </div>
-          <div style={method === 'manual' ? s.methodBtnActive : s.methodBtn} onClick={() => { setMethod('manual'); setExtractedFoods(null); setError('') }}>
+          <div style={method === 'manual' ? s.methodBtnActive : s.methodBtn} onClick={() => { setMethod('manual'); setExtractedFoods(null); setFile(null); setUploadedFile(null); setUploadFailed(false); setError('') }}>
             <div style={s.methodIcon}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </div>
@@ -448,7 +488,7 @@ Rules:
                   <div style={s.fileName}>{file.name}</div>
                   <div style={s.fileSize}>{(file.size / 1024).toFixed(0)} KB · Ready to analyze</div>
                 </div>
-                <div style={s.fileRemove} onClick={() => setFile(null)}>Remove</div>
+                <div style={s.fileRemove} onClick={() => { setFile(null); setUploadedFile(null); setUploadFailed(false) }}>Remove</div>
               </div>
             )}
 
@@ -563,9 +603,19 @@ Rules:
               })}
               {search.trim() && filteredFoods.length === 0 && (
                 <div style={{ background: '#FFFFFF', boxShadow: 'var(--shadow-1)', borderRadius: 16, padding: '15px', marginBottom: 9 }}>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: '#20241F', marginBottom: 4 }}>No match for “{search.trim()}”</div>
-                  <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.55, marginBottom: 11 }}>Lab reports sometimes flag foods beyond our common list. Add it exactly as your report names it, then tap its level like any other food.</div>
-                  <button className="sn-btn sn-btn-quiet" style={{ width: '100%' }} onClick={addCustomFood}>Add “{search.trim()}” as a food</button>
+                  {searchResolvesToKnown ? (
+                    <>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: '#20241F', marginBottom: 4 }}>Did you mean “{canonOfSearch}”?</div>
+                      <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.55, marginBottom: 11 }}>That looks like a food already on our list — using the listed name keeps your results tied together.</div>
+                      <button className="sn-btn sn-btn-quiet" style={{ width: '100%' }} onClick={() => setSearch(canonOfSearch)}>Yes — show “{canonOfSearch}”</button>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: '#20241F', marginBottom: 4 }}>No match for “{search.trim()}”</div>
+                      <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.55, marginBottom: 11 }}>Lab reports sometimes flag foods beyond our common list. Add it exactly as your report names it, then tap its level like any other food.</div>
+                      <button className="sn-btn sn-btn-quiet" style={{ width: '100%' }} onClick={addCustomFood}>Add “{search.trim()}” as a food</button>
+                    </>
+                  )}
                 </div>
               )}
             </div>

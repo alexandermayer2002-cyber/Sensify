@@ -82,7 +82,18 @@ export default function HouseholdCard({ token }) {
         <div className="sn-micro" style={s.sectionLabel}>Currently off the plate</div>
         {avoiding.length > 0 ? (
           <div style={s.chips}>
-            {avoiding.map(food => <span key={food} style={s.chip}>{food}</span>)}
+            {avoiding.map(f => {
+              // Entries may be strings (legacy) or {name, status}; a ruled
+              // Limit/Avoid food carries its ruling so the cook sees it.
+              const nm = typeof f === 'string' ? f : f.name
+              const stLabel = typeof f === 'string' ? null : f.status === 'avoid' ? 'AVOID' : f.status === 'limit' ? 'SMALL AMOUNTS ONLY' : null
+              return (
+                <span key={nm} style={s.chip}>
+                  {nm}
+                  {stLabel && <span style={{ marginLeft: 6, fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '0.8px', color: f.status === 'avoid' ? '#A32D2D' : '#8A5410' }}>{stLabel}</span>}
+                </span>
+              )
+            })}
           </div>
         ) : (
           <div style={s.empty}>Nothing is off the plate right now.</div>

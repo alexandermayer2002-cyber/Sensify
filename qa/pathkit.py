@@ -14,7 +14,7 @@ def signup_or_login(r, email, name, pw):
     r.fill_ph("you@email.com", email)
     r.fill_ph("••••••••", pw)
     r.click_btn("Sign"); r.sleep(2.0); r.wait_ready(20)
-    if "Sign in to continue" in r.text() or "Invalid" in r.text():
+    if "Sign in to continue" in r.text() or "Invalid" in r.text() or "don't match" in r.text():
         r.click("Continue here"); r.sleep(1.0)
         r.fill_ph("you@email.com", email); r.click_btn("Continue"); r.sleep(1.8)
         r.fill_ph("Sarah Chen", name)

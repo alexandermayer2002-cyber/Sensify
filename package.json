@@ -15,6 +15,17 @@
     "start": "react-scripts start",
     "build": "react-scripts build"
   },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ],
+    "rules": {
+      "no-undef": "error",
+      "no-unused-vars": "off",
+      "no-loop-func": "off",
+      "react-hooks/exhaustive-deps": "off"
+    }
+  },
   "browserslist": {
     "production": [
       ">0.2%",

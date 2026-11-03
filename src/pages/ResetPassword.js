@@ -13,7 +13,7 @@ const INPUT_CSS = `
 const s = {
   wrap: { minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' },
   logo: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, letterSpacing: '-0.3px', color: '#20241F', marginBottom: '36px' },
-  logoEm: { color: '#3D5C3C', fontStyle: 'italic' },
+  logoEm: { color: '#3D5C3C' },
   card: { padding: '32px 28px', width: '100%', maxWidth: '400px' },
   title: { fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, letterSpacing: '-0.3px', marginBottom: '6px' },
   titleEm: { fontStyle: 'italic', color: '#3D5C3C' },
@@ -45,16 +45,16 @@ export default function ResetPassword({ onDone }) {
   return (
     <div style={s.wrap}>
       <style>{INPUT_CSS}</style>
-      <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+      <div style={s.logo}>Sensify<em style={s.logoEm}>.</em></div>
       <div className="sn-card sn-rise" style={s.card}>
         <div style={s.title}>Set a new <em style={s.titleEm}>password.</em></div>
         <div style={s.sub}>Choose a new password for your account.</div>
         {error && <div style={s.error}>{error}</div>}
         <form onSubmit={submit}>
           <label className="sn-micro" style={s.label}>New password</label>
-          <input className="sn-input" style={s.input} type="password" placeholder="At least 8 characters" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} />
+          <input className="sn-input" style={s.input} type="password" autoComplete="new-password" placeholder="At least 8 characters" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} />
           <label className="sn-micro" style={s.label}>Confirm new password</label>
-          <input className="sn-input" style={s.input} type="password" placeholder="••••••••" value={confirm} onChange={e => setConfirm(e.target.value)} required />
+          <input className="sn-input" style={s.input} type="password" autoComplete="new-password" placeholder="••••••••" value={confirm} onChange={e => setConfirm(e.target.value)} required />
           <button className="sn-btn" style={s.btn} type="submit" disabled={loading}>{loading ? 'Saving…' : 'Save new password →'}</button>
         </form>
       </div>

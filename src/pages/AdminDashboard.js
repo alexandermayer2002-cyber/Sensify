@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
-import { recommendTrack, countFlags, symptomBurden, COMMON_TRIGGERS, toBadness } from '../utils/trackRecommendation'
+import { recommendTrack, countFlags, symptomBurden, toBadness } from '../utils/trackRecommendation'
 import { localDateString } from '../utils/dateUtils'
 import AdminSupport from './AdminSupport'
 import { symptomsAreGI, COMMON_TRACK_ENABLED } from '../utils/protocolEngine'
@@ -249,7 +249,6 @@ export default function AdminDashboard({ session, onBack }) {
   const [userDetail, setUserDetail] = useState(null)
   const [loadingUser, setLoadingUser] = useState(false)
   const [trackChoice, setTrackChoice] = useState({})    // labId -> chosen track
-  const [trackFoodSel, setTrackFoodSel] = useState({})  // labId -> array of selected food names
 
   useEffect(() => { loadAll(); loadSupportUnread(); loadStalledUsers(); loadOrphanPayments() }, [])
 
@@ -772,7 +771,6 @@ export default function AdminDashboard({ session, onBack }) {
                   const highFoods = lab.foods?.filter(f => f.level === 'High') || []
                   const moderateFoods = lab.foods?.filter(f => f.level === 'Moderate') || []
                   const lowFoods = lab.foods?.filter(f => f.level === 'Low') || []
-                  const totalFoods = highFoods.length + moderateFoods.length + lowFoods.length
                   return (
                     <div key={lab.id} className="adm-card">
                       <div className="adm-card-header">

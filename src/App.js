@@ -154,7 +154,7 @@ export default function App() {
   if (page === 'login') return <Login onSuccess={() => setPage('dashboard')} onSignup={() => startCheckout()} onResumePaid={(email) => { setPaidEmail(email); setPage('signup') }} />
   if (page === 'reset-password') return <ResetPassword onDone={() => setPage('dashboard')} />
   if (page === 'signup') return <Signup prefillEmail={paidEmail} onSuccess={() => setPage('onboarding')} onLogin={() => setPage('login')} />
-  if (page === 'onboarding') return <Onboarding onComplete={() => setPage('dashboard')} session={session} />
+  if (page === 'onboarding') return <Onboarding onComplete={() => setPage('dashboard')} />
   if (page === 'admin') return <AdminDashboard session={session} onBack={() => setPage('dashboard')} />
   if (page === 'dashboard') return <Dashboard session={session} onLogout={handleLogout} isAdmin={isAdmin} onAdmin={() => setPage('admin')} />
 

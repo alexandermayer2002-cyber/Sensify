@@ -1697,8 +1697,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="snfy-phase sn-rise">
                 <div className="snfy-phase-eyebrow">Your program</div>
                 <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, color: 'white', marginBottom: '8px' }}>Awaiting <em style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>approval.</em></div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>Complete setup to begin</div>
-                <div className="snfy-pbar" style={{ marginTop: '16px' }}><div className="snfy-pfill" style={{ width: '0%' }}></div></div>
+                {/* Shown precisely when setup IS complete (QA 2026-11-02 #5). */}
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>Setup complete — your results are in review</div>
+                <div className="snfy-pbar" style={{ marginTop: '16px' }}><div className="snfy-pfill" style={{ width: '4%' }}></div></div>
                 <div className="snfy-plabel"><span></span><span>6 months total</span></div>
               </div>
             )}
@@ -1708,7 +1709,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="snfy-action">
                 <div className="snfy-action-tag"><div className="snfy-action-dot"></div>Complete your setup</div>
                 <h2>Start your <em>intake survey.</em></h2>
-                <p>Tell us about your symptoms and how often you eat certain foods. Takes about 5 minutes.</p>
+                <p>Tell us about your symptoms and how often you eat certain foods. 15–20 minutes, and your progress saves as you go.</p>
                 <button className="snfy-btn" onClick={() => setScreen('intake')}>Start intake survey →</button>
               </div>
             )}

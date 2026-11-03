@@ -155,6 +155,42 @@ def run_p4():
     finally:
         r.close()
 
+def run_p5():
+    """Upload path end-to-end: a tiny PDF through real extraction to a FILED
+    submission, with the stored file_path verified over REST. This is the gap
+    that hid the storage-RLS breakage (2026-11-02 #1) for 13 nights — the
+    suite only ever exercised manual entry."""
+    import os as _os
+    from fleetkit import rest
+    EMAIL, NAME = acct("p5", "QA Robot")
+    r = Robot("RG5")
+    try:
+        pdf = _os.path.join(_os.environ.get("QA_SHOTS", "/tmp"), "rg5_lab.pdf")
+        pg = r.ctx.new_page()
+        pg.set_content("<h1>IgG Panel</h1><table border=1><tr><td>Cow's Milk</td><td>HIGH</td></tr><tr><td>Wheat</td><td>MODERATE</td></tr><tr><td>Chicken</td><td>No reaction</td></tr></table>")
+        pg.pdf(path=pdf); pg.close()
+        signup_or_login(r, EMAIL, NAME, PW)
+        dig_intake(r, ["Digestive health"])
+        r.cta(r"upload|results"); r.sleep(1.5); r.wait_ready(12)
+        r.page.set_input_files("input[accept='.pdf']", pdf); r.sleep(0.8)
+        r.click_btn("Read my results"); r.sleep(2.0)
+        for _ in range(30):
+            t = r.text()
+            if "extracted from your results" in t or "couldn't be read" in t or "Something went wrong" in t: break
+            r.sleep(1.0)
+        t = r.text()
+        check("p5.upload_extracted", "extracted from your results" in t, t[:200])
+        r.cta(r"Looks right, submit for review"); r.sleep(3.0); r.wait_ready(20)
+        check("p5.upload_no_error", "didn't go through" not in r.text(), r.text()[:200])
+        r.goto(); r.sleep(2.5); r.wait_ready(25)
+        row = rest(r, "lab_results?user_id=eq.@UID@&select=file_path&order=submitted_at.desc&limit=1")
+        body = row.get("body") or []
+        check("p5.file_stored", bool(body and body[0].get("file_path")), str(body)[:120])
+    except Exception as e:
+        check("p5.walk", False, traceback.format_exc()[-150:])
+    finally:
+        r.close()
+
 def run_marketing():
     r = Robot("RGM")
     try:
@@ -174,6 +210,7 @@ if __name__ == "__main__":
     run_p2()
     run_p3()
     run_p4()
+    run_p5()
     # DEPTH LAYER (2026-10-23): aged-persona fleet + invariant sweep. Guarded so
     # a fleet crash can never take down the base suite. --no-fleet skips it.
     if "--no-fleet" not in sys.argv:

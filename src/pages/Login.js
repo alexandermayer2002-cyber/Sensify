@@ -33,20 +33,23 @@ export default function Login({ onSuccess, onSignup, onResumePaid }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [mode, setMode] = useState('login')  // login | forgot | forgot-sent | resume
-  const [notice, setNotice] = useState('')
-
   const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setError(error.message)
+    // Warm copy + the two doors that fix most failed logins (QA 2026-11-01 #4).
+    if (error) setError(/invalid login credentials/i.test(error.message)
+      ? "That email and password don't match. Forgot your password? Use the link below — or if you paid but never set up your account, tap \u201cContinue here\u201d."
+      : error.message)
     else onSuccess()
     setLoading(false)
   }
 
   const handleGoogle = async () => {
-    await supabase.auth.signInWithOAuth({ provider: 'google' })
+    // Surface OAuth init failures (QA 2026-11-01 #5: a silent no-op button).
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' })
+    if (error) setError('Google sign-in could not start: ' + error.message)
   }
 
   const handleForgot = async (e) => {
@@ -98,7 +101,7 @@ export default function Login({ onSuccess, onSignup, onResumePaid }) {
     return (
       <div style={s.wrap}>
         <style>{INPUT_CSS}</style>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<em style={s.logoEm}>.</em></div>
         <div className="sn-card sn-rise" style={s.card}>
           {mode === 'forgot-sent' ? (
             <>
@@ -113,7 +116,7 @@ export default function Login({ onSuccess, onSignup, onResumePaid }) {
               {error && <div style={s.error}>{error}</div>}
               <form onSubmit={handleForgot}>
                 <label className="sn-micro" style={s.label}>Email</label>
-                <input className="sn-input" style={s.input} type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+                <input className="sn-input" style={s.input} type="email" autoComplete="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
                 <button className="sn-btn" style={s.btn} type="submit" disabled={loading}>{loading ? 'Sending…' : 'Send reset link →'}</button>
               </form>
               <div style={s.footer}><span style={s.link} onClick={() => { setMode('login'); setError('') }}>← Back to sign in</span></div>
@@ -128,14 +131,14 @@ export default function Login({ onSuccess, onSignup, onResumePaid }) {
     return (
       <div style={s.wrap}>
         <style>{INPUT_CSS}</style>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<em style={s.logoEm}>.</em></div>
         <div className="sn-card sn-rise" style={s.card}>
           <div style={s.title}>Finish setting <em style={s.titleEm}>up.</em></div>
           <div style={s.sub}>Already paid but never created your account? Enter the email you used at checkout and we'll pick up where you left off.</div>
           {error && <div style={s.error}>{error}</div>}
           <form onSubmit={handleResume}>
             <label className="sn-micro" style={s.label}>Email you paid with</label>
-            <input className="sn-input" style={s.input} type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+            <input className="sn-input" style={s.input} type="email" autoComplete="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
             <button className="sn-btn" style={s.btn} type="submit" disabled={loading}>{loading ? 'Checking…' : 'Continue →'}</button>
           </form>
           <div style={s.footer}><span style={s.link} onClick={() => { setMode('login'); setError('') }}>← Back to sign in</span></div>
@@ -147,7 +150,7 @@ export default function Login({ onSuccess, onSignup, onResumePaid }) {
   return (
     <div style={s.wrap}>
       <style>{INPUT_CSS}</style>
-      <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+      <div style={s.logo}>Sensify<em style={s.logoEm}>.</em></div>
       <div className="sn-card sn-rise" style={s.card}>
         <div style={s.title}>Welcome <em style={s.titleEm}>back.</em></div>
         <div style={s.sub}>Sign in to continue your program.</div>
@@ -159,9 +162,9 @@ export default function Login({ onSuccess, onSignup, onResumePaid }) {
         {error && <div style={s.error}>{error}</div>}
         <form onSubmit={handleLogin}>
           <label className="sn-micro" style={s.label}>Email</label>
-          <input className="sn-input" style={s.input} type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+          <input className="sn-input" style={s.input} type="email" autoComplete="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
           <label className="sn-micro" style={s.label}>Password</label>
-          <input className="sn-input" style={s.input} type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
+          <input className="sn-input" style={s.input} type="password" autoComplete="current-password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
           <button className="sn-btn" style={s.btn} type="submit" disabled={loading}>{loading ? 'Signing in...' : 'Sign in →'}</button>
         </form>
         <div style={{ textAlign: 'center', marginTop: '12px' }}>

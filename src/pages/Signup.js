@@ -9,7 +9,6 @@ const INPUT_CSS = `
 const s = {
   wrap: { minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' },
   logo: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, letterSpacing: '-0.3px', color: '#20241F', marginBottom: '36px' },
-  logoEm: { color: '#3D5C3C' },
   card: { padding: '32px 28px', width: '100%', maxWidth: '400px' },
   title: { fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, letterSpacing: '-0.3px', marginBottom: '6px' },
   titleEm: { color: '#3D5C3C' },
@@ -96,11 +95,11 @@ export default function Signup({ onSuccess, onLogin, prefillEmail }) {
             <label className="sn-micro" style={s.label}>Full name</label>
             <input className="sn-input" style={s.input} type="text" placeholder="Sarah Chen" value={name} onChange={e => setName(e.target.value)} required />
             <label className="sn-micro" style={s.label}>Email</label>
-            <input className="sn-input" style={{ ...s.input, ...(prefillEmail ? { background: '#F7F5EE', color: '#6A6A62', cursor: 'not-allowed' } : {}) }} type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required readOnly={!!prefillEmail} title={prefillEmail ? 'Locked to the email you paid with' : undefined} />
+            <input className="sn-input" style={{ ...s.input, ...(prefillEmail ? { background: '#F7F5EE', color: '#6A6A62', cursor: 'not-allowed' } : {}) }} type="email" autoComplete="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required readOnly={!!prefillEmail} title={prefillEmail ? 'Locked to the email you paid with' : undefined} />
             <label className="sn-micro" style={s.label}>Password</label>
-            <input className="sn-input" style={s.input} type="password" placeholder="At least 8 characters" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} />
+            <input className="sn-input" style={s.input} type="password" autoComplete="new-password" placeholder="At least 8 characters" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} />
             <label className="sn-micro" style={s.label}>Confirm password</label>
-            <input className="sn-input" style={{ ...s.input, boxShadow: confirmPassword && confirmPassword !== password ? '0 0 0 2px rgba(201,91,91,0.45), var(--shadow-1)' : undefined }} type="password" placeholder="Re-enter your password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required minLength={8} />
+            <input className="sn-input" style={{ ...s.input, boxShadow: confirmPassword && confirmPassword !== password ? '0 0 0 2px rgba(201,91,91,0.45), var(--shadow-1)' : undefined }} type="password" autoComplete="new-password" placeholder="Re-enter your password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required minLength={8} />
             {confirmPassword && confirmPassword !== password && (
               <div style={{ fontSize: '12px', color: '#C95B5B', marginTop: '-8px', marginBottom: '10px' }}>Passwords do not match</div>
             )}

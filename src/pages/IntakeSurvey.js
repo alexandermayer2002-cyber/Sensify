@@ -66,7 +66,9 @@ const padInRange = (field, v) => {
 
 
 const FREQ_NEVER = ['Never', 'Rarely or never']
-const FREQ_FREQUENT = ['Daily', 'A few times a week', 'Regularly', 'Almost daily', 'Most afternoons', 'Daily and severe', 'Poor. Hard to fall or stay asleep', 'Very poor']
+// Only the strings the live crashes question can produce (QA 2026-10-31 #6:
+// six legacy options from retired questions rode along here).
+const FREQ_FREQUENT = ['Most afternoons', 'Daily and severe']
 
 const isFrequent = (val) => val && FREQ_FREQUENT.some(f => val.includes(f.split(' ')[0]) || val === f)
 const isNever = (val) => !val || FREQ_NEVER.includes(val)
@@ -142,6 +144,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   const [openPad, setOpenPad] = useState(null)
   const [padWarning, setPadWarning] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [completeError, setCompleteError] = useState('')
 
   // Draft persistence (QA 2026-10-21 #5): all intake state was in-memory only,
   // so a mid-intake refresh (or a phone discarding the backgrounded tab) lost
@@ -151,8 +154,16 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   const draftKey = `sensify.intakeDraft.${session?.user?.id || 'anon'}`
   const [hydrated, setHydrated] = useState(false)
   useEffect(() => {
+    ;(async () => {
     try {
-      const raw = localStorage.getItem(draftKey)
+      let raw = localStorage.getItem(draftKey)
+      if (!raw) {
+        // Device switch / cleared storage: fall back to the profile mirror.
+        try {
+          const { data: prof } = await supabase.from('profiles').select('intake_draft').eq('id', session.user.id).maybeSingle()
+          if (prof?.intake_draft && typeof prof.intake_draft.step === 'number') raw = JSON.stringify(prof.intake_draft)
+        } catch (e) { /* column may not exist yet */ }
+      }
       if (raw) {
         const d = JSON.parse(raw)
         if (d && typeof d.step === 'number') {
@@ -168,6 +179,8 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       }
     } catch (e) { /* storage unavailable — intake still works, just unsaved */ }
     setHydrated(true)
+    })()
+    // eslint-disable-next-line
   }, [])
   useEffect(() => {
     if (!hydrated) return
@@ -175,6 +188,22 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       localStorage.setItem(draftKey, JSON.stringify({ step, agreed, researchOk, signatureName, selectedCategories, answers, foodFrequency, lifestyle }))
     } catch (e) { /* best-effort */ }
   }, [hydrated, step, agreed, researchOk, signatureName, selectedCategories, answers, foodFrequency, lifestyle])
+
+  // Write-behind to the profile on step changes (QA 2026-10-31 #2): localStorage
+  // dies on a device switch, private mode, or a cleared webview. Defensive on
+  // purpose — until INTAKE_DRAFT_MIGRATION.sql adds the column, the write
+  // errors quietly and localStorage remains the only net.
+  useEffect(() => {
+    if (!hydrated || step < 0) return
+    ;(async () => {
+      try {
+        await supabase.from('profiles').update({
+          intake_draft: { step, agreed, researchOk, signatureName, selectedCategories, answers, foodFrequency, lifestyle, saved_at: new Date().toISOString() },
+        }).eq('id', session.user.id)
+      } catch (e) { /* column may not exist yet */ }
+    })()
+    // eslint-disable-next-line
+  }, [hydrated, step])
 
   const hasDigestive = selectedCategories.includes('digestive')
   const hasEnergy = selectedCategories.includes('energy')
@@ -313,9 +342,10 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     if (hasEnergy) symptoms.push('Energy')
     if (hasGeneral) symptoms.push('General wellness')
 
-    await supabase.from('profiles').upsert({
+    const { error: saveError } = await supabase.from('profiles').upsert({
       id: session.user.id,
       full_name: session.user.user_metadata?.full_name,
+      email: session.user.email,
       symptoms,
       baseline_bloating: answers.baseline_bloating ?? null,
       baseline_energy: answers.baseline_energy ?? null,
@@ -340,6 +370,16 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       consent_name: signatureName,
       consent_timestamp: new Date().toISOString(),
     })
+    // THE FINAL SAVE IS CHECKED (QA 2026-11-01 #1, worst silent-write found):
+    // a failed upsert used to delete the draft and route to the dashboard
+    // anyway — one network blip at the last tap and ~15 minutes of answers
+    // plus the signed consent vanished behind a success screen. On failure
+    // the draft stays, the user stays here, and retry is free.
+    if (saveError) {
+      setSaving(false)
+      setCompleteError("Your answers couldn't save — nothing was lost, they're all still here. Check your connection and tap Complete intake again.")
+      return
+    }
     // Optional research consent rides the milestones KV (the column that
     // accepts arrays), read-merge-write so nothing else is clobbered.
     if (researchOk) {
@@ -353,6 +393,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     }
     setSaving(false)
     try { localStorage.removeItem(draftKey) } catch (e) { /* best-effort */ }
+    try { await supabase.from('profiles').update({ intake_draft: null }).eq('id', session.user.id) } catch (e) { /* mirror may not exist */ }
     onComplete()
   }
 
@@ -651,9 +692,24 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         <div style={s.importantNote}>
           This helps us build your elimination list the moment your lab results arrive. No extra steps needed.
         </div>
+        {/* Sticky category bar (QA 2026-10-31 #3): 81 foods was one 10,700px
+            wall. Chips jump to a section and carry live rated-counts. */}
+        <div style={{ position: 'sticky', top: 0, zIndex: 5, background: 'rgba(251,248,242,0.95)', backdropFilter: 'blur(6px)', margin: '0 -4px', padding: '8px 4px', display: 'flex', gap: 6, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          {FOOD_CATEGORIES.map(cat => {
+            const rated = cat.foods.filter(f => foodFrequency[f]).length
+            return (
+              <button key={cat.category}
+                onClick={() => { const el = document.getElementById(`fcat-${cat.category}`); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+                style={{ flexShrink: 0, border: 'none', borderRadius: 999, padding: '7px 12px', fontSize: 11.5, fontWeight: 600, cursor: 'pointer', background: rated > 0 ? '#3D5C3C' : '#FFFFFF', color: rated > 0 ? '#FFFFFF' : '#73736A', boxShadow: 'var(--shadow-1)', whiteSpace: 'nowrap' }}>
+                {cat.category} {rated}/{cat.foods.length}
+              </button>
+            )
+          })}
+        </div>
         {FOOD_CATEGORIES.map(cat => (
-          <div key={cat.category}>
+          <div key={cat.category} id={`fcat-${cat.category}`} style={{ scrollMarginTop: 56 }}>
             <div style={s.categoryTitle2}>{cat.category}</div>
+            <div style={{ fontSize: 11.5, color: '#A8A69E', margin: '-6px 0 10px' }}>Blank means you rarely or never eat it — that's a real answer.</div>
             {cat.foods.map((food, foodIndex) => (
               <div
                 key={food}
@@ -689,7 +745,10 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       && (lifestyle.drinks_alcohol === 'no' || lifestyle.avg_drinks_week)
       && padInRange('avg_sleep', lifestyle.avg_sleep)
       && padInRange('avg_hydration', lifestyle.avg_hydration)
-      && padInRange('avg_drinks_week', lifestyle.avg_drinks_week)
+      // Mirror the write logic, which nulls drinks when alcohol is 'no'
+      // (QA 2026-11-01 #2: a lingering out-of-range value inside the hidden
+      // card kept Complete disabled with the only explanation collapsed).
+      && (lifestyle.drinks_alcohol === 'no' || padInRange('avg_drinks_week', lifestyle.avg_drinks_week))
     // Out-of-range entries never close the pad; the warning stays until corrected.
     const confirmPad = (field) => {
       if (!padInRange(field, lifestyle[field])) { setPadWarning(field); return }
@@ -776,7 +835,8 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           )}
         </div>
         <div style={s.footer}>
-          <button className="sn-btn" style={s.cta} disabled={!lifestyleComplete || saving} onClick={handleComplete}>
+          {completeError && <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 12, padding: '10px 13px', fontSize: 12.5, lineHeight: 1.55, marginBottom: 10 }}>{completeError}</div>}
+          <button className="sn-btn" style={s.cta} disabled={!lifestyleComplete || saving} onClick={() => { setCompleteError(''); handleComplete() }}>
             {saving ? 'Saving your program...' : 'Complete intake →'}
           </button>
         </div>

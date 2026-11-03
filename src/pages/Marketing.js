@@ -73,7 +73,6 @@ const css = `
   .mk-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
   .btn-p { background: var(--forest-500); color: #fff; border: none; border-radius: var(--r-md); padding: 15px 26px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-pill); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
   .mk-hero.dark .btn-g { background: rgba(250,248,244,0.1); color: #FAF8F4; box-shadow: none; }
-  .mk-hero.dark .mk-trust { color: rgba(250,248,244,0.5) !important; }
   @media (hover: hover) { .btn-p:hover { transform: translateY(-1px); box-shadow: 0 14px 30px -6px rgba(61,92,60,0.5); } }
   .btn-p:active { transform: scale(0.985); }
   .btn-g { background: var(--paper); color: var(--ink-soft); border: none; border-radius: var(--r-md); padding: 14px 22px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow-1); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
@@ -739,7 +738,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 ))}
               </div>
               <div className="fmcard-foot">
-                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>EXAMPLE · WHAT 184 DAYS OF TESTING PRODUCES</div>
+                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>EXAMPLE · WHAT 140 DAYS OF TESTING PRODUCES</div>
               </div>
             </div>
           </div>
@@ -1069,6 +1068,10 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 </div>
               ))}
               <div className="price-note">Everything included: your lab test, the full protocol, AI guidance, and your completed verdicts. No hidden costs, no separate lab bill.</div>
+              {/* The refund story + the one optional add-on, at the decision
+                  point (QA 2026-10-30 #3/#4): both already existed, but only
+                  in terms.html and an in-app upsell a buyer never sees. */}
+              <div className="price-note" style={{ marginTop: 8 }}>Not for you? Write to us and we make it right — see our Terms. After you finish, Maintain is an optional $12.99/mo companion that keeps your verdicts working day to day. Entirely optional, nothing is required beyond the one price above.</div>
             </div>
           </div>
         </div>
