@@ -40,7 +40,7 @@ export default function Login({ onSuccess, onSignup, onResumePaid }) {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     // Warm copy + the two doors that fix most failed logins (QA 2026-11-01 #4).
     if (error) setError(/invalid login credentials/i.test(error.message)
-      ? "That email and password don't match. Forgot your password? Use the link below — or if you paid but never set up your account, tap \u201cContinue here\u201d."
+      ? "That email and password don't match. You can reset your password below, or, if you paid but never finished setting up, use the recovery link at the bottom."
       : error.message)
     else onSuccess()
     setLoading(false)
