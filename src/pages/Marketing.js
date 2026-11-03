@@ -820,7 +820,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="spine-step">
               <div className="spine-dot"></div>
               <div className="spine-tag">Step 3</div>
-              <div className="spine-title">Upload your results, read instantly</div>
+              <div className="spine-title">Upload your results, read in seconds</div>
               <div className="spine-desc">Upload your lab PDF, take a photo, or enter results manually. Every flagged food is extracted and categorized as High, Moderate, or Low sensitivity, then cross-referenced with your eating habits to build your elimination list. You review and confirm before anything starts.</div>
             </div>
           </div>

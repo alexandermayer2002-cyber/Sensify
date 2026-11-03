@@ -357,9 +357,20 @@ Rules:
       return
     }
 
-    await supabase.from('profiles').update({
-      program_phase: 'pending_review',
-    }).eq('id', session.user.id)
+    // Checked (QA sentinel S3): the lab row is saved above; if this phase
+    // advance fails silently the account is stranded (lab submitted, dashboard
+    // still says "upload your lab"). Retry once, then surface it.
+    let phaseOk = false
+    for (let i = 0; i < 2 && !phaseOk; i++) {
+      const { error: pErr, data: pRows } = await supabase.from('profiles')
+        .update({ program_phase: 'pending_review' }).eq('id', session.user.id).select()
+      phaseOk = !pErr && pRows && pRows.length > 0
+    }
+    if (!phaseOk) {
+      setError('Your results were saved, but your dashboard did not advance. Please refresh; if it still shows the upload step, tap submit again.')
+      setSaving(false)
+      return
+    }
 
     // TESTING ONLY: robot accounts (+fable/+qa/+robot emails) skip the human
     // admin gate so automated end-to-end walks can run. Real customers always

@@ -48,15 +48,14 @@ export default function Signup({ onSuccess, onLogin, prefillEmail }) {
     if (error) {
       setError(error.message)
     } else {
-      // Create profile row immediately on signup
+      // Create profile row immediately on signup. Best-effort with one retry
+      // (QA sentinel S4): intake later upserts the profile too, so a miss here
+      // is recoverable — but a retry makes the common transient failure a
+      // non-event instead of a NULL-profile account.
       if (data?.user) {
-        await supabase.from('profiles').upsert({
-          id: data.user.id,
-          full_name: name,
-          email: email,
-          program_phase: 'awaiting_results',
-          created_at: new Date().toISOString(),
-        })
+        const row = { id: data.user.id, full_name: name, email, program_phase: 'awaiting_results', created_at: new Date().toISOString() }
+        const { error: pErr } = await supabase.from('profiles').upsert(row)
+        if (pErr) { try { await supabase.from('profiles').upsert(row) } catch (e) {} }
       }
       if (data?.session) {
         // Signed in immediately (email confirmation off): hand off to

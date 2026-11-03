@@ -39,7 +39,14 @@ function MaintainPreview({ profile, session }) {
 
   const cancelOptIn = async () => {
     setBusy(true)
-    await supabase.from('profiles').update({ maintain_opt_in: false }).eq('id', session.user.id)
+    // Checked (QA sentinel S2): a silently failed cancel left the user looking
+    // still-opted-in after the reload, with their card still on file.
+    const { error, data } = await supabase.from('profiles').update({ maintain_opt_in: false }).eq('id', session.user.id).select()
+    if (error || !data || data.length === 0) {
+      setBusy(false)
+      alert("That didn't go through — your reservation wasn't cancelled. Please try again.")
+      return
+    }
     window.location.reload()
   }
 

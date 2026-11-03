@@ -412,10 +412,25 @@ export default function AdminDashboard({ session, onBack }) {
   const respondToAudit = async (auditId, userId, outcome) => {
     setResponding(prev => ({ ...prev, [auditId]: true }))
     const note = notes[auditId] || ''
-    await supabase.from('compliance_audit').update({ status: 'responded', admin_outcome: outcome, admin_note: note, responded_at: new Date().toISOString() }).eq('id', auditId)
+    // Checked writes (QA sentinel S1): a failed response used to show the admin
+    // "responded" while the customer's guidance / clock-reset never happened.
+    const { error: aErr, data: aRows } = await supabase.from('compliance_audit')
+      .update({ status: 'responded', admin_outcome: outcome, admin_note: note, responded_at: new Date().toISOString() })
+      .eq('id', auditId).select()
+    if (aErr || !aRows || aRows.length === 0) {
+      alert('Could not save the response: ' + (aErr?.message || 'no row updated (check RLS admin policy)'))
+      setResponding(prev => ({ ...prev, [auditId]: false }))
+      return
+    }
     if (outcome === 'Reset clock') {
       const today = localDateString(new Date())
-      await supabase.from('profiles').update({ protocol_start_date: today, program_phase: 'elimination' }).eq('id', userId)
+      const { error: pErr, data: pRows } = await supabase.from('profiles')
+        .update({ protocol_start_date: today, program_phase: 'elimination' }).eq('id', userId).select()
+      if (pErr || !pRows || pRows.length === 0) {
+        alert('Response saved, but the clock reset failed: ' + (pErr?.message || 'no row updated') + ' — retry the reset.')
+        setResponding(prev => ({ ...prev, [auditId]: false }))
+        return
+      }
     }
     setResponded(prev => ({ ...prev, [auditId]: outcome }))
     setResponding(prev => ({ ...prev, [auditId]: false }))
