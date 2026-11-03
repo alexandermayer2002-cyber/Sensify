@@ -90,12 +90,18 @@ const css = `
 
   .mk-section { padding: 72px 64px; max-width: 100%; }
   .mk-section-inner { max-width: 960px; margin: 0 auto; }
-  /* Sections carry NO backgrounds of their own: per-section washes produced
-     hard-edged gray-green bands against the page glow. The page is one
-     continuous lit surface; sections separate by spacing and cards. */
-  .mk-section.alt { background: transparent; }
-  .mk-section.sage { background: transparent; }
-  .mk-section.cream { background: transparent; }
+  /* MARKETING SURFACE (founder-approved 2026-11-03): soft warm slabs on a
+     deeper paper page, forest only at the hero. Sections alternate between a
+     lifted off-white slab and the bare paper, so every section has edges and
+     nothing is ever a faint tint of its neighbor. Cards flip tone with their
+     section through --card-bg so they always read as cards. No pure white
+     surfaces larger than a card. */
+  .mk-page { background: #E9E3D6; min-height: 100vh; position: relative; z-index: 0; }
+  .mk-section { --card-bg: #F9F6EF; margin: 18px 24px; border-radius: 32px; background: transparent; }
+  .mk-section:nth-child(odd of .mk-section) { background: #F9F6EF; box-shadow: 0 12px 32px -14px rgba(56,62,48,0.10); --card-bg: #FFFFFF; }
+  .mk-section.alt, .mk-section.sage, .mk-section.cream { background: inherit; }
+  .mk-section:nth-child(odd of .mk-section).alt, .mk-section:nth-child(odd of .mk-section).sage, .mk-section:nth-child(odd of .mk-section).cream { background: #F9F6EF; }
+  @media (max-width: 640px) { .mk-section { margin: 12px 12px; border-radius: 24px; } }
   .ey { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); margin-bottom: 14px; }
   .sh { font-family: var(--font-display); font-size: 30px; font-weight: 400; line-height: 1.22; margin-bottom: 14px; letter-spacing: -0.4px; color: var(--ink); }
   .sh em { font-style: italic; color: var(--forest-500); }
@@ -125,7 +131,7 @@ const css = `
     .ph-name { font-size: 22px; }
   }
   .sci-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .sci-card { background: var(--paper); border-radius: var(--r-md); padding: 22px; box-shadow: var(--shadow-1); }
+  .sci-card { background: var(--card-bg, var(--paper)); border-radius: var(--r-md); padding: 22px; box-shadow: var(--shadow-1); }
   .sci-icon { width: 36px; height: 36px; border-radius: 11px; background: #EDF3ED; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
   .sci-t { font-size: 14px; font-weight: 500; margin-bottom: 7px; }
   .sci-d { font-size: 13px; color: #7A7A72; line-height: 1.7; }
@@ -152,7 +158,7 @@ const css = `
   .sci-paths-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin-bottom: 10px; }
   .sci-paths-h { font-family: var(--font-display); font-size: 26px; font-weight: 400; color: var(--ink); margin-bottom: 22px; max-width: 560px; }
   .sci-paths-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .sci-path { background: var(--paper); border-radius: var(--r-md); padding: 22px; box-shadow: var(--shadow-1); }
+  .sci-path { background: var(--card-bg, var(--paper)); border-radius: var(--r-md); padding: 22px; box-shadow: var(--shadow-1); }
   .sci-path-num { width: 28px; height: 28px; border-radius: 50%; background: #EDF3ED; color: #3D5C3C; font-family: 'DM Mono', monospace; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
   .sci-path-t { font-size: 15px; font-weight: 600; color: #1C1C1C; margin-bottom: 8px; }
   .sci-path-d { font-size: 13px; line-height: 1.6; color: #6A6A62; }
@@ -168,7 +174,7 @@ const css = `
   }
 
   .pricing-wrap { max-width: 460px; }
-  .pricing-card { background: var(--paper); border: none; border-radius: var(--r-lg); padding: 36px 32px; box-shadow: var(--shadow-2); }
+  .pricing-card { background: var(--card-bg, var(--paper)); border: none; border-radius: var(--r-lg); padding: 36px 32px; box-shadow: var(--shadow-2); }
   .price-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); margin-bottom: 12px; }
   .price-num { font-family: var(--font-display); font-size: 72px; font-weight: 300; line-height: 1; margin-bottom: 8px; letter-spacing: -0.02em; font-variant-numeric: lining-nums; }
   .price-sub { font-size: 13px; color: #73736A; margin-bottom: 24px; }
@@ -184,7 +190,7 @@ const css = `
   .faq-group:last-child { margin-bottom: 0; }
   .faq-group-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin-bottom: 14px; }
   .faq-list { display: flex; flex-direction: column; gap: 10px; }
-  .faq-item { background: var(--paper); border: none; border-radius: var(--r-md); cursor: pointer; padding: 0 20px; box-shadow: var(--shadow-1); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+  .faq-item { background: var(--card-bg, var(--paper)); border: none; border-radius: var(--r-md); cursor: pointer; padding: 0 20px; box-shadow: var(--shadow-1); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
   @media (hover: hover) { .faq-item:hover { transform: translateY(-1px); box-shadow: var(--shadow-2); } }
   .faq-item.open { box-shadow: var(--shadow-2); }
   .faq-q { font-size: 14.5px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 17px 0; line-height: 1.45; }
@@ -205,7 +211,7 @@ const css = `
   .mk-footer-link:hover { color: #1C1C1C; }
 
   .prob-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 40px; }
-  .prob-card { background: var(--paper); border-radius: var(--r-md); padding: 22px 20px; box-shadow: var(--shadow-1); }
+  .prob-card { background: var(--card-bg, var(--paper)); border-radius: var(--r-md); padding: 22px 20px; box-shadow: var(--shadow-1); }
   .prob-t { font-family: var(--font-display); font-size: 18px; font-weight: 400; margin-bottom: 7px; }
   .prob-d { font-size: 12.5px; color: #73736A; line-height: 1.65; }
 
@@ -613,7 +619,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
   }, [tab])
 
   if (tab === 'home') return (
-    <div>
+    <div className="mk-page">
       <style>{css}</style>
       <Nav />
       <div className="mk-hero dark">
@@ -657,7 +663,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               { n: '03', t: 'Reintroduce', d: 'Each food returns one at a time in a controlled cycle while we track your response. Your body gives the real answer.' },
               { n: '04', t: 'Know', d: 'Every food lands where it belongs: Safe, Limit, or Avoid. Every verdict is earned and yours to keep.' },
             ].map((s, i) => (
-              <div key={i} className="sn-card-hov" style={{ background: '#FFFFFF', borderRadius: 16, padding: '22px 20px', boxShadow: 'var(--shadow-1)' }}>
+              <div key={i} className="sn-card-hov" style={{ background: 'var(--card-bg, #FFFFFF)', borderRadius: 16, padding: '22px 20px', boxShadow: 'var(--shadow-1)' }}>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, color: '#8BAE8A', letterSpacing: '0.17em', marginBottom: '10px' }}>{s.n}</div>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: '#20241F', marginBottom: '8px' }}>{s.t}</div>
                 <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>{s.d}</div>
@@ -789,7 +795,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
   )
 
   if (tab === 'how') return (
-    <div>
+    <div className="mk-page">
       <style>{css}</style>
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
@@ -921,7 +927,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
   )
 
   if (tab === 'science') return (
-    <div>
+    <div className="mk-page">
       <style>{css}</style>
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
@@ -1033,7 +1039,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
   )
 
   if (tab === 'pricing') return (
-    <div>
+    <div className="mk-page">
       <style>{css}</style>
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
@@ -1084,7 +1090,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
   )
 
   if (tab === 'faq') return (
-    <div>
+    <div className="mk-page">
       <style>{css}</style>
       <Nav />
       <div className="mk-hero" style={{ padding: '56px 64px 12px' }}>
@@ -1107,7 +1113,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
   )
 
   if (tab === 'about') return (
-    <div>
+    <div className="mk-page">
       <style>{css}</style>
       <Nav />
       <div className="mk-hero" style={{ padding: '64px 64px 48px' }}>
