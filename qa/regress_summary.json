@@ -1,7 +1,7 @@
 {
- "date": "2611020756",
- "passed": 54,
- "total": 54,
+ "date": "2611030751",
+ "passed": 63,
+ "total": 63,
  "results": [
   {
    "check": "mkt.example_labels",
@@ -104,6 +104,21 @@
    "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nReintroduction.\nThe testing phase of the structured protocol.\nYOU'RE TRACKING, NOT TESTING\nReintroduction cycle"
   },
   {
+   "check": "p5.upload_extracted",
+   "ok": true,
+   "detail": "\u2190 Back\nSensify.\nYOUR LAB RESULTS\nAdd your test results.\nEnter only the foods that showed a reaction. Anything you leave out is treated as clear.\nUpload PDF\nTake"
+  },
+  {
+   "check": "p5.upload_no_error",
+   "ok": true,
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood morning,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nELIMINATION PHASE\nStarts tomorrow.\nYour elimination phas"
+  },
+  {
+   "check": "p5.file_stored",
+   "ok": true,
+   "detail": "[{'file_path': '6e229a42-9508-484b-a6d5-b6e1a87f4829-1793692858584.pdf'}]"
+  },
+  {
    "check": "fleet.elimearly.no_overflow",
    "ok": true,
    "detail": ""
@@ -126,12 +141,12 @@
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-02"
+   "detail": "no daily_factors row for 2026-11-03"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=6 expected=6 start=2026-10-28"
+   "detail": "shown=7 expected=7 start=2026-10-28"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -161,12 +176,12 @@
   {
    "check": "fleet.elimlate.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-02"
+   "detail": "no daily_factors row for 2026-11-03"
   },
   {
    "check": "fleet.elimlate.day_counter",
    "ok": true,
-   "detail": "shown=46 expected=46 start=2026-09-18"
+   "detail": "shown=47 expected=47 start=2026-09-18"
   },
   {
    "check": "fleet.elimlate.console_clean",
@@ -196,12 +211,12 @@
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-02"
+   "detail": "no daily_factors row for 2026-11-03"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=13 expected=13 start=2026-10-21"
+   "detail": "shown=14 expected=14 start=2026-10-21"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -231,7 +246,7 @@
   {
    "check": "fleet.reintro.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-02"
+   "detail": "no daily_factors row for 2026-11-03"
   },
   {
    "check": "fleet.reintro.verdict_count",
@@ -266,12 +281,42 @@
   {
    "check": "fleet.tracking.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-02"
+   "detail": "no daily_factors row for 2026-11-03"
   },
   {
    "check": "fleet.tracking.console_clean",
    "ok": true,
    "detail": "[]"
+  },
+  {
+   "check": "sentinel.silent_writes",
+   "ok": true,
+   "detail": "0 NEW unchecked writes"
+  },
+  {
+   "check": "sentinel.safety",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "sentinel.rls_boundary",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "sentinel.data_integrity",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fault.intake_complete_surfaces",
+   "ok": true,
+   "detail": "errored=True escaped_to_dashboard=False | \u2190 Back\nSensify.\nSTEP 5 OF 5\nA bit about\nyour normal.\nSleep, stress, and a few habits shape how you feel as much as foo"
+  },
+  {
+   "check": "fault.meal_log_surfaces",
+   "ok": true,
+   "detail": "retry=True false_success=False"
   }
  ]
 }
