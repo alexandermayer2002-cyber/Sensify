@@ -90,8 +90,11 @@ const css = `
 
   .mk-section { padding: 72px 64px; max-width: 100%; }
   .mk-section-inner { max-width: 960px; margin: 0 auto; }
-  .mk-section.alt { background: linear-gradient(180deg, rgba(139,174,138,0.07), rgba(139,174,138,0)); }
-  .mk-section.sage { background: linear-gradient(180deg, rgba(139,174,138,0.07), rgba(139,174,138,0)); }
+  /* Sections carry NO backgrounds of their own: per-section washes produced
+     hard-edged gray-green bands against the page glow. The page is one
+     continuous lit surface; sections separate by spacing and cards. */
+  .mk-section.alt { background: transparent; }
+  .mk-section.sage { background: transparent; }
   .mk-section.cream { background: transparent; }
   .ey { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); margin-bottom: 14px; }
   .sh { font-family: var(--font-display); font-size: 30px; font-weight: 400; line-height: 1.22; margin-bottom: 14px; letter-spacing: -0.4px; color: var(--ink); }

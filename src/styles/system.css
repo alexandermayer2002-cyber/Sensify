@@ -61,15 +61,27 @@
   --t-med: 260ms;
 }
 
-/* ---- Atmosphere: the page is lit, never flat ---- */
+/* ---- Atmosphere: the page is lit, never flat ----
+   The glow lives on a fixed-position layer behind everything, not on the
+   body background. background-attachment: fixed is ignored by iOS Safari
+   (the gradient stretched over the whole document there) and it made
+   section tints shift against a pinned glow while scrolling. A fixed
+   pseudo-element paints identically in every browser and never moves. */
 body {
   font-family: var(--font-body);
   color: var(--ink);
+  background: var(--stone);
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background:
     radial-gradient(130% 55% at 88% -5%, rgba(139, 174, 138, 0.20), transparent 60%),
     radial-gradient(110% 45% at 0% 38%, rgba(232, 148, 31, 0.07), transparent 55%),
     linear-gradient(175deg, var(--cream) 0%, var(--stone) 70%, #EFEFE4 100%);
-  background-attachment: fixed;
 }
 
 input, textarea, select, button { font-family: var(--font-body); }
