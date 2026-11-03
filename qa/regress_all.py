@@ -227,6 +227,14 @@ if __name__ == "__main__":
             run_sentinel(check)
         except Exception:
             check("sentinel.boot", False, traceback.format_exc()[-150:])
+    # FAULT INJECTION (2026-11-03): induce write failures, assert the UI surfaces
+    # them (no false success) — proves the write-first fixes hold. --no-fault skips.
+    if "--no-fault" not in sys.argv:
+        try:
+            from faultkit import run_faults
+            run_faults(check)
+        except Exception:
+            check("fault.boot", False, traceback.format_exc()[-150:])
     passed = sum(1 for x in RESULTS if x["ok"])
     summary = {"date": STAMP, "passed": passed, "total": len(RESULTS), "results": RESULTS}
     with open("regress_summary.json", "w") as f:

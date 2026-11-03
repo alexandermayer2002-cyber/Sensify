@@ -46,3 +46,28 @@ matching cycle; an approved lab doesn't sit under a pending profile.
 `sentinel_report.json` + `sentinel.*` checks in `regress_summary.json`.
 RLS and data-integrity are hard pass/fail; silent-writes fails on count (triage
 against the allowlist); copy-promises is report-only.
+
+## 4. Safety / medical oracle (added 2026-11-03)
+
+Static assertions on the paths where a regression could harm a person, not just
+annoy them: severe reactions route to "seek medical care" + an Avoid stop; the
+verdict engine defaults severe to Avoid; Ask Sensify never certifies a label
+all-clear; observation mode refuses verdicts. These are structural guarantees
+that must never silently disappear. `sentinel.safety` — hard fail.
+
+## Silent-write allowlist
+
+`SILENT_WRITE_ALLOW` holds the reviewed, intentional best-effort writes (test
+harness, backfills/mirrors after a checked primary). The scan skips them so it
+only ever flags NEW unchecked writes. Revisit when code moves.
+
+---
+
+# Fault injection (faultkit.py)
+
+The layer that finds what reading can't. Induces a real failure in a write
+(Playwright route interception → 500) and asserts the UI surfaces it with a
+retry and never shows a false success. Runs after the sentinel (`--no-fault`
+skips). Drills today: intake-complete (the worst data-loss path) and Ask
+Sensify meal log — both proving the Deploy 14/13 write-first fixes hold under
+failure. Add a drill per high-stakes write surface over time.
