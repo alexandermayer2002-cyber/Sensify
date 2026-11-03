@@ -219,6 +219,14 @@ if __name__ == "__main__":
             run_fleet(check)
         except Exception:
             check("fleet.boot", False, traceback.format_exc()[-150:])
+    # SENTINEL (2026-11-03): security (RLS) + data-integrity + static scans.
+    # Guarded so a sentinel crash can't take down the suite. --no-sentinel skips.
+    if "--no-sentinel" not in sys.argv:
+        try:
+            from sentinelkit import run_sentinel
+            run_sentinel(check)
+        except Exception:
+            check("sentinel.boot", False, traceback.format_exc()[-150:])
     passed = sum(1 for x in RESULTS if x["ok"])
     summary = {"date": STAMP, "passed": passed, "total": len(RESULTS), "results": RESULTS}
     with open("regress_summary.json", "w") as f:

@@ -1,0 +1,375 @@
+{
+ "rls": [],
+ "integrity": [],
+ "silent_writes": [
+  {
+   "file": "src/utils/aiInsights.js",
+   "line": 440,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({"
+  },
+  {
+   "file": "src/utils/testMode.js",
+   "line": 37,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update(profileUpdate).eq('id', userId)"
+  },
+  {
+   "file": "src/utils/testMode.js",
+   "line": 49,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({ protocol_start_date: shiftDate(prof.protocol_start_date, n) }).eq('id', userId)"
+  },
+  {
+   "file": "src/utils/testMode.js",
+   "line": 64,
+   "table": "reintroduction_results",
+   "op": "update",
+   "code": "await supabase.from('reintroduction_results').update({"
+  },
+  {
+   "file": "src/utils/testMode.js",
+   "line": 73,
+   "table": "symptom_logs",
+   "op": "update",
+   "code": "await supabase.from('symptom_logs').update({ logged_at: t.toISOString() }).eq('id', e.id)"
+  },
+  {
+   "file": "src/utils/testMode.js",
+   "line": 83,
+   "table": "daily_factors",
+   "op": "upsert",
+   "code": "await supabase.from('daily_factors').upsert({ user_id: userId, log_date: ds, sleep: '7-8', stress: 'low', hydration: '6'"
+  },
+  {
+   "file": "src/utils/testMode.js",
+   "line": 86,
+   "table": "daily_compliance",
+   "op": "upsert",
+   "code": "await supabase.from('daily_compliance').upsert({ user_id: userId, date: ds, response: 'YES', logged_at: new Date(d.getFu"
+  },
+  {
+   "file": "src/utils/support.js",
+   "line": 132,
+   "table": "tickets",
+   "op": "update",
+   "code": "await supabase.from('tickets').update(patch).eq('id', ticketId)"
+  },
+  {
+   "file": "src/pages/CommonTrackDecision.js",
+   "line": 109,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({ seen_track_intro: true }).eq('id', session.user.id)"
+  },
+  {
+   "file": "src/pages/MaintainHub.js",
+   "line": 42,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({ maintain_opt_in: false }).eq('id', session.user.id)"
+  },
+  {
+   "file": "src/pages/Signup.js",
+   "line": 53,
+   "table": "profiles",
+   "op": "upsert",
+   "code": "await supabase.from('profiles').upsert({"
+  },
+  {
+   "file": "src/pages/ReintroTab.js",
+   "line": 743,
+   "table": "food_map",
+   "op": "upsert",
+   "code": "await supabase.from('food_map').upsert({"
+  },
+  {
+   "file": "src/pages/ReintroTab.js",
+   "line": 763,
+   "table": "reintro_daily_logs",
+   "op": "delete",
+   "code": "await supabase.from('reintro_daily_logs').delete().eq('reintro_id', activeReintro.id)"
+  },
+  {
+   "file": "src/pages/ReintroTab.js",
+   "line": 764,
+   "table": "reintroduction_results",
+   "op": "update",
+   "code": "await supabase.from('reintroduction_results').update({"
+  },
+  {
+   "file": "src/pages/LabResults.js",
+   "line": 360,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({"
+  },
+  {
+   "file": "src/pages/AdminDashboard.js",
+   "line": 415,
+   "table": "compliance_audit",
+   "op": "update",
+   "code": "await supabase.from('compliance_audit').update({ status: 'responded', admin_outcome: outcome, admin_note: note, responde"
+  },
+  {
+   "file": "src/pages/AdminDashboard.js",
+   "line": 418,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({ protocol_start_date: today, program_phase: 'elimination' }).eq('id', userId)"
+  },
+  {
+   "file": "src/pages/DailyCheckin.js",
+   "line": 216,
+   "table": "reintro_daily_logs",
+   "op": "upsert",
+   "code": "await supabase.from('reintro_daily_logs').upsert({"
+  },
+  {
+   "file": "src/pages/DailyCheckin.js",
+   "line": 241,
+   "table": "reintroduction_results",
+   "op": "update",
+   "code": "await supabase.from('reintroduction_results').update(updates).eq('id', activeReintro.id)"
+  },
+  {
+   "file": "src/pages/DailyCheckin.js",
+   "line": 252,
+   "table": "symptom_logs",
+   "op": "insert",
+   "code": "await supabase.from('symptom_logs').insert(names.map(nm => ({ user_id: session.user.id, symptom: nm, severity: offToday,"
+  },
+  {
+   "file": "src/pages/DailyCheckin.js",
+   "line": 297,
+   "table": "daily_compliance",
+   "op": "upsert",
+   "code": "await supabase.from('daily_compliance').upsert({"
+  },
+  {
+   "file": "src/pages/Dashboard.js",
+   "line": 965,
+   "table": "compliance_audit",
+   "op": "insert",
+   "code": "await supabase.from('compliance_audit').insert({"
+  },
+  {
+   "file": "src/pages/Dashboard.js",
+   "line": 1809,
+   "table": "compliance_audit",
+   "op": "insert",
+   "code": "await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigg"
+  },
+  {
+   "file": "src/pages/Dashboard.js",
+   "line": 1810,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({ protocol_start_date: t }).eq('id', session.user.id)"
+  },
+  {
+   "file": "src/pages/Dashboard.js",
+   "line": 1816,
+   "table": "compliance_audit",
+   "op": "insert",
+   "code": "await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigg"
+  },
+  {
+   "file": "src/pages/Dashboard.js",
+   "line": 1821,
+   "table": "compliance_audit",
+   "op": "insert",
+   "code": "await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigg"
+  },
+  {
+   "file": "src/pages/Dashboard.js",
+   "line": 1822,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({ protocol_start_date: t }).eq('id', session.user.id)"
+  },
+  {
+   "file": "src/pages/WeeklyCheckin.js",
+   "line": 227,
+   "table": "confound_observations",
+   "op": "insert",
+   "code": "await supabase.from('confound_observations').insert({"
+  },
+  {
+   "file": "src/pages/WeeklyCheckin.js",
+   "line": 446,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({"
+  },
+  {
+   "file": "src/pages/WeeklyCheckin.js",
+   "line": 458,
+   "table": "weekly_checkins",
+   "op": "update",
+   "code": "await supabase.from('weekly_checkins').update({ ai_insight: aiInsight }).eq('id', inserted.id)"
+  },
+  {
+   "file": "src/pages/WeeklyCheckin.js",
+   "line": 459,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({ latest_insight: aiInsight, latest_insight_week: weekNumber }).eq('id', session."
+  },
+  {
+   "file": "src/pages/WeeklyCheckin.js",
+   "line": 472,
+   "table": "confound_observations",
+   "op": "update",
+   "code": "await supabase.from('confound_observations').update({ surfaced: true }).eq('id', obs.id)"
+  },
+  {
+   "file": "src/pages/IntakeSurvey.js",
+   "line": 200,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({"
+  },
+  {
+   "file": "src/pages/IntakeSurvey.js",
+   "line": 389,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({"
+  },
+  {
+   "file": "netlify/functions/activate-maintain.js",
+   "line": 48,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({"
+  },
+  {
+   "file": "netlify/functions/verify-maintain-setup.js",
+   "line": 17,
+   "table": "profiles",
+   "op": "update",
+   "code": "await supabase.from('profiles').update({"
+  },
+  {
+   "file": "netlify/functions/verify-payment.js",
+   "line": 30,
+   "table": "paid_sessions",
+   "op": "upsert",
+   "code": "await supabase.from('paid_sessions').upsert({"
+  }
+ ],
+ "copy_promises": [
+  {
+   "file": "src/utils/protocolEngine.js",
+   "line": 6,
+   "kind": "physician-claim",
+   "code": "// ---- PHYSICIAN GATE --------------------------------------------------------"
+  },
+  {
+   "file": "src/utils/protocolEngine.js",
+   "line": 66,
+   "kind": "physician-claim",
+   "code": "// TESTING ORDER DOCTRINE (Alex-approved; FLAGGED FOR PHYSICIAN REVIEW)"
+  },
+  {
+   "file": "src/utils/verdictEngine.js",
+   "line": 8,
+   "kind": "physician-claim",
+   "code": "// CLINICAL THRESHOLDS LIVE HERE in one place so a physician"
+  },
+  {
+   "file": "src/utils/confoundAnalysis.js",
+   "line": 24,
+   "kind": "physician-claim",
+   "code": "//  - ENABLED is false until a physician reviews bands, directions,"
+  },
+  {
+   "file": "src/utils/confoundAnalysis.js",
+   "line": 27,
+   "kind": "physician-claim",
+   "code": "// PHYSICIAN-REVIEW ITEMS (all live in CONFOUND_CONFIG, clearly flagged):"
+  },
+  {
+   "file": "src/utils/confoundAnalysis.js",
+   "line": 51,
+   "kind": "physician-claim",
+   "code": "// ---- The medically-bad direction per factor (PHYSICIAN REVIEW) ----"
+  },
+  {
+   "file": "src/utils/confoundAnalysis.js",
+   "line": 55,
+   "kind": "physician-claim",
+   "code": "// ---- Engine 1: unhealthy absolute bands (PHYSICIAN REVIEW) ----"
+  },
+  {
+   "file": "src/pages/MaintainHub.js",
+   "line": 47,
+   "kind": "unlimited-claim",
+   "code": "{ t: 'Ask Sensify, unlimited', d: 'Any food, menu, label, or photo, checked against your map.' },"
+  },
+  {
+   "file": "src/pages/Login.js",
+   "line": 115,
+   "kind": "notification-promise",
+   "code": "<div style={s.sub}>Enter your email and we'll send you a reset link.</div>"
+  },
+  {
+   "file": "src/pages/AdminDashboard.js",
+   "line": 851,
+   "kind": "physician-claim",
+   "code": "alert('The Common Triggers track is held until physician sign-off.')"
+  },
+  {
+   "file": "src/pages/AdminDashboard.js",
+   "line": 958,
+   "kind": "physician-claim",
+   "code": "title={gated ? 'Held until physician sign-off' : ''}"
+  },
+  {
+   "file": "src/pages/AdminDashboard.js",
+   "line": 970,
+   "kind": "physician-claim",
+   "code": "The Common Triggers track is built but held until physician sign-off (tier food lists + FODMAP logic need clinical review). Until then, assi"
+  },
+  {
+   "file": "src/pages/Dashboard.js",
+   "line": 453,
+   "kind": "physician-claim",
+   "code": "// interpretation stays gated behind Layer 2 / physician sign-off."
+  },
+  {
+   "file": "src/pages/WeeklyCheckin.js",
+   "line": 80,
+   "kind": "physician-claim",
+   "code": "// causal connections are Layer 2's job, gated behind physician sign-off."
+  },
+  {
+   "file": "src/pages/Marketing.js",
+   "line": 823,
+   "kind": "instant-claim",
+   "code": "<div className=\"spine-title\">Upload your results, read instantly</div>"
+  },
+  {
+   "file": "netlify/functions/ai-proxy.js",
+   "line": 59,
+   "kind": "unlimited-claim",
+   "code": "// Maintain subscribers are sold \"Ask Sensify, unlimited\" (QA 2026-10-29"
+  },
+  {
+   "file": "netlify/functions/create-checkout.js",
+   "line": 28,
+   "kind": "physician-claim",
+   "code": "// (QA 2026-10-30 #2: \"physician-reviewed\" was never backed)."
+  },
+  {
+   "file": "public/terms.html",
+   "line": 27,
+   "kind": "physician-claim",
+   "code": "<p>Sensify provides a structured food sensitivity wellness program that includes lab test guidance, a physician-reviewed elimination and rei"
+  }
+ ]
+}
