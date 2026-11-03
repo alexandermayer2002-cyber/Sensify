@@ -61,3 +61,19 @@ through to submit (needs #1 fixed first to pass).
   Stripe wording HIGHs), 10-31 signup/intake set (7), 11-01 set (5; offline
   intake-complete HIGH) — no product deploy since, all open.
 - CONFOUND thresholds + verdictEngine.js physician review — still flagged in-code.
+
+---
+
+> **Resolved 2026-11-03 (Deploy 14 + hotfix 3ce288d, approved by Alex):** every
+> code-fixable finding in this report shipped in one batch. Highlights: lab-file
+> uploads work again via a service-role function (verified live, 200 + stored
+> file_path) while Alex's storage policy is pending; the offline intake-complete
+> data-loss fixed; household card keeps Limit/Avoid for the cook; Maintain reads
+> the verdict union, exempts subscribers from the ask cap, counts meals, and
+> renders the household card; silent writes checked; marketing/auth polish; and
+> `no-undef` is now a build error so the dangling-variable crash class dies at
+> compile time. New classic check p5 uploads a real PDF end-to-end. A copy
+> collision I introduced (login error quoted a button label, stalling the suite
+> signup) was caught by p5+p1 and hotfixed same session. Post-deploy: 57/57.
+> Still Alex's: storage INSERT policy, PAYMENT_GATE_MIGRATION.sql, Confirm email,
+> INTAKE_DRAFT_MIGRATION.sql, and the lab-kit fulfillment ruling (10-30 #1).

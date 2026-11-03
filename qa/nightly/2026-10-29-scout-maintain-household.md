@@ -75,3 +75,19 @@ verdictEngine.js remain flagged in-code as physician-review items. Everything
 through 10-28 is closed (Deploy 13 verified 54/54 last night); tonight's
 elimlate crash is new (Deploy 11 latent) and is the one thing that should not
 wait for the next scout cycle.
+
+---
+
+> **Resolved 2026-11-03 (Deploy 14 + hotfix 3ce288d, approved by Alex):** every
+> code-fixable finding in this report shipped in one batch. Highlights: lab-file
+> uploads work again via a service-role function (verified live, 200 + stored
+> file_path) while Alex's storage policy is pending; the offline intake-complete
+> data-loss fixed; household card keeps Limit/Avoid for the cook; Maintain reads
+> the verdict union, exempts subscribers from the ask cap, counts meals, and
+> renders the household card; silent writes checked; marketing/auth polish; and
+> `no-undef` is now a build error so the dangling-variable crash class dies at
+> compile time. New classic check p5 uploads a real PDF end-to-end. A copy
+> collision I introduced (login error quoted a button label, stalling the suite
+> signup) was caught by p5+p1 and hotfixed same session. Post-deploy: 57/57.
+> Still Alex's: storage INSERT policy, PAYMENT_GATE_MIGRATION.sql, Confirm email,
+> INTAKE_DRAFT_MIGRATION.sql, and the lab-kit fulfillment ruling (10-30 #1).
