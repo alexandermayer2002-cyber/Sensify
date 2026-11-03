@@ -505,7 +505,17 @@ function WeekFactorCards({ days, factors, profile }) {
     const weekVals = days.map(d => parseFloat(byDate[d.dateStr]?.[key])).filter(v => !isNaN(v))
     const protoVals = (factors || []).map(f => parseFloat(f[key])).filter(v => !isNaN(v))
     if (key === 'drinks') {
-      const weeks = Math.max(1, Math.ceil((factors || []).length / 7))
+      // Weeks ELAPSED since protocol start, not logged-days/7 (QA 2026-11-03 #5):
+      // a sparse logger's rate was inflated by counting only the days they logged.
+      const weeks = (() => {
+        const start = profile?.protocol_start_date
+        if (start) {
+          const [y, m, d] = String(start).split('T')[0].split('-').map(Number)
+          const elapsed = Math.floor((new Date() - new Date(y, m - 1, d)) / (7 * 86400000))
+          if (elapsed >= 1) return elapsed
+        }
+        return Math.max(1, Math.ceil((factors || []).length / 7))
+      })()
       return {
         intake: isNaN(intake) ? null : intake,
         week: weekVals.length ? weekVals.reduce((a, b) => a + b, 0) : null,
@@ -707,6 +717,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [dailyDone, setDailyDone] = useState(false)
   const [unreadMsgs, setUnreadMsgs] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [milestoneMessage, setMilestoneMessage] = useState(null)
   const [milestoneKey, setMilestoneKey] = useState(null)
   const [legendOpen, setLegendOpen] = useState(false)
@@ -740,8 +751,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
   const loadData = async () => {
     setLoading(true)
+    setLoadError(false)
     try {
-      const { data: p } = await supabase.from('profiles').select('*').eq('id', session.user.id).single()
+      // A failed profile fetch must NOT fall through to the new-user setup
+      // screen (QA 2026-11-03 #1): every state card keys off MISSING data, so a
+      // network blip showed a mid-protocol customer "let's get you set up" and
+      // risked an intake overwrite. Treat a fetch error as an error, not empty.
+      const { data: p, error: pErr } = await supabase.from('profiles').select('*').eq('id', session.user.id).single()
+      if (pErr) { setLoadError(true); setLoading(false); return }
       setProfile(p)
 
       const { data: l } = await supabase.from('lab_results').select('*').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).maybeSingle()
@@ -1141,6 +1158,16 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const currentDay = calculateProtocolDay()
   const currentWeek = Math.ceil(currentDay / 7)
   const calculatedPhase = calculatePhase(currentDay)
+  // Only foods that will actually be trialed count toward the reintro span
+  // (QA 2026-11-03 #2): exclude never-frequency foods, matching the suspect
+  // board, so the hero clock and the board can't contradict each other.
+  const testableFoodCount = (() => {
+    const freq = profile?.food_frequency || {}
+    const foods = labResult?.foods || []
+    const n = foods.filter(f => freq[f.name] !== 'never').length
+    return n > 0 ? n : (foods.length || 8)
+  })()
+  const reintroSpanDays = testableFoodCount * 14
   const eliminationProgressPct = profile?.protocol_start_date ? Math.min((currentDay / 56) * 100, 100) : 0
   const daysUntilReintro = profile?.protocol_start_date ? Math.max(57 - currentDay, 0) : null
 
@@ -1211,11 +1238,6 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     : profile?.program_phase === 'pending_review' ? 'Pending'
     : 'Setup'
 
-  const phaseFull = calculatedPhase === 'elimination' ? 'Elimination Phase'
-    : calculatedPhase === 'reintroduction' ? 'Reintroduction Phase'
-    : profile?.program_phase === 'pending_review' ? 'Awaiting Approval'
-    : 'Setup in progress'
-
   const showAvoidingList = labResult?.foods && labResult.status !== 'pending_review'
 
   // Exposure-honest avoiding list (mirrors netlify/functions/household-card.js):
@@ -1264,6 +1286,20 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     return Math.round((todayLocal - sd) / (1000 * 60 * 60 * 24)) + 1 >= 57
   })()
 
+  // Reach-your-program failure: never the setup screen (QA 2026-11-03 #1).
+  if (loadError) {
+    return (
+      <div className="snfy-app">
+        <style>{css}</style>
+        <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '24px', gap: 12 }}>
+          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 300, color: 'var(--ink)' }}>Can't reach your program.</div>
+          <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.6, maxWidth: 320 }}>Your data is safe — we just couldn't load it right now. Check your connection and try again.</div>
+          <button className="snfy-btn" style={{ maxWidth: 220 }} onClick={() => loadData()}>Try again</button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="snfy-app">
       <style>{css}</style>
@@ -1271,15 +1307,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       <nav className="snfy-nav">
         <div className="snfy-logo">Sensify<span style={{ color: '#8BAE8A', fontStyle: 'normal' }}>.</span></div>
         <div className="snfy-nav-tabs">
-          {['Home', 'Reintro', 'History', 'Verdicts', 'Ask Sensify', 'Maintain'].filter(t => {
-            if (t !== 'Maintain') return true
-            if (isAdmin) return true  // admins always see Maintain (dev eyes)
-            if (!profile?.protocol_start_date) return false  // pre-results: hidden
-            const sd = new Date(profile.protocol_start_date + 'T00:00:00')
-            const now = new Date(); const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-            const pDay = Math.round((todayLocal - sd) / (1000 * 60 * 60 * 24)) + 1
-            return pDay >= 57  // appears the day reintroduction unlocks
-          }).map(t => (
+          {['Home', 'Reintro', 'History', 'Verdicts', 'Ask Sensify', 'Maintain'].filter(t => t !== 'Maintain' || maintainVisible).map(t => (
             <button key={t} className={`snfy-tab${tab === t.toLowerCase().replace(' ', '-') ? ' active' : ''}`} onClick={() => goTab(t)}>{t}</button>
           ))}
         </div>
@@ -1448,7 +1476,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               return { food: activeCycleLite.food, cd: Math.min(rawCd, 14), phase: activeCycleLite.washout_started_at ? 'Washout' : 'Exposure' }
             } catch (e) { return null }
           })()
-          const reintroSpan = (labResult?.foods?.length || 8) * 14
+          const reintroSpan = reintroSpanDays
           const clock = runningCycle
             ? { pct: (runningCycle.cd / 14) * 100, left: 'Day 1', right: 'Day 14 · verdict' }
             : calculatedPhase === 'reintroduction'
@@ -1479,7 +1507,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   </div>
                   {runningCycle && <div className="sn-micro sn-micro-dark" style={{ marginTop: 8 }}>{calculatedPhase === 'reintroduction' ? 'Reintroduction' : 'Elimination'} · day {calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay}</div>}
                   {!runningCycle && cycleLine && <div className="sn-micro" style={{ color: '#8BAE8A', marginTop: 8 }}>{cycleLine}</div>}
-                  {betweenCycles && <div className="sn-micro" style={{ color: '#8BAE8A', marginTop: 8 }}>REINTRODUCTION · DAY {currentDay - 56}{(currentDay - 56) <= (labResult?.foods?.length || 8) * 14 ? ` OF ${(labResult?.foods?.length || 8) * 14}` : ''} · {reintroRows.some(r => r.verdict) ? 'CYCLE COMPLETE' : 'TESTING OPEN'}</div>}
+                  {betweenCycles && <div className="sn-micro" style={{ color: '#8BAE8A', marginTop: 8 }}>REINTRODUCTION · DAY {currentDay - 56}{(currentDay - 56) <= reintroSpanDays ? ` OF ${reintroSpanDays}` : ''} · {reintroRows.some(r => r.verdict) ? 'CYCLE COMPLETE' : 'TESTING OPEN'}</div>}
                 </div>
                 {verdictReadyFood ? (
                   <button onClick={() => { window.scrollTo(0, 0); setTab('reintro'); setScreen('reintro-tab') }} style={{ background: '#C9A227', border: 'none', borderRadius: 'var(--r-md)', padding: '12px 19px', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', boxShadow: '0 0 22px rgba(201,162,39,0.35)' }}>
@@ -1700,7 +1728,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 {/* Shown precisely when setup IS complete (QA 2026-11-02 #5). */}
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>Setup complete — your results are in review</div>
                 <div className="snfy-pbar" style={{ marginTop: '16px' }}><div className="snfy-pfill" style={{ width: '4%' }}></div></div>
-                <div className="snfy-plabel"><span></span><span>6 months total</span></div>
+                {/* Length is food-count-dependent, and the count is known here
+                    (QA 2026-11-03 #6): 8 weeks elimination + ~2 weeks/food. */}
+                <div className="snfy-plabel"><span>Setup done</span><span>{(() => {
+                  const n = labResult?.foods?.length
+                  if (!n) return 'about 6 months'
+                  const months = Math.round((56 + n * 14) / 30.4)
+                  return `about ${months} month${months === 1 ? '' : 's'} total`
+                })()}</span></div>
               </div>
             )}
 
@@ -2178,7 +2213,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
 
             {/* THE LEAF CONSTELLATION — 28 nights, one star per logged day, randomized per user; the leaf reveals at 28 */}
-            {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 42) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
+            {/* Lives through all of elimination, not just day 42 (QA 2026-11-03
+                #4): a slow logger past day 42 with <28 stars used to lose the
+                card — and its "pattern detection unlocks" promise — mid-story.
+                Day 57 hands off to the reintro hero naturally. */}
+            {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 56) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
               const preP = !profile?.protocol_start_date
               const pStartIso = preP ? null : String(profile.protocol_start_date).split('T')[0]
               const todayIso = localDateString(new Date())
