@@ -5,13 +5,18 @@
 // any non-food factor is worth gently surfacing to the user, alongside
 // their weekly symptom insight.
 //
-// Two engines:
+// Three engines:
 //   Engine 1 (absolute)   — is their NORMAL itself unhealthy? (chronic
 //                            low sleep, chronic high stress, etc.)
 //                            No correlation needed. Gentle standing note.
 //   Engine 2 (divergence) — was THIS WEEK unusual for them, in the BAD
 //                            direction, AND did symptoms worsen, AND has
 //                            it repeated? Tight, correlation-gated.
+//   Engine 3 (cycle)      — do worse-symptom weeks repeatedly coincide
+//                            with logged period days, more often than
+//                            period weeks that felt fine? (2026-11-04,
+//                            approved by Alex.) Correlation-gated like
+//                            Engine 2; thresholds are MD-review items.
 //
 // CRITICAL SAFETY:
 //  - Code decides significance; the AI only phrases (with hard rules).
@@ -52,6 +57,12 @@ export const CONFOUND_CONFIG = {
   // Only divergence TOWARD these directions is eligible to surface.
   badDirection: { sleep: 'down', stress: 'up', hydration: 'down', alcohol: 'up' },
 
+  // ---- Engine 3: cycle coincidence (PHYSICIAN REVIEW) ----
+  // A "hit" week = symptoms worse AND >= cycleMinPeriodDays period days
+  // logged. Surfaces only after minRepeats hits AND more hit weeks than
+  // period weeks that felt fine (otherwise every cycling customer flags).
+  cycleMinPeriodDays: 1,
+
   // ---- Engine 1: unhealthy absolute bands (PHYSICIAN REVIEW) ----
   unhealthyBands: {
     sleepUnderHours: 6,       // baseline/avg under this = chronically low
@@ -68,8 +79,8 @@ const SLEEP_MIDPOINT = { under6: 5, '6-7': 6.5, '7-8': 7.5, '8plus': 8.5 }
 const DRINKS_WEEK_MIDPOINT = { '1-3': 2, '4-7': 5.5, '8-14': 11, '15plus': 18 }
 
 // ---- Shared: roll daily_factors rows into weekly summaries -------------------
-// rows: [{ log_date, sleep, stress, hydration, drinks, followed_protocol }]
-// Returns weeks: [{ weekStart, n, sleepHrs, stressNum, hydrationNum, drinks }]
+// rows: [{ log_date, sleep, stress, hydration, drinks, followed_protocol, cycle_phase }]
+// Returns weeks: [{ weekStart, n, sleepHrs, stressNum, hydrationNum, drinks, periodDays }]
 export function computeWeeklySummaries(rows) {
   if (!rows || rows.length === 0) return []
   const byWeek = {}
@@ -95,6 +106,7 @@ export function computeWeeklySummaries(rows) {
       stressNum: avg(stressVals),
       hydrationNum: avg(hydVals),
       drinks: drinkVals.length ? drinkVals.reduce((a, b) => a + b, 0) : null, // weekly total
+      periodDays: wk.filter(r => r.cycle_phase === 'period').length,
     }
   }).sort((a, b) => new Date(a.weekStart) - new Date(b.weekStart))
 }
@@ -202,6 +214,32 @@ export function engine2Divergence(profile, weeks, weeklySymptoms) {
   return eligible.length ? eligible : null
 }
 
+// ---- Engine 3: cycle coincidence (correlation-gated; never decides) ---------
+// Surfaces only when worse-symptom weeks repeatedly include period days AND
+// that happens more often than period weeks that felt fine.
+export function engine3Cycle(profile, weeks, weeklySymptoms) {
+  if (profile?.gender !== 'female') return null
+  const cfg = CONFOUND_CONFIG
+  const usable = weeks.filter(w => w.n >= cfg.minLoggingDays)
+  if (usable.length < cfg.minWeeksOfData) return null
+
+  const symMap = {}
+  for (const s of (weeklySymptoms || [])) symMap[s.weekStart] = s.worseThanUsual
+
+  let hits = 0, quietPeriodWeeks = 0
+  for (const w of usable) {
+    const onPeriod = (w.periodDays || 0) >= cfg.cycleMinPeriodDays
+    if (!onPeriod) continue
+    if (symMap[w.weekStart] === true) hits++
+    else if (symMap[w.weekStart] === false) quietPeriodWeeks++
+  }
+  if (hits < cfg.minRepeats || hits <= quietPeriodWeeks) return null
+  return [{
+    factor: 'cycle', kind: 'cycle', repeats: hits,
+    confidence: hits >= cfg.minRepeats + 2 ? 'strong' : 'moderate',
+  }]
+}
+
 // ---- Combiner: one observation max, default silence -------------------------
 // Returns null OR a single validated observation object (not a sentence).
 export function analyzeConfounds({ profile, dailyRows, weeklySymptoms }) {
@@ -209,17 +247,20 @@ export function analyzeConfounds({ profile, dailyRows, weeklySymptoms }) {
   const weeks = computeWeeklySummaries(dailyRows)
   const sufficiency = dataSufficiency(weeks)
 
-  // Engine 2 needs sufficiency; Engine 1 can speak from baseline alone.
+  // Engines 2 and 3 need sufficiency; Engine 1 can speak from baseline alone.
   const e2 = sufficiency.state === 'sufficient' ? engine2Divergence(profile, weeks, weeklySymptoms) : null
+  const e3 = sufficiency.state === 'sufficient' ? engine3Cycle(profile, weeks, weeklySymptoms) : null
   const e1 = engine1Absolute(profile, weeks)
 
-  // Priority: a validated weekly divergence (specific, actionable) outranks a
-  // standing absolute note, but we only ever surface ONE.
+  // Priority: a validated weekly divergence (specific, actionable) outranks
+  // the cycle coincidence, which outranks a standing absolute note — and we
+  // only ever surface ONE.
   let chosen = null
   if (e2 && e2.length) chosen = e2[0]
+  else if (e3 && e3.length) chosen = e3[0]
   else if (e1 && e1.length) chosen = e1[0]
 
-  return chosen ? { observation: chosen, sufficiency, engine1All: e1, engine2All: e2 } : { observation: null, sufficiency, engine1All: e1, engine2All: e2 }
+  return chosen ? { observation: chosen, sufficiency, engine1All: e1, engine2All: e2, engine3All: e3 } : { observation: null, sufficiency, engine1All: e1, engine2All: e2, engine3All: e3 }
 }
 
 // ---- The guarded prompt fragment (AI phrases; hard rules) -------------------
@@ -237,6 +278,17 @@ HARD RULES for this aside:
 - Observational, NEVER prescriptive. "your ${human} tends to run on the low side, which is worth being aware of" is OK. "you need to fix your ${human}" is NOT.
 - NEVER causal. Do not say their ${human} is causing their symptoms.
 - NEVER dismiss food. Do not imply this explains away a food reaction. It is additional context, not a replacement.
+- If it doesn't fit naturally this week, omit it entirely.`
+  }
+
+  if (observation.kind === 'cycle') {
+    return `
+CONFOUND NOTE (optional, gentle, at most one sentence, and ONLY if it fits naturally):
+On weeks this user's symptoms were worse, those weeks also tended to include logged period days (this has lined up ${observation.repeats} times). You MAY add one gentle, observational aside noting that hormonal cycle timing can affect digestion and energy, and that it is being tracked alongside their foods.
+HARD RULES for this aside:
+- Correlational, NEVER causal. "has tended to line up with" is OK. "caused by your cycle" is NOT.
+- NEVER dismiss food. Do not imply a food reaction was really hormonal. It is additional context, never a replacement.
+- Hedged and gentle, never clinical or diagnostic.
 - If it doesn't fit naturally this week, omit it entirely.`
   }
 

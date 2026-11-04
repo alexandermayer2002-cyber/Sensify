@@ -1111,12 +1111,9 @@ export default function AdminDashboard({ session, onBack }) {
                         {audit.branch_responses?.other_text && <div className="adm-audit-item"><span>Other:</span>"{audit.branch_responses.other_text}"</div>}
                       </div>
 
-                      {audit.ai_acknowledgment && (
-                        <div className="adm-ai-ack">
-                          <div className="adm-ai-ack-label">AI already sent them</div>
-                          <div className="adm-ai-ack-text">{audit.ai_acknowledgment}</div>
-                        </div>
-                      )}
+                      {/* ai_acknowledgment panel removed (QA 2026-11-04 #4):
+                          RLS blocks the user-side backfill, so the column was
+                          never populated and this section was always empty. */}
 
                       <div className="adm-suggested">Rules engine suggests: <strong>{suggested}</strong></div>
 

@@ -132,6 +132,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
   const [wasConflicted, setWasConflicted] = useState(false)
   const [noiseFloor, setNoiseFloor] = useState(null)
   const [sleepOverlap, setSleepOverlap] = useState(null)
+  const [cycleOverlap, setCycleOverlap] = useState(null)  // period-day cross-ref (2026-11-04, approved by Alex)
   const [analysis, setAnalysis] = useState('')
 
   // Load the cycle's daily logs so we can summarize them back to the user
@@ -158,12 +159,18 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
             // Sleep cross-ref: symptom days vs worst-sleep nights inside the cycle
             const symDays = (data || []).filter(l => (l.symptoms || []).length > 0).map(l => l.log_date)
             if (symDays.length >= 2) {
-              const { data: dfs } = await supabase.from('daily_factors').select('log_date, sleep').eq('user_id', session.user.id).gte('log_date', cycStart)
+              const { data: dfs } = await supabase.from('daily_factors').select('log_date, sleep, cycle_phase').eq('user_id', session.user.id).gte('log_date', cycStart)
               const SLEEP_RANK = { under6: 1, '6-7': 2, '7-8': 3, '8plus': 4 }
               const ranked = (dfs || []).filter(d => d.sleep).sort((a, b) => SLEEP_RANK[a.sleep] - SLEEP_RANK[b.sleep])
               const worst = new Set(ranked.slice(0, Math.max(2, symDays.length)).map(d => d.log_date))
               const overlap = symDays.filter(d => worst.has(d)).length
               if (overlap >= 2) setSleepOverlap({ overlap, symDays: symDays.length })
+              // Cycle cross-ref: symptom days vs logged period days
+              // (2026-11-04, approved by Alex). Hormonal timing can mimic or
+              // amplify a food reaction; honest context, never the ruling.
+              const periodSet = new Set((dfs || []).filter(d => d.cycle_phase === 'period').map(d => d.log_date))
+              const pOverlap = symDays.filter(d => periodSet.has(d)).length
+              if (pOverlap >= 2) setCycleOverlap({ overlap: pOverlap, symDays: symDays.length })
             }
           }
         } catch (e) { /* intelligence never blocks the survey */ }
@@ -223,6 +230,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         dayGrainContext: [
           noiseFloor ? `Clean-baseline noise floor: during elimination this person logged symptoms on about ${noiseFloor.daysPerWeek} day(s) per week (${noiseFloor.totalDays} symptom days total). Weigh exposure symptoms against that background, and say so if the exposure pattern clearly exceeds it.` : null,
           sleepOverlap ? `Sleep cross-reference: ${sleepOverlap.overlap} of their ${sleepOverlap.symDays} symptom days in this cycle were also among their worst sleep nights. Mention this as honest context; it may inflate the signal.` : null,
+          cycleOverlap ? `Cycle cross-reference: ${cycleOverlap.overlap} of their ${cycleOverlap.symDays} symptom days in this test fell on logged period days. Hormonal timing can mimic or amplify food reactions, so mention this as honest context and weigh it when deciding between adjacent verdicts, never as the decided cause.` : null,
         ].filter(Boolean).join('\n'),
         contextNote: context,
       })
@@ -377,11 +385,12 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
           {logsLoaded ? <div style={s.summaryText}>{buildSummary(dailyLogs, food)}</div> : <div style={s.summaryText}>Loading your cycle…</div>}
         </div>
 
-        {(noiseFloor?.totalDays > 0 || sleepOverlap) && (
+        {(noiseFloor?.totalDays > 0 || sleepOverlap || cycleOverlap) && (
           <div style={{ background: 'var(--tint-warm)', border: 'none', borderRadius: 'var(--r-md)', padding: '13px 14px', marginBottom: '14px' }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray-faint)', textTransform: 'uppercase', marginBottom: 6 }}>Worth weighing</div>
             {noiseFloor?.totalDays > 0 && <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6 }}>During clean elimination weeks you logged symptoms about {noiseFloor.daysPerWeek} day{noiseFloor.daysPerWeek === 1 ? '' : 's'} a week. That background is part of how this cycle gets read.</div>}
             {sleepOverlap && <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6, marginTop: noiseFloor?.totalDays > 0 ? 6 : 0 }}>{sleepOverlap.overlap} of your {sleepOverlap.symDays} symptom days were also among your worst sleep nights this cycle. The analysis weighs that too.</div>}
+            {cycleOverlap && <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6, marginTop: (noiseFloor?.totalDays > 0 || sleepOverlap) ? 6 : 0 }}>{cycleOverlap.overlap} of your {cycleOverlap.symDays} symptom days fell on period days you logged. Hormonal timing can look like a food reaction, so the analysis weighs that honestly too.</div>}
           </div>
         )}
 

@@ -206,7 +206,9 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       followed_protocol: onProtocol ? followed : null,
       sleep, stress, hydration,
       cycle_phase: isWoman ? cyclePhase : null,
-      drinks: isDrinker ? (drinks === '' ? 0 : parseInt(drinks, 10)) : null,
+      // A skipped field stays blank (QA 2026-11-04 #6): recording an
+      // unanswered drinks question as 0 was a guess stored as data.
+      drinks: isDrinker ? (drinks === '' ? null : parseInt(drinks, 10)) : null,
     }
     // Phase-aware: persist the reintro log + exposure counting in the same save
     if (showReintroBlock && activeReintro) {
@@ -249,19 +251,26 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       if (!showReintroBlock && (offToday === 'mild' || offToday === 'notable')) {
         const names = Object.keys(elimSymptoms)
         if (names.length > 0) {
-          await supabase.from('symptom_logs').insert(names.map(nm => ({ user_id: session.user.id, symptom: nm, severity: offToday, note: elimTiming || null })))
-          // The memory beat: the system counting in front of you.
-          const since30 = new Date(Date.now() - 30 * 86400000).toISOString()
-          const { data: hist } = await supabase.from('symptom_logs').select('symptom, note').eq('user_id', session.user.id).gte('logged_at', since30)
-          const first = names[0]
-          const symCount = (hist || []).filter(h => h.symptom === first).length
-          const timeCount = elimTiming ? (hist || []).filter(h => h.note === elimTiming).length : 0
-          const ord = (n) => n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : `${n}th`
-          const pieces = [`${first}${elimTiming ? ', ' + elimTiming : ''}`]
-          if (symCount > 1) pieces.push(`your ${ord(symCount)} ${first.toLowerCase()} event this month`)
-          else if (timeCount > 1) pieces.push(`your ${ord(timeCount)} ${elimTiming} event this month`)
-          else pieces.push('first of its kind on your record')
-          onRecord = pieces.join(' \u00b7 ')
+          // Checked write (QA 2026-11-04 #7): the reward screen used to claim
+          // "on your record" even when this insert had silently failed.
+          const { error: symErr } = await supabase.from('symptom_logs').insert(names.map(nm => ({ user_id: session.user.id, symptom: nm, severity: offToday, note: elimTiming || null })))
+          if (!symErr) {
+            // The memory beat: the system counting in front of you \u2014 only
+            // when the record actually took the event.
+            const since30 = new Date(Date.now() - 30 * 86400000).toISOString()
+            const { data: hist } = await supabase.from('symptom_logs').select('symptom, note').eq('user_id', session.user.id).gte('logged_at', since30)
+            const first = names[0]
+            const symCount = (hist || []).filter(h => h.symptom === first).length
+            const timeCount = elimTiming ? (hist || []).filter(h => h.note === elimTiming).length : 0
+            const ord = (n) => n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : `${n}th`
+            const pieces = [`${first}${elimTiming ? ', ' + elimTiming : ''}`]
+            if (symCount > 1) pieces.push(`your ${ord(symCount)} ${first.toLowerCase()} event this month`)
+            else if (timeCount > 1) pieces.push(`your ${ord(timeCount)} ${elimTiming} event this month`)
+            else pieces.push('first of its kind on your record')
+            onRecord = pieces.join(' \u00b7 ')
+          } else {
+            console.warn('symptom_logs insert failed:', symErr.message)
+          }
         }
         // Symptom-night recall: raw words + parsed foods, tagged as recall.
         // A lead, never a ruling; stored even when the parse fails.

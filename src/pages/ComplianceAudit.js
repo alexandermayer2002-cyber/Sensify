@@ -158,7 +158,6 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       triggered_at: new Date().toISOString(),
       hardest_parts: selectedReasons,
       branch_responses: allAnswers,
-      ai_acknowledgment: '',
       status: 'pending_admin_review',
     }).select().single()
     if (insErr || !inserted) {
@@ -178,7 +177,10 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       eliminatedFoods,
     })
     setAiMessage(insight)
-    try { await supabase.from('compliance_audit').update({ ai_acknowledgment: insight }).eq('id', inserted.id) } catch (e) {}
+    // No ai_acknowledgment backfill: RLS blocks user-side UPDATEs on
+    // compliance_audit (by design — users must not touch audit rows), so the
+    // old update here wrote zero rows forever (QA 2026-11-04 #4). The
+    // acknowledgment is screen-only; Alex reviews the raw answers.
 
     setGenerating(false)
     setSubmitting(false)

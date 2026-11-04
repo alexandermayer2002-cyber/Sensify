@@ -85,7 +85,7 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
       const since = new Date(); since.setDate(since.getDate() - 6)
       const sinceStr = localDateString(since)
       const { data: week } = await supabase.from('daily_factors')
-        .select('log_date, followed_protocol, stress, sleep')
+        .select('log_date, followed_protocol, stress, sleep, cycle_phase')
         .eq('user_id', session.user.id)
         .gte('log_date', sinceStr)
       weekFactorRows = week || []
@@ -98,6 +98,34 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
       }
     } catch (e) { /* adherence never blocks the insight */ }
   }
+
+  // ---- This week's slip-ups (QA 2026-11-04 #3) ----
+  // The slip-up survey promises "this gets factored into your weekly
+  // insight"; this line is what makes that promise true.
+  let slipLine = ''
+  if (session?.user?.id) {
+    try {
+      const since = new Date(); since.setDate(since.getDate() - 6)
+      const { data: slips } = await supabase.from('daily_compliance')
+        .select('date, slip_up_foods, slip_up_reason')
+        .eq('user_id', session.user.id).eq('response', 'NO')
+        .gte('date', localDateString(since))
+      const told = (slips || []).filter(s => (s.slip_up_foods || []).length > 0)
+      if (told.length > 0) {
+        const parts = told.map(s => `${s.slip_up_foods.join(' + ')} (${(s.slip_up_reason || 'unspecified').split(',').join('/')}, ${s.date})`)
+        slipLine = `\nSLIP-UPS LOGGED THIS WEEK: ${parts.join('; ')}.`
+      }
+    } catch (e) { /* slips never block the insight */ }
+  }
+
+  // ---- Cycle context (descriptive; QA 2026-11-04, approved by Alex) ----
+  // Correlation across weeks is the confound engine's job; this line only
+  // states this week's logged fact so the data stops being write-only.
+  let periodLine = ''
+  try {
+    const periodDays = weekFactorRows.filter(d => d.cycle_phase === 'period').length
+    if (periodDays > 0) periodLine = `\nCYCLE CONTEXT THIS WEEK: ${periodDays} logged day${periodDays === 1 ? '' : 's'} on their period.`
+  } catch (e) {}
 
   // ---- This week's symptom events (descriptive fuel for early-era insights) ----
   let eventsLine = ''
@@ -197,7 +225,7 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
   if (CONFOUND_ENABLED && session?.user?.id) {
     try {
       const { data: dailyRows } = await supabase.from('daily_factors')
-        .select('log_date, sleep, stress, hydration, drinks, followed_protocol')
+        .select('log_date, sleep, stress, hydration, drinks, followed_protocol, cycle_phase')
         .eq('user_id', session.user.id)
       const { data: pastCheckins } = await supabase.from('weekly_checkins')
         .select('answers, submitted_at, week_number').eq('user_id', session.user.id)
@@ -283,7 +311,7 @@ ${previousScores ? `LAST WEEK'S SCORES:\n${previousScores}` : 'This is their fir
 
 OVERALL FEELING: ${answers.overall_feeling || 'not specified'}
 WHAT CHANGED THIS WEEK: ${contextStr}
-COMPLIANCE: ${answers.compliance || 'not specified'}${adherenceLine}${cycleLine}${eventsLine}
+COMPLIANCE: ${answers.compliance || 'not specified'}${adherenceLine}${slipLine}${periodLine}${cycleLine}${eventsLine}
 ${answers.notes ? `USER NOTES: ${answers.notes}` : ''}
 
 YOUR TASK:
@@ -300,6 +328,8 @@ Write a personalized weekly insight. Rules:
 - Use ${name}'s name only if it reads naturally, at most once
 - If compliance was poor and scores are bad, you may note both facts side by side, but NEVER assert that adherence is 'the explanation' or 'the most plausible cause' of symptom changes. You cannot see everything that happened this week (alcohol, illness, sleep debt, life events), so never claim a definitive cause. Frame possible connections as possibilities, not conclusions.
 - If DAILY CHECK-IN ADHERENCE is provided, you may include ONE short factual clause acknowledging it (e.g. "with all 7 days logged" or "on 4 of 5 logged days you followed the plan"). State it as fact only. Never scold about missed days, and never claim daily habits caused or explain symptom changes.
+- If SLIP-UPS LOGGED are listed, acknowledge them in ONE neutral clause at most: an eliminated food eaten that week can add symptom noise, so name that as a possibility when scores worsened. Never judge, never call it the cause, and never assign or predict any food verdict from a slip.
+- If CYCLE CONTEXT is provided, you MAY add one neutral observational clause that hormonal cycle timing can affect digestion and energy and is tracked alongside foods. Never causal, never dismissive of food signals, and omit it if it doesn't fit naturally.
 - NEVER say 'nothing unusual was reported' or imply the week was unremarkable. The context question captures only what the user chose to flag, not everything that happened. If context is empty, simply do not mention it.
 - If this is the first check-in with data, compare against baseline scores only and do not reference prior weeks
 ${confoundFragment}

@@ -56,20 +56,34 @@ WRITE_RE = re.compile(r"\.from\(\s*['\"]([a-z_]+)['\"]\s*\)\s*\.\s*(insert|updat
 # Intentional best-effort writes — reviewed 2026-11-03, confirmed acceptable
 # (test-only code, or a backfill/mirror AFTER a checked primary write). The
 # scan skips these so it only ever speaks up about NEW unchecked writes.
-# Format: "file:line" as the scan reports them. Revisit if the code moves.
+# Re-keyed by CONTENT 2026-11-04: the old "file:line" keys drifted twice in
+# one day (Deploy 16, then Deploy 17's edits). Keys are now
+# (file, table, op) -> reviewed count; a count overrun or a new key is NEW.
 SILENT_WRITE_ALLOW = {
-    "src/utils/testMode.js":            {37, 49, 64, 73, 83, 86},   # test-only harness writes
-    "src/utils/aiInsights.js":          {440},                       # best-effort insight cache
-    "src/utils/support.js":             {132},                       # ticket patch, non-critical
-    "src/pages/CommonTrackDecision.js": {109},                       # seen_track_intro flag
-    "src/pages/ReintroTab.js":          {743, 763, 764},             # restart path; stop path is checked separately
-    "src/pages/DailyCheckin.js":        {216, 241, 252, 297},        # core daily_factors is checked; these are secondary
-    "src/pages/WeeklyCheckin.js":       {227, 446, 458, 459, 472},   # best-effort pointer/backfills after a checked insert (Deploy 12)
-    "src/pages/IntakeSurvey.js":        {200, 389},                  # intake_draft write-behind + research consent, best-effort
-    "src/pages/Dashboard.js":           {982, 1844, 1845, 1851, 1856, 1857},  # away/audit auto-create backstops (re-keyed 2026-11-04: Deploy 16 shifted Dashboard.js by +39 lines; same six reviewed writes)
-    "netlify/functions/activate-maintain.js":    {48},
-    "netlify/functions/verify-maintain-setup.js":{17},
-    "netlify/functions/verify-payment.js":       {30},               # service-role, server-side
+    ("netlify/functions/activate-maintain.js", "profiles", "update"): 1,
+    ("netlify/functions/verify-maintain-setup.js", "profiles", "update"): 1,
+    ("netlify/functions/verify-payment.js", "paid_sessions", "upsert"): 1,   # service-role, server-side
+    ("src/pages/CommonTrackDecision.js", "profiles", "update"): 1,           # seen_track_intro flag
+    ("src/pages/DailyCheckin.js", "daily_compliance", "upsert"): 1,          # mirror after checked daily_factors write
+    ("src/pages/DailyCheckin.js", "reintro_daily_logs", "upsert"): 1,
+    ("src/pages/DailyCheckin.js", "reintroduction_results", "update"): 1,
+    ("src/pages/Dashboard.js", "compliance_audit", "insert"): 4,             # away/audit auto-create backstops (incl. Sentinel S5, fix pending Alex)
+    ("src/pages/Dashboard.js", "profiles", "update"): 2,                     # away-gate clock restarts
+    ("src/pages/IntakeSurvey.js", "profiles", "update"): 2,                  # intake_draft write-behind + research consent
+    ("src/pages/ReintroTab.js", "food_map", "upsert"): 1,                    # restart path; stop path is checked separately
+    ("src/pages/ReintroTab.js", "reintro_daily_logs", "delete"): 1,
+    ("src/pages/ReintroTab.js", "reintroduction_results", "update"): 1,
+    ("src/pages/WeeklyCheckin.js", "confound_observations", "insert"): 1,    # best-effort observation log
+    ("src/pages/WeeklyCheckin.js", "confound_observations", "update"): 1,
+    ("src/pages/WeeklyCheckin.js", "profiles", "update"): 2,                 # pointer/backfills after checked insert (Deploy 12)
+    ("src/pages/WeeklyCheckin.js", "weekly_checkins", "update"): 1,
+    ("src/utils/aiInsights.js", "profiles", "update"): 1,                    # best-effort insight cache
+    ("src/utils/support.js", "tickets", "update"): 1,                        # ticket patch, non-critical
+    ("src/utils/testMode.js", "daily_compliance", "upsert"): 1,              # test-only harness writes
+    ("src/utils/testMode.js", "daily_factors", "upsert"): 1,
+    ("src/utils/testMode.js", "profiles", "update"): 2,
+    ("src/utils/testMode.js", "reintroduction_results", "update"): 1,
+    ("src/utils/testMode.js", "symptom_logs", "update"): 1,
 }
 
 def scan_silent_writes():
@@ -98,10 +112,17 @@ def scan_silent_writes():
             bare = bool(re.match(r"\s*await\s+supabase", ln)) and "=" not in ln.split("await")[0]
             if bare and not checked:
                 rel = path.replace(REPO + "/", "")
-                if (i + 1) in SILENT_WRITE_ALLOW.get(rel, set()):
-                    continue  # reviewed, intentional best-effort
                 hits.append({"file": rel, "line": i + 1, "table": table, "op": op, "code": ln.strip()[:120]})
-    return hits
+    # Content-keyed allowlist: up to the reviewed COUNT of each
+    # (file, table, op) is suppressed; overruns and new keys surface.
+    seen = {}
+    new_hits = []
+    for h in hits:
+        key = (h["file"], h["table"], h["op"])
+        seen[key] = seen.get(key, 0) + 1
+        if seen[key] > SILENT_WRITE_ALLOW.get(key, 0):
+            new_hits.append(h)
+    return new_hits
 
 PROMISE_PATS = [
     (r"within\s+\d+\s*hours?", "time-SLA"),

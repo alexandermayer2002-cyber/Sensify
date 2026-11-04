@@ -92,7 +92,16 @@ Write only the message. No labels.`
 }
 
 // DAY 14 — Two week milestone
-export const generateDay14Message = async ({ name, profile, checkins }) => {
+// The milestone prompts carry the DAILY logging record too (QA 2026-11-04 #5):
+// fed only weekly check-ins, the AI used to tell a customer with a long daily
+// streak that they "haven't logged yet". dailyLogging = { loggedDays, streak }.
+const dailyLoggingLines = (dailyLogging) => dailyLogging
+  ? `\n- Daily check-ins logged so far: ${dailyLogging.loggedDays} (current streak: ${dailyLogging.streak} days)`
+  : ''
+const DAILY_LOGGING_RULE = `
+- The "Daily check-ins logged" line above is this user's real logging record. NEVER claim they haven't logged, haven't tracked, or should "start tracking" — if the count is high, you may acknowledge their consistency in one short clause; if it is low, simply say nothing about logging`
+
+export const generateDay14Message = async ({ name, profile, checkins, dailyLogging }) => {
   const week1 = checkins?.find(c => c.week_number === 1)
   const week2 = checkins?.find(c => c.week_number === 2)
   const symptoms = formatSymptoms(profile?.symptoms)
@@ -117,14 +126,14 @@ USER:
 - Baseline energy: ${profile?.baseline_energy || 'not recorded'}/10
 - Week 1 energy: ${energyW1 || 'not yet recorded'}/10
 - Week 2 energy: ${energyW2 || 'not yet recorded'}/10
-- Energy change: ${energyChange !== null ? `${energyChange > 0 ? '+' : ''}${energyChange}%` : 'no data yet'}
+- Energy change: ${energyChange !== null ? `${energyChange > 0 ? '+' : ''}${energyChange}%` : 'no data yet'}${dailyLoggingLines(dailyLogging)}
 
 Write 2-3 sentences. Rules:
 - Reference specific numbers if available
 - If improvement: acknowledge it specifically
 - If no improvement yet: normalize it — week 3 and 4 is when the signal gets clearer
 - Do NOT mention texts or SMS
-- Specific and grounded, not generic praise
+- Specific and grounded, not generic praise${DAILY_LOGGING_RULE}
 
 Write only the message. No labels.`
 
@@ -132,7 +141,7 @@ Write only the message. No labels.`
 }
 
 // DAY 28 — One month progress summary
-export const generateDay28Message = async ({ name, profile, checkins }) => {
+export const generateDay28Message = async ({ name, profile, checkins, dailyLogging }) => {
   const symptoms = formatSymptoms(profile?.symptoms)
   const checkinSummary = checkins?.slice(0, 4).map((c, i) =>
     `Week ${c.week_number}: bloating ${c.answers?.bloating || '—'}, energy ${c.answers?.energy || '—'}, compliance ${c.answers?.compliance || '—'}`
@@ -159,7 +168,7 @@ USER:
 - Energy improvement: ${energyImprovement !== null ? `${energyImprovement}%` : 'insufficient data'}
 - Four week summary:
 ${checkinSummary}
-- Days until reintroduction: 28
+- Days until reintroduction: 28${dailyLoggingLines(dailyLogging)}
 
 Write 4-5 sentences. Rules:
 - Reference specific numbers and percentage improvements
@@ -168,7 +177,7 @@ Write 4-5 sentences. Rules:
 - Tell them what the next 4 weeks look like
 - Mention reintroduction unlocks in 28 days
 - Do NOT mention texts or SMS
-- Analytical and specific — this is the most data-rich insight
+- Analytical and specific — this is the most data-rich insight${DAILY_LOGGING_RULE}
 
 Write only the message. No labels.`
 
@@ -187,7 +196,7 @@ USER:
 
 Write 2-3 sentences. Rules:
 - Reference the specific food they slipped on
-- Explain what one exposure means for their timeline — brief delay not a reset
+- Be honest about the mechanics: one exposure does not reset or delay their protocol clock — it is one noted data point. NEVER claim their timeline, clarity window, or program moves because of it (QA 2026-11-04 #3: the system has no such mechanism)
 - Tell them what to watch for in the next 48-72 hours symptom-wise
 - Non-judgmental, practical, forward-looking
 - Do NOT mention texts or SMS

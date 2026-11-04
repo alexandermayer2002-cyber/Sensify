@@ -92,13 +92,29 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
     setSubmitError('')
     const today = todayLocal()
 
+    // A second slip-up the same day MERGES with the first instead of
+    // replacing it (QA 2026-11-04 #2): the upsert used to clobber the
+    // earlier confession's foods and reason wholesale.
+    let mergedFoods = selectedFoods
+    let mergedReason = reason
+    try {
+      const { data: existing } = await supabase.from('daily_compliance')
+        .select('slip_up_foods, slip_up_reason')
+        .eq('user_id', session.user.id).eq('date', today).maybeSingle()
+      if (existing) {
+        mergedFoods = [...new Set([...(existing.slip_up_foods || []), ...selectedFoods])]
+        const prevReasons = (existing.slip_up_reason || '').split(',').map(x => x.trim()).filter(Boolean)
+        mergedReason = [...new Set([...prevReasons, reason])].join(',')
+      }
+    } catch (e) { /* merge is best-effort; the write below is what's checked */ }
+
     // Checked write (QA 2026-10-24 #3 family): a failed save says so.
     const { error: upErr } = await supabase.from('daily_compliance').upsert({
       user_id: session.user.id,
       date: today,
       response: 'NO',
-      slip_up_foods: selectedFoods,
-      slip_up_reason: reason,
+      slip_up_foods: mergedFoods,
+      slip_up_reason: mergedReason,
       logged_at: new Date().toISOString(),
     }, { onConflict: 'user_id,date' })
     if (upErr) {

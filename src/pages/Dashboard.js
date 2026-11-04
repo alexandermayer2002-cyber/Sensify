@@ -1000,6 +1000,26 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     } catch (e) {}
     setLoading(false)
   }
+  // The milestone AI used to see only weekly check-ins, so it could tell a
+  // customer with a long daily streak they "haven't logged yet"
+  // (QA 2026-11-04 #5). This hands the prompts the real daily record.
+  const fetchDailyLogging = async () => {
+    try {
+      const { data: rows } = await supabase.from('daily_factors')
+        .select('log_date').eq('user_id', session.user.id)
+      const logged = new Set((rows || []).map(r => r.log_date))
+      let streak = 0
+      const start = new Date()
+      if (!logged.has(localDateString(start))) start.setDate(start.getDate() - 1)
+      for (let i = 0; i < 365; i++) {
+        const d = new Date(start); d.setDate(start.getDate() - i)
+        if (logged.has(localDateString(d))) streak++
+        else break
+      }
+      return { loggedDays: logged.size, streak }
+    } catch (e) { return null }
+  }
+
   const checkMilestones = async (p, lab, c) => {
     if (!p?.protocol_start_date) return
     // Tone-awareness: if the latest weekly check-in shows symptoms broadly worsening
@@ -1070,7 +1090,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       const shown = await checkMilestoneShown(supabase, session.user.id, 'day14')
       if (!shown) {
         try {
-          const msg = await generateDay14Message({ name, profile: p, checkins: c })
+          const msg = await generateDay14Message({ name, profile: p, checkins: c, dailyLogging: await fetchDailyLogging() })
           setMilestoneMessage(msg)
           setMilestoneKey('day14')
           celebrate()
@@ -1082,7 +1102,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       const shown = await checkMilestoneShown(supabase, session.user.id, 'day28')
       if (!shown) {
         try {
-          const msg = await generateDay28Message({ name, profile: p, checkins: c })
+          const msg = await generateDay28Message({ name, profile: p, checkins: c, dailyLogging: await fetchDailyLogging() })
           setMilestoneMessage(msg)
           setMilestoneKey('day28')
           celebrate()
@@ -1176,7 +1196,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   // One compassion card at a time: once three days off plan trigger the
   // audit, it subsumes the daily slip-up card instead of stacking on it.
   const showAuditCard = consecutiveNOs >= 3 && !pendingAudit
-  const showSlipupCard = todayEntry?.response === 'NO' && !pendingAudit && !showAuditCard
+  // Once the survey is answered (slip_up_reason set), the ask stops
+  // (QA 2026-11-04 #1): the card used to keep begging all day after the
+  // customer had already told us what happened.
+  const slipupAnswered = todayEntry?.response === 'NO' && !!todayEntry?.slip_up_reason
+  const showSlipupCard = todayEntry?.response === 'NO' && !slipupAnswered && !pendingAudit && !showAuditCard
   const showIntakeCard = !profile?.intake_completed_at
   const showLabCard = profile?.intake_completed_at && !labResult
   const showPendingLabCard = labResult?.status === 'pending_review'
@@ -1813,6 +1837,20 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 <h2>What <em className="amber">happened today?</em></h2>
                 <p>Takes 60 seconds. No judgment, just data that makes your weekly insights more accurate.</p>
                 <button className="snfy-btn amber" onClick={() => setScreen('slipup')}>Tell us what happened →</button>
+              </div>
+            )}
+
+            {/* The confession was heard (QA 2026-11-04 #1): a quiet receipt
+                replaces the ask for the rest of the day. */}
+            {slipupAnswered && !showAuditCard && !pendingAudit && (
+              <div className="snfy-audit-pending">
+                <div className="snfy-audit-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Slip-up logged — thank you</div>
+                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>It's on the record and feeds this week's insight. Tomorrow is a fresh start.</div>
+                </div>
               </div>
             )}
 
