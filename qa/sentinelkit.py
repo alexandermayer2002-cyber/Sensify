@@ -66,7 +66,7 @@ SILENT_WRITE_ALLOW = {
     "src/pages/DailyCheckin.js":        {216, 241, 252, 297},        # core daily_factors is checked; these are secondary
     "src/pages/WeeklyCheckin.js":       {227, 446, 458, 459, 472},   # best-effort pointer/backfills after a checked insert (Deploy 12)
     "src/pages/IntakeSurvey.js":        {200, 389},                  # intake_draft write-behind + research consent, best-effort
-    "src/pages/Dashboard.js":           {965, 1809, 1810, 1816, 1821, 1822},  # away/audit auto-create backstops
+    "src/pages/Dashboard.js":           {982, 1844, 1845, 1851, 1856, 1857},  # away/audit auto-create backstops (re-keyed 2026-11-04: Deploy 16 shifted Dashboard.js by +39 lines; same six reviewed writes)
     "netlify/functions/activate-maintain.js":    {48},
     "netlify/functions/verify-maintain-setup.js":{17},
     "netlify/functions/verify-payment.js":       {30},               # service-role, server-side
