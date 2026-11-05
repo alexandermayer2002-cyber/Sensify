@@ -80,7 +80,10 @@ export async function testSkipDays(supabase, userId, days) {
     const d = new Date(); d.setDate(d.getDate() - i)
     const ds = localDateString(d)
     try {
-      await supabase.from('daily_factors').upsert({ user_id: userId, log_date: ds, sleep: '7-8', stress: 'low', hydration: '6', followed_protocol: true }, { onConflict: 'user_id,log_date' })
+      // App-shape values (QA 2026-11-05 #7): the live check-in writes NUMERIC
+      // numpad strings, so seeded personas must too — the old '7-8' band kept
+      // QA data in a shape no current customer produces.
+      await supabase.from('daily_factors').upsert({ user_id: userId, log_date: ds, sleep: '7', stress: 'low', hydration: '6', followed_protocol: true }, { onConflict: 'user_id,log_date' })
     } catch (e) { console.log('[testMode] factors fill fail', ds, e?.message) }
     try {
       await supabase.from('daily_compliance').upsert({ user_id: userId, date: ds, response: 'YES', logged_at: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 20).toISOString() }, { onConflict: 'user_id,date' })

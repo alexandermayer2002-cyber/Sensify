@@ -148,7 +148,10 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
           const sleepHours = (v) => {
             const n = parseFloat(v)
             if (!isNaN(n)) return n
-            return ({ 'under6': 5.5, '6-7': 6.5, '7-8': 7.5, '8+': 8.5 })[v] ?? null
+            // '8plus' is what DailyCheckin actually writes (QA 2026-11-05 #2):
+            // the old '8+' key silently dropped every 8+ hour night from this
+            // stat, skewing it for exactly the users sleeping well.
+            return ({ 'under6': 5.5, '6-7': 6.5, '7-8': 7.5, '8plus': 8.5 })[v] ?? null
           }
           const rows = weekFactorRows.filter(r => r.stress || r.sleep)
           if (rows.length >= 4 && symptomDates.size > 0) {
@@ -292,6 +295,16 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
     ? scales.filter(s => previousAnswers[s.id] !== undefined).map(s => `${s.id}: ${previousAnswers[s.id]}/10`).join(', ')
     : null
 
+  // Honest label for the prior scores (QA 2026-11-05 #6): the newest prior
+  // check-in is not necessarily "last week".
+  const prevWeekNum = previousAnswers?._week_number
+  const prevGap = prevWeekNum ? weekNumber - prevWeekNum : 1
+  const prevLabel = !prevWeekNum
+    ? "PRIOR CHECK-IN'S SCORES (week unknown)"
+    : prevGap <= 1
+    ? "LAST WEEK'S SCORES"
+    : `WEEK ${prevWeekNum} SCORES (their most recent check-in, ${prevGap} weeks before this one — do NOT call it "last week")`
+
   const contextItems = answers.context_changes?.filter(c => c !== 'Nothing unusual, a normal week') || []
   const contextStr = contextItems.length > 0 ? contextItems.join(', ') : 'None flagged by user (this does not mean nothing happened)'
 
@@ -307,7 +320,7 @@ USER CONTEXT:
 THIS WEEK'S SCORES vs BASELINE:
 ${symptomScores}
 
-${previousScores ? `LAST WEEK'S SCORES:\n${previousScores}` : 'This is their first check-in.'}
+${previousScores ? `${prevLabel}:\n${previousScores}` : 'This is their first check-in.'}
 
 OVERALL FEELING: ${answers.overall_feeling || 'not specified'}
 WHAT CHANGED THIS WEEK: ${contextStr}
@@ -410,8 +423,10 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
 
   const loadPreviousCheckin = async () => {
     if (weekNumber <= 1) return
-    const { data } = await supabase.from('weekly_checkins').select('answers').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).maybeSingle()
-    if (data) setPreviousAnswers(data.answers)
+    const { data } = await supabase.from('weekly_checkins').select('answers, week_number').eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(1).maybeSingle()
+    // The newest prior check-in may be weeks old (QA 2026-11-05 #6): keep its
+    // real week number so the prompt never calls a month-old week "last week".
+    if (data) setPreviousAnswers({ ...data.answers, _week_number: data.week_number })
   }
 
   const setAnswer = (id, value) => setAnswers(prev => ({ ...prev, [id]: value }))
@@ -453,6 +468,20 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         .order('started_at', { ascending: false }).limit(1).maybeSingle()
       if (tagCycle) cycleTag = { food: tagCycle.food, phase: tagCycle.washout_started_at ? 'washout' : 'exposure' }
     } catch (e) {}
+
+    // Double-submit guard (QA 2026-11-05 minor): weekly_checkins has no
+    // unique (user, week) constraint yet (WEEKLY_UNIQUE_MIGRATION.sql adds
+    // one), so two tabs could store twin rows and break the streak walk.
+    // A pre-check closes the common case app-side.
+    try {
+      const { data: dupe } = await supabase.from('weekly_checkins')
+        .select('id').eq('user_id', session.user.id).eq('week_number', weekNumber).limit(1).maybeSingle()
+      if (dupe) {
+        setSubmitError('This week is already on your record — it may have been submitted in another tab. Your dashboard has the latest.')
+        setSubmitting(false)
+        return
+      }
+    } catch (e) { /* guard is best-effort; the DB constraint is the backstop */ }
 
     // THE WEEK'S DATA LANDS FIRST (QA 2026-10-25 #1): the insert used to run
     // after the slow AI call with its result unchecked — a failure showed
@@ -730,7 +759,13 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         </div>
 
         <div className="sn-card" style={s.questionBlock}>
-          <div style={s.questionLabel}>How closely did you follow the elimination plan this week?</div>
+          {/* Phase-aware (QA 2026-11-05 #5): mid-reintro, eating the test food
+              IS the plan — "the elimination plan" made honest answers impossible
+              on exposure days. */}
+          <div style={s.questionLabel}>How closely did you follow your protocol this week?</div>
+          {phase === 'reintroduction' && (
+            <div style={{ fontSize: '12px', color: '#7A7A72', lineHeight: 1.55, marginTop: '-6px', marginBottom: '10px' }}>Eating your current test food on exposure days counts as on-plan. This asks about everything else staying eliminated.</div>
+          )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {['Fully', 'Mostly', 'Some slip-ups', 'Not at all'].map(opt => (
               <button key={opt} style={answers.compliance === opt ? { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', textAlign: 'left', fontWeight: 600, boxShadow: 'var(--shadow-pill)' } : { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#F7F5EE', fontSize: '14px', cursor: 'pointer', color: '#3B4036', textAlign: 'left' }} onClick={() => setAnswer('compliance', opt)}>{opt}</button>

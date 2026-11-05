@@ -289,7 +289,10 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         scales.push({ id: 'baseline_reflux', label: 'In a typical week, how would you rate your reflux or heartburn?', low: 'None at all', high: 'Severe' })
       }
       if (a.digestion_regularity && a.digestion_regularity !== 'Very regular') {
-        scales.push({ id: 'baseline_digestive', label: 'In a typical week, how would you rate your overall digestive comfort?', low: 'Very comfortable', high: 'Very uncomfortable' })
+        // COMFORT AXIS (QA 2026-11-05 #1): 10 = very comfortable, matching the
+        // weekly check-in, the post-meal variant below, and every reader.
+        // This label used to run the other way, inverting the whole scale.
+        scales.push({ id: 'baseline_digestive', label: 'In a typical week, how would you rate your overall digestive comfort?', low: 'Very uncomfortable', high: 'Very comfortable' })
       }
     }
 

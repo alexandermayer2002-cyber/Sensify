@@ -48,7 +48,9 @@ const addDays = (date, n) => {
   d.setDate(d.getDate() + n)
   return d
 }
-const fmt = (date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+// Non-breaking space keeps "~Dec 7" on one line at 430px (QA 2026-11-04
+// minor: the month and day used to wrap apart mid-date).
+const fmt = (date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).replace(' ', ' ')
 
 export default function SuspectBoard({ session, profile, labResult, onOpenReintro }) {
   const [cycles, setCycles] = useState([])

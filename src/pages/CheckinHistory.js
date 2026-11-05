@@ -234,11 +234,14 @@ const SCORE_METRICS = [
   { id: 'wellbeing', label: 'Wellbeing' },
 ]
 
-function CheckinCard({ checkin: c, index: i, profile, formatDate, complianceColors, styles: s }) {
+function CheckinCard({ checkin: c, index: i, fallbackWeek, profile, formatDate, complianceColors, styles: s }) {
   const [expanded, setExpanded] = useState(false)
   const compliance = c.answers?.compliance
   const compStyle = complianceColors[compliance] || { bg: '#FAF8F4', color: '#7A7A72' }
-  const weekNum = c.week_number || i + 1
+  // Legacy rows with no week_number count from the OLDEST entry (QA 2026-11-05
+  // minor): the list renders newest-first, so `i + 1` numbered the newest
+  // entry "Week 1".
+  const weekNum = c.week_number || fallbackWeek || i + 1
 
   const scores = SCORE_METRICS.filter(m => c.answers?.[m.id] !== undefined)
   const contextChanges = c.answers?.context_changes?.filter(ch => ch !== 'Nothing unusual — normal week' && ch !== 'Nothing unusual, a normal week') || []
@@ -438,6 +441,13 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
   }
 
   const programNotStarted = !profile?.program_phase || profile?.program_phase === 'awaiting_results' || profile?.program_phase === 'pending_review'
+  // Weekly check-ins only exist in elimination/reintroduction (Dashboard only
+  // ever arms weeklyDue there) — a complete/tracking customer used to see a
+  // perpetual "T-MINUS Nd" countdown for a check-in that never unlocks
+  // (QA 2026-11-05 #3). They get a closing state instead.
+  const programFinished = !programNotStarted
+    && profile?.program_phase !== 'elimination'
+    && profile?.program_phase !== 'reintroduction'
 
   return (
     <div style={s.wrap}>
@@ -473,7 +483,23 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
         )}
 
         {/* LOCKED STATE */}
-        {!weeklyDue && !programNotStarted && checkins.length > 0 && (() => {
+        {/* RECORD COMPLETE — no countdown for a check-in that never unlocks */}
+        {programFinished && checkins.length > 0 && (
+          <div style={{ position: 'relative', background: '#22301F', borderRadius: 24, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: 'var(--shadow-3)', marginBottom: 20 }}>
+            <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', opacity: 0.08, pointerEvents: 'none' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, position: 'relative' }}>
+              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · RECORD</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.9)' }} />
+                <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: '#8BAE8A' }}>COMPLETE</span>
+              </div>
+            </div>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 300, color: '#FAF8F4', position: 'relative', lineHeight: 1.25 }}>Your record is <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>complete.</em></div>
+            <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65, maxWidth: 300, margin: '8px auto 0', position: 'relative', fontWeight: 300 }}>{checkins.length} week{checkins.length === 1 ? '' : 's'} logged, start to finish. Everything below is the story of how you got here.</div>
+          </div>
+        )}
+
+        {!weeklyDue && !programNotStarted && !programFinished && checkins.length > 0 && (() => {
             const remaining = daysUntilNext()
             const dayOfCycle = Math.min(Math.max(7 - remaining, 0), 7)
             const CIRC = 301.6
@@ -583,7 +609,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               const entryPhase = c.answers?._phase || ((c.week_number || 0) > 8 ? 'reintroduction' : 'elimination')
               return entryPhase === phaseFilter
             }).map((c, i) => (
-              <CheckinCard key={i} checkin={c} index={i} profile={profile} formatDate={formatDate} complianceColors={COMPLIANCE_COLORS} styles={s} />
+              <CheckinCard key={i} checkin={c} index={i} fallbackWeek={checkins.length - checkins.indexOf(c)} profile={profile} formatDate={formatDate} complianceColors={COMPLIANCE_COLORS} styles={s} />
             ))}
           </>
         )}

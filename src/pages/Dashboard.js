@@ -979,13 +979,17 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               .maybeSingle()
 
             if (!existingAudit) {
-              await supabase.from('compliance_audit').insert({
+              // Checked write (Sentinel S5, approved 2026-11-05): a silent
+              // failure here meant the no-improvement safety net never reached
+              // Alex's queue and nothing ever knew.
+              const { error: niErr } = await supabase.from('compliance_audit').insert({
                 user_id: session.user.id,
                 triggered_at: new Date().toISOString(),
                 trigger_type: 'no_improvement',
                 hardest_parts: [],
                 status: 'pending_admin_review',
               })
+              if (niErr) console.warn('no_improvement audit insert failed:', niErr.message)
             }
           }
         }
@@ -1933,12 +1937,15 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="sn-rise-2" style={{ marginTop: 14 }}><SuspectBoard session={session} profile={profile} labResult={labResult} onOpenReintro={() => goTab('Reintro')} /></div>
             )}
 
-            {/* AI INSIGHT — the voice card */}
+            {/* AI INSIGHT — the voice card. A stale insight says so
+                (QA 2026-11-05 #4): a weeks-old "this week" used to front the
+                dashboard in the present tense with no cue it was old. */}
             <div className="snfy-insight sn-rise-3" style={{ marginTop: 14 }}>
               <div className="snfy-insight-head">
                 <span className="snfy-insight-dot"></span>
                 <span className="sn-micro">{
-                  profile?.latest_insight ? 'WEEKLY INSIGHT'
+                  profile?.latest_insight
+                    ? (profile?.latest_insight_week && currentWeek > profile.latest_insight_week ? `WEEKLY INSIGHT · FROM WEEK ${profile.latest_insight_week}` : 'WEEKLY INSIGHT')
                   : (currentDay >= 1 ? 'PROTOCOL' : 'GETTING STARTED')
                 }</span>
               </div>
@@ -1955,7 +1962,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   ? 'You are set. Elimination begins tomorrow. Your day 1 briefing will meet you here.'
                   : 'Once you complete your setup and upload your lab results, your weekly insights will appear here, generated from your symptom data after each check-in.')
               }</p>
-              {profile?.latest_insight && <div className="sn-micro sn-micro-dim" style={{ marginTop: 12 }}>GENERATED FROM YOUR CHECK-IN DATA</div>}
+              {profile?.latest_insight && (
+                profile?.latest_insight_week && currentWeek > profile.latest_insight_week
+                  ? <div className="sn-micro sn-micro-dim" style={{ marginTop: 12 }}>FROM YOUR WEEK {profile.latest_insight_week} CHECK-IN · YOUR NEXT CHECK-IN REFRESHES THIS</div>
+                  : <div className="sn-micro sn-micro-dim" style={{ marginTop: 12 }}>GENERATED FROM YOUR CHECK-IN DATA</div>
+              )}
             </div>
 
             {/* WEEKLY CHECK-IN — slim state card */}
@@ -2235,15 +2246,20 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
             </div>
 
+            {/* Collapsed by default (QA 2026-10-23/11-04 test-only note): the
+                open panel overlapped real content at 430px for 12 nights. */}
             {isTestAccount(session?.user?.email) && (
-              <div style={{ position: 'fixed', bottom: window.innerWidth <= 640 ? 86 : 14, right: 14, zIndex: 70, background: '#FFFFFF', border: '1.5px dashed #C07A28', borderRadius: 12, padding: '10px 12px', boxShadow: '0 6px 20px rgba(0,0,0,0.12)', fontFamily: 'DM Mono, monospace' }}>
-                <div style={{ fontSize: 8, letterSpacing: '1.4px', color: '#C07A28', marginBottom: 7 }}>TEST MODE · TIME MACHINE</div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  {[1, 7, 11, 43].map(d => (
-                    <button key={d} onClick={async (ev) => { ev.currentTarget.disabled = true; await testSkipDays(supabase, session.user.id, d); window.location.reload() }} style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(192,122,40,0.4)', background: '#FBF0DF', color: '#9A6212', cursor: 'pointer' }}>+{d}d</button>
-                  ))}
+              <details style={{ position: 'fixed', bottom: window.innerWidth <= 640 ? 86 : 14, right: 14, zIndex: 70, fontFamily: 'DM Mono, monospace' }}>
+                <summary style={{ listStyle: 'none', cursor: 'pointer', background: '#FFFFFF', border: '1.5px dashed #C07A28', borderRadius: 999, padding: '6px 10px', fontSize: 9, letterSpacing: '1px', color: '#C07A28', boxShadow: '0 4px 14px rgba(0,0,0,0.12)', userSelect: 'none' }}>⏱ TM</summary>
+                <div style={{ marginTop: 6, background: '#FFFFFF', border: '1.5px dashed #C07A28', borderRadius: 12, padding: '10px 12px', boxShadow: '0 6px 20px rgba(0,0,0,0.12)' }}>
+                  <div style={{ fontSize: 8, letterSpacing: '1.4px', color: '#C07A28', marginBottom: 7 }}>TEST MODE · TIME MACHINE</div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    {[1, 7, 11, 43].map(d => (
+                      <button key={d} onClick={async (ev) => { ev.currentTarget.disabled = true; await testSkipDays(supabase, session.user.id, d); window.location.reload() }} style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(192,122,40,0.4)', background: '#FBF0DF', color: '#9A6212', cursor: 'pointer' }}>+{d}d</button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </details>
             )}
             {/* HOUSEHOLD CARD — utility row, column footer per the design direction */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (

@@ -21,7 +21,7 @@ export const SCALE_DIRECTION = {
   bloating: 'higherWorse',
   gas: 'higherWorse',
   reflux: 'higherWorse',
-  digestive: 'higherWorse',     // high = "Very uncomfortable"
+  digestive: 'higherBetter',    // high = "Very comfortable" — COMFORT axis everywhere (QA 2026-11-05 #1: intake's main label ran the other way, so the AI read improvements as reactions; relabeled + DIGESTIVE_AXIS_MIGRATION.sql repairs stored baselines)
   energy: 'higherBetter',
   clarity: 'higherBetter',
   afternoon: 'higherBetter',    // high = "Sustained energy" (was miscategorized as a symptom)

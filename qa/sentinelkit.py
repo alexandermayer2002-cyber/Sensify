@@ -67,7 +67,7 @@ SILENT_WRITE_ALLOW = {
     ("src/pages/DailyCheckin.js", "daily_compliance", "upsert"): 1,          # mirror after checked daily_factors write
     ("src/pages/DailyCheckin.js", "reintro_daily_logs", "upsert"): 1,
     ("src/pages/DailyCheckin.js", "reintroduction_results", "update"): 1,
-    ("src/pages/Dashboard.js", "compliance_audit", "insert"): 4,             # away/audit auto-create backstops (incl. Sentinel S5, fix pending Alex)
+    ("src/pages/Dashboard.js", "compliance_audit", "insert"): 3,             # away-gate backstops (Sentinel S5 fixed 2026-11-05: no_improvement insert is checked now)
     ("src/pages/Dashboard.js", "profiles", "update"): 2,                     # away-gate clock restarts
     ("src/pages/IntakeSurvey.js", "profiles", "update"): 2,                  # intake_draft write-behind + research consent
     ("src/pages/ReintroTab.js", "food_map", "upsert"): 1,                    # restart path; stop path is checked separately

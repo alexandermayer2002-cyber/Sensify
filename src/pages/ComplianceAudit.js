@@ -140,14 +140,16 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
     setSubmitting(true)
     setSubmitError('')
 
-    const allAnswers = {
-      ...branchAnswers,
+    // Flat, non-empty answers only (QA 2026-11-04 minor): the old shape stored
+    // every branch's empty strings plus a nested duplicate of each answer —
+    // schema noise for every future reader. Admin reads these flat keys.
+    const allAnswers = Object.fromEntries(Object.entries({
       stress_score: stressScore,
       social_when: socialWhen,
       cooking_role: cookingRole,
-      craving_food: craving,
-      other_text: otherText,
-    }
+      craving_food: craving.trim(),
+      other_text: otherText.trim(),
+    }).filter(([, v]) => v !== null && v !== '' && v !== undefined))
 
     // THE CONFESSION LANDS FIRST (QA 2026-10-24 #3): the insert used to run
     // after the slow AI call, unchecked — a failure showed the full success

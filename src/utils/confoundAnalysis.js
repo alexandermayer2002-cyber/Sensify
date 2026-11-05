@@ -78,6 +78,21 @@ const HYDRATION_SCALE = { under3: 1, '3-5': 2, '6-8': 3, '8plus': 4 }
 const SLEEP_MIDPOINT = { under6: 5, '6-7': 6.5, '7-8': 7.5, '8plus': 8.5 }
 const DRINKS_WEEK_MIDPOINT = { '1-3': 2, '4-7': 5.5, '8-14': 11, '15plus': 18 }
 
+// Daily check-in and intake lifestyle now write NUMERIC strings from the
+// numpad ('7', '6.5'); the band tokens are the legacy/weekly shape. Both must
+// resolve, or the engines silently go blind to every current customer
+// (QA 2026-11-05 #7, root cause behind the seeder-literal find).
+const sleepHours = (v) => {
+  const n = parseFloat(v)
+  if (!isNaN(n)) return n
+  return SLEEP_MIDPOINT[v] ?? null
+}
+const hydrationBand = (v) => {
+  const n = parseFloat(v)
+  if (!isNaN(n)) return n < 3 ? 1 : n <= 5 ? 2 : n <= 8 ? 3 : 4
+  return HYDRATION_SCALE[v] ?? null
+}
+
 // ---- Shared: roll daily_factors rows into weekly summaries -------------------
 // rows: [{ log_date, sleep, stress, hydration, drinks, followed_protocol, cycle_phase }]
 // Returns weeks: [{ weekStart, n, sleepHrs, stressNum, hydrationNum, drinks, periodDays }]
@@ -95,9 +110,9 @@ export function computeWeeklySummaries(rows) {
   }
   return Object.entries(byWeek).map(([weekStart, wk]) => {
     const avg = (vals) => vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null
-    const sleepVals = wk.map(r => SLEEP_MIDPOINT[r.sleep]).filter(v => v != null)
+    const sleepVals = wk.map(r => sleepHours(r.sleep)).filter(v => v != null)
     const stressVals = wk.map(r => STRESS_SCALE[r.stress]).filter(v => v != null)
-    const hydVals = wk.map(r => HYDRATION_SCALE[r.hydration]).filter(v => v != null)
+    const hydVals = wk.map(r => hydrationBand(r.hydration)).filter(v => v != null)
     const drinkVals = wk.map(r => (typeof r.drinks === 'number' ? r.drinks : null)).filter(v => v != null)
     return {
       weekStart,
@@ -130,7 +145,7 @@ export function engine1Absolute(profile, weeks) {
   const flags = []
 
   // Sleep: baseline band OR lived average under the threshold
-  const baseSleep = SLEEP_MIDPOINT[profile?.baseline_avg_sleep]
+  const baseSleep = sleepHours(profile?.baseline_avg_sleep)
   const livedSleep = avgOf(weeks, 'sleepHrs')
   const sleepVal = livedSleep ?? baseSleep
   if (sleepVal != null && sleepVal < b.sleepUnderHours) {
@@ -146,7 +161,7 @@ export function engine1Absolute(profile, weeks) {
   }
 
   // Hydration: baseline in lowest band
-  const baseHyd = HYDRATION_SCALE[profile?.baseline_avg_hydration]
+  const baseHyd = hydrationBand(profile?.baseline_avg_hydration)
   const livedHyd = avgOf(weeks, 'hydrationNum')
   const hydVal = livedHyd ?? baseHyd
   if (hydVal != null && hydVal <= HYDRATION_SCALE[b.hydrationLowest]) {
@@ -154,7 +169,13 @@ export function engine1Absolute(profile, weeks) {
   }
 
   // Alcohol: baseline weekly over threshold
-  const baseDrinks = DRINKS_WEEK_MIDPOINT[profile?.baseline_avg_drinks_week]
+  // Numeric-aware like sleep/hydration: intake's drinks-per-week is a numpad
+  // entry now, with the band tokens as the legacy shape.
+  const baseDrinks = (() => {
+    const n = parseFloat(profile?.baseline_avg_drinks_week)
+    if (!isNaN(n)) return n
+    return DRINKS_WEEK_MIDPOINT[profile?.baseline_avg_drinks_week] ?? null
+  })()
   if (profile?.drinks_alcohol && baseDrinks != null && baseDrinks > b.alcoholWeeklyOver) {
     flags.push({ factor: 'alcohol', kind: 'absolute', level: baseDrinks, confidence: 'stated' })
   }

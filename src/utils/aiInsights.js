@@ -463,7 +463,7 @@ export const markMilestoneShown = async (supabase, userId, milestoneKey) => {
 // stored regardless, so a failed parse loses nothing.
 export const parseRecallFoods = async (rawText) => {
   try {
-    const prompt = `Extract the distinct foods and food ingredients from this meal description, including hidden forms (teriyaki or soy sauce contains wheat; parmesan is dairy; mayo contains egg). One per line, format: Canonical food | the phrase it came from. Canonical food should be the simple base food name (Wheat, Dairy, Eggs, Coffee, Tomato, Beef...). No other text.
+    const prompt = `Extract the distinct foods and food ingredients from this meal description, including hidden forms (teriyaki or soy sauce contains wheat; parmesan is dairy; mayo contains egg). One per line, format: Canonical food | the phrase it came from. Canonical food should be the simple base food name (Wheat, Dairy, Eggs, Coffee, Tomato, Beef...). Any alcoholic drink (wine, beer, a cocktail, spirits) is canonically "Alcohol" — never the plant it is made from (wine is Alcohol, not Grapes; beer is Alcohol, not Barley, though beer is also Wheat/Barley-containing if gluten matters: list Alcohol and the grain separately for beer). No other text.
 
 MEAL: "${String(rawText).slice(0, 400)}"`
     const raw = await callClaude(prompt, 220)
