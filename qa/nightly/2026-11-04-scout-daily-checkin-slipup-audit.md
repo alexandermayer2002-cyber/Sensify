@@ -63,3 +63,19 @@ slip-up card's CTA at 430px (10-23 note, still true).
 - CONFOUND thresholds + verdictEngine.js physician review — flagged in-code.
 - 11-03's six home-dashboard items shipped in Deploy 16 — verified present in
   code tonight (testableFoodCount, hero clock); full live re-verify next area-3 pass.
+
+---
+
+> **Resolved 2026-11-05 (Deploy 17, approved by Alex):** all seven findings
+> implemented and deployed in one batch, plus the cycle-data decision — Alex
+> chose "wire it in as a confound": weekly-insight period-day context line,
+> confound Engine 3 (cycle coincidence, correlation-gated, thresholds flagged
+> for MD review), and a verdict-survey period-day cross-reference with honest
+> hedging. Live re-walk post-deploy: slip card stops begging and the receipt
+> shows (fix #1), drinks stores null (#6), slip-up AI now says the clock
+> doesn't move (#3 prompt), audit submit + pending card green with
+> ai_acknowledgment null (#4), zero console errors on the audit walk. The
+> sentinel silent-write allowlist is now content-keyed (file+table+op+count)
+> after drifting twice in one day. Still with Alex: the Supabase actions, the
+> lab-kit ruling, Sentinel S5, and the new 11-05 HIGH (digestive axis
+> inversion).

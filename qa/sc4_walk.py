@@ -8,7 +8,7 @@ from pathkit import (signup_or_login, enter_intake, do_symptoms, do_baselines,
                      do_freq, lab_manual, srv_skip, ANON, SB, SITE_FN)
 from fleetkit import _flag_and_submit, gate
 
-EMAIL = "alexandermayer2002+qa2611044scb@gmail.com"
+EMAIL = "alexandermayer2002+qa2611055vfy@gmail.com"
 PW = "RobotQA-2611!"
 NAME = "Scout Fournight"
 
@@ -121,7 +121,7 @@ try:
         print("SLIPAI:", r.text()[:700].replace("\n", " | "))
         r.click_btn("Back to dashboard"); r.sleep(2.5); r.wait_ready(15)
         t = r.text()
-        print("CARD_AFTER_SUBMIT:", "Tell us what happened" in t, "|", "Slip-up logged today" in t)
+        print("CARD_AFTER_SUBMIT:", "Tell us what happened" in t, "|", "Slip-up logged today" in t); print("RECEIPT_CARD:", ("thank you" in t) and ("fresh start" in t))
         r.shot("dash_after_slipup")
         print("DC_ROW:", rest(r, "GET", "daily_compliance?user_id=eq.$UID&select=date,response,slip_up_foods,slip_up_reason&order=date.desc&limit=1"))
         if "Tell us what happened" in t:

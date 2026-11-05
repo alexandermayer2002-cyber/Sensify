@@ -4,7 +4,7 @@ os.environ["QA_SHOTS"] = "/tmp/claude-0/-home-claude-sensify/1716ba7b-bc83-5816-
 from robot import Robot
 from pathkit import signup_or_login, ANON, SB
 
-EMAIL = "alexandermayer2002+qa2611044scb@gmail.com"
+EMAIL = "alexandermayer2002+qa2611055vfy@gmail.com"
 PW = "RobotQA-2611!"
 
 def rest(r, method, path, body=None):
