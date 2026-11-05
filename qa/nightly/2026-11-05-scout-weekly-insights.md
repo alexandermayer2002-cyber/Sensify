@@ -61,3 +61,25 @@ newest entry Week 1.
 - CONFOUND thresholds + verdictEngine.js physician review — flagged in-code;
   tonight's #1 is a point in favor of doing that review soon: the direction
   tables it would audit are exactly where the HIGH lived.
+
+---
+
+> **Resolved 2026-11-05 (Deploy 18, approved by Alex):** all seven findings
+> implemented and deployed, plus Sentinel S5 (checked no_improvement insert)
+> and the small-items sweep (double-submit guard + WEEKLY_UNIQUE_MIGRATION.sql,
+> oldest-first legacy numbering, wine→Alcohol recall mapping, flat non-empty
+> branch_responses, non-wrapping suspect-board dates, TIME MACHINE collapsed
+> to a pill). #7 went deeper than the seeder literal: the confound engines'
+> band maps never parsed the NUMERIC numpad values the live check-in writes,
+> so sleep/hydration/drinks were invisible to Engines 1/2 for every current
+> customer — the mappers are numeric-aware now and both seeders write
+> app-shape values. Live verification (D18_*): intake label reads the comfort
+> axis, a 5→9 digestive week renders as an improvement on the tile AND in the
+> AI insight on the same screen (gas/reflux 5→9 correctly read as worsening
+> beside it), "your protocol" wording live, TM pill collapsed. ALSO PINNED:
+> the stray console 400 (open since 10-23) is the intake_draft write-behind
+> 400ing on the missing column — INTAKE_DRAFT_MIGRATION.sql was never run, so
+> intake's "progress saves as you go" is dead in production until it is.
+> Still with Alex: DIGESTIVE_AXIS_MIGRATION.sql (set cutoff to Deploy 18
+> time), WEEKLY_UNIQUE_MIGRATION.sql, the four older Supabase actions, the
+> lab-kit ruling, and the MD review.
