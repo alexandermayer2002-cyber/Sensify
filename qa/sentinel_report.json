@@ -1,50 +1,7 @@
 {
  "rls": [],
  "integrity": [],
- "silent_writes": [
-  {
-   "file": "src/pages/Dashboard.js",
-   "line": 982,
-   "table": "compliance_audit",
-   "op": "insert",
-   "code": "await supabase.from('compliance_audit').insert({"
-  },
-  {
-   "file": "src/pages/Dashboard.js",
-   "line": 1844,
-   "table": "compliance_audit",
-   "op": "insert",
-   "code": "await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigg"
-  },
-  {
-   "file": "src/pages/Dashboard.js",
-   "line": 1845,
-   "table": "profiles",
-   "op": "update",
-   "code": "await supabase.from('profiles').update({ protocol_start_date: t }).eq('id', session.user.id)"
-  },
-  {
-   "file": "src/pages/Dashboard.js",
-   "line": 1851,
-   "table": "compliance_audit",
-   "op": "insert",
-   "code": "await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigg"
-  },
-  {
-   "file": "src/pages/Dashboard.js",
-   "line": 1856,
-   "table": "compliance_audit",
-   "op": "insert",
-   "code": "await supabase.from('compliance_audit').insert({ user_id: session.user.id, triggered_at: new Date().toISOString(), trigg"
-  },
-  {
-   "file": "src/pages/Dashboard.js",
-   "line": 1857,
-   "table": "profiles",
-   "op": "update",
-   "code": "await supabase.from('profiles').update({ protocol_start_date: t }).eq('id', session.user.id)"
-  }
- ],
+ "silent_writes": [],
  "copy_promises": [
   {
    "file": "src/utils/protocolEngine.js",

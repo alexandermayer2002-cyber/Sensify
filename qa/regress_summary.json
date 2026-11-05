@@ -1,6 +1,6 @@
 {
- "date": "2611040751",
- "passed": 62,
+ "date": "2611050751",
+ "passed": 63,
  "total": 63,
  "results": [
   {
@@ -111,12 +111,12 @@
   {
    "check": "p5.upload_no_error",
    "ok": true,
-   "detail": "\u2190 Back\nSensify.\nYOUR LAB RESULTS\nAdd your test results.\nEnter only the foods that showed a reaction. Anything you leave out is treated as clear.\nUpload PDF\nTake"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood morning,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nELIMINATION PHASE\nStarts tomorrow.\nYour elimination phas"
   },
   {
    "check": "p5.file_stored",
    "ok": true,
-   "detail": "[{'file_path': 'f65644b3-7ecf-4677-89d3-75b79abb4f37-1793779244215.pdf'}]"
+   "detail": "[{'file_path': '22014503-3c93-43b0-930c-b5810fb09a8e-1793865680865.pdf'}]"
   },
   {
    "check": "fleet.elimearly.no_overflow",
@@ -136,17 +136,17 @@
   {
    "check": "fleet.elimearly.seeded",
    "ok": true,
-   "detail": "{\"protocol_start_date\": \"2026-10-28\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+   "detail": "{\"protocol_start_date\": \"2026-11-04\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
   },
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-04"
+   "detail": "no daily_factors row for 2026-11-05"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=8 expected=8 start=2026-10-28"
+   "detail": "shown=2 expected=2 start=2026-11-04"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -176,12 +176,12 @@
   {
    "check": "fleet.elimlate.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-04"
+   "detail": "no daily_factors row for 2026-11-05"
   },
   {
    "check": "fleet.elimlate.day_counter",
    "ok": true,
-   "detail": "shown=48 expected=48 start=2026-09-18"
+   "detail": "shown=49 expected=49 start=2026-09-18"
   },
   {
    "check": "fleet.elimlate.console_clean",
@@ -211,12 +211,12 @@
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-04"
+   "detail": "no daily_factors row for 2026-11-05"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=15 expected=15 start=2026-10-21"
+   "detail": "shown=16 expected=16 start=2026-10-21"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -246,7 +246,7 @@
   {
    "check": "fleet.reintro.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-04"
+   "detail": "no daily_factors row for 2026-11-05"
   },
   {
    "check": "fleet.reintro.verdict_count",
@@ -281,7 +281,7 @@
   {
    "check": "fleet.tracking.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-04"
+   "detail": "no daily_factors row for 2026-11-05"
   },
   {
    "check": "fleet.tracking.console_clean",
@@ -290,8 +290,8 @@
   },
   {
    "check": "sentinel.silent_writes",
-   "ok": false,
-   "detail": "6 NEW unchecked writes"
+   "ok": true,
+   "detail": "0 NEW unchecked writes"
   },
   {
    "check": "sentinel.safety",
