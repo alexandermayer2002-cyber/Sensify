@@ -35,6 +35,20 @@ const clampLevel = (idx) => LEVELS[Math.max(0, Math.min(2, idx))]
 const levelIndex = (v) => LEVELS.indexOf(v)
 
 // Compute the provisional verdict purely from logged data.
+// ONE tolerant symptom reader for the whole verdict path (QA 2026-11-06 #6):
+// rows arrive as object arrays, string arrays, or JSON-encoded strings
+// (legacy). The severe gate and the engine must read every shape the
+// ledger/needle already tolerate — a silently skipped severe day could rule
+// a reactive food Safe.
+export const parseSymptoms = (raw) => {
+  let syms = raw
+  if (typeof syms === 'string') { try { syms = JSON.parse(syms) } catch (e) { syms = null } }
+  if (!Array.isArray(syms)) return []
+  return syms
+    .map(s => typeof s === 'string' ? { name: s, intensity: null } : (s && typeof s === 'object' ? s : null))
+    .filter(Boolean)
+}
+
 // logs: array of daily log rows for this cycle.
 export const computeProvisionalVerdict = (logs = []) => {
   const t = VERDICT_THRESHOLDS
@@ -42,9 +56,9 @@ export const computeProvisionalVerdict = (logs = []) => {
   const exposureLogs = logs.filter(l => l.phase === 'exposure' && l.ate_food)
   const washoutLogs = logs.filter(l => l.phase === 'washout')
 
-  // Flatten symptom intensities
-  const allSymptoms = logs.flatMap(l => Array.isArray(l.symptoms) ? l.symptoms : [])
-  const hasSevere = allSymptoms.some(s => s.intensity === 'severe') || logs.some(l => l.stopped_early)
+  // Flatten symptom intensities — tolerant of every stored shape
+  const allSymptoms = logs.flatMap(l => parseSymptoms(l.symptoms))
+  const hasSevere = allSymptoms.some(s => String(s.intensity || '').toLowerCase() === 'severe') || logs.some(l => l.stopped_early)
 
   // Severe -> Avoid immediately
   if (t.severeAlwaysAvoid && hasSevere) {

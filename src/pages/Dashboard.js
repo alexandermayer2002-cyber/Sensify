@@ -705,6 +705,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [checkinLate, setCheckinLate] = useState(false)
   const [activeCheckinWeek, setActiveCheckinWeek] = useState(1)
   const [activeReintroId, setActiveReintroId] = useState(null)
+  const [surveyFood, setSurveyFood] = useState(null)  // the food the verdict survey was opened FOR (QA 2026-11-06 #1)
   const [activeCycleLite, setActiveCycleLite] = useState(null)
   const [awayGap, setAwayGap] = useState(null)
   const [recordStats, setRecordStats] = useState({ days: 0, events: 0 })  // { days, hard } when the away-gate should show
@@ -1259,7 +1260,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   })()
 
   const cockpitActive = (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && currentDay >= 1 && !needsCommonDecision && !isTracking && !showIntakeCard && !showLabCard && !showPendingLabCard
-  const showReintroCard = calculatedPhase === 'reintroduction' && profile?.current_reintro_day >= 14
+  // showReintroCard deleted (QA 2026-11-06 #7): current_reintro_day was
+  // written 1 and incremented by nothing, so its "day 14" hero could never
+  // fire — the live path is verdictReadyFood off the cycle row.
 
   const phaseLabel = calculatedPhase === 'elimination' ? 'Elimination'
     : calculatedPhase === 'reintroduction' ? 'Reintroduction'
@@ -1292,7 +1295,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   if (screen === 'daily-checkin') return <DailyCheckin session={session} profile={profile} onBack={() => setScreen('dashboard')} onComplete={() => { setDailyDone(true); setScreen('dashboard') }} />
   if (screen === 'slipup') return <SlipupSurvey session={session} profile={profile} labResult={labResult} currentDay={currentDay} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
   if (screen === 'audit') return <ComplianceAudit session={session} eliminatedFoods={labResult?.foods?.map(f => f.name) || []} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
-  if (screen === 'reintro-survey') return <ReintroductionSurvey session={session} food={profile?.current_reintro_food || 'Eggs'} cycleNumber={profile?.reintro_cycle || 1} baselineScores={{ bloating: profile?.baseline_bloating, energy: profile?.baseline_energy }} symptoms={profile?.symptoms || []} profile={profile} activeReintroId={activeReintroId} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
+  // No 'Eggs' literal (QA 2026-11-06 #1): the cycle row is the authority on
+  // which food is being ruled; the survey itself re-derives it from the row
+  // it writes to.
+  if (screen === 'reintro-survey') return <ReintroductionSurvey session={session} food={surveyFood || activeCycleLite?.food || profile?.current_reintro_food || ''} cycleNumber={profile?.reintro_cycle || 1} baselineScores={{ bloating: profile?.baseline_bloating, energy: profile?.baseline_energy }} symptoms={profile?.symptoms || []} profile={profile} activeReintroId={activeReintroId} onBack={() => setScreen('dashboard')} onComplete={() => setScreen('dashboard')} />
 
   // Shared tab navigation (top tabs on desktop, bottom bar on phones)
   const goTab = (t) => {
@@ -1482,6 +1488,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           currentDay={currentDay}
           onOpenDailyCheckin={() => setScreen('daily-checkin')}
           onStartVerdictSurvey={(food) => {
+            // Carry the food we were handed (QA 2026-11-06 #1): discarding it
+            // let a stale profile pointer rule the wrong food.
+            setSurveyFood(food || activeCycleLite?.food || null)
             setScreen('reintro-survey')
           }}
         />
@@ -1855,16 +1864,6 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Slip-up logged — thank you</div>
                   <div style={{ fontSize: '12px', color: '#7A7A72' }}>It's on the record and feeds this week's insight. Tomorrow is a fresh start.</div>
                 </div>
-              </div>
-            )}
-
-
-            {showReintroCard && (
-              <div className="snfy-action">
-                <div className="snfy-action-tag">Day 14 · verdict ready</div>
-                <h2><em>{profile?.current_reintro_food}</em> reintroduction complete.</h2>
-                <p>Complete your survey and get your AI verdict: Safe, Limit, or Avoid.</p>
-                <button className="snfy-btn" onClick={() => setScreen('reintro-survey')}>Get my verdict →</button>
               </div>
             )}
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
+import { sleepHours } from '../utils/confoundAnalysis'
 import { computeProvisionalVerdict, applyAiAdjustment } from '../utils/verdictEngine'
 import { generateReintroVerdict } from '../utils/aiInsights'
 
@@ -114,7 +115,12 @@ function buildSummary(logs, food) {
   return part1 + part2
 }
 
-export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumber = 1, baselineScores = {}, symptoms = [], profile = null, activeReintroId = null, onComplete, onBack }) {
+export default function ReintroductionSurvey({ session, food: foodProp = '', cycleNumber = 1, baselineScores = {}, symptoms = [], profile = null, activeReintroId = null, onComplete, onBack }) {
+  // THE CYCLE ROW IS THE AUTHORITY on which food is being ruled
+  // (QA 2026-11-06 #1): a stale profile pointer once produced "Your eggs
+  // results." for a Wheat cycle and wrote a never-tested Eggs verdict.
+  const [cycleFood, setCycleFood] = useState(null)
+  const food = cycleFood || foodProp
   const [accuracy, setAccuracy] = useState(null) // 'accurate' | 'worse' | 'milder'
   // Disagreement follow-up: only shown when the testimony disputes the logs.
   // Three neutral questions so the one-step shift is earned from specifics,
@@ -146,13 +152,17 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
         // ---- Day-grain intelligence (surface + prompt context; never decides) ----
         try {
           // Noise floor: elimination-era symptom events per week (clean baseline rumble)
-          const { data: cyc } = await supabase.from('reintroduction_results').select('started_at').eq('id', activeReintroId).single()
+          const { data: cyc } = await supabase.from('reintroduction_results').select('started_at, food').eq('id', activeReintroId).single()
+          if (cyc?.food) setCycleFood(cyc.food)
           if (cyc?.started_at) {
             const cycStart = String(cyc.started_at).split('T')[0]
             const { data: elimEvents } = await supabase.from('symptom_logs').select('symptom, severity, logged_at').eq('user_id', session.user.id).lt('logged_at', cycStart)
             if (elimEvents && elimEvents.length >= 0) {
               const dayset = new Set(elimEvents.map(e => String(e.logged_at).split('T')[0]))
-              const span = elimEvents.length ? Math.max(7, (new Date() - new Date([...dayset].sort()[0])) / 86400000) : 56
+              // Denominator runs to CYCLE START, not today (QA 2026-11-06
+              // minor): the events are all pre-cycle, so spanning to today
+              // diluted the baseline rate on every day of the cycle.
+              const span = elimEvents.length ? Math.max(7, (new Date(cycStart + 'T12:00:00') - new Date([...dayset].sort()[0])) / 86400000) : 56
               const perWeek = dayset.size ? (dayset.size / (span / 7)) : 0
               setNoiseFloor({ daysPerWeek: Math.round(perWeek * 10) / 10, totalDays: dayset.size })
             }
@@ -160,8 +170,11 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
             const symDays = (data || []).filter(l => (l.symptoms || []).length > 0).map(l => l.log_date)
             if (symDays.length >= 2) {
               const { data: dfs } = await supabase.from('daily_factors').select('log_date, sleep, cycle_phase').eq('user_id', session.user.id).gte('log_date', cycStart)
-              const SLEEP_RANK = { under6: 1, '6-7': 2, '7-8': 3, '8plus': 4 }
-              const ranked = (dfs || []).filter(d => d.sleep).sort((a, b) => SLEEP_RANK[a.sleep] - SLEEP_RANK[b.sleep])
+              // Shared numeric-aware mapper (QA 2026-11-06 #3): a private band
+              // map here couldn't read the NumPad's numeric values, so the
+              // "worst sleep nights" ranking was a no-op and the overlap it
+              // asserted (on screen and in the verdict prompt) was arbitrary.
+              const ranked = (dfs || []).map(d => ({ ...d, _hrs: sleepHours(d.sleep) })).filter(d => d._hrs != null).sort((a, b) => a._hrs - b._hrs)
               const worst = new Set(ranked.slice(0, Math.max(2, symDays.length)).map(d => d.log_date))
               const overlap = symDays.filter(d => worst.has(d)).length
               if (overlap >= 2) setSleepOverlap({ overlap, symDays: symDays.length })
@@ -183,6 +196,17 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
 
   const disagreeing = accuracy === 'worse' || accuracy === 'milder'
   const allAnswered = () => accuracy !== null && (!disagreeing || (feltWhen !== null && feltCause !== null))
+
+  // No food, no ruling (QA 2026-11-06 #1): with neither a cycle row nor a
+  // pointer there is nothing this verdict could honestly attach to.
+  if (!food) return (
+    <div style={s.wrap}>
+      <div style={{ padding: '60px 24px', textAlign: 'center' }}>
+        <div style={{ fontSize: '15px', color: '#3B4036', lineHeight: 1.7, maxWidth: 320, margin: '0 auto 20px' }}>We couldn't find the cycle this verdict belongs to. Head back to the Reintro tab and open the survey from your active cycle.</div>
+        <button className="sn-btn" style={{ maxWidth: 260 }} onClick={onBack}>Back</button>
+      </div>
+    </div>
+  )
 
   const handleSubmit = async () => {
     setSubmitting(true)
@@ -356,7 +380,7 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
 
           <div style={{ padding: '14px 16px', marginBottom: '12px' }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray-faint)', textTransform: 'uppercase', marginBottom: 7 }}>Worth knowing</div>
-            <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>This isn't necessarily permanent. Sensitivities can shift over time. After completing your full program, you can choose to retest any food and update its verdict.</div>
+            <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>This isn't necessarily permanent. Sensitivities can shift over time. If a verdict was ruled on conflicting evidence, you'll be offered a retest; for anything else, reach out through Support and we'll set one up with you.</div>
           </div>
         </div>
         <div style={s.footer}>
@@ -438,7 +462,9 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
               placeholder="Anything else, in your own words"
             />
 
-            <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '8px' }}>When was it strongest?</div>
+            {/* Direction-aware copy (QA 2026-11-06 minor): these read oddly on
+                the "felt milder" path, where the logs OVERstate. */}
+            <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '8px' }}>{accuracy === 'milder' ? 'When do the logs most overstate it?' : 'When was it strongest?'}</div>
             <div style={{ ...s.stackBtns, marginBottom: '16px' }}>
               {[
                 { id: 'exposure', label: `On the days I ate ${food.toLowerCase()}` },
@@ -449,10 +475,10 @@ export default function ReintroductionSurvey({ session, food = 'Eggs', cycleNumb
               ))}
             </div>
 
-            <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '8px' }}>Do you think {food.toLowerCase()} was behind it?</div>
+            <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '8px' }}>{accuracy === 'milder' ? `Do you think what you logged was really about ${food.toLowerCase()}?` : `Do you think ${food.toLowerCase()} was behind it?`}</div>
             <div style={s.stackBtns}>
               {[
-                { id: 'food', label: `Yes, I think it was the ${food.toLowerCase()}` },
+                { id: 'food', label: accuracy === 'milder' ? `Yes, it was still the ${food.toLowerCase()}` : `Yes, I think it was the ${food.toLowerCase()}` },
                 { id: 'unsure', label: 'Not sure' },
                 { id: 'other', label: 'Probably something else going on' },
               ].map(opt => (

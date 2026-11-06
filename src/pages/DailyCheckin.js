@@ -210,12 +210,16 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       // unanswered drinks question as 0 was a guess stored as data.
       drinks: isDrinker ? (drinks === '' ? null : parseInt(drinks, 10)) : null,
     }
-    // Phase-aware: persist the reintro log + exposure counting in the same save
+    // Phase-aware: persist the reintro log + exposure counting in the same
+    // save. BOTH WRITES ARE CHECKED (QA 2026-11-06 #2 — the last silent write
+    // on the verdict path): a failed exposure log silently corrupted the
+    // verdict's evidence, and a failed count update desynced the washout
+    // clock. A failure stops the save with every answer still on screen.
     if (showReintroBlock && activeReintro) {
       try {
         const symptoms = Object.entries(symptomIntensities).map(([nm, intensity]) => ({ name: nm === 'Other' && otherText.trim() ? otherText.trim() : nm, intensity }))
         const wasExposure = reintroPhase === 'exposure'
-        await supabase.from('reintro_daily_logs').upsert({
+        const { error: logErr } = await supabase.from('reintro_daily_logs').upsert({
           user_id: session.user.id,
           reintro_id: activeReintro.id,
           food: activeReintro.food,
@@ -227,6 +231,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           symptoms,
           stopped_early: false,
         }, { onConflict: 'user_id,reintro_id,log_date' })
+        if (logErr) throw logErr
         if (wasExposure && ateFood) {
           const newCount = (activeReintro.exposure_days_completed || 0) + 1
           const updates = { exposure_days_completed: newCount }
@@ -240,9 +245,14 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
               updates.answers = { ...a, doses: { ...(a.doses || {}), [today]: portion } }
             } catch (e) {}
           }
-          await supabase.from('reintroduction_results').update(updates).eq('id', activeReintro.id)
+          const { error: cntErr } = await supabase.from('reintroduction_results').update(updates).eq('id', activeReintro.id)
+          if (cntErr) throw cntErr
         }
-      } catch (e) { console.error('reintro save error:', e) }
+      } catch (e) {
+        setSaving(false)
+        alert("Your " + activeReintro.food.toLowerCase() + " log didn't save — nothing was lost, your answers are still here. Tap Done to try again." + (e?.message ? ` (${e.message})` : ''))
+        return
+      }
     }
 
     // Day-grain symptom events (elimination era): unrecoverable if not captured now.

@@ -82,12 +82,12 @@ const DRINKS_WEEK_MIDPOINT = { '1-3': 2, '4-7': 5.5, '8-14': 11, '15plus': 18 }
 // numpad ('7', '6.5'); the band tokens are the legacy/weekly shape. Both must
 // resolve, or the engines silently go blind to every current customer
 // (QA 2026-11-05 #7, root cause behind the seeder-literal find).
-const sleepHours = (v) => {
+export const sleepHours = (v) => {
   const n = parseFloat(v)
   if (!isNaN(n)) return n
   return SLEEP_MIDPOINT[v] ?? null
 }
-const hydrationBand = (v) => {
+export const hydrationBand = (v) => {
   const n = parseFloat(v)
   if (!isNaN(n)) return n < 3 ? 1 : n <= 5 ? 2 : n <= 8 ? 3 : 4
   return HYDRATION_SCALE[v] ?? null

@@ -65,8 +65,8 @@ SILENT_WRITE_ALLOW = {
     ("netlify/functions/verify-payment.js", "paid_sessions", "upsert"): 1,   # service-role, server-side
     ("src/pages/CommonTrackDecision.js", "profiles", "update"): 1,           # seen_track_intro flag
     ("src/pages/DailyCheckin.js", "daily_compliance", "upsert"): 1,          # mirror after checked daily_factors write
-    ("src/pages/DailyCheckin.js", "reintro_daily_logs", "upsert"): 1,
-    ("src/pages/DailyCheckin.js", "reintroduction_results", "update"): 1,
+    # reintro_daily_logs upsert + reintroduction_results count update are
+    # CHECKED as of Deploy 19 (QA 2026-11-06 #2) — removed from the allowlist.
     ("src/pages/Dashboard.js", "compliance_audit", "insert"): 3,             # away-gate backstops (Sentinel S5 fixed 2026-11-05: no_improvement insert is checked now)
     ("src/pages/Dashboard.js", "profiles", "update"): 2,                     # away-gate clock restarts
     ("src/pages/IntakeSurvey.js", "profiles", "update"): 2,                  # intake_draft write-behind + research consent

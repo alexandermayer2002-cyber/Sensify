@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { getTestingOrder } from '../utils/protocolEngine'
-import { computeProvisionalVerdict } from '../utils/verdictEngine'
+import { computeProvisionalVerdict, parseSymptoms } from '../utils/verdictEngine'
 import { todayLocal, localDateString } from '../utils/dateUtils'
 import { generateReintroFoodBriefing, generateProgramCompleteMessage, normalizeMilestones, serializeMilestones } from '../utils/aiInsights'
 
@@ -442,7 +442,11 @@ function CycleSummary({ logs = [], food, exposureDaysCompleted = 0, expanded, on
   const oneLiner = parts.join(' ')
 
   const dayLabel = (log) => {
-    const d = new Date(log.log_date)
+    // LOCAL parse (QA 2026-11-06 #4): new Date('YYYY-MM-DD') is UTC, which
+    // rendered every cycle-log date one day early for US customers — the
+    // only date in this area that still parsed UTC.
+    const [y, m, dd] = String(log.log_date).split('T')[0].split('-').map(Number)
+    const d = new Date(y, m - 1, dd)
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   }
 
@@ -679,9 +683,10 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
       sensitivity_level: level,
       started_at: today,
     })
+    // current_reintro_day write deleted (QA 2026-11-06 #7): it was written 1
+    // and incremented by nothing — a half-dead counter waiting to mislead.
     const { error: profileError, data: updated } = await supabase.from('profiles').update({
       current_reintro_food: food,
-      current_reintro_day: 1,
       reintro_started_at: today,
     }).eq('id', session.user.id).select()
 
@@ -724,7 +729,9 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   // A severe day anywhere on this cycle's log (QA 2026-10-26 #1): the clear
   // answer that ends the cycle as Avoid, and the fact the restart gate must
   // never delete or re-expose past.
-  const hasSevereLog = (dailyLogs || []).some(l => (l.symptoms || []).some(s => String(s?.intensity || '').toLowerCase() === 'severe'))
+  // Shape-tolerant via the engine's own reader (QA 2026-11-06 #6): a legacy
+  // string-encoded row used to throw here and error-boundary the whole tab.
+  const hasSevereLog = (dailyLogs || []).some(l => parseSymptoms(l.symptoms).some(s => String(s?.intensity || '').toLowerCase() === 'severe'))
 
   // Severe reaction -> stop cycle, auto-verdict Avoid. Checked writes: a failed
   // stop must say so, never silently leave the cycle running.
@@ -1104,7 +1111,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
               <div className={`rt-phase-badge ${isVerdictDay ? 'exposure' : isExposure ? 'exposure' : 'washout'}`}>
                 <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isVerdictDay ? '#AECDAD' : isExposure ? '#AECDAD' : '#C9D8C8', flexShrink: 0 }}></div>
-                {isVerdictDay ? 'Cycle complete' : isExposure ? 'Exposure phase: eat this food' : 'Washout phase: avoid this food'}
+                {isVerdictDay ? 'Cycle complete' : isExposure ? 'Exposure phase: eat this food' : washoutDay <= 1 ? 'Exposure complete' : 'Washout phase: avoid this food'}
               </div>
               {!isVerdictDay && (
                 <div style={{ marginTop: '10px', padding: '9px 12px', background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 'var(--r-sm)', fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.8px', color: 'rgba(250,248,244,0.75)' }}>ONLY {activeReintro.food.toUpperCase()} COMES BACK · EVERY OTHER FOOD ON YOUR LIST STAYS ELIMINATED</div>
@@ -1135,9 +1142,11 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                   )
                 })}
               </div>
-              <div className="rt-timeline-labels">
-                <span style={{ flex: 3, textAlign: 'left' }}>Exposure (days 1 to 3)</span>
-                <span style={{ flex: 11, textAlign: 'right' }}>Washout (days 4 to 14)</span>
+              {/* Labels no longer wrap at 430px (QA 2026-10-26 minor, fixed
+                  11-06): the left label had ~80px and broke to three lines. */}
+              <div className="rt-timeline-labels" style={{ justifyContent: 'space-between', gap: 8 }}>
+                <span style={{ whiteSpace: 'nowrap' }}>Exposure · days 1–3</span>
+                <span style={{ whiteSpace: 'nowrap' }}>Washout · days 4–14</span>
               </div>
 
               {!isVerdictDay && (<>
@@ -1152,7 +1161,12 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                     ? `Your ${activeReintro.food} cycle is complete. Complete your verdict survey to get your result.`
                     : isExposure
                     ? `Eat ${activeReintro.food} today as you normally would. You're on exposure day ${nextExposureNumber} of 3. Every other food on your elimination list stays off the plate.`
-                    : `Avoid ${activeReintro.food} completely today. This is washout day ${washoutDay} of ${WASHOUT_LENGTH}. Continue your elimination diet as usual.`}
+                    : washoutDay <= 1
+                    // The 3rd exposure day is not a washout day (QA 2026-10-26
+                    // minor, fixed 11-06): the badge used to say "avoid this
+                    // food" on the very day the plan had them eat it.
+                    ? `Exposure complete — all 3 ${activeReintro.food.toLowerCase()} days are logged. Washout begins tomorrow: from then, avoid it completely while we watch for delayed reactions.`
+                    : `Avoid ${activeReintro.food} completely today. This is washout day ${washoutDay - 1} of ${WASHOUT_LENGTH}. Continue your elimination diet as usual.`}
                 </div>
                 {cycleDay < 1 && (
                   <div style={{ marginTop: '12px', fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.8px', color: 'rgba(250,248,244,0.55)' }}>YOUR FIRST CHECK-IN UNLOCKS WITH DAY 1</div>
