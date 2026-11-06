@@ -23,25 +23,31 @@
   },
   {
    "file": "src/utils/confoundAnalysis.js",
-   "line": 24,
+   "line": 29,
    "kind": "physician-claim",
    "code": "//  - ENABLED is false until a physician reviews bands, directions,"
   },
   {
    "file": "src/utils/confoundAnalysis.js",
-   "line": 27,
+   "line": 32,
    "kind": "physician-claim",
    "code": "// PHYSICIAN-REVIEW ITEMS (all live in CONFOUND_CONFIG, clearly flagged):"
   },
   {
    "file": "src/utils/confoundAnalysis.js",
-   "line": 51,
+   "line": 56,
    "kind": "physician-claim",
    "code": "// ---- The medically-bad direction per factor (PHYSICIAN REVIEW) ----"
   },
   {
    "file": "src/utils/confoundAnalysis.js",
-   "line": 55,
+   "line": 60,
+   "kind": "physician-claim",
+   "code": "// ---- Engine 3: cycle coincidence (PHYSICIAN REVIEW) ----"
+  },
+  {
+   "file": "src/utils/confoundAnalysis.js",
+   "line": 66,
    "kind": "physician-claim",
    "code": "// ---- Engine 1: unhealthy absolute bands (PHYSICIAN REVIEW) ----"
   },
