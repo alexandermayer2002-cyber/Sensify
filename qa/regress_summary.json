@@ -1,5 +1,5 @@
 {
- "date": "2611050751",
+ "date": "2611060752",
  "passed": 63,
  "total": 63,
  "results": [
@@ -116,7 +116,7 @@
   {
    "check": "p5.file_stored",
    "ok": true,
-   "detail": "[{'file_path': '22014503-3c93-43b0-930c-b5810fb09a8e-1793865680865.pdf'}]"
+   "detail": "[{'file_path': 'd9cf6c81-f9f8-4a45-b704-de3bb058efea-1793952135282.pdf'}]"
   },
   {
    "check": "fleet.elimearly.no_overflow",
@@ -141,12 +141,12 @@
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-05"
+   "detail": "no daily_factors row for 2026-11-06"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=2 expected=2 start=2026-11-04"
+   "detail": "shown=3 expected=3 start=2026-11-04"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -176,12 +176,12 @@
   {
    "check": "fleet.elimlate.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-05"
+   "detail": "no daily_factors row for 2026-11-06"
   },
   {
    "check": "fleet.elimlate.day_counter",
    "ok": true,
-   "detail": "shown=49 expected=49 start=2026-09-18"
+   "detail": "shown=50 expected=50 start=2026-09-18"
   },
   {
    "check": "fleet.elimlate.console_clean",
@@ -206,17 +206,17 @@
   {
    "check": "fleet.audit.seeded",
    "ok": true,
-   "detail": "{\"protocol_start_date\": \"2026-10-21\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+   "detail": "{\"protocol_start_date\": \"2026-11-02\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
   },
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-05"
+   "detail": "no daily_factors row for 2026-11-06"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=16 expected=16 start=2026-10-21"
+   "detail": "shown=5 expected=5 start=2026-11-02"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -246,7 +246,7 @@
   {
    "check": "fleet.reintro.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-05"
+   "detail": "no daily_factors row for 2026-11-06"
   },
   {
    "check": "fleet.reintro.verdict_count",
@@ -281,7 +281,7 @@
   {
    "check": "fleet.tracking.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-05"
+   "detail": "no daily_factors row for 2026-11-06"
   },
   {
    "check": "fleet.tracking.console_clean",
