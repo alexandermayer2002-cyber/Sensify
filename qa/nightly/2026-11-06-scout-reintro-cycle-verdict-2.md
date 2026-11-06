@@ -59,3 +59,22 @@ worse" direction and read oddly on the "felt milder" path.
   running, the HIGHs live exactly where that review would look (11-05's
   inverted axis, tonight's #3).
 - Tonight's 7 findings await approval; no product deploy since Deploy 18.
+
+---
+
+> **Resolved 2026-11-06 (Deploy 19, approved by Alex):** all seven findings
+> implemented and deployed the same day, plus the area's minors (washout
+> badge honesty, non-wrapping timeline labels, noise-floor denominator to
+> cycle start, direction-aware "felt milder" questions). Live re-reproduction
+> of #1's exact poison (Wheat cycle verdict-ready, current_reintro_food
+> cleared): the survey now says "Your wheat results.", no eggs anywhere, and
+> food_map holds exactly [Wheat: Avoid] — the phantom-verdict path is closed,
+> and a survey with no identifiable cycle refuses to rule. A string-shaped
+> symptoms row seeded into the washout neither crashed the tab nor hid from
+> the engine (shared parseSymptoms). The reintro daily save is checked both
+> ways; sentinel allowlist updated (silent-write family is now 0 on the
+> verdict path). Note for the MD review: the engine ruled 1 mild exposure day
+> + 1 washout flare as Avoid — thresholds unchanged tonight, but that
+> severity feels high; it's on the review's list.
+> Console 400s during this walk remain the known intake_draft noise
+> (INTAKE_DRAFT_MIGRATION.sql still unrun).
