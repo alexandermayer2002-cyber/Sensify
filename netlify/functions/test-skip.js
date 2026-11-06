@@ -15,7 +15,7 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'POST only' }
   let email, days
   try { const b = JSON.parse(event.body || '{}'); email = (b.email || '').trim().toLowerCase(); days = Math.max(1, Math.min(200, Number(b.days) || 0)) } catch { return { statusCode: 400, body: 'bad json' } }
-  if (!/\+(fable|qa|robot)/i.test(email)) return { statusCode: 403, body: JSON.stringify({ ok: false }) }
+  if (!/^alexandermayer2002\+(fable|qa|robot)/i.test(email)) return { statusCode: 403, body: JSON.stringify({ ok: false }) } // pinned to the QA address prefix (Door Sentry 2026-11-06)
   const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
   const { data: prof } = await sb.from('profiles').select('id, protocol_start_date').eq('email', email).maybeSingle()
   if (!prof) return { statusCode: 404, body: JSON.stringify({ ok: false, error: 'no profile' }) }

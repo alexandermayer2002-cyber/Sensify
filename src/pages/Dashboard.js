@@ -706,6 +706,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const [activeCheckinWeek, setActiveCheckinWeek] = useState(1)
   const [activeReintroId, setActiveReintroId] = useState(null)
   const [surveyFood, setSurveyFood] = useState(null)  // the food the verdict survey was opened FOR (QA 2026-11-06 #1)
+  const [kitConfirm, setKitConfirm] = useState(false) // two-step "I took my test" (First-Timer #15)
   const [activeCycleLite, setActiveCycleLite] = useState(null)
   const [awayGap, setAwayGap] = useState(null)
   const [recordStats, setRecordStats] = useState({ days: 0, events: 0 })  // { days, hard } when the away-gate should show
@@ -1387,6 +1388,18 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           onStartCheckin={() => setScreen('checkin')}
         />
       ) : screen === 'food-map' ? (
+        !profile?.protocol_start_date ? (
+          /* Locked state instead of a seemingly-dead tab pre-protocol
+             (QA 2026-11-06 First-Timer #14). */
+          <div className="sn-rise" style={{ maxWidth: 560, margin: '0 auto', padding: '40px 24px' }}>
+            <div className="sn-card" style={{ padding: '26px 22px', textAlign: 'center' }}>
+              <div style={{ fontSize: 26, marginBottom: 10 }}>🔒</div>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: 'var(--ink)', marginBottom: 10 }}>Your verdicts live here.</div>
+              <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.65, marginBottom: 18 }}>Every food you test ends up on this page with an answer you earned: Safe, Limit, or Avoid. It starts filling in once your program begins.</div>
+              <button className="sn-btn" style={{ maxWidth: 240 }} onClick={() => goTab('Home')}>Back to Home</button>
+            </div>
+          </div>
+        ) :
         <FoodMap
           session={session}
           profile={profile}
@@ -1481,6 +1494,18 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           <MaintainHub session={session} profile={profile} isAdmin={isAdmin} />
         </div>
       ) : screen === 'reintro-tab' ? (
+        !profile?.protocol_start_date ? (
+          /* Locked state instead of a seemingly-dead tab pre-protocol
+             (QA 2026-11-06 First-Timer #14). */
+          <div className="sn-rise" style={{ maxWidth: 560, margin: '0 auto', padding: '40px 24px' }}>
+            <div className="sn-card" style={{ padding: '26px 22px', textAlign: 'center' }}>
+              <div style={{ fontSize: 26, marginBottom: 10 }}>🔒</div>
+              <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: 'var(--ink)', marginBottom: 10 }}>Reintroduction unlocks later.</div>
+              <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.65, marginBottom: 18 }}>First comes your elimination stretch. Then, from day 57, this is where you eat each flagged food again — one at a time, on purpose — to find out which ones actually cause your symptoms.</div>
+              <button className="sn-btn" style={{ maxWidth: 240 }} onClick={() => goTab('Home')}>Back to Home</button>
+            </div>
+          </div>
+        ) :
         <ReintroTab
           session={session}
           profile={profile}
@@ -1802,7 +1827,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Results under review</div>
-                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Usually reviewed within a day. Check back here — this page updates when it's approved.</div>
+                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>A real person checks every entry — usually within a day. When it's approved, this page updates, your elimination list appears, and your Day 1 is scheduled for the next morning. Nothing for you to do until then.</div>
                 </div>
               </div>
             )}
@@ -1908,10 +1933,29 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {!labResult && !normalizeMilestones(profile?.shown_milestones).test_taken && (showIntakeCard || showLabCard || showPendingLabCard) && (
               <div className="sn-card sn-rise-2" style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.12), rgba(139,174,138,0.04)), var(--paper)', marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
-                  <div className="sn-micro" style={{ marginBottom: 6 }}>Your lab kit</div>
-                  <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.55 }}>Done with your test? Tell us so we know your results are on the way.</div>
+                  <div className="sn-micro" style={{ marginBottom: 6 }}>Your lab test</div>
+                  <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.55 }}>{kitConfirm ? 'Just to confirm: your test is done and results are on the way?' : 'Done with your test? Tell us so we know your results are on the way.'}</div>
                 </div>
-                <button onClick={async () => { const sm = serializeMilestones({ ...normalizeMilestones(profile?.shown_milestones), test_taken: true }); await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-md)', padding: '11px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)', flexShrink: 0 }}>I took my test</button>
+                {/* Two taps, not one (QA 2026-11-06 First-Timer #15): a curious
+                    single tap used to silently tell the system results were in
+                    the mail, with no confirm and no way back. */}
+                {kitConfirm ? (
+                  <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                    <button onClick={async () => { const sm = serializeMilestones({ ...normalizeMilestones(profile?.shown_milestones), test_taken: true }); await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-md)', padding: '11px 16px', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)' }}>Yes, it's done</button>
+                    <button onClick={() => setKitConfirm(false)} style={{ background: 'var(--tint-warm)', color: 'var(--ink-soft)', border: 'none', borderRadius: 'var(--r-md)', padding: '11px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Not yet</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setKitConfirm(true)} style={{ background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-md)', padding: '11px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)', flexShrink: 0 }}>I took my test</button>
+                )}
+              </div>
+            )}
+
+            {/* The way back (First-Timer #15): once marked, a quiet undo lives
+                here until results actually exist. */}
+            {!labResult && normalizeMilestones(profile?.shown_milestones).test_taken && (showIntakeCard || showLabCard) && (
+              <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '10px 14px', background: 'var(--tint-warm)', borderRadius: 'var(--r-md)' }}>
+                <div style={{ fontSize: 12.5, color: 'var(--ink-soft)', lineHeight: 1.5 }}>You told us your test is done — enter or upload your results whenever they arrive.</div>
+                <button onClick={async () => { const sm = serializeMilestones({ ...normalizeMilestones(profile?.shown_milestones), test_taken: false }); await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: 'none', border: 'none', color: 'var(--ink-soft)', fontSize: 12, fontWeight: 600, textDecoration: 'underline', cursor: 'pointer', flexShrink: 0 }}>Undo</button>
               </div>
             )}
 
@@ -1964,7 +2008,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               {profile?.latest_insight && (
                 profile?.latest_insight_week && currentWeek > profile.latest_insight_week
                   ? <div className="sn-micro sn-micro-dim" style={{ marginTop: 12 }}>FROM YOUR WEEK {profile.latest_insight_week} CHECK-IN · YOUR NEXT CHECK-IN REFRESHES THIS</div>
-                  : <div className="sn-micro sn-micro-dim" style={{ marginTop: 12 }}>GENERATED FROM YOUR CHECK-IN DATA</div>
+                  : <div className="sn-micro sn-micro-dim" style={{ marginTop: 12 }}>GENERATED FROM YOUR CHECK-IN DATA · WATCHING ALONGSIDE YOUR FOODS: SLEEP, STRESS, WATER{profile?.drinks_alcohol ? ', ALCOHOL' : ''}{profile?.gender === 'female' ? ', CYCLE' : ''}</div>
               )}
             </div>
 
@@ -1982,7 +2026,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="sn-row" style={{ justifyContent: 'space-between', marginTop: 14 }}>
                 <div>
                   <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--ink)' }}>Weekly check-in</div>
-                  <div style={{ fontSize: 10.5, color: 'var(--gray)', marginTop: 1 }}>{checkins.length === 0 ? 'Opens at the end of week 1' : 'Done. Next one opens at week\u2019s end'}</div>
+                  <div style={{ fontSize: 10.5, color: 'var(--gray)', marginTop: 1 }}>{checkins.length === 0 ? 'Opens at the end of week 1 (your week 1 starts with Day 1)' : 'Done. Next one opens at week\u2019s end'}</div>
                 </div>
                 <span style={{ fontSize: 11, color: 'var(--gray-faint)' }}>{checkins.length === 0 ? 'Locked' : '\u2713'}</span>
               </div>
@@ -2236,7 +2280,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 <div style={{ padding: '20px 0', textAlign: 'center' }}>
                   <div style={{ fontSize: '13px', fontWeight: 500, color: '#1C1C1C', marginBottom: '6px' }}>No foods yet</div>
                   <div style={{ fontSize: '12px', color: '#7A7A72', lineHeight: 1.65 }}>
-                    {!labResult ? 'Your elimination list will appear here once your lab results are uploaded and approved.'
+                    {!labResult ? 'Your elimination list — the foods you\'ll avoid for 8 weeks — appears here once your results are in and we\'ve reviewed them (usually within a day).'
                       : labResult.status === 'pending_review' ? 'Your lab results are under review.'
                       : 'No foods flagged on your elimination list.'}
                   </div>
@@ -2307,7 +2351,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#3D5C3C' }}>took shape.</span></> : starCount < 8 ? <>Every check-in <span style={{ color: '#3D5C3C' }}>hangs a star.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
                   </div>
                   <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginBottom: 10 }}>
-                    {preP ? <>Every day you log becomes a star. At 28 nights they form a constellation, and pattern detection unlocks. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <b style={{ color: '#1C1C1C', fontWeight: 600 }}>Pattern detection is live</b>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{awayN > 0 ? <> ({awayN} away night{awayN === 1 ? '' : 's'} on your word, held out of the count)</> : ''}{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <b style={{ color: '#1C1C1C', fontWeight: 600 }}>pattern detection unlocks</b>: sleep, stress, and symptoms, cross-referenced for connections.</>}
+                    {preP ? <>Every day you log becomes a star. At 28 nights — four clean weeks of check-ins — they form a constellation, and pattern detection unlocks: we start cross-referencing your sleep, stress, and symptoms for connections. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <b style={{ color: '#1C1C1C', fontWeight: 600 }}>Pattern detection is live</b>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{awayN > 0 ? <> ({awayN} away night{awayN === 1 ? '' : 's'} on your word, held out of the count)</> : ''}{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <b style={{ color: '#1C1C1C', fontWeight: 600 }}>pattern detection unlocks</b>: sleep, stress, and symptoms, cross-referenced for connections.</>}
                   </div>
                   <svg width="100%" viewBox="0 0 280 195" style={{ display: 'block', borderRadius: 14 }}>
                     <defs>

@@ -431,7 +431,8 @@ Rules:
       <div className="sn-rise" style={s.content}>
         <div className="sn-micro" style={{ marginBottom: '8px' }}>Your lab results</div>
         <div style={s.title}>Add your test results.</div>
-        <div style={s.sub}>Enter only the foods that showed a reaction. Anything you leave out is treated as clear.</div>
+        {/* Plain words before lab vocabulary (QA 2026-11-06 First-Timer #13). */}
+        <div style={s.sub}>Your test report lists foods with a reaction level next to each (words like "elevated", "high", or a colored band). Here, only add the foods your report flagged — anything you leave out is treated as clear. Upload the report and we'll read it for you, or type the flagged foods in yourself.</div>
 
         <div style={s.methodRow}>
           {/* Method switches clear any abandoned file (QA 2026-11-02 #3). */}

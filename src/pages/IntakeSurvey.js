@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import NumPad from '../components/NumPad'
 import { normalizeMilestones, serializeMilestones } from '../utils/aiInsights'
+import { SCALE_DIRECTION } from '../utils/trackRecommendation'
 
 const FOOD_CATEGORIES = [
   { category: 'Proteins', foods: ['Beef', 'Chicken', 'Pork', 'Lamb', 'Turkey', 'Egg White', 'Egg Yolk'] },
@@ -504,6 +505,12 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         </div>
       </div>
       <div style={s.footer}>
+        {!canProceedFromAgreement && (
+          <div style={{ fontSize: 12, color: '#9A6212', background: '#FBF0DF', borderRadius: 10, padding: '8px 12px', marginBottom: 8, lineHeight: 1.5 }}>
+            {/* A dead button always says why (QA 2026-11-06 First-Timer #7) */}
+            To continue: {!agreed ? 'tick the agreement statement above' : ''}{!agreed && signatureName.trim().length < 2 ? ' and ' : ''}{signatureName.trim().length < 2 ? 'type your full name as your signature' : ''}.
+          </div>
+        )}
         <button
           className="sn-btn"
           style={s.cta}
@@ -612,6 +619,11 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         ))}
       </div>
       <div style={s.footer}>
+        {!allSymptomAnswered && (
+          <div style={{ fontSize: 12, color: '#9A6212', background: '#FBF0DF', borderRadius: 10, padding: '8px 12px', marginBottom: 8, lineHeight: 1.5 }}>
+            {requiredSymptomQuestions.filter(q => !answers[q.id]).length} question{requiredSymptomQuestions.filter(q => !answers[q.id]).length === 1 ? '' : 's'} above still need{requiredSymptomQuestions.filter(q => !answers[q.id]).length === 1 ? 's' : ''} an answer — scroll up to the unanswered ones.
+          </div>
+        )}
         <button className="sn-btn" style={s.cta} disabled={!allSymptomAnswered} onClick={() => setStep(2)}>Continue</button>
       </div>
     </div>
@@ -651,23 +663,48 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             <div style={{ position: 'relative', fontSize: '12.5px', color: 'rgba(250,248,244,0.65)', lineHeight: 1.6 }}>A typical week over the past couple of months, not just how you feel today. This becomes your baseline, and everything you improve gets measured against it.</div>
           </div>
         )}
-        {baselineScales.length > 0 ? baselineScales.map(scale => (
+        {baselineScales.length > 0 ? baselineScales.map((scale, si) => {
+          // Direction is made visible (QA 2026-11-06 First-Timer #9): scales on
+          // this page can run opposite ways (10 = severe vs 10 = comfortable),
+          // and a pattern-tapper used to corrupt their baseline silently. The
+          // good end reads green, the rough end amber, and a flip from the
+          // previous scale gets an explicit heads-up line.
+          const goodHigh = SCALE_DIRECTION[scale.id.replace('baseline_', '')] === 'higherBetter'
+          const prev = si > 0 ? baselineScales[si - 1] : null
+          const prevGoodHigh = prev ? SCALE_DIRECTION[prev.id.replace('baseline_', '')] === 'higherBetter' : goodHigh
+          const flipped = prev && goodHigh !== prevGoodHigh
+          const GOOD = '#2D6B42', ROUGH = '#9A5F1A'
+          return (
           <div key={scale.id} className="sn-card" style={{ padding: '18px 16px', marginBottom: '12px' }}>
             <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, color: '#20241F', lineHeight: 1.3 }}>{scale.label}</div>
-            <div style={{ ...s.scaleLabels, margin: '13px 0 8px' }}><span>{scale.low}</span><span>{scale.high}</span></div>
+            {flipped && (
+              <div style={{ marginTop: 10, background: '#FBF0DF', color: '#9A6212', borderRadius: 10, padding: '7px 11px', fontSize: 11.5, lineHeight: 1.5, fontWeight: 600 }}>
+                Heads up — this scale runs the other way: 10 is the {goodHigh ? 'good' : 'rough'} end here.
+              </div>
+            )}
+            <div style={{ ...s.scaleLabels, margin: '13px 0 8px' }}>
+              <span style={{ color: goodHigh ? ROUGH : GOOD, fontWeight: 600 }}>{scale.low}</span>
+              <span style={{ color: goodHigh ? GOOD : ROUGH, fontWeight: 600 }}>{scale.high}</span>
+            </div>
             <div style={s.scaleRow}>
               {[1,2,3,4,5,6,7,8,9,10].map(n => (
                 <button key={n} style={answers[scale.id] === n ? { ...s.sbtOn, fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 600 } : s.sbt} onClick={() => setAnswer(scale.id, n)}>{n}</button>
               ))}
             </div>
           </div>
-        )) : (
+          )
+        }) : (
           <div style={{ color: '#7A7A72', fontSize: '14px', textAlign: 'center', padding: '20px 0' }}>
             Based on your answers, your symptoms are minimal in a typical week. That's a good starting point. We'll track any changes from here.
           </div>
         )}
       </div>
       <div style={s.footer}>
+        {!allBaselinesAnswered && (
+          <div style={{ fontSize: 12, color: '#9A6212', background: '#FBF0DF', borderRadius: 10, padding: '8px 12px', marginBottom: 8, lineHeight: 1.5 }}>
+            {baselineScales.filter(sc => !answers[sc.id]).length} scale{baselineScales.filter(sc => !answers[sc.id]).length === 1 ? '' : 's'} above still unrated.
+          </div>
+        )}
         <button className="sn-btn" style={s.cta} disabled={!allBaselinesAnswered} onClick={() => setStep(3)}>Continue</button>
       </div>
     </div>
@@ -769,6 +806,12 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             {padWarning === field && <div style={s.padWarn}>{PAD_LIMITS[field].warn}</div>}
           </div>
         )}
+        {/* The warning survives the pad closing (QA 2026-11-06 First-Timer
+            #11): an out-of-range value used to sit silently behind a dead
+            Complete button. */}
+        {openPad !== field && lifestyle[field] && !padInRange(field, lifestyle[field]) && (
+          <div style={{ ...s.padWarn, marginTop: 6 }}>That doesn't look right — {PAD_LIMITS[field].warn.toLowerCase()} Tap the field to fix it.</div>
+        )}
       </>
     )
     const Band = ({ field, options }) => (
@@ -839,6 +882,19 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         </div>
         <div style={s.footer}>
           {completeError && <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 12, padding: '10px 13px', fontSize: 12.5, lineHeight: 1.55, marginBottom: 10 }}>{completeError}</div>}
+          {!lifestyleComplete && (
+            <div style={{ fontSize: 12, color: '#9A6212', background: '#FBF0DF', borderRadius: 10, padding: '8px 12px', marginBottom: 8, lineHeight: 1.5 }}>
+              Still needed: {[
+                !lifestyle.avg_sleep ? 'sleep hours' : !padInRange('avg_sleep', lifestyle.avg_sleep) ? 'a realistic sleep number (0–14)' : null,
+                !lifestyle.avg_stress ? 'stress level' : null,
+                !lifestyle.avg_hydration ? 'water' : !padInRange('avg_hydration', lifestyle.avg_hydration) ? 'a realistic water number (0–20)' : null,
+                !lifestyle.gender ? 'sex' : null,
+                !lifestyle.drinks_alcohol ? 'the alcohol question' : null,
+                lifestyle.drinks_alcohol === 'yes' && !lifestyle.avg_drinks_week ? 'drinks per week' : null,
+                lifestyle.drinks_alcohol === 'yes' && lifestyle.avg_drinks_week && !padInRange('avg_drinks_week', lifestyle.avg_drinks_week) ? 'a realistic drinks number (0–30)' : null,
+              ].filter(Boolean).join(', ')}.
+            </div>
+          )}
           <button className="sn-btn" style={s.cta} disabled={!lifestyleComplete || saving} onClick={() => { setCompleteError(''); handleComplete() }}>
             {saving ? 'Saving your program...' : 'Complete intake →'}
           </button>

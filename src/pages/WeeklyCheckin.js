@@ -709,17 +709,33 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
           <div style={s.sectionLine} />
         </div>
 
-        {symptomScales.map(scale => (
+        {symptomScales.map((scale, si) => {
+          // Visible direction anchors + flip heads-up, same as intake
+          // (QA 2026-11-06 First-Timer #9): these scales run opposite ways.
+          const goodHigh = SCALE_DIRECTION[scale.id] === 'higherBetter'
+          const prev = si > 0 ? symptomScales[si - 1] : null
+          const flipped = prev && goodHigh !== (SCALE_DIRECTION[prev.id] === 'higherBetter')
+          const GOOD = '#2D6B42', ROUGH = '#9A5F1A'
+          return (
           <div key={scale.id} className="sn-card" style={s.questionBlock}>
             <div style={s.questionLabel}>{scale.label}</div>
-            <div style={s.scaleLabels}><span>{scale.low}</span><span>{scale.high}</span></div>
+            {flipped && (
+              <div style={{ margin: '0 0 8px', background: '#FBF0DF', color: '#9A6212', borderRadius: 10, padding: '7px 11px', fontSize: 11.5, lineHeight: 1.5, fontWeight: 600 }}>
+                Heads up — this scale runs the other way: 10 is the {goodHigh ? 'good' : 'rough'} end here.
+              </div>
+            )}
+            <div style={s.scaleLabels}>
+              <span style={{ color: goodHigh ? ROUGH : GOOD, fontWeight: 600 }}>{scale.low}</span>
+              <span style={{ color: goodHigh ? GOOD : ROUGH, fontWeight: 600 }}>{scale.high}</span>
+            </div>
             <div style={s.scaleRow}>
               {[1,2,3,4,5,6,7,8,9,10].map(n => (
                 <button key={n} style={answers[scale.id] === n ? s.sbtOn : s.sbt} onClick={() => setAnswer(scale.id, n)}>{n}</button>
               ))}
             </div>
           </div>
-        ))}
+          )
+        })}
 
         {/* OVERALL FEELING */}
         <div style={s.sectionDivider}>

@@ -583,7 +583,9 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <div className="mk-nav-right">
         <button className="mk-menu-btn" aria-expanded={menuOpen} onClick={() => setMenuOpen(o => !o)}>{menuOpen ? 'Close' : 'Menu'}</button>
         <button className="mk-signin" onClick={onSignIn}>Sign in</button>
-        <button className="mk-cta" onClick={onGetStarted}>Get started</button>
+        {/* Price shown before Stripe sees you (QA 2026-11-06 First-Timer #1):
+            the nav CTA used to land on a $399 checkout with no warning. */}
+        <button className="mk-cta" onClick={onGetStarted}>Get started · $399</button>
       </div>
       {menuOpen && (
         <div className="mk-nav-panel">

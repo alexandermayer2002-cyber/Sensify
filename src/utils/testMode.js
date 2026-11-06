@@ -5,7 +5,9 @@
 // exact production flow (admin-gated lab approval, no time controls).
 // =============================================================================
 export function isTestAccount(email) {
-  return /\+(fable|qa|robot)/i.test(email || '')
+  // Pinned to the QA address prefix (Door Sentry 2026-11-06): a real customer
+  // whose own email happens to contain +qa must never see test controls.
+  return /^alexandermayer2002\+(fable|qa|robot)/i.test(email || '')
 }
 
 const localDateString = (d) => {

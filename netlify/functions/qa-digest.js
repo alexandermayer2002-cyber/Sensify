@@ -24,7 +24,7 @@ exports.handler = async (event) => {
 
   const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
   const out = { ok: true, generated_at: new Date().toISOString(), cohort: [], tickets: [], errors: [] }
-  const isTest = (e) => /\+(fable|qa|qan4|robot)/i.test(e || '')
+  const isTest = (e) => /^alexandermayer2002\+(fable|qa|qan4|robot)/i.test(e || '')
 
   try {
     const { data: profs, error } = await sb.from('profiles')
