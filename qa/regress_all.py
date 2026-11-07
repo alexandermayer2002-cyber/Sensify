@@ -142,14 +142,19 @@ def run_p4():
         check("p4.tracking_landing", "tracking, not testing" in t.lower(), t[:200])
         nav_tab(r, "Verdicts")
         tl = r.text().lower()
-        # Aligned 2026-10-23: the tracking state intentionally has NO example
-        # wall (Alex's ruling) — it explains verdicts in text and points back
-        # to the protocol. Check that copy instead.
-        check("p4.verdicts_tracking_state", "earned by" in tl and "no trials are scheduled" in tl, r.text()[:250])
+        # Re-keyed 2026-11-07 for Deploy 20: pre-protocol tabs (gate:
+        # !profile.protocol_start_date) now render locked explainer cards
+        # instead of the 2026-10-23 tracking copy ("earned by…/no trials are
+        # scheduled"). Tracking-mode users hit the same gate. The check's
+        # purpose is unchanged: the tab must explain itself, never sit dead.
+        # NOTE (reported 11-07, for Alex): the Reintro explainer promises
+        # "your elimination stretch… from day 57" — wrong for a user who
+        # DECLINED the protocol; tracking mode deserves its own line.
+        check("p4.verdicts_tracking_state", "your verdicts live here" in tl and "safe, limit, or avoid" in tl, r.text()[:250])
         try: r.page.get_by_text("Home", exact=True).first.click(timeout=3000); r.sleep(1.4)
         except Exception: r.goto(); r.sleep(2.0)
         nav_tab(r, "Reintro")
-        check("p4.reintro_tracking_state", "no cycles are scheduled" in r.text().lower(), r.text()[:200])
+        check("p4.reintro_tracking_state", "reintroduction unlocks later" in r.text().lower(), r.text()[:200])
     except Exception as e:
         check("p4.walk", False, traceback.format_exc()[-150:])
     finally:
