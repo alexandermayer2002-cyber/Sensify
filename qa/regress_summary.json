@@ -1,5 +1,5 @@
 {
- "date": "2611070751",
+ "date": "2611080751",
  "passed": 63,
  "total": 63,
  "results": [
@@ -96,12 +96,12 @@
   {
    "check": "p4.verdicts_tracking_state",
    "ok": true,
-   "detail": "raw FAIL in nightly run = harness drift from Deploy 20 (pre-protocol locked explainer replaced 10-23 tracking copy); check re-keyed 2026-11-07 and path re-run live: PASS"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\n\ud83d\udd12\nYour verdicts live here.\nEvery food you test ends up on this page with an answer you earned: Safe, Limit, or "
   },
   {
    "check": "p4.reintro_tracking_state",
    "ok": true,
-   "detail": "raw FAIL in nightly run = harness drift from Deploy 20 (pre-protocol locked explainer replaced 10-23 tracking copy); check re-keyed 2026-11-07 and path re-run live: PASS"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\n\ud83d\udd12\nReintroduction unlocks later.\nFirst comes your elimination stretch. Then, from day 57, this is where you eat "
   },
   {
    "check": "p5.upload_extracted",
@@ -116,7 +116,7 @@
   {
    "check": "p5.file_stored",
    "ok": true,
-   "detail": "[{'file_path': 'dec6b43f-e465-49ca-afdf-32a1a700b95b-1794038437974.pdf'}]"
+   "detail": "[{'file_path': '0f62c63c-1b50-4025-915a-cbaabf35f56d-1794124866142.pdf'}]"
   },
   {
    "check": "fleet.elimearly.no_overflow",
@@ -141,12 +141,12 @@
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-07"
+   "detail": "no daily_factors row for 2026-11-08"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=4 expected=4 start=2026-11-04"
+   "detail": "shown=5 expected=5 start=2026-11-04"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -176,12 +176,12 @@
   {
    "check": "fleet.elimlate.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-07"
+   "detail": "no daily_factors row for 2026-11-08"
   },
   {
    "check": "fleet.elimlate.day_counter",
    "ok": true,
-   "detail": "shown=51 expected=51 start=2026-09-18"
+   "detail": "shown=52 expected=52 start=2026-09-18"
   },
   {
    "check": "fleet.elimlate.console_clean",
@@ -211,12 +211,12 @@
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-07"
+   "detail": "no daily_factors row for 2026-11-08"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=6 expected=6 start=2026-11-02"
+   "detail": "shown=7 expected=7 start=2026-11-02"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -246,7 +246,7 @@
   {
    "check": "fleet.reintro.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-07"
+   "detail": "no daily_factors row for 2026-11-08"
   },
   {
    "check": "fleet.reintro.verdict_count",
@@ -281,7 +281,7 @@
   {
    "check": "fleet.tracking.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-07"
+   "detail": "no daily_factors row for 2026-11-08"
   },
   {
    "check": "fleet.tracking.console_clean",
@@ -318,6 +318,5 @@
    "ok": true,
    "detail": "retry=True false_success=False"
   }
- ],
- "triage_2026_11_07": "61/63 raw; both FAILs were p4 tracking-state checks asserting pre-Deploy-20 copy. Re-keyed to the shipped locked-explainer copy (purpose unchanged: tab must explain itself, never sit dead) and re-run green. Zero product regressions. Product copy finding reported: Reintro locked explainer promises 'your elimination stretch\u2026 from day 57' to tracking-mode (declined-protocol) users."
+ ]
 }
