@@ -1,0 +1,31 @@
+{
+ "fable_home_head": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\n\u2013\nSTREAK STARTS WITH TONIGHT\u2019S CHECK-IN\nGood morning, Fable\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 64 \u00b7 CYCLE COMPLETE\nPick your next food\n\u2192\nor log today\u2019s check-in\nDAY 1\nDAY 28 \u00b7 MAP COMPLETE\nGuidance being prepared\nUsually ready within a day \u2014 ",
+ "token_minted": true,
+ "card_json": {
+  "first_name": "Fable",
+  "avoiding": [
+   {
+    "name": "Dairy",
+    "status": "limit"
+   }
+  ],
+  "trial": null,
+  "phase": "elimination"
+ },
+ "card_page_text": "SENSIFY \u00b7 HOUSEHOLD CARD\nCooking for Fable?\nCURRENTLY OFF THE PLATE\nDairySMALL AMOUNTS ONLY\nThis card updates automatically. Nothing else about the program is shared.",
+ "card_shows_limit_label": true,
+ "card_overflow": 430,
+ "maintain_text_head": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nHistory\nMaintain\nSupport\nSign out\n\u2013\nSTREAK STARTS WITH TONIGHT\u2019S CHECK-IN\nGood morning, Fable\nChoose your next food.\nREINTRODUCTION \u00b7 DAY 64 \u00b7 CYCLE COMPLETE\nPick your next food\n\u2192\nor log today\u2019s check-in\nDAY 1\nDAY 28 \u00b7 MAP COMPLETE\nGuidance being prepared\nUsually ready within a day \u2014 it will meet you here.\nTHE SUSPECT BOARD\n2 OF 2 RULED\nEvery food your protocol removed and where its case stands: suspect, on trial, or ruled. How this works\n1\nDairy\nCommon trigger \u00b7 eaten daily \u00b7 Trial complete\nLIMIT\n2\nGluten / wheat\nCommon trigger \u00b7 eaten 3-5x a week \u00b7 Trial complete\nSAFE\nWEEKLY INSIGHT \u00b7 FROM WEEK 14\nWeek 14\n\nBloating improved the most this week, down 33% from your baseline of 6 to a current 4, which is a meaningful digestive shift. On the energy side, overall energy, afternoon levels, and sleep each dropped 20% from baseline, a pattern worth watching as your gluten washout phase completes and that reintroduction cycle data gets reviewed. You logged 6 of 7 days and followed the plan on every logged day, so the picture this week is reasonably complete.\n\nFROM YOUR WEEK 14 CHECK-IN \u00b7 YOUR NEXT CHECK-IN REFRESHES THIS\nWeekly check-in\nDue ",
+ "maintain_overflow": 430,
+ "unlimited_copy": false,
+ "rate_line_count": 0,
+ "maphealth_rendered": false,
+ "link_off": false,
+ "revoked_404": false,
+ "fable_console": [],
+ "reintro_maintain_opened": false,
+ "reintro_has_label": false,
+ "reintro_maphealth_rendered": false,
+ "reintro_text_tail": " how you feel week to week lives in the Weekly Insight.\nDAYS 62\u201368\nTu\n\u2713\nWe\n\u2713\nTh\n\u2713\nFr\n\u2713\nSa\n\u2713\nSu\n\u2713\nMo\n\u2713\n\u2713\nOn plan\n\u2717\nSlipped\n\u2013\nNo check-in\nWhat do these mean?\nSLEEP\n6.6 hrs\nSTRESS\nmoderate\nWATER\n5.4 cups\nCURRENTLY AVOIDING\n3 FOODS TOTAL\nHIGH SENSITIVITY\n1\nCow Milk\nMODERATE SENSITIVITY\n1\nWheat\nLOW SENSITIVITY\n1\nCrab\n\u23f1 TM\nHOUSEHOLD CARD\nA link for whoever cooks for you: what is off the plate right now, nothing else.\nCreate link\nSYMPTOM TRENDS\n-17% avg vs baseline\nLatest week\nOverall average\nBoth phases\nElimination\nReintro\nBloating\nGas\nREINTRO\n5\nBaseline\nWeek 8\nWeek 9\nBASELINE\n6\nLATEST\n5\nCHECK-INS\n2",
+ "reintro_console": []
+}

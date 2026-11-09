@@ -1,0 +1,18 @@
+{
+ "link_off": true,
+ "revoked_404": true,
+ "maintain_opened": true,
+ "unlimited_copy": true,
+ "rate_line_count": 1,
+ "maphealth_rendered": true,
+ "drift_label": false,
+ "maintain_text": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nAFTER MONTH SIX\nThe map is yours.\nKeeping it alive is Maintain.\n01\nAsk Sensify, unlimited\nAny food, menu, label, or photo, checked against your map.\n02\nContinuous logging\nMeals and symptoms tracked, so the map stays honest.\n03\nDrift detection\nOld symptoms creeping back get flagged before they take over.\n04\nRe-testing cycles\nBodies change. Re-run any food and update its verdict.\n$12.99\n/MO\nCANCEL ANYTIME\nReserve Maintain, $0 today\nSaves your card securely with Stripe. Nothing is charged until your protocol completes, and you can cancel anytime before then.\nWHAT DRIFT DETECTION LOOKS LIKE\nMAP HEALTH \u00b7 LAST 30 DAYS\nWhether the foods you cleared are still behaving, checked against your own quiet weeks. How this works\nYour map is holding. Nothing is drifting.\n1 meal, 9 check-ins and 0 symptom logs in the last 30 days.\n0.0 events a week, was 0.0 during the program.\nDairy\nLIMIT\nWITHIN BAND\nLogged 0 times in the last 30 days.\nGluten / wheat\nSAFE\nWITHIN BAND\nLogged 0 times in the last 30 days.\nYour completed Food Map is yours forever, subscription or not.",
+ "maintain_overflow": 430,
+ "fable_console": [],
+ "reintro_maintain_opened": true,
+ "reintro_drift_label": false,
+ "reintro_maphealth_rendered": false,
+ "reintro_verdictish": 0,
+ "reintro_text_tail": "inuous logging\nMeals and symptoms tracked, so the map stays honest.\n03\nDrift detection\nOld symptoms creeping back get flagged before they take over.\n04\nRe-testing cycles\nBodies change. Re-run any food and update its verdict.\n$12.99\n/MO\nCANCEL ANYTIME\nReserve Maintain, $0 today\nSaves your card securely with Stripe. Nothing is charged until your protocol completes, and you can cancel anytime before then.\nWHAT DRIFT DETECTION LOOKS LIKE\nYour completed Food Map is yours forever, subscription or not.",
+ "reintro_console": []
+}
