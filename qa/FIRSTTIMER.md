@@ -6,6 +6,14 @@
 - Display name: Fiona Tester
 - Created: 2026-11-06 (via the paid-resume test door)
 
+## State as of 2026-11-10 (Anxious Reader run)
+- Day 4 of elimination (Day 1 = 2026-11-07). Days 1–3 are REAL unlogged gaps (no
+  runs happened) — kept deliberately; they produced the run's HIGH finding.
+- Day 4 daily check-in done live: on plan, 7.5h sleep, moderate stress, 6 cups,
+  not on period, bloating · all day. Streak 1. Night 1 of 28 stars.
+- Weekly check-in #1 unlocks day 7 = Fri 2026-11-13 (a scheduled run day — do it live).
+- No test doors used. Household Card still live.
+
 ## State as of 2026-11-06 (evening, Doubter run)
 - Intake complete (goal: Digestive health; baseline bloating 6, gas 5, comfort 6
   — comfort deliberately skimmer-corrupted, see the day's report; sleep 7h,
@@ -22,8 +30,9 @@
 |---|---|---|
 | 2026-11-06 | the Skimmer — DONE | `qa/nightly/2026-11-06-firsttimer-skimmer.md` |
 | 2026-11-06 | the Doubter (run #2) — DONE | `qa/nightly/2026-11-06-firsttimer-doubter.md` |
-| next | the anxious reader | — |
-| then | the every-third-day logger | — |
+| 2026-11-10 | the Anxious Reader — DONE | `qa/nightly/2026-11-10-firsttimer-anxious.md` |
+| next | the every-third-day logger (the Casual) | — |
+| then | the Skimmer (second pass) | — |
 
 Rule of the roster: fresh eyes first — no src/, no netlify/, no prior nightly
 reports before the walk. Belief-before-action at every screen.
