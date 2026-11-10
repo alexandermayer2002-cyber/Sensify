@@ -1276,6 +1276,31 @@ export default function AdminDashboard({ session, onBack }) {
                           Mark protocol complete{selectedUser.maintain_opt_in ? ' · starts Maintain' : ''}
                         </button>
                       )}
+                      {/* Second chance for a failed activation (QA 2026-11-09 scout #2,
+                          approved by Alex 2026-11-10): "Mark protocol complete" was the
+                          ONLY caller of activate-maintain and disappears once phase is
+                          'complete' — an opted-in, carded, complete-but-not-active
+                          profile had no way to start its $12.99/mo subscription. */}
+                      {selectedUser.program_phase === 'complete' && selectedUser.maintain_opt_in && !selectedUser.maintain_active && (
+                        <button
+                          style={{ marginTop: '8px', fontSize: '11px', fontWeight: 600, color: '#8B5A1A', background: '#FBF1E2', border: 'none', borderRadius: '7px', padding: '6px 10px', cursor: 'pointer' }}
+                          onClick={async () => {
+                            if (!window.confirm(`Start ${selectedUser.full_name || 'this user'}'s Maintain subscription now ($12.99/mo)? They opted in but no subscription is active.`)) return
+                            try {
+                              const { data: sess } = await supabase.auth.getSession()
+                              const res = await fetch('/.netlify/functions/activate-maintain', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sess?.session?.access_token}` },
+                                body: JSON.stringify({ userId: selectedUser.id }),
+                              })
+                              const data = await res.json()
+                              alert(data.activated ? 'Maintain subscription started ($12.99/mo).' : `Maintain NOT started: ${data.reason || data.error || 'unknown'}.`)
+                              if (data.activated) { loadAll(); setSelectedUser({ ...selectedUser, maintain_active: true }) }
+                            } catch (e) { alert('Activation call failed: ' + (e?.message || 'unknown')) }
+                          }}>
+                          Start Maintain subscription · retry
+                        </button>
+                      )}
                     </div>
                     <div className="adm-profile-card">
                       <div className="adm-profile-label">Protocol track</div>
