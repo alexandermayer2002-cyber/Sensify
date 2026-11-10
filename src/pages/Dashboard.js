@@ -2200,7 +2200,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           </div>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 2 }}>{dailyDone ? (currentDay === 1 ? 'First check-in logged' : "Today's check-in logged") : 'Check in every day'}</div>
-                            <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>{dailyDone ? `Day ${currentDay === 1 ? 'one' : currentDay} is on the record. ${7 - currentDay} more night${7 - currentDay !== 1 ? 's' : ''} this week, ten seconds each.` : `Ten seconds a day: did you stick to it, how you slept, how you feel. Morning or night both count ${currentDay === 1 ? '— today is your first.' : 'for today.'}`}</div>
+                            <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>{dailyDone ? `Day ${currentDay === 1 ? 'one' : currentDay} is on the record. ${7 - currentDay} more night${7 - currentDay !== 1 ? 's' : ''} this week, ten seconds each.` : `Ten seconds at the end of each day: did you stick to it, how you slept, how you feel. ${currentDay === 1 ? 'Tonight is your first.' : 'Tonight counts for today.'}`}</div>
                           </div>
                         </div>
 
