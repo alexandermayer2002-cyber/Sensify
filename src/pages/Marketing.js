@@ -648,10 +648,21 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="ey">The problem</div>
           <div className="sh">Most people suspect food.<br />Almost none ever confirm it.</div>
           <div className="ss">Food sensitivity tests are more accessible than ever. But buying a test is easy. Knowing what to do with it isn't. Without a structured process, most people eliminate a few things, feel slightly better, give up, and never get real answers.</div>
-          <div className="prob-grid">
-            <div className="prob-card"><div className="prob-t">Tests are easy to buy</div><div className="prob-d">But most people who buy a food sensitivity test never follow a proper elimination protocol.</div></div>
-            <div className="prob-card"><div className="prob-t">Guessing doesn't work</div><div className="prob-d">Randomly cutting foods with no structure gives you no signal. You don't know what's helping.</div></div>
-            <div className="prob-card"><div className="prob-t">No accountability</div><div className="prob-d">No daily check-ins, no AI tracking your symptoms, no verdicts at the end. Just a list and good luck.</div></div>
+          {/* De-boxed (Alex, 2026-11-10): three editorial rows instead of card grid */}
+          <div style={{ marginTop: 26, maxWidth: 640 }}>
+            {[
+              ['01', 'Tests are easy to buy.', 'Following a proper elimination protocol afterward is the part almost nobody does.'],
+              ['02', "Guessing doesn't work.", "Randomly cutting foods with no structure gives you no signal. You don't know what's helping."],
+              ['03', 'No one holds the thread.', 'No daily check-ins, no one tracking your symptoms, no verdicts at the end. Just a list and good luck.'],
+            ].map(([n, t, d]) => (
+              <div key={n} style={{ display: 'flex', gap: 18, alignItems: 'baseline', padding: '15px 0', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#8BAE8A', letterSpacing: '0.1em', flexShrink: 0 }}>{n}</span>
+                <div style={{ fontSize: 14.5, lineHeight: 1.65 }}>
+                  <span style={{ fontWeight: 650, color: '#20241F' }}>{t}</span>{' '}
+                  <span style={{ color: '#73736A' }}>{d}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -666,10 +677,12 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               { n: '02', t: 'Eliminate', d: 'Eight weeks without your target foods, with 30-second daily check-ins. Your symptoms settle into a clean baseline.' },
               { n: '03', t: 'Reintroduce', d: 'Each food returns one at a time in a controlled cycle while we track your response. Your body gives the real answer.' },
               { n: '04', t: 'Know', d: 'Every food lands where it belongs: Safe, Limit, or Avoid. Every verdict is earned and yours to keep.' },
+            // De-boxed inside the section card (Alex, 2026-11-10): open
+            // typographic columns, not cards-in-a-card
             ].map((s, i) => (
-              <div key={i} className="sn-card-hov" style={{ background: 'var(--card-bg, #FFFFFF)', borderRadius: 16, padding: '22px 20px', boxShadow: 'var(--shadow-1)' }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, color: '#8BAE8A', letterSpacing: '0.17em', marginBottom: '10px' }}>{s.n}</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: '#20241F', marginBottom: '8px' }}>{s.t}</div>
+              <div key={i} style={{ padding: '6px 4px' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '34px', fontWeight: 300, color: 'rgba(139,174,138,0.55)', lineHeight: 1, marginBottom: '8px' }}>{s.n}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: '#20241F', marginBottom: '7px' }}>{s.t}</div>
                 <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>{s.d}</div>
               </div>
             ))}
@@ -814,55 +827,8 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
-      {/* ===== WHY BELIEVE IT — the proof is the product's own instrumentation
-             (teardown #2 + Advisor 2026-11-08 #3, approved by Alex 2026-11-10).
-             Founder note moved up from below the final CTA, rewritten. ===== */}
-      <div className="mk-section alt" data-reveal>
-        <div className="mk-section-inner">
-          <div className="ey">Why believe it</div>
-          <div className="sh">Built to show its work.</div>
-          <div className="ss" style={{ marginBottom: '24px' }}>No testimonials, no miracle claims. Just what the product actually puts on your screen, every day: where each verdict comes from and how trustworthy your own data is.</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14, marginBottom: 26 }}>
-            <div style={{ background: 'var(--card-bg, #FFFFFF)', borderRadius: 16, boxShadow: 'var(--shadow-1)', padding: '18px 17px' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '1.4px', color: '#9A927E', marginBottom: 12 }}>THE SUSPECT BOARD · EXAMPLE DATA</div>
-              {[
-                ['Cow Milk', 'LAB: HIGH · EATEN DAILY', 'ON TRIAL', '#9A5E0B', 'rgba(232,148,31,0.12)'],
-                ['Wheat', 'LAB: HIGH · EATEN DAILY', 'NEXT · DAY 71', '#5A5A52', 'rgba(0,0,0,0.05)'],
-                ['Egg White', 'LAB: LOW · WEEKLY', 'DAY 85', '#5A5A52', 'rgba(0,0,0,0.05)'],
-              ].map(([nm, meta, chip, fg, bg]) => (
-                <div key={nm} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                  <div>
-                    <div style={{ fontSize: 14.5, fontWeight: 600, color: '#20241F' }}>{nm}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8.5, letterSpacing: '0.8px', color: '#9A927E', marginTop: 3 }}>{meta}</div>
-                  </div>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8.5, letterSpacing: '0.8px', color: fg, background: bg, borderRadius: 999, padding: '5px 10px' }}>{chip}</span>
-                </div>
-              ))}
-              <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6, marginTop: 12 }}>Every food you'll test, why it's suspected, and when its trial comes. Nothing hidden, nothing assumed.</div>
-            </div>
-            <div style={{ background: 'var(--card-bg, #FFFFFF)', borderRadius: 16, boxShadow: 'var(--shadow-1)', padding: '18px 17px' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '1.4px', color: '#9A927E', marginBottom: 12 }}>BASELINE SHARPNESS · EXAMPLE DATA</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 34, fontWeight: 300, color: '#20241F' }}>±0.9</span>
-                <span style={{ fontSize: 12.5, color: '#3D5C3C', fontWeight: 600 }}>and narrowing</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-mono)', fontSize: 8.5, letterSpacing: '0.8px', color: '#9A927E', margin: '14px 0 6px' }}>
-                <span>DAY 1 · ±2.5</span><span>VERDICT-READY · ±0.4</span>
-              </div>
-              <div style={{ position: 'relative', height: 8, borderRadius: 4, background: 'rgba(61,92,60,0.12)' }}>
-                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '68%', borderRadius: 4, background: '#3D5C3C' }} />
-              </div>
-              <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6, marginTop: 12 }}>The product measures how steady your own baseline is, and tells you, because your verdicts are only as trustworthy as the data under them.</div>
-            </div>
-          </div>
-          <div style={{ maxWidth: '520px', background: 'var(--card-bg, #FFFFFF)', borderRadius: 16, boxShadow: 'var(--shadow-1)', padding: '22px 22px' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, letterSpacing: '0.17em', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: '10px' }}>A note from the founder</div>
-            <div style={{ fontSize: '13.5px', color: '#4A4A45', lineHeight: 1.75 }}>The standard answer to food symptoms is a test, a list, and good luck. I built Sensify to be better than that. Every verdict it issues traces back to your own logged days, nothing is assumed, and every screen shows its work. It is the standard I wanted back when I was the one guessing.</div>
-            <div style={{ marginTop: '12px', fontSize: '13px', fontWeight: 600, color: '#20241F' }}>Alex Mayer, founder</div>
-          </div>
-        </div>
-      </div>
-
+      {/* "Why believe it" section deleted entirely (Alex, 2026-11-10). The
+          founder note went with it; resurrect from git history if wanted. */}
       <div className="cta-section" data-reveal>
         <h2>Stop guessing.<br />Start knowing.</h2>
         <p>A lab test alone costs $150 to $300 and hands you a guess. Sensify includes the lab <em style={{ fontStyle: 'normal', fontWeight: 600 }}>and</em> the months of structure that turn it into an answer. One price, nothing else to buy.</p>
