@@ -160,7 +160,7 @@ export default function SuspectBoard({ session, profile, labResult, onOpenReintr
 
         {showHow && (
           <div style={s.howPanel}>
-            Each food stays off your plate through elimination, then comes back one at a time for its own 14 day trial: three exposure days, then a washout (eleven clean days without it) while your record settles. The ~dates are estimates from your protocol clock (elimination runs 56 days, trials begin day 57, one trial per 14 days) and shift if a trial restarts or runs long. Every verdict is earned from your own check-ins, never assumed.
+            Each food stays off your plate through elimination, then comes back one at a time for its own 14 day trial: three exposure days, then a washout (eleven clean days without it) while your record settles. The ~dates are estimates from your protocol clock (elimination runs 56 days, trials begin day 57, one trial per 14 days) and shift if a trial restarts or runs long. Low flags sit out the full stretch too: one food sneaking back in would muddy the test for every other food on this board. Your lab level decides when a food gets tested, never how long it sits out. Every verdict is earned from your own check-ins, never assumed.
           </div>
         )}
 
