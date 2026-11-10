@@ -30,8 +30,10 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
-  -- Test accounts: the same server-side pattern test-approve-lab uses.
-  if new.email ~* '\+(fable|qa|robot)' then
+  -- Test accounts: pinned to the QA prefix, same as Deploy 20's testMode pin
+  -- (the pre-Deploy-20 substring pattern would have given anyone with +qa
+  -- anywhere in their email a free signup — Door Sentry 2026-11-06 carry).
+  if new.email ~* '^alexandermayer2002\+(fable|qa|robot)' then
     return new;
   end if;
 
