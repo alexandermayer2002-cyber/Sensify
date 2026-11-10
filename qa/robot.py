@@ -87,6 +87,22 @@ class Robot:
             return "confirm_required"
         return "ok"
 
+    def signup_door(self, email, name, pw):
+        """Create a pre-confirmed robot account via the test-signup door, then
+        sign in. Needed since 2026-11-10: email confirm is ON, so UI signup
+        strands robots at the confirmation wall. Server-side prefix pin means
+        this can never mint a real account. UI-signup walks (release gate)
+        still use signup() on purpose — the confirm wall IS the real
+        tester experience."""
+        r = self.page.request.post(SITE + "/.netlify/functions/test-signup",
+                                   data={"email": email, "password": pw, "full_name": name})
+        if r.status == 409:
+            print("signup_door: account exists, signing in")
+        elif r.status != 200:
+            self.find(f"test-signup door failed: {r.status} {r.text()[:120]}")
+            return "door_failed"
+        return self.login(email, pw)
+
     def login(self, email, pw):
         self.goto()
         self.click("Sign in")

@@ -50,7 +50,9 @@ reasons. It never says ready while a known tester-blocking item is open.
 ## 4 · Door Sentry — weekly (and before first invites)
 
 Proves the test machinery is sealed: test-skip / test-approve-lab /
-test-inspect refuse non-test emails (403), the TIME MACHINE never renders for
+test-inspect / test-signup refuse non-test emails (403; test-signup added
+2026-11-10 — it creates PRE-CONFIRMED robot accounts since email confirm went
+ON, so its refusal matters doubly), the TIME MACHINE never renders for
 real accounts, robots never write outside test accounts, and RLS still blocks
 cross-user reads/writes (sentinelkit RLS layer). Output: PASS/FAIL table.
 
