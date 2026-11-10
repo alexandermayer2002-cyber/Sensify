@@ -19,7 +19,10 @@ exports.handler = async (event) => {
 
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId)
-    const paid = session.payment_status === 'paid'
+    // 'paid' = card payment; 'no_payment_required' = a 100%-off promotion
+    // code brought the total to $0 (the F&F founding-tester flow, approved
+    // by Alex 2026-11-10). Both are completed checkouts.
+    const paid = session.payment_status === 'paid' || session.payment_status === 'no_payment_required'
     const email = session.customer_email || session.customer_details?.email || null
 
     // Record the payment durably so it survives a closed tab. If someone
@@ -30,7 +33,7 @@ exports.handler = async (event) => {
         await supabase.from('paid_sessions').upsert({
           session_id: sessionId,
           email: email.toLowerCase(),
-          amount: session.amount_total || null,
+          amount: session.amount_total ?? null, // keep a real $0 for code redemptions
         })
       } catch (e) {
         // Never block the signup flow over bookkeeping — log and continue.
