@@ -780,7 +780,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13.5, color: '#4A4A45' }}><CheckIcon /> {it}</div>
               ))}
             </div>
-            <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.65, marginBottom: 16 }}>A lab test alone costs $150 to $300 and only hands you suspects. And honestly: this takes months, not days, because a real answer does. About 30 seconds a day is all it asks.</div>
+            <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.65, marginBottom: 16 }}>A lab test alone costs $150 to $300 and only hands you suspects. Sensify is the months of structure that turn them into answers, at about 30 seconds a day.</div>
             <button className="btn-p" style={{ width: '100%' }} onClick={onGetStarted}>Start your program</button>
             <div style={{ fontSize: 11.5, color: '#A8A69E', marginTop: 10, textAlign: 'center' }}>Optional after your program: Maintain, $12.99/mo, never required.</div>
           </div>
