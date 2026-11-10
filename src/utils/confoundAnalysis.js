@@ -26,8 +26,10 @@
 //  - Never contradicts the food protocol. Observations are additive
 //    ("also worth noting"), never dismissive of a real food reaction.
 //  - This is SURFACE-ONLY (Layer 2). It never adjusts a verdict (Layer 3).
-//  - ENABLED is false until a physician reviews bands, directions,
-//    thresholds, and framing.
+//  - APPROVAL HISTORY, stated honestly (QA 2026-11-06 protocol critique #8):
+//    ENABLED was flipped true 8/27/26 on Alex's word BEFORE any physician
+//    review. Bands, directions, thresholds, and framing all remain
+//    MD-review items; update this comment when that review lands.
 //
 // PHYSICIAN-REVIEW ITEMS (all live in CONFOUND_CONFIG, clearly flagged):
 //  - unhealthyBands (what counts as an unhealthy absolute level)

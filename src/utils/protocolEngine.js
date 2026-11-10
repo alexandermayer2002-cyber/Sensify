@@ -5,9 +5,12 @@
 
 // ---- PHYSICIAN GATE --------------------------------------------------------
 // The common-trigger track directs a broad elimination WITHOUT lab justification,
-// which is a bigger clinical step than the flagged track. It must not go live to
-// real users until the medical advisor has signed off on the tier food lists,
-// the GI/FODMAP logic, and the timings. Flip to true only after sign-off.
+// which is a bigger clinical step than the flagged track.
+// APPROVAL HISTORY, stated honestly (QA 2026-11-06 protocol critique #8):
+// flipped true on Alex's call for the friends-and-family phase, BEFORE the
+// medical advisor's sign-off on the tier food lists, GI/FODMAP logic, and
+// timings. That review has not happened yet — it is item #1 on the physician
+// agenda, and this comment must be updated when it lands.
 // The flagged track is unaffected by this and stays fully live.
 export const COMMON_TRACK_ENABLED = true
 

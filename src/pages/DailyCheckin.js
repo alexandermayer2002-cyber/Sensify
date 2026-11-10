@@ -444,7 +444,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       <div className="sn-rise" style={s.content}>
         <div className="sn-micro" style={s.eyebrow}>Daily check-in</div>
         <div style={s.title}>How's today?</div>
-        <div style={s.hint}>A few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day.</div>
+        <div style={s.hint}>A few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day. Check in whenever suits you — morning or night, it counts for today. Sleep means last night; everything else means today so far.</div>
 
         {showReintroBlock && (
           <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.10), rgba(44,157,138,0.04)), #FFFFFF', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '24px', padding: '18px', marginBottom: '18px' }}>

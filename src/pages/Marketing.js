@@ -285,9 +285,9 @@ const FAQ_GROUPS = [
   {
     group: 'The program',
     items: [
-      { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
+      { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you have real evidence, from your own body, of what it does and does not tolerate. The test finds the suspects. Sensify puts each one on trial.' },
       { q: 'How do the daily check-ins work?', a: 'Each day you log a quick snapshot: sleep, stress, hydration, whether you stayed on plan, and anything your body did that day. About 30 seconds. Every entry feeds a system that learns your patterns, cross-references your symptoms against your sleep and stress, and weighs all of it when your verdicts are decided.' },
-      { q: 'Does Sensify actually analyze my data?', a: 'Yes, and it shows its work. Sensify learns your personal baseline during elimination, spots when a bad week lines up with bad sleep or high stress rather than food, and brings that context into every verdict, so a food never gets blamed for what your sleep did. No standalone lab test can do any of that.' },
+      { q: 'Does Sensify actually analyze my data?', a: 'Yes, and it shows its work. Sensify learns your personal baseline during elimination, spots when a bad week lines up with bad sleep or high stress rather than food, and brings that context into every verdict, so your sleep gets weighed before a food takes the blame. No standalone lab test can do any of that.' },
       { q: "What if I don't see improvement during elimination?", a: 'Your symptom trends are monitored every week and flagged when improvement is not occurring. We look at compliance, hidden ingredients, and stress, and every flagged case is reviewed personally before any plan changes are suggested.' },
       { q: 'Do I have to finish the whole protocol?', a: 'The full value comes from completing the protocol, since the reintroduction phase is where your verdicts are earned. You can stop anytime, but your verdicts are only complete once each food has been tested. We designed the program to keep each step light so finishing feels doable.' },
       { q: 'What happens when I finish?', a: 'You receive your completed verdicts, yours to keep. You can also continue with Maintain, an optional monthly plan that keeps your verdicts working for you every day, with Ask Sensify on hand to check any food, menu, or meal against your results whenever you need it. Maintain pricing is on the Pricing page.' },
@@ -504,7 +504,7 @@ function ShowcaseScreen({ tab }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12, padding: '0 2px' }}>
         <div>
           <div style={{ fontFamily: mono, fontSize: 5.5, letterSpacing: '1.6px', color: '#9A927E', marginBottom: 4 }}>SENSIFY · THE VERDICTS</div>
-          <div style={{ fontFamily: serif, fontSize: 16, fontWeight: 400, color: '#1C1C1C', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Sarah's <span style={{ color: '#3D5C3C' }}>verdicts.</span></div>
+          <div style={{ fontFamily: serif, fontSize: 16, fontWeight: 400, color: '#1C1C1C', fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Sarah's <span style={{ color: '#3D5C3C' }}>verdicts.</span> <span style={{ fontFamily: mono, fontSize: 5.5, letterSpacing: '1.2px', color: '#9A927E', verticalAlign: 'middle' }}>EXAMPLE</span></div>
         </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontFamily: serif, fontSize: 15, color: '#3D5C3C', lineHeight: 1 }}>4<span style={{ color: 'rgba(28,28,28,0.25)', fontSize: 11 }}> / 6</span></div>
@@ -762,7 +762,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="faq-list" style={{ maxWidth: '660px', marginTop: '26px' }}>
             {[
               { q: "What's included in the price?", a: 'Everything: your lab test, the full elimination and reintroduction protocol, daily and weekly check-ins, pattern detection that learns your baseline, personalized insights, and your completed verdicts. One payment covers it all, there is no separate lab bill and nothing else to buy. Current pricing is on the Pricing page.' },
-              { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you know for certain what your body does and does not tolerate. The test finds the suspects. Sensify confirms the truth.' },
+              { q: 'What makes Sensify different from just buying a test?', a: 'A lab test gives you a list. Sensify runs each food through a controlled 14-day reintroduction cycle with daily tracking, so by the end you have real evidence, from your own body, of what it does and does not tolerate. The test finds the suspects. Sensify puts each one on trial.' },
               { q: 'How much time does it take each week?', a: 'The daily check-in takes about 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
               { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people finish the protocol and find their body tolerates everything well, which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. A clean result is still an answer you can trust.' },
               { q: 'Do I need to already have a lab test?', a: 'No. A food sensitivity lab test is part of the program. You complete it from home, no clinic visits, then upload your results and they are read straight into your protocol. Already have recent results? You can use those instead.' },
@@ -862,7 +862,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="spine-dot"></div>
               <div className="spine-tag">Always on</div>
               <div className="spine-title">Sensify learns you</div>
-              <div className="spine-desc">Behind the check-ins, a pattern engine is building your personal baseline: how often symptoms show up on clean weeks, how your sleep and stress move with how you feel. By week 4 it starts cross-referencing, and everything it learns is weighed when your verdicts are decided, so a food never gets blamed for what your sleep did.</div>
+              <div className="spine-desc">Behind the check-ins, a pattern engine is building your personal baseline: how often symptoms show up on clean weeks, how your sleep and stress move with how you feel. By week 4 it starts cross-referencing, and everything it learns is weighed when your verdicts are decided, so your sleep gets considered before a food takes the blame.</div>
             </div>
             <div className="spine-step">
               <div className="spine-dot"></div>
@@ -954,7 +954,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div className="sci-cside verdict">
                 <div className="sci-cside-tag">Sensify</div>
                 <div className="sci-cside-title">A verdict</div>
-                <div className="sci-cside-desc">Removes and reintroduces each flagged food in real life, tracks your response daily, and confirms the truth: Safe, Limit, or Avoid.</div>
+                <div className="sci-cside-desc">Removes and reintroduces each flagged food in real life, tracks your response daily, and rules on the evidence: Safe, Limit, or Avoid.</div>
               </div>
             </div>
           </div>

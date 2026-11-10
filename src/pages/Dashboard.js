@@ -1557,7 +1557,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   </svg>
                   {/* A celebrated zero reads as a bug (QA 2026-10-23 #5): before the
                       first check-in the ring shows a dash and names what starts it. */}
-                  <span className="sn-micro sn-micro-dark" style={{ textAlign: 'center', maxWidth: 86 }}>{cleanDays > 0 ? <>day streak{cleanDays >= 3 ? ', unbroken' : ''}</> : 'streak starts with tonight’s check-in'}</span>
+                  <span className="sn-micro sn-micro-dark" style={{ textAlign: 'center', maxWidth: 86 }}>{cleanDays > 0 ? <>day streak{cleanDays >= 3 ? ', unbroken' : ''}</> : 'streak starts with your next check-in'}</span>
                 </div>
                 <div style={{ flex: 1, minWidth: 220 }}>
                   <div style={{ fontSize: 12, color: 'rgba(250,248,244,0.5)', marginBottom: 4 }}>{getGreeting()}, {name}</div>
@@ -1681,7 +1681,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {milestoneMessage && (
               <div className="snfy-action sn-rise" style={{ background: 'linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', boxShadow: 'var(--shadow-3)', color: 'white', position: 'relative' }}>
                 <div className="sn-micro sn-micro-dark" style={{ marginBottom: '10px' }}>
-                  {milestoneKey === 'day1' ? 'Day 1' : milestoneKey === 'day3' ? 'Day 3' : milestoneKey === 'day14' ? '2 week milestone' : milestoneKey === 'day28' ? 'One month in' : milestoneKey === 'day57' ? 'Reintroduction begins' : 'Milestone'}
+                  {/* A milestone can surface days late (the catch-up windows above).
+                      Say so (QA 2026-11-10 first-timer #4, approved by Alex): a bare
+                      "DAY 3" under a "Day 4" header read as the protocol clock being
+                      off by one. Same pattern as the weekly insight's "FROM WEEK N". */}
+                  {milestoneKey === 'day1' ? (currentDay > 1 ? `From day 1 · you're on day ${currentDay}` : 'Day 1')
+                    : milestoneKey === 'day3' ? (currentDay > 3 ? `From day 3 · you're on day ${currentDay}` : 'Day 3')
+                    : milestoneKey === 'day14' ? '2 week milestone' : milestoneKey === 'day28' ? 'One month in' : milestoneKey === 'day57' ? 'Reintroduction begins' : 'Milestone'}
                 </div>
                 {(() => {
                   // Day-1 briefings arrive in three labeled sections; render
@@ -2111,13 +2117,22 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                         ))}
                         <button onClick={() => setLegendOpen(v => !v)} style={{ background: 'transparent', border: 'none', padding: 0, fontSize: '10px', color: '#3D5C3C', textDecoration: 'underline', cursor: 'pointer' }}>{legendOpen ? 'Hide' : 'What do these mean?'}</button>
                       </div>
+                      {/* Missed-days truth, shown exactly where the dashes cause the
+                          panic (QA 2026-11-10 first-timer #2, approved by Alex): a
+                          3-day gap used to read as "my protocol is ruined" with no
+                          screen saying otherwise. */}
+                      {days.some(d => d.cls.startsWith('missed')) && (
+                        <div style={{ fontSize: '11px', color: '#8A8A82', lineHeight: 1.55, marginTop: '9px', textAlign: 'center' }}>
+                          Missed days never stop your protocol. The clock keeps running and your end date hasn't moved — a blank day just adds no data. Tonight's check-in picks right back up.
+                        </div>
+                      )}
                       {legendOpen && (
                         <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {[
                             { bg: '#4A8C6A', fg: 'white', m: '\u2713', title: 'On plan', text: 'You checked in and stayed on your plan. A clean day. Builds your streak.' },
                             { bg: '#D64545', fg: 'white', m: '\u2717', title: 'Slipped', text: 'You checked in and honestly logged eating something off-plan. Your streak keeps going. An honest slip is real data, and it never counts against you.' },
-                            { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', title: 'No check-in', text: 'The day went unlogged with no explanation, so there is no data and no word. This is the one that resets your streak. A slip we can work with. A blank we cannot.' },
-                            { bg: 'transparent', bd: '1.5px solid #8BAE8A', fg: '#3D5C3C', m: '\u25cb', title: 'Away, on plan', text: 'You were away for a stretch, and when you returned you told us you stayed on your plan. We take your word for the days, so your streak pauses instead of resetting. But only a check-in creates data, so these days stay out of your analysis.' },
+                            { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', title: 'No check-in', text: 'The day went unlogged with no explanation, so there is no data and no word. This is the one that resets your streak. A slip we can work with. A blank we cannot. One thing a blank never does: stop your protocol. The clock keeps running, your end date stays where it was, and your baseline is not ruined — you only lose that day’s data. Tonight’s check-in picks right back up.' },
+                            { bg: 'transparent', bd: '1.5px solid #8BAE8A', fg: '#3D5C3C', m: '\u25cb', title: 'Away, on plan', text: 'You were away for a stretch, and when you returned you told us you stayed on your plan. We take your word for the days, so your streak pauses instead of resetting. But only a check-in creates data, so these days stay out of your analysis. We only ask after a longer absence (four days or more) — shorter gaps simply show as blanks.' },
                           ].map((l, i) => (
                             <div key={i} style={{ display: 'flex', gap: '10px', background: 'var(--tint-warm)', borderRadius: 'var(--r-sm)', padding: '10px 12px' }}>
                               <span style={{ width: '18px', height: '18px', borderRadius: '5px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0, marginTop: '1px' , border: l.bd || 'none' }}>{l.m}</span>
@@ -2185,7 +2200,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           </div>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1C1C1C', marginBottom: 2 }}>{dailyDone ? (currentDay === 1 ? 'First check-in logged' : "Today's check-in logged") : 'Check in every day'}</div>
-                            <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>{dailyDone ? `Day ${currentDay === 1 ? 'one' : currentDay} is on the record. ${7 - currentDay} more night${7 - currentDay !== 1 ? 's' : ''} this week, ten seconds each.` : `Ten seconds each night: did you stick to it, how you slept, how you feel. ${currentDay === 1 ? 'Tonight is your first.' : 'Tonight counts.'}`}</div>
+                            <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6 }}>{dailyDone ? `Day ${currentDay === 1 ? 'one' : currentDay} is on the record. ${7 - currentDay} more night${7 - currentDay !== 1 ? 's' : ''} this week, ten seconds each.` : `Ten seconds a day: did you stick to it, how you slept, how you feel. Morning or night both count ${currentDay === 1 ? '— today is your first.' : 'for today.'}`}</div>
                           </div>
                         </div>
 
