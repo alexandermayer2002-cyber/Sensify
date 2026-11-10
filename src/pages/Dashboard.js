@@ -1376,6 +1376,10 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           <button className="snfy-more-item" onClick={() => goTab('History')}>History</button>
           {maintainVisible && <button className="snfy-more-item" onClick={() => goTab('Maintain')}>Maintain</button>}
           {!isAdmin && <button className="snfy-more-item" onClick={() => { setMoreOpen(false); setTab('messages'); setScreen('messages') }}>Support</button>}
+          {/* Privacy reachable where the data lives (QA 2026-11-06 Doubter #6,
+              approved by Alex 2026-11-10): the app collected health data with
+              no privacy link anywhere inside it. */}
+          <button className="snfy-more-item" onClick={() => { setMoreOpen(false); window.open('/privacy.html', '_blank', 'noopener') }}>Privacy</button>
           <button className="snfy-more-item" onClick={onLogout}>Sign out</button>
         </div>
       )}
@@ -1496,12 +1500,24 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
       ) : screen === 'reintro-tab' ? (
         !profile?.protocol_start_date ? (
           /* Locked state instead of a seemingly-dead tab pre-protocol
-             (QA 2026-11-06 First-Timer #14). */
+             (QA 2026-11-06 First-Timer #14). Tracking-mode users declined the
+             protocol, so the lock card never promises them an elimination
+             stretch they said no to (QA 2026-11-07 regression MED, approved
+             by Alex 2026-11-10). */
           <div className="sn-rise" style={{ maxWidth: 560, margin: '0 auto', padding: '40px 24px' }}>
             <div className="sn-card" style={{ padding: '26px 22px', textAlign: 'center' }}>
               <div style={{ fontSize: 26, marginBottom: 10 }}>🔒</div>
-              <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: 'var(--ink)', marginBottom: 10 }}>Reintroduction unlocks later.</div>
-              <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.65, marginBottom: 18 }}>First comes your elimination stretch. Then, from day 57, this is where you eat each flagged food again — one at a time, on purpose — to find out which ones actually cause your symptoms.</div>
+              {isTracking ? (
+                <>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: 'var(--ink)', marginBottom: 10 }}>You're tracking, not testing.</div>
+                  <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.65, marginBottom: 18 }}>Reintroduction is the testing phase of the full protocol, which you chose to skip for now. No cycles are scheduled and nothing is assumed about your foods. If your tracking starts pointing at food, you can begin the protocol anytime from Home and this tab becomes yours.</div>
+                </>
+              ) : (
+                <>
+                  <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: 'var(--ink)', marginBottom: 10 }}>Reintroduction unlocks later.</div>
+                  <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.65, marginBottom: 18 }}>First comes your elimination stretch. Then, from day 57, this is where you eat each flagged food again — one at a time, on purpose — to find out which ones actually cause your symptoms.</div>
+                </>
+              )}
               <button className="sn-btn" style={{ maxWidth: 240 }} onClick={() => goTab('Home')}>Back to Home</button>
             </div>
           </div>
@@ -1833,7 +1849,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Results under review</div>
-                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>A real person checks every entry — usually within a day. When it's approved, this page updates, your elimination list appears, and your Day 1 is scheduled for the next morning. Nothing for you to do until then.</div>
+                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Alex M. checks every entry, usually within a day. When it's approved, this page updates, your elimination list appears, and your Day 1 is scheduled for the next morning. Nothing for you to do until then.</div>
                 </div>
               </div>
             )}
@@ -2072,16 +2088,16 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     const isFuture = dateStr > todayStr
                     const isToday = dateStr === todayStr
                     const day = dowLabels[td.getDay()]
-                    let cls, mark
+                    let cls, mark, prestart = false
                     if (entry?.response === 'YES') { cls = 'yes'; mark = '\u2713' }        // did check-in + complied
                     else if (entry?.response === 'NO') { cls = 'no'; mark = '\u2717' }     // did check-in + slipped
                     else if (isFuture) { cls = 'future'; mark = '' }
-                    else if (profile?.protocol_start_date && dateStr < String(profile.protocol_start_date).split('T')[0]) { cls = 'future'; mark = '' }  // pre-protocol days: blank, never 'missed' (finding #8)
+                    else if (profile?.protocol_start_date && dateStr < String(profile.protocol_start_date).split('T')[0]) { cls = 'future'; mark = ''; prestart = true }  // pre-protocol days: dropped below (QA 2026-11-10 first-timer #6)
                     else if (isToday) { cls = 'empty'; mark = '\u00b7' }                   // today, pending - not missed yet
                     else if (awayDates.has(dateStr)) { cls = 'away'; mark = '\u25cb' }     // away, on plan (user's word): pauses, never resets
                     else { cls = 'missed'; mark = '\u2013' }  // forgot — the only streak-breaker
-                    return { day, cls: cls + (isToday ? ' today' : ''), mark, dateStr, isFuture }
-                  })
+                    return { day, cls: cls + (isToday ? ' today' : ''), mark, dateStr, isFuture, prestart }
+                  }).filter(d => !d.prestart)  // days before Day 1 never render: seven chips under a "DAYS 1–4" header read as "I'm on day 7" (QA 2026-11-10 #6)
                   // Early in the protocol the trailing window reaches before day 1;
                   // pre-protocol dots already render blank, so clamp the label.
                   const weekLabel = startDayNum !== null

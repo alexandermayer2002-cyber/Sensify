@@ -327,6 +327,14 @@ export default function FoodMap({ session, profile, labResult }) {
           </div>
         </div>
 
+        {/* First-paint honesty for the ghosted board (QA 2026-11-10 first-timer
+            #9, approved by Alex): near-zero-contrast rows read as "the page is
+            broken" until the explanation was found a scroll below. */}
+        {labResult && preReintro && (
+          <div style={{ fontSize: 12.5, color: '#73736A', lineHeight: 1.6, margin: '2px 0 12px' }}>
+            The faded rows are your trials to come — they unlock on day 57. Nothing here is broken, just not earned yet.
+          </div>
+        )}
         {labResult && ruledCount > 0 && dayZeroEcho(profile, currentDay) && (
           <div style={{ fontSize: 13, color: '#73736A', lineHeight: 1.65, margin: '2px 0 14px', fontStyle: 'italic' }}>
             {dayZeroEcho(profile, currentDay)}

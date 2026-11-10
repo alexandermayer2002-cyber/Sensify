@@ -336,11 +336,17 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         .gte('log_date', localDateString(since))
         .order('log_date', { ascending: false })
       const logged = new Set((recent || []).map(r => r.log_date))
-      // Streak: consecutive days back from today that have a log
+      // Streak: consecutive days back from today that have a log, FLOORED at
+      // protocol day 1 like the dashboard (QA 2026-11-06 full-run #2, approved
+      // by Alex 2026-11-10): a pre-start daily_factors row made this counter
+      // run one higher than the home screen on every single celebration.
+      const streakFloor = profile?.protocol_start_date ? String(profile.protocol_start_date).split('T')[0] : null
       let streak = 0
       for (let i = 0; i < 200; i++) {
         const d = new Date(); d.setDate(d.getDate() - i)
-        if (logged.has(localDateString(d))) streak++
+        const ds = localDateString(d)
+        if (streakFloor && ds < streakFloor) break
+        if (logged.has(ds)) streak++
         else break
       }
       // This week's 7 cells — the PROTOCOL week (day 1 → 7, left to right, today
@@ -582,6 +588,9 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         <div style={{ maxWidth: '560px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
           <div className="sn-card" style={s.block}>
             <div style={s.label}>Anything off today? <span style={{ color: '#A0A096', fontWeight: 400, fontSize: '13px' }}>optional</span></div>
+            {/* Name the division of labor (QA 2026-11-10 first-timer #7, approved
+                by Alex): "optional" read as "symptoms live somewhere else". */}
+            <div style={{ fontSize: '12px', color: '#A0A096', lineHeight: 1.55, marginTop: '-4px', marginBottom: '10px' }}>This is where day-to-day symptoms get on the record. Your weekly check-in is where they're scored against your baseline.</div>
             <div style={s.opts}>
               {[['fine', 'Felt fine'], ['mild', 'Something mild'], ['notable', 'Something notable']].map(([v, l]) => (
                 <button key={v} style={offToday === v ? s.optOn : s.opt} onClick={() => { setOffToday(v); if (v === 'fine') { setElimSymptoms({}); setElimTiming(null) } }}>{l}</button>

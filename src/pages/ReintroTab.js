@@ -969,7 +969,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                       {Array.from({ length: 11 }).map((_, i) => <span key={'w' + i} style={{ width: 9, height: 9, borderRadius: '50%', background: '#9DBD9C', flexShrink: 0 }} />)}
                       <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: '#3D5C3C', marginLeft: 8, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>Verdict.</span>
                     </div>
-                    <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.65, marginTop: 11 }}>Three days eating it, then eleven clean days, watching for anything delayed. One food at a time, so the answer can only belong to that food.{firstFood ? <> First up: <b style={{ fontWeight: 600, color: '#1C1C1C' }}>{firstFood}</b>, chosen because it ranks highest in how often you eat it.</> : ''}</div>
+                    <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.65, marginTop: 11 }}>Three days eating it, then eleven clean days, watching for anything delayed. One food at a time, so the answer can only belong to that food.{firstFood ? <> First up: <b style={{ fontWeight: 600, color: '#1C1C1C' }}>{firstFood}</b>, first in line by how often you eat it, with your lab level breaking ties.</> : ''}</div>
                   </div>
                 )
               })()}
@@ -1076,6 +1076,12 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                       : `Nothing to do yet. Day 1 begins in ${1 - cycleDay} days, eat ${activeReintro.food} as you normally would then. Until then your elimination holds exactly as it is.`)
                     : isVerdictDay
                     ? `Your ${activeReintro.food} cycle is complete. Complete your verdict survey to get your result.`
+                    // Logged-today wins over the live instruction (QA 2026-11-06
+                    // full-run #4, approved by Alex 2026-11-10): an evening
+                    // logger used to see "Eat it today · day 2 of 3" and
+                    // "Logged for today" on the same screen.
+                    : loggedToday
+                    ? `Today's log is in — nothing more to eat or do until tomorrow. ${isExposure ? 'Tomorrow picks up your next exposure day.' : 'The washout continues tomorrow.'}`
                     : isExposure
                     ? `Eat ${activeReintro.food} today as you normally would. You're on exposure day ${nextExposureNumber} of 3. Every other food on your elimination list stays off the plate.`
                     : washoutDay <= 1

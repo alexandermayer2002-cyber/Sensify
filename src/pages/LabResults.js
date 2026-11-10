@@ -433,6 +433,11 @@ Rules:
         <div style={s.title}>Add your test results.</div>
         {/* Plain words before lab vocabulary (QA 2026-11-06 First-Timer #13). */}
         <div style={s.sub}>Your test report lists foods with a reaction level next to each (words like "elevated", "high", or a colored band). Here, only add the foods your report flagged — anything you leave out is treated as clear. Upload the report and we'll read it for you, or type the flagged foods in yourself.</div>
+        {/* Data handling said at the moment data is handed over (QA 2026-11-06
+            Doubter #5, approved by Alex 2026-11-10). Claims match privacy.html. */}
+        <div style={{ fontSize: '12px', color: '#A0A096', lineHeight: 1.55, marginTop: '8px', marginBottom: '4px' }}>
+          Your results are stored privately and used only to build your protocol — never sold, never shared outside Sensify. <a href="/privacy.html" target="_blank" rel="noopener noreferrer" style={{ color: '#3D5C3C', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Privacy</a>
+        </div>
 
         <div style={s.methodRow}>
           {/* Method switches clear any abandoned file (QA 2026-11-02 #3). */}

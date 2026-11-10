@@ -128,7 +128,6 @@ export default function BaselineSharpness({ session, profile }) {
   if (!data || !data.scales.length) return null
 
   const cur = data.scales[Math.min(sel, data.scales.length - 1)]
-  const day3 = baseUncertainty(3)
   // Sharpness as a 0-to-1 journey from the day-one margin to the floor. This is
   // pure presentation: it reuses the same uncertainty the math always produced.
   const sharpFrac = Math.min(1, Math.max(0, (U_START - cur.uncertainty) / (U_START - U_FLOOR)))
@@ -194,7 +193,10 @@ export default function BaselineSharpness({ session, profile }) {
       </div>
 
       <div style={b.footNote}>
-        Was ±{fmt1(day3)} on day 3; your logging narrowed it. Not a symptom score: how you feel week to week lives in the Weekly Insight.
+        {/* Gap-aware, always true (QA 2026-11-10 first-timer #5, approved by
+            Alex): the old caption cited a day-3 figure that may never have been
+            logged and said "narrowed" even when gaps had widened the margin. */}
+        Day one starts at ±{fmt1(U_START)}. Logged days narrow it, unlogged days leave it wider. Not a symptom score: how you feel week to week lives in the Weekly Insight.
       </div>
     </div>
   )

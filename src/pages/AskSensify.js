@@ -197,7 +197,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         {loaded && messages.length === 0 && (
           <div className="sn-rise" style={s.empty}>
             <div style={s.emptyTitle}>{observationMode ? 'What can I help you track?' : 'What can I help you eat?'}</div>
-            <div style={s.emptyText}>{observationMode ? "You're tracking your meals and symptoms to spot patterns over time. Tell me what you eat and how you feel, and I'll help you notice what connects." : "I know your Food Map and your lab results, so I can give you guidance that's specific to you. Here's what I can do:"}</div>
+            <div style={s.emptyText}>{observationMode ? "You're tracking your meals and symptoms to spot patterns over time. Tell me what you eat and how you feel, and I'll help you notice what connects." : "I know your Food Map (your verdicts, as they're earned) and your lab results, so I can give you guidance that's specific to you. Here's what I can do:"}</div>
             <div style={s.capList}>
               {!observationMode && capabilities.map((c, i) => (
                 <button key={i} className={`sn-chip ${['sn-rise-2', 'sn-rise-3', 'sn-rise-4'][i] || 'sn-rise-4'}`} style={s.capCard} onClick={() => setInput(c.example)}>
