@@ -39,12 +39,20 @@ function MaintainPreview({ profile, session }) {
 
   const cancelOptIn = async () => {
     setBusy(true)
-    // Checked (QA sentinel S2): a silently failed cancel left the user looking
-    // still-opted-in after the reload, with their card still on file.
-    const { error, data } = await supabase.from('profiles').update({ maintain_opt_in: false }).eq('id', session.user.id).select()
-    if (error || !data || data.length === 0) {
+    // Cancel now goes through the server so the saved card is DETACHED at
+    // Stripe, not just un-flagged (QA 2026-11-09 scout #4, approved by Alex
+    // 2026-11-10): "cancel anytime" used to leave the card quietly on file.
+    try {
+      const { data: sess } = await supabase.auth.getSession()
+      const res = await fetch('/.netlify/functions/cancel-maintain-setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sess?.session?.access_token}` },
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.ok) throw new Error(data.error || 'cancel failed')
+    } catch (e) {
       setBusy(false)
-      alert("That didn't go through — your reservation wasn't cancelled. Please try again.")
+      alert("That didn't go through — your reservation wasn't cancelled and your card is unchanged. Please try again.")
       return
     }
     window.location.reload()

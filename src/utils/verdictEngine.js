@@ -108,6 +108,12 @@ export const computeProvisionalVerdict = (logs = []) => {
 // Apply the AI's adjustment, clamped to +/- aiMaxAdjustmentLevels
 // and never crossing Safe<->Avoid in one move.
 export const applyAiAdjustment = (provisional, aiVerdict) => {
+  // SEVERE IS CODE LAW, NOT A PROMPT REQUEST (QA 2026-11-06 protocol critique
+  // #3, approved by Alex 2026-11-10): a severe reaction means Avoid, and the
+  // AI's adjustment is skipped entirely — its analysis text may ride along,
+  // its power over the verdict does not. Before this, one ignored prompt
+  // instruction could soften a throat-tightening reaction to "Limit".
+  if (VERDICT_THRESHOLDS.severeAlwaysAvoid && provisional?.signals?.hasSevere) return provisional.verdict
   if (!LEVELS.includes(aiVerdict)) return provisional.verdict
   const from = levelIndex(provisional.verdict)
   const to = levelIndex(aiVerdict)

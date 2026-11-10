@@ -14,10 +14,14 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: JSON.stringify({ ok: false }) }
     }
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
-    await supabase.from('profiles').update({
+    // THE WRITE IS CHECKED (QA 2026-11-09 scout #1, approved by Alex): a
+    // silent failure here is the exact card-saved-but-never-recorded state
+    // the client now surfaces and retries.
+    const { error } = await supabase.from('profiles').update({
       maintain_opt_in: true,
       stripe_customer_id: session.customer,
     }).eq('id', session.client_reference_id)
+    if (error) return { statusCode: 500, body: JSON.stringify({ ok: false, error: error.message }) }
     return { statusCode: 200, body: JSON.stringify({ ok: true }) }
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) }
