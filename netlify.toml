@@ -5,6 +5,11 @@
 
 [build.environment]
   SECRETS_SCAN_OMIT_KEYS = "REACT_APP_SUPABASE_URL,SUPABASE_URL"
+  # qa/digest.key is the QA agents' half of QA_DIGEST_KEY — an intentional
+  # shared secret that lives in this private repo by design (see
+  # netlify/functions/qa-digest.js). It is never bundled into build output;
+  # exempting the path keeps the scanner guarding everything else.
+  SECRETS_SCAN_OMIT_PATHS = "qa/digest.key"
 
 [[redirects]]
   from = "/*"
