@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { getTestingOrder } from '../utils/protocolEngine'
-import { computeProvisionalVerdict, parseSymptoms } from '../utils/verdictEngine'
+import { parseSymptoms } from '../utils/verdictEngine'
 import { todayLocal, localDateString } from '../utils/dateUtils'
 import { generateReintroFoodBriefing, generateProgramCompleteMessage, normalizeMilestones, serializeMilestones } from '../utils/aiInsights'
 
@@ -495,96 +495,13 @@ function CycleSummary({ logs = [], food, exposureDaysCompleted = 0, expanded, on
   )
 }
 
-// ============================================================
-// EvidenceNeedle: the live provisional read during an active
-// cycle. A three-zone track (Safe / Limit / Avoid) with a needle
-// positioned ONLY by what the daily logs actually contain. It is
-// a reading, never a ruling: it is never shown once the verdict
-// survey is available, and the footnote says so in plain words.
-// Position mapping (worst condition wins, checked top down):
-//   3 symptom exposure days incl. moderate+  -> 88% (deep Avoid)
-//   2 moderate+ days, any severe, or a
-//   washout flare                            -> 72% (Limit/Avoid boundary)
-//   1 moderate day or 2 mild days            -> 55% (mid Limit)
-//   1 mild symptom day                       -> 38% (Safe/Limit boundary)
-//   0 symptom exposure days                  -> 12% (deep Safe)
-// ============================================================
-function EvidenceNeedle({ logs = [], cycleStartStr }) {
-  const RANK = { mild: 1, moderate: 2, severe: 3 }
-  const parseL = (str) => { if (!str) return null; const [y, m, d] = String(str).split('T')[0].split('-').map(Number); return new Date(y, m - 1, d) }
-  const start = parseL(cycleStartStr)
+// EvidenceNeedle deleted (QA 2026-11-06 protocol critique #5, approved by
+// Alex 2026-11-10): a live Safe/Limit/Avoid readout during an active cycle
+// fed the verdict back into the person still creating the data — the exact
+// feedback loop the CycleSummary's own doctrine (above) forbids. The verdict
+// now appears only when the cycle ends. computeProvisionalVerdict still
+// powers the ruling itself.
 
-  // Shape-tolerant symptom read (same tolerance as TestedLedger):
-  // symptoms may be an array of {name, intensity}, an array of plain
-  // strings, a JSON string of either, or absent with had_symptoms set.
-  const parseSyms = (log) => {
-    let syms = log.symptoms
-    if (typeof syms === 'string') { try { syms = JSON.parse(syms) } catch (e) { syms = null } }
-    return Array.isArray(syms) ? syms : []
-  }
-
-  // ONE ENGINE, TWO DISPLAYS (QA 2026-10-26 #3): the needle used to run its
-  // own heuristic and could hold Limit for two weeks on facts the real engine
-  // rules Avoid. It now sits inside the zone computeProvisionalVerdict — the
-  // brain that writes the actual ruling — picks from the same logs.
-  const provisional = computeProvisionalVerdict(logs)
-  const pv = provisional?.verdict || 'Safe'
-  const position = pv === 'Avoid' ? 86 : pv === 'Limit' ? 55 : (logs.length ? 16 : 12)
-
-  // Caption: the latest mover, stated factually from the most recent log.
-  const dayNum = (log) => {
-    const d = parseL(log.log_date)
-    return (d && start) ? Math.floor((d - start) / 86400000) + 1 : null
-  }
-  let caption = 'No check-ins logged yet. The needle moves when you log.'
-  if (logs.length > 0) {
-    const last = logs[logs.length - 1]
-    const n = dayNum(last)
-    const dLabel = n ? `Day ${n}` : 'Latest log'
-    if (last.phase === 'exposure' && last.ate_food === false) {
-      caption = `${dLabel}: food skipped, nothing counted.`
-    } else if (!last.had_symptoms) {
-      caption = last.phase === 'washout'
-        ? `${dLabel}: washout clean, holding toward Safe.`
-        : `${dLabel}: exposure clean, holding toward Safe.`
-    } else {
-      let worst = null; let worstRank = 0
-      for (const s of parseSyms(last)) { const r = RANK[s && s.intensity] || 1; if (r > worstRank) { worstRank = r; worst = s } }
-      if (worstRank === 0) worstRank = 1 // had_symptoms with nothing readable: mild
-      const intensity = worstRank >= 3 ? 'severe' : worstRank === 2 ? 'moderate' : 'mild'
-      const nm = worst ? String((worst && worst.name) || worst).toLowerCase() : 'symptoms'
-      const toward = (last.phase === 'washout' || worstRank >= 2) ? 'Avoid' : 'Limit'
-      caption = `${dLabel}: ${intensity} ${nm} logged, moved toward ${toward}.`
-    }
-  }
-
-  const zones = [
-    { label: 'Safe', color: '#2C9D8A', width: 38 },
-    { label: 'Limit', color: '#E8941F', width: 34 },
-    { label: 'Avoid', color: '#D64545', width: 28 },
-  ]
-
-  return (
-    <div style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px', marginBottom: '14px' }}>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, letterSpacing: '0.17em', textTransform: 'uppercase', color: 'var(--forest-500)', marginBottom: '12px' }}>The evidence so far</div>
-      <div style={{ display: 'flex', marginBottom: '7px' }}>
-        {zones.map(z => (
-          <div key={z.label} style={{ width: `${z.width}%`, fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.8px', textTransform: 'uppercase', color: z.color }}>{z.label}</div>
-        ))}
-      </div>
-      <div style={{ position: 'relative', paddingTop: '4px', paddingBottom: '4px' }}>
-        <div style={{ display: 'flex', height: '9px', borderRadius: '5px', overflow: 'hidden' }}>
-          {zones.map(z => (
-            <div key={z.label} style={{ width: `${z.width}%`, background: z.color + '2E' }} />
-          ))}
-        </div>
-        <div style={{ position: 'absolute', top: '50%', left: `${position}%`, transform: 'translate(-50%, -50%)', width: '15px', height: '15px', borderRadius: '50%', background: 'var(--ink)', border: '3px solid #fff', boxShadow: '0 3px 10px rgba(32,36,31,0.35)', transition: 'left 0.4s ease' }} />
-      </div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9.5px', letterSpacing: '0.4px', color: 'var(--ink-soft)', marginTop: '10px' }}>{caption}</div>
-      <div style={{ fontSize: '10.5px', color: '#8A8A82', lineHeight: 1.5, marginTop: '6px' }}>A reading, not a ruling. The verdict is decided by the full 14 days and your survey.</div>
-    </div>
-  )
-}
 
 const cs = {
   wrap: { background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px', marginBottom: '14px' },
@@ -1235,13 +1152,9 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
               />
             </div>
 
-            {/* THE EVIDENCE SO FAR: live provisional needle, logs only.
-                Never rendered once the verdict survey is available. */}
-            {!isVerdictDay && cycleDay >= 1 && (
-              <div className="sn-rise-4">
-                <EvidenceNeedle logs={dailyLogs} cycleStartStr={activeReintro.started_at} />
-              </div>
-            )}
+            {/* The live evidence needle that rendered here was removed
+                2026-11-10 (approved by Alex): no mid-cycle verdict preview —
+                the data must finish being created before it is read. */}
 
             {/* THE SEVERE OFF-RAMP (QA 2026-10-26 #1): the daily check-in has
                 always SAID a severe reaction can stop the cycle from this tab.

@@ -69,7 +69,7 @@ const VERDICT_CONFIG = {
     color: '#D4894A',
     icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4894A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
     title: 'Be mindful with {food}.',
-    sub: 'Mild or dose-dependent symptoms detected. {food} has been added to your Limit list.',
+    sub: 'Mild or mixed symptoms showed up on your record. {food} has been added to your Limit list.',
   },
   Avoid: {
     bg: '#FAEAEA',
@@ -78,7 +78,7 @@ const VERDICT_CONFIG = {
     color: '#C95B5B',
     icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C95B5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>,
     title: 'We recommend avoiding {food}.',
-    sub: 'A clear, repeatable symptom pattern was detected. {food} has been added to your Avoid list.',
+    sub: 'The symptoms on your record were strong or consistent enough to rule this out. {food} has been added to your Avoid list.',
   },
 }
 
@@ -132,6 +132,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
   const [context, setContext] = useState('')
   const [dailyLogs, setDailyLogs] = useState([])
   const [logsLoaded, setLogsLoaded] = useState(false)
+  const [restarting, setRestarting] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [verdict, setVerdict] = useState(null)
   const [submitError, setSubmitError] = useState('')
@@ -196,6 +197,42 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
 
   const disagreeing = accuracy === 'worse' || accuracy === 'milder'
   const allAnswered = () => accuracy !== null && (!disagreeing || (feltWhen !== null && feltCause !== null))
+
+  // No logs, no ruling (QA 2026-11-06 protocol critique #12, approved by
+  // Alex 2026-11-10): a cycle with zero logged days used to default to
+  // 'Limit' (AI-adjustable) — a verdict minted from nothing, against every
+  // "earned from your own record" promise. Refuse to rule; offer a restart.
+  if (logsLoaded && dailyLogs.length === 0 && activeReintroId) return (
+    <div style={s.wrap}>
+      <div style={{ padding: '60px 24px', textAlign: 'center' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: 12 }}>There's nothing to rule from.</div>
+        <div style={{ fontSize: '14px', color: '#3B4036', lineHeight: 1.7, maxWidth: 360, margin: '0 auto 20px' }}>
+          Not a single day of this {food.toLowerCase()} cycle was logged, and every verdict here is earned from your own record — so no verdict can honestly be entered. Restart the cycle to test {food.toLowerCase()} properly, or write to Support if you'd rather set this food aside.
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
+          <button className="sn-btn" disabled={restarting} onClick={async () => {
+            setRestarting(true)
+            try {
+              const today = new Date().toLocaleDateString('en-CA')
+              const { data: cyc } = await supabase.from('reintroduction_results').select('restart_count').eq('id', activeReintroId).single()
+              const { error } = await supabase.from('reintroduction_results').update({
+                started_at: today,
+                exposure_days_completed: 0,
+                washout_started_at: null,
+                restart_count: ((cyc?.restart_count) || 0) + 1,
+              }).eq('id', activeReintroId)
+              if (error) throw error
+              onBack()
+            } catch (e) {
+              alert("Couldn't restart the cycle — nothing was changed. " + (e?.message || ''))
+              setRestarting(false)
+            }
+          }}>{restarting ? 'Restarting…' : `Restart the ${food.toLowerCase()} cycle`}</button>
+          <button style={{ background: 'transparent', border: 'none', fontSize: 13, color: 'var(--gray)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }} onClick={onBack}>Back</button>
+        </div>
+      </div>
+    </div>
+  )
 
   // No food, no ruling (QA 2026-11-06 #1): with neither a cycle row nor a
   // pointer there is nothing this verdict could honestly attach to.
@@ -359,7 +396,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
                 <span style={{ width: 8, height: 8, borderRadius: 2, background: verdict === 'Safe' ? '#2C9D8A' : verdict === 'Limit' ? '#E8941F' : '#D64545', flexShrink: 0 }}></span>
                 <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C' }}>{food}</span>
               </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{accuracy && accuracy !== 'accurate' ? 'RULED WITH YOUR ACCOUNT' : verdict === 'Safe' ? 'NO REACTION' : verdict === 'Limit' ? 'MILD, DOSE-LINKED' : 'SYMPTOMS CONFIRMED'}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{accuracy && accuracy !== 'accurate' ? 'RULED WITH YOUR ACCOUNT' : verdict === 'Safe' ? 'NO REACTION' : verdict === 'Limit' ? 'MILD / MIXED' : 'SYMPTOMS ON RECORD'}</span>
             </div>
           </div>
 

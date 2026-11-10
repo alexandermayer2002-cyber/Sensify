@@ -66,7 +66,13 @@ export const computeProvisionalVerdict = (logs = []) => {
   }
 
   const exposureSymptomDays = exposureLogs.filter(l => l.had_symptoms).length
-  const moderateCount = allSymptoms.filter(s => s.intensity === 'moderate').length
+  // Moderate DAYS, not moderate symptom objects (QA 2026-11-06 protocol
+  // critique #6, approved by Alex 2026-11-10): one afternoon logged as
+  // "bloating/moderate + gas/moderate" used to count 2 and jump straight to
+  // Avoid, bypassing the 2-day consistency requirement.
+  const moderateDays = new Set(
+    logs.filter(l => parseSymptoms(l.symptoms).some(s => s.intensity === 'moderate')).map(l => l.log_date)
+  ).size
   const mildCount = allSymptoms.filter(s => s.intensity === 'mild').length
   const washoutFlareDays = washoutLogs.filter(l => l.had_symptoms).length
 
@@ -74,7 +80,7 @@ export const computeProvisionalVerdict = (logs = []) => {
 
   if (exposureSymptomDays === 0 && washoutFlareDays === 0) {
     idx = 0 // Safe
-  } else if (exposureSymptomDays >= t.avoidSymptomDayCount || moderateCount >= 2) {
+  } else if (exposureSymptomDays >= t.avoidSymptomDayCount || moderateDays >= 2) {
     idx = 2 // Avoid
   } else {
     idx = 1 // Limit (mild/inconsistent)
@@ -91,7 +97,7 @@ export const computeProvisionalVerdict = (logs = []) => {
     signals: {
       exposureSymptomDays,
       washoutFlareDays,
-      moderateCount,
+      moderateDays,
       mildCount,
       hasSevere: false,
       exposureDaysCompleted: exposureLogs.length,
