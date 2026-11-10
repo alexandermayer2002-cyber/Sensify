@@ -33,7 +33,7 @@ begin
   -- Test accounts: pinned to the QA prefix, same as Deploy 20's testMode pin
   -- (the pre-Deploy-20 substring pattern would have given anyone with +qa
   -- anywhere in their email a free signup — Door Sentry 2026-11-06 carry).
-  if new.email ~* '^alexandermayer2002\+(fable|qa|robot)' then
+  if new.email ~* '^alexandermayer2002\+(fable|qa|robot)[^@]*@gmail\.com$' then
     return new;
   end if;
 

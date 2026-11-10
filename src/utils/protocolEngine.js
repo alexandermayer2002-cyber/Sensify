@@ -2,6 +2,7 @@
 // Protocol Track Engine
 // ------------------------------------------------------------
 // One engine, multiple ways of populating its food list.
+import commonTiers from '../shared/commonTiers.json'
 
 // ---- PHYSICIAN GATE --------------------------------------------------------
 // The common-trigger track directs a broad elimination WITHOUT lab justification,
@@ -47,21 +48,12 @@ export const AWAY_GATE = { SOFT_MIN: 4, HARD_MIN: 14 }
 // expects High/Moderate/Low) has something to work with. Common-track foods
 // have no lab severity, so they all sit in one tier and default to 'Moderate'.
 
-export const COMMON_TIER_1 = [
-  { name: 'Dairy', level: 'Common', fodmap: false },
-  { name: 'Gluten / wheat', level: 'Common', fodmap: false },
-]
-
-export const COMMON_TIER_2 = [
-  { name: 'Dairy', level: 'Common', fodmap: false },
-  { name: 'Gluten / wheat', level: 'Common', fodmap: false },
-  { name: 'Eggs', level: 'Common', fodmap: false },
-  { name: 'Soy', level: 'Common', fodmap: false },
-  { name: 'Tree nuts', level: 'Common', fodmap: false },
-  { name: 'Corn', level: 'Common', fodmap: false },
-  { name: 'Onion / garlic', level: 'Common', fodmap: true },
-  { name: 'Legumes', level: 'Common', fodmap: true },
-]
+// Tier lists live in src/shared/commonTiers.json — the ONE source both this
+// engine and netlify/functions/household-card.js read (QA 2026-11-09 scout #6,
+// approved by Alex 2026-11-10): the hand-kept duplicate was one tier edit away
+// from desyncing the cook's card from the user's app.
+export const COMMON_TIER_1 = commonTiers.tier1
+export const COMMON_TIER_2 = commonTiers.tier2
 
 // User-facing labels for the two tiers (plain language, the user sees these).
 

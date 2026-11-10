@@ -7,7 +7,7 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'POST only' }
   let email
   try { email = (JSON.parse(event.body || '{}').email || '').trim().toLowerCase() } catch { return { statusCode: 400, body: 'bad json' } }
-  if (!/^alexandermayer2002\+(fable|qa|robot)/i.test(email)) return { statusCode: 403, body: JSON.stringify({ ok: false }) } // pinned prefix (Door Sentry 2026-11-06)
+  if (!/^alexandermayer2002\+(fable|qa|robot)[^@]*@gmail\.com$/i.test(email)) return { statusCode: 403, body: JSON.stringify({ ok: false }) } // pinned prefix (Door Sentry 2026-11-06)
   const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
   const { data: prof } = await sb.from('profiles').select('id, protocol_start_date, program_phase, protocol_track, current_reintro_food').eq('email', email).maybeSingle()
   if (!prof) return { statusCode: 404, body: JSON.stringify({ ok: false }) }

@@ -33,17 +33,23 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: JSON.stringify({ activated: false, reason: 'no saved card' }) }
     }
 
+    // One reusable Price when MAINTAIN_PRICE_ID is set (QA 2026-11-09 scout #5,
+    // approved by Alex 2026-11-10): inline product_data minted a duplicate
+    // "Sensify Maintain" product in Stripe per subscriber. The inline shape
+    // stays as the fallback so activation never breaks on a missing env var.
     const sub = await stripe.subscriptions.create({
       customer: profile.stripe_customer_id,
       default_payment_method: pms.data[0].id,
-      items: [{
-        price_data: {
-          currency: 'usd',
-          product_data: { name: 'Sensify Maintain' },
-          unit_amount: 1299,
-          recurring: { interval: 'month' },
-        },
-      }],
+      items: [process.env.MAINTAIN_PRICE_ID
+        ? { price: process.env.MAINTAIN_PRICE_ID }
+        : {
+            price_data: {
+              currency: 'usd',
+              product_data: { name: 'Sensify Maintain' },
+              unit_amount: 1299,
+              recurring: { interval: 'month' },
+            },
+          }],
     })
     await supabase.from('profiles').update({
       maintain_active: true,

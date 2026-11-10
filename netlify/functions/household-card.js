@@ -21,12 +21,14 @@ const reply = (statusCode, body) => ({ statusCode, headers: CORS, body: JSON.str
 
 // ---------------------------------------------------------------------------
 // Minimal mirror of src/utils/protocolEngine.js getProtocolFoods(). Netlify
-// functions are CommonJS and cannot import the app's ES modules, so the food
-// lists and track rules are duplicated here. If the engine's lists or rules
-// change, change these too.
+// functions are CommonJS and cannot import the app's ES modules, but the FOOD
+// LISTS now come from the same JSON the engine imports (QA 2026-11-09 scout
+// #6, approved by Alex 2026-11-10) — a tier edit can no longer desync the
+// cook's card. Only the track RULES below remain mirrored.
 // ---------------------------------------------------------------------------
-const COMMON_TIER_1 = ['Dairy', 'Gluten / wheat']
-const COMMON_TIER_2 = ['Dairy', 'Gluten / wheat', 'Eggs', 'Soy', 'Tree nuts', 'Corn', 'Onion / garlic', 'Legumes']
+const commonTiers = require('../../src/shared/commonTiers.json')
+const COMMON_TIER_1 = commonTiers.tier1.map(f => f.name)
+const COMMON_TIER_2 = commonTiers.tier2.map(f => f.name)
 
 function resolveProtocolFoodNames(profile, labResult) {
   const labFoods = (labResult && Array.isArray(labResult.foods)) ? labResult.foods : []

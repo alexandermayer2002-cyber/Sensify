@@ -1,0 +1,17 @@
+{
+  "_comment": "SINGLE SOURCE for the common-track tier food lists (QA 2026-11-09 scout #6, approved by Alex 2026-11-10). Imported by src/utils/protocolEngine.js (ES) and required by netlify/functions/household-card.js (CJS) so the cook's card can never desync from the user's app. fodmap flags ride along for the engine.",
+  "tier1": [
+    { "name": "Dairy", "level": "Common", "fodmap": false },
+    { "name": "Gluten / wheat", "level": "Common", "fodmap": false }
+  ],
+  "tier2": [
+    { "name": "Dairy", "level": "Common", "fodmap": false },
+    { "name": "Gluten / wheat", "level": "Common", "fodmap": false },
+    { "name": "Eggs", "level": "Common", "fodmap": false },
+    { "name": "Soy", "level": "Common", "fodmap": false },
+    { "name": "Tree nuts", "level": "Common", "fodmap": false },
+    { "name": "Corn", "level": "Common", "fodmap": false },
+    { "name": "Onion / garlic", "level": "Common", "fodmap": true },
+    { "name": "Legumes", "level": "Common", "fodmap": true }
+  ]
+}

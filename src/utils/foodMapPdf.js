@@ -69,21 +69,16 @@ function evidenceLine(cycle, logs) {
 }
 
 function daysOfTesting(protocolStart, entries) {
-  // "Days of testing" counts the TESTING era only (QA 2026-10-27 #5): trials
-  // begin at day 57, so the 56 elimination days never inflate the claim.
-  const start = isoDay(protocolStart)
-  if (!start) return null
-  const trialsStart = addDays(start, 56)
-  let latest = null
+  // Counts DISTINCT LOGGED trial days (QA 2026-11-06 full-run #3, approved by
+  // Alex 2026-11-10): the old calendar math (latest cycle end minus day 57)
+  // could print "EARNED FROM 3 DAYS OF TESTING" above the document's own
+  // "14 day trial" sentence when cycles were backdated or stopped early.
+  // Logged days are the only number this document can honestly claim.
+  const days = new Set()
   for (const e of entries) {
-    const c = e.cycle
-    if (!c) continue
-    const end = isoDay(c.submitted_at) || (isoDay(c.started_at) ? addDays(isoDay(c.started_at), 13) : null)
-    if (end && (!latest || end > latest)) latest = end
+    for (const l of (e.logs || [])) if (l && l.log_date) days.add(l.log_date)
   }
-  if (!latest) return null
-  const n = Math.round((new Date(latest + 'T12:00:00') - new Date(trialsStart + 'T12:00:00')) / 86400000) + 1
-  return n >= 1 ? n : null
+  return days.size || null
 }
 
 const paintPage = (doc) => {

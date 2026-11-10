@@ -17,7 +17,7 @@ exports.handler = async (event) => {
   const email = (body.email || '').trim().toLowerCase()
   const password = body.password || ''
   const full_name = String(body.full_name || 'Robot Tester').slice(0, 80)
-  if (!/^alexandermayer2002\+(fable|qa|robot)/i.test(email)) { // pinned prefix (Door Sentry 2026-11-06)
+  if (!/^alexandermayer2002\+(fable|qa|robot)[^@]*@gmail\.com$/i.test(email)) { // pinned prefix (Door Sentry 2026-11-06)
     return { statusCode: 403, body: JSON.stringify({ ok: false, error: 'not a test account' }) }
   }
   if (password.length < 8) {

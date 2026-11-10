@@ -15,7 +15,7 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'POST only' }
   let email, days
   try { const b = JSON.parse(event.body || '{}'); email = (b.email || '').trim().toLowerCase(); days = Math.max(1, Math.min(200, Number(b.days) || 0)) } catch { return { statusCode: 400, body: 'bad json' } }
-  if (!/^alexandermayer2002\+(fable|qa|robot)/i.test(email)) return { statusCode: 403, body: JSON.stringify({ ok: false }) } // pinned to the QA address prefix (Door Sentry 2026-11-06)
+  if (!/^alexandermayer2002\+(fable|qa|robot)[^@]*@gmail\.com$/i.test(email)) return { statusCode: 403, body: JSON.stringify({ ok: false }) } // pinned to the QA address prefix (Door Sentry 2026-11-06)
   const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
   const { data: prof } = await sb.from('profiles').select('id, protocol_start_date').eq('email', email).maybeSingle()
   if (!prof) return { statusCode: 404, body: JSON.stringify({ ok: false, error: 'no profile' }) }
@@ -46,12 +46,20 @@ exports.handler = async (event) => {
   await shiftTable('reintro_daily_logs', 'log_date')
   await shiftTable('reintroduction_results', 'started_at')
   await shiftTable('reintroduction_results', 'washout_started_at')
-  { // symptom_logs: timestamp shift
-    const { data: rows } = await sb.from('symptom_logs').select('id, logged_at').eq('user_id', uid)
+  { // symptom_logs: shift BOTH the timestamp and log_date (QA 2026-11-06
+    // full-run #5, approved by Alex 2026-11-10): shifting only logged_at
+    // piled time-traveled personas' symptom events onto the real-world date
+    // and skewed weekly insights/trends for every fleet persona.
+    const { data: rows } = await sb.from('symptom_logs').select('id, logged_at, log_date').eq('user_id', uid)
     let n = 0
     for (const r of (rows || [])) {
       const t = new Date(r.logged_at); t.setUTCDate(t.getUTCDate() - days)
-      const { error } = await sb.from('symptom_logs').update({ logged_at: t.toISOString() }).eq('id', r.id)
+      const upd = { logged_at: t.toISOString() }
+      if (r.log_date) {
+        const ld = new Date(r.log_date + 'T12:00:00Z'); ld.setUTCDate(ld.getUTCDate() - days)
+        upd.log_date = ld.toISOString().split('T')[0]
+      }
+      const { error } = await sb.from('symptom_logs').update(upd).eq('id', r.id)
       if (error) out.errors.push('symptom_logs: ' + error.message); else n++
     }
     out.shifted['symptom_logs.logged_at'] = n

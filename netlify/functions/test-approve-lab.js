@@ -11,7 +11,7 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'POST only' }
   let email
   try { email = (JSON.parse(event.body || '{}').email || '').trim().toLowerCase() } catch { return { statusCode: 400, body: 'bad json' } }
-  if (!/^alexandermayer2002\+(fable|qa|robot)/i.test(email)) { // pinned prefix (Door Sentry 2026-11-06)
+  if (!/^alexandermayer2002\+(fable|qa|robot)[^@]*@gmail\.com$/i.test(email)) { // pinned prefix (Door Sentry 2026-11-06)
     return { statusCode: 403, body: JSON.stringify({ ok: false, error: 'not a test account' }) }
   }
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
