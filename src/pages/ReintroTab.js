@@ -55,8 +55,11 @@ function TestedLedger({ cycles, protocolStartDate }) {
       <div className="rt-section-label" style={{ marginTop: '20px' }}>Tested · {cycles.length} food{cycles.length !== 1 ? 's' : ''}</div>
       {cycles.map((cyc) => {
         const open = expandedId === cyc.id
+        // Ruled day comes from submitted_at (QA 2026-11-06 full-run #12,
+        // approved by Alex): "DAY 45" alone was the day the cycle STARTED,
+        // shown unlabeled beside a verdict ruled on day 59.
         const startDay = protoDay(cyc.started_at)
-        const endDay = protoDay(cyc.updated_at || cyc.started_at)
+        const endDay = protoDay(cyc.submitted_at || cyc.updated_at || cyc.started_at)
         const logs = logsMap[cyc.id]
         return (
           <div key={cyc.id} className="sn-card-hov" style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-md)', boxShadow: 'var(--shadow-1)', marginBottom: '8px', overflow: 'hidden' }}>
@@ -1015,7 +1018,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
       <div className="rt-content">
         <div className="rt-header">
           <div className="rt-title">Reintro<em>duction.</em></div>
-          <div className="rt-sub">One food at a time. 14 days per cycle. Every answer earns a verdict.</div>
+          <div className="rt-sub">One food at a time. 14 days per cycle, verdict the morning after. Every answer earns a verdict.</div>
         </div>
 
         {/* ACTIVE REINTRODUCTION */}
@@ -1024,7 +1027,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <div className="rt-active-card sn-rise">
               <div className="rt-active-eyebrow">Currently testing</div>
               <div className="rt-active-food"><em>{activeReintro.food}</em></div>
-              <div className="rt-active-sub">{cycleDay < 1 ? `14-day reintroduction cycle · ${cycleDay === 0 ? 'Starts tomorrow' : `Starts in ${1 - cycleDay} days`}` : `14-day reintroduction cycle · Day ${Math.min(cycleDay, 14)} of 14`}</div>
+              <div className="rt-active-sub">{cycleDay < 1 ? `14-day reintroduction cycle · ${cycleDay === 0 ? 'Starts tomorrow' : `Starts in ${1 - cycleDay} days`}` : cycleDay > 14 ? '14-day cycle complete · verdict ready' : `14-day reintroduction cycle · Day ${cycleDay} of 14`}</div>
 
               <div className={`rt-phase-badge ${isVerdictDay ? 'exposure' : isExposure ? 'exposure' : 'washout'}`}>
                 <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isVerdictDay ? '#AECDAD' : isExposure ? '#AECDAD' : '#C9D8C8', flexShrink: 0 }}></div>
@@ -1294,7 +1297,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                         {/* Projected verdict date: queue position i finishes a 14-day
                             cycle starting today for i=0, today + 14*i for the rest. */}
                         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.4px', color: '#8A8A82', marginTop: '2px' }}>
-                          Verdict by ~{(() => { const t = new Date(); const d = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 14 * (i + 1)); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) })()}
+                          Verdict by ~{(() => { const t = new Date(); const d = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 14 * (i + 1) + 1); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) })()}
                         </div>
                       </div>
                     </div>

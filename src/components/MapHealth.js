@@ -229,8 +229,29 @@ export default function MapHealth({ session, profile }) {
           if (!error && Array.isArray(data)) mealRows = data
         } catch (e) {}
 
+        // Reintro-cycle symptom days count toward drift too (QA 2026-11-06
+        // full-run #11, approved by Alex 2026-11-10): a severe cow-milk
+        // reaction hours earlier used to read as "0 symptom logs in the last
+        // 30 days" because only symptom_logs was consulted.
+        let reintroSymRows = []
+        try {
+          const { data: rlogs } = await supabase.from('reintro_daily_logs')
+            .select('log_date, had_symptoms, symptoms')
+            .eq('user_id', uid)
+            .eq('had_symptoms', true)
+          reintroSymRows = (rlogs || []).map(r => {
+            let syms = r.symptoms
+            if (typeof syms === 'string') { try { syms = JSON.parse(syms) } catch (e) { syms = [] } }
+            const worst = (Array.isArray(syms) ? syms : []).reduce((w, s) => {
+              const rank = { mild: 1, moderate: 2, severe: 3 }[s && s.intensity] || 1
+              return rank > w.rank ? { rank, name: (s && s.name) || 'symptom', sev: (s && s.intensity) || 'mild' } : w
+            }, { rank: 0, name: 'symptom', sev: 'mild' })
+            return { symptom: worst.name, severity: worst.sev, logged_at: `${String(r.log_date).slice(0, 10)}T12:00:00Z` }
+          })
+        } catch (e) {}
+
         const result = computeMapHealth(
-          verdictsRes.data, symptomsRes.data, factorsRes.data, mealRows,
+          verdictsRes.data, [...(symptomsRes.data || []), ...reintroSymRows], factorsRes.data, mealRows,
           profile?.protocol_start_date, new Date()
         )
         if (!cancelled && result) setReport(result)

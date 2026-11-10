@@ -16,18 +16,46 @@ export default function App() {
   const [page, setPage] = useState('marketing')
   const [isAdmin, setIsAdmin] = useState(false)
   const [paidEmail, setPaidEmail] = useState(null)
+  // Maintain setup-return verification state: null | 'verifying' | 'ok' | 'failed'
+  const [maintainSetup, setMaintainSetup] = useState(null)
+  const [maintainSid, setMaintainSid] = useState(null)
+
+  const verifyMaintainSetup = async (sid) => {
+    setMaintainSid(sid)
+    setMaintainSetup('verifying')
+    try {
+      const r = await fetch('/.netlify/functions/verify-maintain-setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sid }),
+      })
+      const data = await r.json().catch(() => ({}))
+      if (r.ok && data.ok) {
+        setMaintainSetup('ok')
+        // Any mounted dashboard refetches the profile so the Maintain tab
+        // reflects the recorded opt-in without a manual reload.
+        window.dispatchEvent(new Event('sensify:profile-refresh'))
+        setTimeout(() => setMaintainSetup(s => (s === 'ok' ? null : s)), 7000)
+      } else {
+        setMaintainSetup('failed')
+      }
+    } catch (e) {
+      setMaintainSetup('failed')
+    }
+  }
 
   // Detect return from Stripe Checkout and verify the payment was real
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    // Return from a Maintain setup-mode checkout (card saved, no charge)
+    // Return from a Maintain setup-mode checkout (card saved, no charge).
+    // AWAITED AND SURFACED (QA 2026-11-09 scout #1, approved by Alex
+    // 2026-11-10): this used to be fire-and-forget with .catch(() => {}) —
+    // a failed verify left the card saved at Stripe with the opt-in never
+    // recorded, and the customer saw nothing either way.
     if (params.get('maintain_setup') === '1' && params.get('session_id')) {
       const sid = params.get('session_id')
-      fetch('/.netlify/functions/verify-maintain-setup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: sid }),
-      }).catch(() => {}).finally(() => { window.history.replaceState({}, '', '/') })
+      window.history.replaceState({}, '', '/')
+      verifyMaintainSetup(sid)
       return
     }
     if (params.get('paid') === 'true' && params.get('session_id')) {
@@ -156,7 +184,27 @@ export default function App() {
   if (page === 'signup') return <Signup prefillEmail={paidEmail} onSuccess={() => setPage('onboarding')} onLogin={() => setPage('login')} />
   if (page === 'onboarding') return <Onboarding onComplete={() => setPage('dashboard')} />
   if (page === 'admin') return <AdminDashboard session={session} onBack={() => setPage('dashboard')} />
-  if (page === 'dashboard') return <Dashboard session={session} onLogout={handleLogout} isAdmin={isAdmin} onAdmin={() => setPage('admin')} />
+  if (page === 'dashboard') return (
+    <>
+      {maintainSetup && (
+        <div style={{ position: 'fixed', top: 10, left: '50%', transform: 'translateX(-50%)', zIndex: 9999, maxWidth: 420, width: 'calc(100% - 24px)', background: maintainSetup === 'failed' ? '#FAEAEA' : '#EDF3ED', border: 'none', boxShadow: '0 10px 30px -8px rgba(32,36,31,0.35)', borderRadius: 14, padding: '12px 16px', fontFamily: 'DM Sans, sans-serif' }}>
+          {maintainSetup === 'verifying' && (
+            <div style={{ fontSize: 13, color: '#3D5C3C' }}>Finishing your Maintain reservation…</div>
+          )}
+          {maintainSetup === 'ok' && (
+            <div style={{ fontSize: 13, color: '#22301F' }}><b>You're set for Maintain.</b> Nothing is charged until your program completes.</div>
+          )}
+          {maintainSetup === 'failed' && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+              <div style={{ fontSize: 12.5, color: '#8B2E2E', lineHeight: 1.5 }}>Your card was saved, but we couldn't record your reservation.</div>
+              <button onClick={() => verifyMaintainSetup(maintainSid)} style={{ background: '#8B2E2E', color: '#fff', border: 'none', borderRadius: 9, padding: '7px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>Retry</button>
+            </div>
+          )}
+        </div>
+      )}
+      <Dashboard session={session} onLogout={handleLogout} isAdmin={isAdmin} onAdmin={() => setPage('admin')} />
+    </>
+  )
 
   return null
 }

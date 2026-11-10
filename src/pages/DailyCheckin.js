@@ -648,7 +648,14 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                           </button>
                         ))}
                       </div>
+                      {/* Silently dropped foods get named as a possibility
+                          (QA 2026-11-06 full-run #7, approved by Alex): corn
+                          once vanished from a recall with no hint. */}
+                      <div style={{ fontSize: '11.5px', color: '#A0A096', lineHeight: 1.5, marginTop: '6px' }}>Typed a food that isn't tagged above? We couldn't read that one — your exact words are saved with the log either way.</div>
                     </div>
+                  )}
+                  {recallTags && recallTags.length === 0 && recallText.trim().length > 2 && (
+                    <div style={{ fontSize: '11.5px', color: '#A0A096', lineHeight: 1.5, marginTop: '8px' }}>We couldn't pick out specific foods from that, but your exact words are saved with the log.</div>
                   )}
                   <div style={{ fontSize: '10.5px', color: '#A8A69E', marginTop: '8px', lineHeight: 1.5 }}>Memory after a symptom is a lead, never a ruling. Skipping is fine; an honest blank beats a guess.</div>
                 </div>

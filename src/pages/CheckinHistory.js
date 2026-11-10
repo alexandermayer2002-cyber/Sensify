@@ -44,8 +44,11 @@ function SymptomProgress({ profile, checkins }) {
         deltaText = lens === 'average' ? `avg ${now} · ${dir} ${magnitude}%` : `${baseline} \u2192 ${now} · ${dir} ${magnitude}%`
         deltaCls = 'good'; barColor = meta.lowerIsBetter ? '#2C9D8A' : '#5DBF8A'
       } else {
+        // Say "worse" in words (QA 2026-11-06 full-run #9, approved by Alex):
+        // a decline used to read in the same grammar as an improvement, with
+        // only the bar color differing.
         const dir = meta.lowerIsBetter ? 'up' : 'down'
-        deltaText = lens === 'average' ? `avg ${now} · ${dir} ${magnitude}%` : `${baseline} \u2192 ${now} · ${dir} ${magnitude}%`
+        deltaText = lens === 'average' ? `avg ${now} · ${dir} ${magnitude}% · worse than baseline` : `${baseline} \u2192 ${now} · ${dir} ${magnitude}% · worse than baseline`
         deltaCls = 'bad'; barColor = '#D4894A'
       }
       return { label: meta.label, baseline, now, deltaText, deltaCls, barColor }
@@ -403,6 +406,7 @@ const COMPLIANCE_COLORS = {
 
 export default function CheckinHistory({ session, profile, weeklyDue, onStartCheckin }) {
   const [checkins, setCheckins] = useState([])
+  const [verdictCycles, setVerdictCycles] = useState([])
   const [loading, setLoading] = useState(true)
   const [phaseFilter, setPhaseFilter] = useState('all')
 
@@ -412,12 +416,24 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
 
   const loadCheckins = async () => {
     setLoading(true)
-    const { data } = await supabase
-      .from('weekly_checkins')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .order('submitted_at', { ascending: false })
+    const [{ data }, { data: cycles }] = await Promise.all([
+      supabase
+        .from('weekly_checkins')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('submitted_at', { ascending: false }),
+      // Real milestones, not just intake (QA 2026-11-06 full-run #10, approved
+      // by Alex): after 59 days and two verdicts the list still said only
+      // "Intake survey complete."
+      supabase
+        .from('reintroduction_results')
+        .select('food, verdict, submitted_at')
+        .eq('user_id', session.user.id)
+        .not('verdict', 'is', null)
+        .order('submitted_at', { ascending: false }),
+    ])
     if (data) setCheckins(data)
+    if (cycles) setVerdictCycles(cycles)
     setLoading(false)
   }
 
@@ -592,6 +608,37 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
         {profile?.intake_completed_at && (
           <IntakeMilestoneCard profile={profile} formatDate={formatDate} />
         )}
+
+        {/* Earned milestones beyond intake (QA 2026-11-06 full-run #10) */}
+        {!loading && (() => {
+          const rows = []
+          for (const c of verdictCycles) {
+            if (c.verdict && c.submitted_at) rows.push({ t: `${c.food} ruled ${c.verdict}`, d: c.submitted_at })
+          }
+          if (profile?.protocol_start_date) {
+            const [sy, sm, sd] = String(profile.protocol_start_date).split('T')[0].split('-').map(Number)
+            const start = new Date(sy, sm - 1, sd)
+            const today = new Date()
+            const day = Math.round((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - start) / 86400000) + 1
+            if (day >= 57) {
+              const unlock = new Date(start); unlock.setDate(start.getDate() + 56)
+              rows.push({ t: 'Reintroduction unlocked', d: unlock.toISOString() })
+            }
+            rows.push({ t: 'Day 1 — protocol started', d: profile.protocol_start_date })
+          }
+          if (rows.length === 0) return null
+          rows.sort((a, b) => new Date(b.d) - new Date(a.d))
+          return (
+            <div className="sn-rise-2" style={{ background: '#FFFFFF', borderRadius: '24px', boxShadow: 'var(--shadow-1)', padding: '16px 20px', marginBottom: '10px' }}>
+              {rows.map((r, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10, padding: '7px 0', borderBottom: i < rows.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
+                  <span style={{ fontSize: '13.5px', color: '#1C1C1C', fontWeight: 500 }}>{r.t}</span>
+                  <span style={{ fontSize: '11.5px', color: '#A0A096', flexShrink: 0 }}>{formatDate(r.d)}</span>
+                </div>
+              ))}
+            </div>
+          )
+        })()}
 
         {/* CHECK-IN HISTORY */}
         {!loading && checkins.length > 0 && (

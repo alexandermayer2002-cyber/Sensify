@@ -134,13 +134,20 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
       // #2) — the prompt gets the honest provenance instead.
       const foodLevel = labResult?.foods?.find(f => f.name.toLowerCase() === topFood.toLowerCase())?.level
         || 'not on their flagged list — a food they chose to log anyway'
-      const msg = await generateSlipupMessage({
-        name,
-        food: topFood,
-        sensitivityLevel: foodLevel,
-        currentDay: currentDay || 0,
-      })
-      setAiMessage(msg)
+      // 12s hard cap (QA 2026-11-06 full-run #8, approved by Alex): the
+      // "Getting your personalized guidance..." spinner had no timeout, so a
+      // hung AI call spun forever. On timeout the honest static fallback
+      // below renders instead, and the slip stays fully logged either way.
+      const msg = await Promise.race([
+        generateSlipupMessage({
+          name,
+          food: topFood,
+          sensitivityLevel: foodLevel,
+          currentDay: currentDay || 0,
+        }),
+        new Promise((resolve) => setTimeout(() => resolve(null), 12000)),
+      ])
+      if (msg) setAiMessage(msg)
     } catch (e) {}
     setLoadingAi(false)
   }

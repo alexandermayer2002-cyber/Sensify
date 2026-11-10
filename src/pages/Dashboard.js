@@ -751,6 +751,14 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     return () => document.removeEventListener('visibilitychange', onVisible)
   }, [])
 
+  // Refetch the profile when App records a Maintain opt-in after the Stripe
+  // return (QA 2026-11-09 scout #1): the Maintain tab reflects it live.
+  useEffect(() => {
+    const onRefresh = () => { try { loadData() } catch (e) {} }
+    window.addEventListener('sensify:profile-refresh', onRefresh)
+    return () => window.removeEventListener('sensify:profile-refresh', onRefresh)
+  }, [])  // eslint-disable-line
+
   const loadData = async () => {
     setLoading(true)
     setLoadError(false)
@@ -1580,7 +1588,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div className="snfy-hero-big">
                     {profile?.program_phase === 'complete' ? 'Every verdict, earned.'
                       : betweenCycles ? 'Choose your next food.'
-                      : runningCycle ? <>{runningCycle.food} cycle, day {runningCycle.cd} of 14.<span className="snfy-hero-phase">{runningCycle.phase}</span></>
+                      : runningCycle ? (runningCycle.cd > 14 ? <>{runningCycle.food} cycle complete, verdict ready.<span className="snfy-hero-phase">{runningCycle.phase}</span></> : <>{runningCycle.food} cycle, day {runningCycle.cd} of 14.<span className="snfy-hero-phase">{runningCycle.phase}</span></>)
                       : `Day ${calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay} of ${calculatedPhase === 'reintroduction' ? 'reintroduction' : 'elimination'}.`}
                   </div>
                   {runningCycle && <div className="sn-micro sn-micro-dark" style={{ marginTop: 8 }}>{calculatedPhase === 'reintroduction' ? 'Reintroduction' : 'Elimination'} · day {calculatedPhase === 'reintroduction' ? currentDay - 56 : currentDay}</div>}

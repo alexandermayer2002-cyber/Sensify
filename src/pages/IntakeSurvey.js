@@ -363,11 +363,14 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       intake_answers: answers,
       food_frequency: foodFrequency,
       gender: lifestyle.gender,
-      baseline_avg_sleep: lifestyle.avg_sleep,
-      baseline_avg_stress: lifestyle.avg_stress,
-      baseline_avg_hydration: lifestyle.avg_hydration,
+      // Numbers stored as numbers (QA 2026-11-06 full-run #13, approved by
+      // Alex): "4" and "7" went in as strings — the same type-looseness that
+      // caused the sleep band-map bug. Blank stays null, never NaN.
+      baseline_avg_sleep: lifestyle.avg_sleep !== '' && lifestyle.avg_sleep != null && isFinite(parseFloat(lifestyle.avg_sleep)) ? parseFloat(lifestyle.avg_sleep) : null,
+      baseline_avg_stress: lifestyle.avg_stress !== '' && lifestyle.avg_stress != null && isFinite(parseFloat(lifestyle.avg_stress)) ? parseFloat(lifestyle.avg_stress) : lifestyle.avg_stress ?? null,
+      baseline_avg_hydration: lifestyle.avg_hydration !== '' && lifestyle.avg_hydration != null && isFinite(parseFloat(lifestyle.avg_hydration)) ? parseFloat(lifestyle.avg_hydration) : null,
       drinks_alcohol: lifestyle.drinks_alcohol === 'yes',
-      baseline_avg_drinks_week: lifestyle.drinks_alcohol === 'yes' ? lifestyle.avg_drinks_week : null,
+      baseline_avg_drinks_week: lifestyle.drinks_alcohol === 'yes' && lifestyle.avg_drinks_week !== '' && lifestyle.avg_drinks_week != null && isFinite(parseFloat(lifestyle.avg_drinks_week)) ? parseFloat(lifestyle.avg_drinks_week) : null,
       program_phase: 'awaiting_results',
       intake_completed_at: new Date().toISOString(),
       consent_agreed: true,
