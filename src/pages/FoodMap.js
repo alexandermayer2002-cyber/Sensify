@@ -21,6 +21,31 @@ const ordinal = (n) => {
   return `${n}${({ 1: 'ST', 2: 'ND', 3: 'RD' }[n % 10]) || 'TH'}`
 }
 
+// Day-0 echo (Advisor 2026-11-08 #4, approved by Alex 2026-11-10): the person
+// narrated their history at intake and the product never said it back. The
+// Food Map opens with their own day-0 words, closing the covenant at the
+// finish line. Built only from fields the intake actually captured; absent
+// fields mean no echo, never a guess.
+export const dayZeroEcho = (profile, days) => {
+  const a = profile?.intake_answers || {}
+  const dur = {
+    'Less than 6 months': 'less than six months in',
+    '6–12 months': 'under a year in',
+    '1–3 years': 'years in the making',
+    'More than 3 years': 'more than three years running',
+  }[a.digestive_duration]
+  const sym = {
+    'After every meal': 'bloating after every meal',
+    'After specific foods': 'bloating after specific foods',
+    'Randomly throughout the day': 'bloating that struck at random',
+    'Mostly in the morning': 'morning bloating',
+    'Mostly in the evening': 'evening bloating',
+  }[a.bloating_timing]
+  if (!sym && !dur) return null
+  const came = sym && dur ? `${sym}, ${dur}` : (sym || `digestive symptoms ${dur}`)
+  return days > 0 ? `You came in with ${came}. ${days} days of your record later:` : `You came in with ${came}.`
+}
+
 const localDate = (d) => {
   const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), dd = String(d.getDate()).padStart(2, '0')
   return `${y}-${m}-${dd}`
@@ -302,6 +327,12 @@ export default function FoodMap({ session, profile, labResult }) {
           </div>
         </div>
 
+        {labResult && ruledCount > 0 && dayZeroEcho(profile, currentDay) && (
+          <div style={{ fontSize: 13, color: '#73736A', lineHeight: 1.65, margin: '2px 0 14px', fontStyle: 'italic' }}>
+            {dayZeroEcho(profile, currentDay)}
+          </div>
+        )}
+
         {labResult && ruledCount > 0 && (
           <div style={s.printRow}>
             <button
@@ -318,6 +349,7 @@ export default function FoodMap({ session, profile, labResult }) {
                   generateFoodMapPdf({
                     firstName: name,
                     protocolStart: profile?.protocol_start_date,
+                    echo: dayZeroEcho(profile, currentDay),
                     entries: ruled.map(f => { const c = byFood[f.name.toLowerCase()]; return { name: f.name, cycle: c, logs: logsFor(c) } }),
                     // On-trial foods are not "untested" (QA 2026-10-27 #5).
                     untested: queue.map(f => f.name),

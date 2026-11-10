@@ -91,7 +91,7 @@ const paintPage = (doc) => {
   doc.rect(0, 0, PAGE_W, PAGE_H, 'F')
 }
 
-export function generateFoodMapPdf({ firstName, protocolStart, entries, untested, onTrial }) {
+export function generateFoodMapPdf({ firstName, protocolStart, entries, untested, onTrial, echo }) {
   const doc = new jsPDF({ unit: 'pt', format: 'letter' })
   doc.addFileToVFS('DMSans-400.ttf', DM400); doc.addFont('DMSans-400.ttf', 'DMSans', 'normal')
   doc.addFileToVFS('DMSans-500.ttf', DM500); doc.addFont('DMSans-500.ttf', 'DMSans', 'bold')
@@ -123,6 +123,12 @@ export function generateFoodMapPdf({ firstName, protocolStart, entries, untested
   doc.setTextColor(FOREST); doc.text('.', M + doc.getTextWidth(title), y)
   y += 16
   doc.setFont('DMSans', 'normal'); doc.setFontSize(8.5); doc.setTextColor(GRAY)
+  // Day-0 echo first, when the intake gave us one (Advisor 2026-11-08 #4):
+  // the report opens with the person's own starting point, then the method line.
+  if (echo) {
+    doc.text(echo, M, y)
+    y += 13
+  }
   doc.text('Each verdict below was ruled by a 14 day single-food trial on this person’s own daily record.', M, y)
   y += 20
 
