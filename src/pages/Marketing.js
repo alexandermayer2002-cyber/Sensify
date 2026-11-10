@@ -852,7 +852,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               <div style={{ position: 'relative', height: 8, borderRadius: 4, background: 'rgba(61,92,60,0.12)' }}>
                 <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '68%', borderRadius: 4, background: '#3D5C3C' }} />
               </div>
-              <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6, marginTop: 12 }}>The product measures how steady your own baseline is, and tells you — because your verdicts are only as trustworthy as the data under them.</div>
+              <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6, marginTop: 12 }}>The product measures how steady your own baseline is, and tells you, because your verdicts are only as trustworthy as the data under them.</div>
             </div>
           </div>
           <div style={{ maxWidth: '520px', background: 'var(--card-bg, #FFFFFF)', borderRadius: 16, boxShadow: 'var(--shadow-1)', padding: '22px 22px' }}>
