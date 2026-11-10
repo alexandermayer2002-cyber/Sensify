@@ -1155,10 +1155,10 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 </div>
               ))}
               <div className="price-note">Everything included: your lab test, the full protocol, AI guidance, and your completed verdicts. No hidden costs, no separate lab bill.</div>
-              {/* The refund story + the one optional add-on, at the decision
+              {/* The one optional add-on, at the decision
                   point (QA 2026-10-30 #3/#4): both already existed, but only
                   in terms.html and an in-app upsell a buyer never sees. */}
-              <div className="price-note" style={{ marginTop: 8 }}>Not for you? Write to us and we make it right — see our Terms. After you finish, Maintain is an optional $12.99/mo companion that keeps your verdicts working day to day. Entirely optional, nothing is required beyond the one price above.</div>
+              <div className="price-note" style={{ marginTop: 8 }}>After you finish, Maintain is an optional $12.99/mo companion that keeps your verdicts working day to day. Entirely optional, nothing is required beyond the one price above.</div>
             </div>
           </div>
         </div>
