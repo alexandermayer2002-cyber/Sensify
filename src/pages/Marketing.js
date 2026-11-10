@@ -55,7 +55,7 @@ const css = `
   .mk-hero.dark .mk-hero-orb2 { position: absolute; bottom: -80px; right: -40px; width: 220px; height: 220px; border-radius: 50%; background: #E8941F; opacity: 0.06; pointer-events: none; }
   @keyframes mkHeroGlow { 0%, 100% { opacity: 0.07; } 50% { opacity: 0.14; } }
   .mk-hero-eyebrow { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.17em; color: rgba(139,174,138,0.95); text-transform: uppercase; margin-bottom: 22px; }
-  .mk-price-line { font-size: 12.5px; color: rgba(250,248,244,0.5); margin-top: 14px; }
+  .mk-price-line { font-size: 13px; color: rgba(250,248,244,0.78); margin-top: 14px; }
   .mk-hero-inner { max-width: 960px; margin: 0 auto; }
   .mk-hero-centered { max-width: 760px; margin: 0 auto; text-align: center; }
   .mk-h1.centered { max-width: 100%; margin-left: auto; margin-right: auto; }
@@ -241,7 +241,8 @@ const css = `
     .mk-hero .mk-h1 { font-size: 36px !important; }
     .mk-h1 { font-size: 36px !important; letter-spacing: -0.5px; }
     .mk-sub { font-size: 15px; }
-    .mk-section { padding: 44px 22px !important; }
+    .mk-section { padding: 32px 22px !important; }
+    .mk-menu-btn, .mk-signin, .mk-cta { min-height: 44px; }
     .sci-grid { grid-template-columns: 1fr; }
     .sci-disclaimers { grid-template-columns: 1fr; }
     .sci-compare-grid { grid-template-columns: 1fr; }
@@ -297,6 +298,7 @@ const FAQ_GROUPS = [
     group: 'Medical & safety',
     items: [
       { q: 'Is this a medical diagnosis?', a: 'No. Sensify is a wellness and educational program. It does not diagnose, treat, or cure any medical condition. If you have serious symptoms, always consult a licensed healthcare provider.' },
+      { q: 'Is it safe to cut several foods for eight weeks?', a: 'For most healthy adults, yes, with ordinary care: the protocol removes specific suspect foods, not whole food groups blindly, and nothing stops you from covering the same nutrients from other sources. That said, this is exactly the question to bring to your doctor or dietitian first if you are pregnant or breastfeeding, underweight, managing a medical condition, or have a history of disordered eating. Sensify is a wellness program, not medical care, and it should never override professional advice.' },
       { q: 'How accurate are IgG food sensitivity tests?', a: 'IgG tests measure immune reactivity, not confirmed intolerance. We treat your results as a starting hypothesis. The real evidence comes from the elimination and reintroduction protocol, which is why the protocol is the product, not the test.' },
       { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people go through the protocol and find their body tolerates everything well. That means food sensitivity is unlikely to be driving what you feel, which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. We would rather give you the honest truth than invent a problem that is not there. A clean result is still an answer you can trust and act on.' },
     ],
@@ -629,14 +631,14 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="mk-hero-orb1"></div>
           <div className="mk-hero-orb2"></div>
           <div className="mk-hero-eyebrow sn-rise" style={{ position: 'relative' }}>Test. Eliminate. Reintroduce. Know.</div>
-          <div className="mk-h1 centered sn-rise-2" style={{ position: 'relative' }}>Stop guessing what your body <em>can't handle.</em></div>
-          <div className="mk-sub centered sn-rise-3" style={{ position: 'relative' }}>A lab test finds the suspects. Eight weeks of clean baseline, then a 14-day trial of every food, gives the verdicts.</div>
+          <div className="mk-h1 centered sn-rise-2" style={{ position: 'relative' }}>Stop guessing what your body <em>can't{' '}handle.</em></div>
+          <div className="mk-sub centered sn-rise-3" style={{ position: 'relative' }}>Symptoms that keep coming back, and no way to know which food is behind them. A lab test only gives you suspects. Sensify puts each one on trial in your real life and rules it: Safe, Limit, or Avoid.</div>
           <div className="mk-actions centered sn-rise-4" style={{ position: 'relative' }}>
-            <button className="btn-p" onClick={onGetStarted} style={{ background: '#8BAE8A', color: '#22301F', boxShadow: '0 10px 24px -6px rgba(0,0,0,0.35)' }}>Start your program</button>
+            <button className="btn-p" onClick={onGetStarted}>Start your program</button>
             <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
           </div>
           <div className="mk-price-line sn-rise-4" style={{ position: 'relative' }}>$399 · lab test included · one payment</div>
-          <div className="sn-rise-4" style={{ position: 'relative', fontSize: '11.5px', color: 'rgba(250,248,244,0.38)', marginTop: '7px', lineHeight: 1.6, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>Lab test, elimination protocol, daily and weekly check-ins, personalized insights, guided reintroductions, Ask Sensify, and your final verdicts.</div>
+          <div className="sn-rise-4" style={{ position: 'relative', fontSize: '12.5px', color: 'rgba(250,248,244,0.72)', marginTop: '7px', lineHeight: 1.6, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>Lab test, elimination protocol, daily and weekly check-ins, personalized insights, guided reintroductions, Ask Sensify, and your final verdicts.</div>
         </div>
       </div>
 
@@ -657,7 +659,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       <div className="mk-section alt" data-reveal>
         <div className="mk-section-inner">
           <div className="ey">How it works</div>
-          <div className="sh">Four steps to certainty.</div>
+          <div className="sh">Four steps to an answer.</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '14px', marginTop: '28px' }}>
             {[
               { n: '01', t: 'Test', d: 'Complete your intake and at-home lab test. Your results become the starting hypothesis: the suspects, not the verdict.' },
@@ -755,6 +757,35 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           </div>
         </div>
       </div>
+
+      {/* ===== THE PRICE — where desire peaks, the ask now lives
+             (teardown #4/#5/#6, approved by Alex 2026-11-10) ===== */}
+      <div className="mk-section sage" data-reveal>
+        <div className="mk-section-inner" style={{ maxWidth: 640 }}>
+          <div className="ey">The price</div>
+          <div className="sh">One payment. The whole answer.</div>
+          <div style={{ background: 'var(--card-bg, #FFFFFF)', borderRadius: 20, boxShadow: 'var(--shadow-2)', padding: '26px 24px', marginTop: 22 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 14 }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: 42, fontWeight: 300, color: '#20241F', lineHeight: 1 }}>$399</span>
+              <span style={{ fontSize: 13, color: '#7A7A72' }}>one payment, nothing else to buy</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 16 }}>
+              {[
+                'Food sensitivity lab test, done from home',
+                'The full elimination and reintroduction protocol',
+                'Daily and weekly check-ins with personalized insights',
+                'Guided single-food trials with honest verdicts',
+                'Your completed Food Map, yours to keep',
+              ].map((it, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13.5, color: '#4A4A45' }}><CheckIcon /> {it}</div>
+              ))}
+            </div>
+            <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.65, marginBottom: 16 }}>A lab test alone costs $150 to $300 and only hands you suspects. And honestly: this takes months, not days, because a real answer does. About 30 seconds a day is all it asks.</div>
+            <button className="btn-p" style={{ width: '100%' }} onClick={onGetStarted}>Start your program</button>
+            <div style={{ fontSize: 11.5, color: '#A8A69E', marginTop: 10, textAlign: 'center' }}>Optional after your program: Maintain, $12.99/mo, never required.</div>
+          </div>
+        </div>
+      </div>
       <div className="mk-section cream" data-reveal>
         <div className="mk-section-inner">
           <div className="ey">Before you start</div>
@@ -766,6 +797,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               { q: 'How much time does it take each week?', a: 'The daily check-in takes about 30 seconds. The weekly check-in takes about 2 minutes. During reintroduction cycles you spend a few extra minutes logging symptoms. It is built to fit into normal life.' },
               { q: 'What if it turns out food is not my problem?', a: 'That is a real and valuable answer, not a failure. Some people finish the protocol and find their body tolerates everything well, which saves you from years of cutting out foods for no reason and points you toward looking elsewhere. A clean result is still an answer you can trust.' },
               { q: 'Do I need to already have a lab test?', a: 'No. A food sensitivity lab test is part of the program. You complete it from home, no clinic visits, then upload your results and they are read straight into your protocol. Already have recent results? You can use those instead.' },
+              { q: 'Is it safe to cut several foods for eight weeks?', a: 'For most healthy adults, yes, with ordinary care: the protocol removes specific suspect foods, not whole food groups blindly, and nothing stops you from covering the same nutrients from other sources. That said, this is exactly the question to bring to your doctor or dietitian first if you are pregnant or breastfeeding, underweight, managing a medical condition, or have a history of disordered eating. Sensify is a wellness program, not medical care, and it should never override professional advice.' },
             ].map((f, i) => {
               const isOpen = homeFaq === i
               return (
@@ -782,15 +814,59 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         </div>
       </div>
 
+      {/* ===== WHY BELIEVE IT — the proof is the product's own instrumentation
+             (teardown #2 + Advisor 2026-11-08 #3, approved by Alex 2026-11-10).
+             Founder note moved up from below the final CTA, rewritten. ===== */}
+      <div className="mk-section alt" data-reveal>
+        <div className="mk-section-inner">
+          <div className="ey">Why believe it</div>
+          <div className="sh">Built to show its work.</div>
+          <div className="ss" style={{ marginBottom: '24px' }}>No testimonials, no miracle claims. Just what the product actually puts on your screen, every day: where each verdict comes from and how trustworthy your own data is.</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14, marginBottom: 26 }}>
+            <div style={{ background: 'var(--card-bg, #FFFFFF)', borderRadius: 16, boxShadow: 'var(--shadow-1)', padding: '18px 17px' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '1.4px', color: '#9A927E', marginBottom: 12 }}>THE SUSPECT BOARD · EXAMPLE DATA</div>
+              {[
+                ['Cow Milk', 'LAB: HIGH · EATEN DAILY', 'ON TRIAL', '#9A5E0B', 'rgba(232,148,31,0.12)'],
+                ['Wheat', 'LAB: HIGH · EATEN DAILY', 'NEXT · DAY 71', '#5A5A52', 'rgba(0,0,0,0.05)'],
+                ['Egg White', 'LAB: LOW · WEEKLY', 'DAY 85', '#5A5A52', 'rgba(0,0,0,0.05)'],
+              ].map(([nm, meta, chip, fg, bg]) => (
+                <div key={nm} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                  <div>
+                    <div style={{ fontSize: 14.5, fontWeight: 600, color: '#20241F' }}>{nm}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8.5, letterSpacing: '0.8px', color: '#9A927E', marginTop: 3 }}>{meta}</div>
+                  </div>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8.5, letterSpacing: '0.8px', color: fg, background: bg, borderRadius: 999, padding: '5px 10px' }}>{chip}</span>
+                </div>
+              ))}
+              <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6, marginTop: 12 }}>Every food you'll test, why it's suspected, and when its trial comes. Nothing hidden, nothing assumed.</div>
+            </div>
+            <div style={{ background: 'var(--card-bg, #FFFFFF)', borderRadius: 16, boxShadow: 'var(--shadow-1)', padding: '18px 17px' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '1.4px', color: '#9A927E', marginBottom: 12 }}>BASELINE SHARPNESS · EXAMPLE DATA</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 34, fontWeight: 300, color: '#20241F' }}>±0.9</span>
+                <span style={{ fontSize: 12.5, color: '#3D5C3C', fontWeight: 600 }}>and narrowing</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-mono)', fontSize: 8.5, letterSpacing: '0.8px', color: '#9A927E', margin: '14px 0 6px' }}>
+                <span>DAY 1 · ±2.5</span><span>VERDICT-READY · ±0.4</span>
+              </div>
+              <div style={{ position: 'relative', height: 8, borderRadius: 4, background: 'rgba(61,92,60,0.12)' }}>
+                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '68%', borderRadius: 4, background: '#3D5C3C' }} />
+              </div>
+              <div style={{ fontSize: 12, color: '#7A7A72', lineHeight: 1.6, marginTop: 12 }}>The product measures how steady your own baseline is, and tells you — because your verdicts are only as trustworthy as the data under them.</div>
+            </div>
+          </div>
+          <div style={{ maxWidth: '520px', background: 'var(--card-bg, #FFFFFF)', borderRadius: 16, boxShadow: 'var(--shadow-1)', padding: '22px 22px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, letterSpacing: '0.17em', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: '10px' }}>A note from the founder</div>
+            <div style={{ fontSize: '13.5px', color: '#4A4A45', lineHeight: 1.75 }}>The standard answer to food symptoms is a test, a list, and good luck. I built Sensify to be better than that. Every verdict it issues traces back to your own logged days, nothing is assumed, and every screen shows its work. It is the standard I wanted back when I was the one guessing.</div>
+            <div style={{ marginTop: '12px', fontSize: '13px', fontWeight: 600, color: '#20241F' }}>Alex Mayer, founder</div>
+          </div>
+        </div>
+      </div>
+
       <div className="cta-section" data-reveal>
         <h2>Stop guessing.<br />Start knowing.</h2>
         <p>A lab test alone costs $150 to $300 and hands you a guess. Sensify includes the lab <em style={{ fontStyle: 'normal', fontWeight: 600 }}>and</em> the months of structure that turn it into an answer. One price, nothing else to buy.</p>
         <button className="btn-p" onClick={onGetStarted}>Start your program</button>
-        <div style={{ maxWidth: '480px', margin: '44px auto 0', paddingTop: '28px', borderTop: '1px solid rgba(0,0,0,0.07)', textAlign: 'left' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, letterSpacing: '0.17em', color: '#3D5C3C', textTransform: 'uppercase', marginBottom: '10px' }}>A note from the founder</div>
-          <div style={{ fontSize: '13.5px', color: '#4A4A45', lineHeight: 1.75 }}>I built Sensify alone, after years of guessing at my own symptoms and getting nowhere. Every screen in the product shows you the evidence behind every verdict, because that is the standard I wanted for myself. And if the program turns out not to be for you, write to me and we will make it right.</div>
-          <a href="mailto:alex@sensifyhealth.com" style={{ display: 'inline-block', marginTop: '12px', fontSize: '12.5px', color: '#3D5C3C', textDecoration: 'underline', textUnderlineOffset: '3px' }}>alex@sensifyhealth.com</a>
-        </div>
       </div>
       <Footer />
     </div>
