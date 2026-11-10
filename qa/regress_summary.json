@@ -1,7 +1,7 @@
 {
- "date": "2611090751",
- "passed": 57,
- "total": 58,
+ "date": "2611100751",
+ "passed": 63,
+ "total": 63,
  "results": [
   {
    "check": "mkt.example_labels",
@@ -111,12 +111,12 @@
   {
    "check": "p5.upload_no_error",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood morning,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nELIMINATION PHASE\nStarts tomorrow.\nYour elimination phas"
+   "detail": "\u2190 Back\nSensify.\nYOUR LAB RESULTS\nAdd your test results.\nYour test report lists foods with a reaction level next to each (words like \"elevated\", \"high\", or a col"
   },
   {
    "check": "p5.file_stored",
    "ok": true,
-   "detail": "[{'file_path': '744dc65d-747e-4d6a-84d0-d08871c43b9a-1794211266226.pdf'}]"
+   "detail": "[{'file_path': '1acf8eb1-14e7-4b8e-b885-ad14c600b49d-1794297639377.pdf'}]"
   },
   {
    "check": "fleet.elimearly.no_overflow",
@@ -141,12 +141,12 @@
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-09"
+   "detail": "no daily_factors row for 2026-11-10"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=6 expected=6 start=2026-11-04"
+   "detail": "shown=7 expected=7 start=2026-11-04"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -176,12 +176,12 @@
   {
    "check": "fleet.elimlate.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-09"
+   "detail": "no daily_factors row for 2026-11-10"
   },
   {
    "check": "fleet.elimlate.day_counter",
    "ok": true,
-   "detail": "shown=53 expected=53 start=2026-09-18"
+   "detail": "shown=54 expected=54 start=2026-09-18"
   },
   {
    "check": "fleet.elimlate.console_clean",
@@ -211,12 +211,12 @@
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-09"
+   "detail": "no daily_factors row for 2026-11-10"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=8 expected=8 start=2026-11-02"
+   "detail": "shown=9 expected=9 start=2026-11-02"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -246,7 +246,7 @@
   {
    "check": "fleet.reintro.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-09"
+   "detail": "no daily_factors row for 2026-11-10"
   },
   {
    "check": "fleet.reintro.verdict_count",
@@ -259,9 +259,34 @@
    "detail": "[]"
   },
   {
-   "check": "fleet.tracking.walk",
-   "ok": false,
-   "detail": "r: Page.goto: Timeout 9000ms exceeded.\nCall log:\n  - navigating to \"https://singular-starship-09b1f1.netlify.app/\", waiting until \"domcontentloaded\"\n\n"
+   "check": "fleet.tracking.no_overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.tracking.screens_render",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.tracking.no_dead_end",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fleet.tracking.seeded",
+   "ok": true,
+   "detail": "{\"protocol_start_date\": null, \"program_phase\": \"tracking\", \"protocol_track\": \"common\", \"track_decision\": \"declined\"}"
+  },
+  {
+   "check": "fleet.tracking.day_logged",
+   "ok": true,
+   "detail": "no daily_factors row for 2026-11-10"
+  },
+  {
+   "check": "fleet.tracking.console_clean",
+   "ok": true,
+   "detail": "[]"
   },
   {
    "check": "sentinel.silent_writes",
@@ -293,9 +318,5 @@
    "ok": true,
    "detail": "retry=True false_success=False"
   }
- ],
- "triage": {
-  "fleet.tracking.walk": "ENVIRONMENTAL \u2014 9s Page.goto timeout on the live site; persona re-run in isolation immediately after: all 6 tracking checks PASS. No regression."
- },
- "effective": "57/58 in-run; the single FAIL re-ran clean -> suite effectively green (zero real regressions)"
+ ]
 }
