@@ -1,3 +1,4 @@
+SITE_URL='https://singular-starship-09b1f1.netlify.app'
 from robot import Robot
 import re, json, subprocess
 
@@ -10,6 +11,9 @@ def srv_skip(email, days):
     print(f"skip{days}:", out[:110]); return out
 
 def signup_or_login(r, email, name, pw):
+    # Re-keyed 2026-11-11: email confirm is ON; mint a pre-confirmed robot via the test-signup door (409 = exists, fine)
+    try: r.page.request.post(SITE_URL + "/.netlify/functions/test-signup", data={"email": email, "password": pw, "full_name": name})
+    except Exception as e: print("test-signup door error:", e)
     r.goto(); r.click("Sign in"); r.sleep(1.2)
     r.fill_ph("you@email.com", email)
     r.fill_ph("••••••••", pw)

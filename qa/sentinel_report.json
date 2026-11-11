@@ -5,13 +5,19 @@
  "copy_promises": [
   {
    "file": "src/utils/protocolEngine.js",
-   "line": 6,
+   "line": 7,
    "kind": "physician-claim",
    "code": "// ---- PHYSICIAN GATE --------------------------------------------------------"
   },
   {
    "file": "src/utils/protocolEngine.js",
-   "line": 66,
+   "line": 13,
+   "kind": "physician-claim",
+   "code": "// timings. That review has not happened yet \u2014 it is item #1 on the physician"
+  },
+  {
+   "file": "src/utils/protocolEngine.js",
+   "line": 61,
    "kind": "physician-claim",
    "code": "// TESTING ORDER DOCTRINE (Alex-approved; FLAGGED FOR PHYSICIAN REVIEW)"
   },
@@ -23,37 +29,37 @@
   },
   {
    "file": "src/utils/confoundAnalysis.js",
-   "line": 29,
+   "line": 30,
    "kind": "physician-claim",
-   "code": "//  - ENABLED is false until a physician reviews bands, directions,"
+   "code": "//    ENABLED was flipped true 8/27/26 on Alex's word BEFORE any physician"
   },
   {
    "file": "src/utils/confoundAnalysis.js",
-   "line": 32,
+   "line": 34,
    "kind": "physician-claim",
    "code": "// PHYSICIAN-REVIEW ITEMS (all live in CONFOUND_CONFIG, clearly flagged):"
   },
   {
    "file": "src/utils/confoundAnalysis.js",
-   "line": 56,
+   "line": 58,
    "kind": "physician-claim",
    "code": "// ---- The medically-bad direction per factor (PHYSICIAN REVIEW) ----"
   },
   {
    "file": "src/utils/confoundAnalysis.js",
-   "line": 60,
+   "line": 62,
    "kind": "physician-claim",
    "code": "// ---- Engine 3: cycle coincidence (PHYSICIAN REVIEW) ----"
   },
   {
    "file": "src/utils/confoundAnalysis.js",
-   "line": 66,
+   "line": 68,
    "kind": "physician-claim",
    "code": "// ---- Engine 1: unhealthy absolute bands (PHYSICIAN REVIEW) ----"
   },
   {
    "file": "src/pages/MaintainHub.js",
-   "line": 54,
+   "line": 62,
    "kind": "unlimited-claim",
    "code": "{ t: 'Ask Sensify, unlimited', d: 'Any food, menu, label, or photo, checked against your map.' },"
   },

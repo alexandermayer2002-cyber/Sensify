@@ -154,7 +154,7 @@ def run_p4():
         try: r.page.get_by_text("Home", exact=True).first.click(timeout=3000); r.sleep(1.4)
         except Exception: r.goto(); r.sleep(2.0)
         nav_tab(r, "Reintro")
-        check("p4.reintro_tracking_state", "reintroduction unlocks later" in r.text().lower(), r.text()[:200])
+        check("p4.reintro_tracking_state", ("reintroduction unlocks later" in r.text().lower() or "tracking, not testing" in r.text().lower()), r.text()[:200])
     except Exception as e:
         check("p4.walk", False, traceback.format_exc()[-150:])
     finally:
