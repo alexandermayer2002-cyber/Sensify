@@ -43,6 +43,8 @@
 .ob-strip .away::after { content: ""; position: absolute; inset: 33%; border-radius: 50%; background: var(--ob-moss); }
 .ob-strip .today { background: var(--ob-paper); outline: 2px solid var(--ob-ink); outline-offset: -2px; }
 .ob-strip .today.exposure { background: var(--ob-ink); outline-color: var(--ob-sage); }
+.ob-strip .today.on { background: var(--ob-moss); outline-color: var(--ob-ink); }
+.ob-strip .today.slipped { outline: 2px solid var(--ob-ink); outline-offset: -2px; }
 .ob-strip .future { background: var(--ob-paper-2); }
 
 /* ---- Symptom curve ---- */

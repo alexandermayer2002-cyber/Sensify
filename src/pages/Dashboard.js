@@ -846,7 +846,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         setActiveCycleLite(ar || null)
       }
 
-      const { data: comp } = await supabase.from('daily_compliance').select('*').eq('user_id', session.user.id).gte('date', localDateOffset(-10)).order('date', { ascending: false })
+      const { data: comp } = await supabase.from('daily_compliance').select('*').eq('user_id', session.user.id).gte('date', localDateOffset(-14)).order('date', { ascending: false })
       // Away-on-plan days (user's word, counted): build the date set from away_gap_attested audits
       try {
         const { data: aways } = await supabase.from('compliance_audit').select('triggered_at, admin_note').eq('user_id', session.user.id).eq('trigger_type', 'away_gap_attested')
@@ -1356,7 +1356,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           ))}
         </div>
         <div className="snfy-nav-right">
-          <div className="snfy-phase-pill">{phaseLabel}</div>
+          {/* Refresh 2026-11-13: the rebuilt elimination Home carries its own day counter, so the caps phase pill (a second clock, a second label) is dropped there. */}
+          {!(cockpitActive && calculatedPhase === 'elimination' && screen === 'dashboard' && tab === 'home') && <div className="snfy-phase-pill">{phaseLabel}</div>}
           {!isAdmin && (
             <button className="snfy-msg-btn" onClick={() => { setTab('messages'); setScreen('messages') }} title="Support">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -1581,8 +1582,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           const clock = runningCycle
             ? { pct: (runningCycle.cd / 14) * 100, left: 'Day 1', right: 'Day 14 · verdict' }
             : calculatedPhase === 'reintroduction'
-              ? { pct: ((currentDay - 56) / reintroSpan) * 100, left: 'Day 1', right: `Day ${reintroSpan} · map complete` }
-              : { pct: (currentDay / 56) * 100, left: 'Day 1', right: 'Day 56 · reintroduction' }
+              ? { pct: ((currentDay - 56) / reintroSpan) * 100, left: 'Day 1', right: `Day ${reintroSpan} · last trial ends` }
+              : { pct: (currentDay / 56) * 100, left: 'Day 1', right: 'Day 57 · testing begins' }
           const pct = Math.min(100, Math.max(2, Math.round(clock.pct)))
           return (
           <div className="snfy-heroband">

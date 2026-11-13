@@ -103,7 +103,7 @@ export function generateFoodMapPdf({ firstName, protocolStart, entries, untested
   const wmW = doc.getTextWidth('Sensify')
   doc.setTextColor(FOREST); doc.text('.', M + wmW, y)
   doc.setFont('DMSans', 'bold'); doc.setFontSize(6.5); doc.setTextColor(GRAY); doc.setCharSpace(1.4)
-  const micro = days ? `FOOD MAP  ·  EARNED FROM ${days} DAY${days === 1 ? '' : 'S'} OF TESTING` : 'FOOD MAP  ·  EARNED BY TESTING'
+  const micro = days && days >= 14 ? `FOOD MAP  ·  EARNED FROM ${days} DAYS OF TESTING` : 'FOOD MAP  ·  EARNED BY TESTING'
   doc.text(micro, PAGE_W - M, y - 1, { align: 'right' })
   doc.setCharSpace(0)
   y += 12

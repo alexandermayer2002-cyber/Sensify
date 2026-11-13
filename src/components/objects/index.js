@@ -11,19 +11,19 @@ import './objects.css'
 /*   'on' | 'exposure' | 'exposure-planned' | 'slipped' | 'none'        */
 /*   | 'away' | 'today' | 'today-exposure' | 'future'                   */
 /* size: 'sm' | 'md' | 'lg'                                             */
-const STRIP_STATES = new Set(['on', 'exposure', 'exposure-planned', 'slipped', 'none', 'away', 'today', 'today-exposure', 'future'])
+const STRIP_STATES = new Set(['on', 'exposure', 'exposure-planned', 'slipped', 'none', 'away', 'today', 'today-on', 'today-slipped', 'today-exposure', 'future'])
 const STRIP_WORDS = {
   on: 'on plan', exposure: 'exposure day', 'exposure-planned': 'exposure day, coming',
   slipped: 'slipped', none: 'no check-in', away: 'away on plan', today: 'today',
-  'today-exposure': 'today, exposure day', future: 'coming',
+  'today-on': 'today, logged', 'today-slipped': 'today, logged a slip', 'today-exposure': 'today, exposure day', future: 'coming',
 }
-export function Strip({ days = [], size = 'md', label }) {
+export function Strip({ days = [], size = 'md', label, startDay = 1 }) {
   return (
     <div className={`ob-strip ${size === 'sm' ? 'ob-sm' : size === 'lg' ? 'ob-lg' : ''}`} role="img" aria-label={label || `${days.length} days`}>
       {days.map((s, i) => {
         const st = STRIP_STATES.has(s) ? s : 'future'
-        const cls = st === 'today-exposure' ? 'today exposure' : st
-        return <i key={i} className={cls} title={`Day ${i + 1}: ${STRIP_WORDS[st]}`} />
+        const cls = st === 'today-exposure' ? 'today exposure' : st === 'today-on' ? 'today on' : st === 'today-slipped' ? 'today slipped' : st
+        return <i key={i} className={cls} title={`Day ${startDay + i}: ${STRIP_WORDS[st]}`} />
       })}
     </div>
   )
@@ -54,7 +54,7 @@ export function reintroStripDays({ logs = [], cycleStart, today, exposureDays = 
 /* points: [{day:number, value:number}] (0-5 or 0-10 scale; pass max)  */
 /* baseline: number | null. Under 7 points draws dots, never a line.    */
 /* Never draws past the last point. Change is position only.           */
-export function SymptomCurve({ points = [], baseline = null, max = 5, width = 260, height = 90, minLine = 7, todayLabel, emptyText = "Your curve starts after tonight's check-in." }) {
+export function SymptomCurve({ points = [], baseline = null, max = 5, width = 260, height = 90, minLine = 7, todayLabel, caption = true, baselineLabel = true, emptyText = "Your curve starts after tonight's check-in." }) {
   // minLine: nightly series need 7 points before a line is honest; weekly
   // series (one point per check-in) may pass 3.
   const W = width, H = height
@@ -64,7 +64,7 @@ export function SymptomCurve({ points = [], baseline = null, max = 5, width = 26
   const base = baseline != null ? (
     <g>
       <line x1="0" x2={W} y1={y(baseline)} y2={y(baseline)} stroke={mute} strokeOpacity=".5" strokeDasharray="2 5" />
-      <text x="0" y={y(baseline) - 5} fontSize="10" fill={mute}>baseline</text>
+      {baselineLabel ? <text x="0" y={y(baseline) - 5} fontSize="10" fill={mute}>baseline</text> : null}
     </g>
   ) : null
 
@@ -82,7 +82,7 @@ export function SymptomCurve({ points = [], baseline = null, max = 5, width = 26
       <svg className="ob-curve" viewBox={`0 0 ${W} ${H}`} width={W} height={H}>
         {base}
         {pts.map((p, i) => <circle key={i} cx={8 + i * ((W - 16) / Math.max(1, minLine - 1))} cy={y(p.value)} r="4" fill={moss} />)}
-        <text x="0" y={H - 2} fontSize="10" fill={mute}>{pts.length} {unit}{pts.length === 1 ? '' : 's'}. A line appears at {minLine}.</text>
+        {caption ? <text x="0" y={H - 2} fontSize="10" fill={mute}>{pts.length} {unit}{pts.length === 1 ? '' : 's'}. A line appears at {minLine}.</text> : null}
       </svg>
     )
   }

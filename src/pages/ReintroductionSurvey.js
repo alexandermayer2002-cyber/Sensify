@@ -108,8 +108,8 @@ function buildSummary(logs, food) {
   let part2 = ''
   if (washout.length > 0) {
     part2 = washoutSymptomDays.length === 0
-      ? ` During the ${washout.length} days after, you stayed clear.`
-      : ` In the ${washout.length} days after, you noted symptoms on ${washoutSymptomDays.length} of them.`
+      ? (washout.length === 1 ? ' On the one washout day logged, you stayed clear.' : ` During the ${washout.length} days after, you stayed clear.`)
+      : (washout.length === 1 ? ' On the one washout day logged, you noted symptoms.' : ` In the ${washout.length} days after, you noted symptoms on ${washoutSymptomDays.length} of them.`)
   }
 
   return part1 + part2
@@ -375,7 +375,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
         </div>
         <div style={s.verdictWrap}>
           <div style={{ textAlign: 'center', marginBottom: 22, marginTop: 8 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray-faint)', textTransform: 'uppercase', marginBottom: 10 }}>Verdict entered · Day 14 of 14</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray-faint)', textTransform: 'uppercase', marginBottom: 10 }}>{(() => { const n = new Set((dailyLogs || []).filter(l => l && l.log_date).map(l => String(l.log_date).slice(0, 10))).size; return n > 0 ? `Verdict entered · ${n} logged day${n === 1 ? '' : 's'}` : 'Verdict entered' })()}</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, color: 'var(--ink)', marginBottom: 2 }}>{food}</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '56px', fontWeight: 300, letterSpacing: '-0.02em', color: config.color, lineHeight: 1.1, textShadow: config.glow.replace('0 0 24px', '0 0 38px') }}>{verdict}.</div>
             <div style={{ width: '38px', height: '2px', background: config.color, opacity: 0.45, margin: '14px auto 12px' }} />

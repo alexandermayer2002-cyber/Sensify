@@ -144,7 +144,7 @@ const sc = {
 const mintToken = () =>
   Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('')
 
-export function HouseholdShareCard({ session, profile }) {
+export function HouseholdShareCard({ session, profile, variant, phase, foods = [] }) {
   const [token, setToken] = useState(() => normalizeMilestones(profile?.shown_milestones).household_token || null)
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -216,6 +216,40 @@ export function HouseholdShareCard({ session, profile }) {
     }
   }
 
+  if (variant === 'panel') {
+    // Refresh 2026-11-13: the Home panel form. Same logic, one dark panel,
+    // sentences not labels, no raw URL on screen (the input stays for the
+    // clipboard fallback only).
+    const what = phase === 'reintroduction' ? 'what is off your plate and this week\u2019s trial' : 'what is off your plate right now'
+    return (
+      <div style={hp.panel}>
+        <div>
+          <h3 style={hp.h3}>{token ? 'Your household card is live.' : 'A card for whoever cooks for you.'}</h3>
+          <p style={hp.p}>
+            {token
+              ? `Anyone with your link sees ${what}, nothing more. It updates itself as the protocol moves, so nobody has to ask.`
+              : `One link that shows ${what}, nothing more. It updates itself as the protocol moves, so nobody has to ask.`}
+          </p>
+          {foods.length > 0 && (
+            <div style={hp.chips}>{foods.map(f => <span key={f} style={hp.chip}>{f}</span>)}</div>
+          )}
+          {error && <p style={{ ...hp.p, color: '#F2C7C7', marginTop: 10 }}>{error}</p>}
+        </div>
+        <div style={hp.actions}>
+          {token ? (
+            <>
+              <button style={{ ...hp.btn, opacity: busy ? 0.6 : 1 }} onClick={copyLink} disabled={busy}>{copied ? 'Link copied' : 'Copy the link'}</button>
+              <button style={{ ...hp.quiet, opacity: busy ? 0.6 : 1 }} onClick={turnOff} disabled={busy}>Turn the link off</button>
+              <input ref={inputRef} value={link} readOnly aria-hidden="true" tabIndex={-1} style={hp.hidden} onFocus={e => e.target.select()} />
+            </>
+          ) : (
+            <button style={{ ...hp.btn, opacity: busy ? 0.6 : 1 }} onClick={createLink} disabled={busy}>{busy ? 'Creating the link' : 'Create the link'}</button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="sn-card" style={sc.card}>
       <div style={sc.row}>
@@ -252,4 +286,16 @@ export function HouseholdShareCard({ session, profile }) {
       )}
     </div>
   )
+}
+
+const hp = {
+  panel: { background: '#1E3327', color: '#ECE7DC', borderRadius: 18, padding: '26px 28px', minHeight: 240, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20 },
+  h3: { fontFamily: "var(--font-display, 'Fraunces', serif)", fontWeight: 400, fontSize: 22, letterSpacing: '-.015em', margin: '0 0 8px', lineHeight: 1.1 },
+  p: { fontSize: 15, lineHeight: 1.55, color: 'rgba(236,231,220,.78)', margin: 0 },
+  chips: { display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 16 },
+  chip: { border: '1px solid rgba(236,231,220,.3)', borderRadius: 999, padding: '6px 12px', fontSize: 13 },
+  actions: { display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' },
+  btn: { background: '#ECE7DC', color: '#1E3327', border: 0, borderRadius: 999, padding: '14px 22px', fontWeight: 600, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit' },
+  quiet: { background: 'none', border: 0, padding: 0, color: 'rgba(236,231,220,.6)', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'underline', textUnderlineOffset: 4 },
+  hidden: { position: 'absolute', opacity: 0, width: 1, height: 1, pointerEvents: 'none' },
 }

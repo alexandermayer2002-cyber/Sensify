@@ -374,7 +374,7 @@ USER:
 - Total foods tested: ${foodMap?.length || 0}
 
 Write 4-5 sentences. Rules:
-- Open with the time frame — six months
+- Do NOT state a duration (no "six months", no "weeks"); the program length is not provided here, so name no time frame at all
 - Reference their specific improvement numbers
 - Name their confirmed triggers from Avoid list
 - Name their safe foods
