@@ -21,6 +21,7 @@ import TrackingLanding from './TrackingLanding'
 import DailyCheckin from './DailyCheckin'
 import BaselineSharpness from '../components/BaselineSharpness'
 import SuspectBoard from '../components/SuspectBoard'
+import HomeElimination from './HomeElimination'
 import { HouseholdShareCard } from './HouseholdCard'
 import {
   generateDay1Message,
@@ -1545,6 +1546,20 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         />
       ) : loading ? (
         <div className="snfy-loading">Loading your program...</div>
+      ) : (cockpitActive && calculatedPhase === 'elimination') ? (
+        /* Refresh 2026-11-13: elimination Home is assembled from the seven
+           shared objects (src/components/objects). Reintro Home still renders
+           the previous layout until its screen is rebuilt. */
+        <HomeElimination
+          profile={profile} labResult={labResult} currentDay={currentDay} streak={cleanDays}
+          dailyDone={dailyDone} weeklyDue={weeklyDue} checkinLate={checkinLate}
+          checkins={checkins} complianceData={complianceData} weekFactors={weekFactors} awayDates={awayDates}
+          milestoneMessage={milestoneMessage} session={session}
+          onOpenDaily={() => setScreen('daily-checkin')}
+          onOpenWeekly={() => setScreen('checkin')}
+          onOpenHistory={() => { setTab('history'); setScreen('checkin-history') }}
+          onOpenReintro={() => goTab('Reintro')}
+        />
       ) : (<>
         {cockpitActive && (() => {
           // Presentation only: pick the ONE clock this hero leads with. While a

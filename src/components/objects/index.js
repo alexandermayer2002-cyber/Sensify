@@ -54,7 +54,9 @@ export function reintroStripDays({ logs = [], cycleStart, today, exposureDays = 
 /* points: [{day:number, value:number}] (0-5 or 0-10 scale; pass max)  */
 /* baseline: number | null. Under 7 points draws dots, never a line.    */
 /* Never draws past the last point. Change is position only.           */
-export function SymptomCurve({ points = [], baseline = null, max = 5, width = 260, height = 90, todayLabel, emptyText = "Your curve starts after tonight's check-in." }) {
+export function SymptomCurve({ points = [], baseline = null, max = 5, width = 260, height = 90, minLine = 7, todayLabel, emptyText = "Your curve starts after tonight's check-in." }) {
+  // minLine: nightly series need 7 points before a line is honest; weekly
+  // series (one point per check-in) may pass 3.
   const W = width, H = height
   const y = v => H - 8 - (v / (max * 1.2)) * (H - 16)
   const ink = 'var(--ob-ink)', moss = 'var(--ob-moss)', mute = 'var(--ob-mute)'
@@ -74,12 +76,13 @@ export function SymptomCurve({ points = [], baseline = null, max = 5, width = 26
       </svg>
     )
   }
-  if (pts.length < 7) {
+  if (pts.length < minLine) {
+    const unit = minLine === 7 ? 'night' : 'week'
     return (
       <svg className="ob-curve" viewBox={`0 0 ${W} ${H}`} width={W} height={H}>
         {base}
-        {pts.map((p, i) => <circle key={i} cx={8 + i * ((W - 16) / 6)} cy={y(p.value)} r="4" fill={moss} />)}
-        <text x="0" y={H - 2} fontSize="10" fill={mute}>{pts.length} night{pts.length === 1 ? '' : 's'}. A line appears at 7.</text>
+        {pts.map((p, i) => <circle key={i} cx={8 + i * ((W - 16) / Math.max(1, minLine - 1))} cy={y(p.value)} r="4" fill={moss} />)}
+        <text x="0" y={H - 2} fontSize="10" fill={mute}>{pts.length} {unit}{pts.length === 1 ? '' : 's'}. A line appears at {minLine}.</text>
       </svg>
     )
   }
