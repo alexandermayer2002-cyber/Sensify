@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { protocolDay } from '../utils/protocolDay'
 import { getProtocolFoods, getTestingOrder } from '../utils/protocolEngine'
+import { VerdictCard, SuspectCard } from '../components/objects'
+import { evidenceLine } from '../utils/evidence'
 // The Food Map download is a real generated PDF (vector, full color, no print
 // dialog). jsPDF and the embedded fonts load only when the button is tapped.
 
@@ -175,38 +177,39 @@ export default function FoodMap({ session, profile, labResult }) {
     )
   }
 
-  const wash = { Safe: ['#EDF3ED', 'rgba(61,92,60,0.14)'], Limit: ['#FBF3E4', 'rgba(192,122,40,0.16)'], Avoid: ['#F9EAE8', 'rgba(192,57,43,0.14)'] }
+  // Refresh 2026-11-13: cards are the shared Verdict / Suspect objects.
+  // Verdict colors only on rulings; no tinted washes; tap a ruled card for
+  // its full record.
   const Card = ({ food, cycle, ghost, tag, live }) => {
     const k = food.name.toLowerCase()
     const canOpen = cycle && !ghost
     const trials = trialCount[k] || 0
     const open = openRow === k
-    const [bg, bd] = ghost ? ['transparent', 'rgba(0,0,0,0.13)'] : live ? ['#E7F3F0', 'rgba(44,157,138,0.22)'] : (wash[cycle?.verdict] || ['#FFFFFF', 'rgba(0,0,0,0.08)'])
-    const dayOf = (iso) => {
-      if (!profile?.protocol_start_date || !iso) return null
-      const a = new Date(String(profile.protocol_start_date).split('T')[0] + 'T12:00:00')
-      const b = new Date(String(iso).split('T')[0] + 'T12:00:00')
-      return Math.max(1, Math.round((b - a) / 86400000) + 1)
-    }
-    // Stamp the day the verdict actually landed (QA 2026-10-27 #6): a severe
-    // stop on day 2 or an extended trial never saw day 14.
-    const ruledDay = cycle?.verdict
-      ? dayOf(cycle.submitted_at ? String(cycle.submitted_at).split('T')[0] : addDays(String(cycle.started_at).split('T')[0], 13))
-      : null
-    const dayStamp = cycle?.verdict
-      ? (ruledDay ? `DAY ${ruledDay}` : null)
-      : live && cycle ? `DAY ${Math.min(14, Math.max(1, Math.round((new Date(today + 'T12:00:00') - new Date(String(cycle.started_at).split('T')[0] + 'T12:00:00')) / 86400000) + 1))} OF 14` : null
-    return (
-      <div className={canOpen ? 'sn-card-hov' : undefined} style={{ ...s.card, background: bg, border: ghost ? `1.5px dashed ${bd}` : 'none', cursor: canOpen ? 'pointer' : 'default', gridColumn: open ? '1 / -1' : 'auto' }} onClick={() => canOpen && setOpenRow(open ? null : k)}>
-        {dayStamp && <div style={s.dayStamp}>{dayStamp}</div>}
-        <div>
-          <div style={{ ...s.fname, color: ghost ? 'rgba(122,122,114,0.5)' : '#7A7A72' }}>{food.name}{trials > 1 && <span style={{ marginLeft: 6, opacity: 0.7 }}>{ordinal(trials)} TRIAL</span>}</div>
-          <div style={{ ...s.vword, ...(ghost ? s.vGhost : {}), color: ghost ? 'rgba(28,28,28,0.2)' : live ? '#2C9D8A' : (V_COLOR[cycle?.verdict] || '#1C1C1C'), animation: live ? 'fmPl 2s infinite' : 'none' }}>
-            {ghost ? (tag === 'NEXT' || tag === 'DAY 57' ? 'Next.' : 'Awaiting.') : live ? 'On trial.' : `${cycle.verdict}.`}
-          </div>
+    const wrap = { gridColumn: open ? '1 / -1' : 'auto', cursor: canOpen ? 'pointer' : 'default' }
+    const onClick = canOpen ? () => setOpenRow(open ? null : k) : undefined
+    if (ghost) {
+      return (
+        <div style={wrap}>
+          <SuspectCard food={food.name} meta={tag === 'EXAMPLE' ? 'Example. Your lab results choose the real list.' : undefined}
+            state={tag === 'NEXT' || tag === 'DAY 57' ? 'next' : 'suspect'}
+            line={tag === 'DAY 57' ? 'First trial opens on day 57.' : tag === 'NEXT' ? 'Starts the day you pick it.' : 'Still off your plate. Not yet tried.'} />
         </div>
-        <Strip cycle={ghost ? null : cycle} ghost={ghost} />
-        {ghost && tag && <div style={s.ghostCorner}>{tag}</div>}
+      )
+    }
+    if (live) {
+      const cd = Math.min(14, Math.max(1, Math.round((new Date(today + 'T12:00:00') - new Date(String(cycle.started_at).split('T')[0] + 'T12:00:00')) / 86400000) + 1))
+      return (
+        <div style={wrap} onClick={onClick}>
+          <VerdictCard food={food.name} state="trial" evidence={`Day ${cd} of 14.`} />
+          {open && <Record cycle={cycle} />}
+        </div>
+      )
+    }
+    const ev = evidenceLine(cycle, logs.filter(l => l.reintro_id === cycle.id))
+    return (
+      <div style={wrap} onClick={onClick}>
+        <VerdictCard food={food.name} meta={trials > 1 ? `${ordinal(trials)} trial.` : undefined} state="ruled" verdict={cycle.verdict} evidence={ev}
+          conflicted={cycle.answers?.conflicted === true} stoppedEarly={!!cycle.stopped_early} />
         {open && <Record cycle={cycle} />}
       </div>
     )
@@ -313,17 +316,17 @@ export default function FoodMap({ session, profile, labResult }) {
       <div className="sn-rise" style={s.doc}>
         <div style={s.dochead}>
           <div>
-            <div style={s.kicker}>SENSIFY · THE VERDICTS{complete ? ' · VERIFIED' : ''}</div>
             <div style={s.title}>
-              {!labResult ? <>A document, <span style={{ color: '#3D5C3C' }}>waiting.</span></>
-                : complete ? <>Every verdict, <span style={{ color: '#3D5C3C' }}>earned.</span></>
-                : preReintro ? <>{total} trial{total === 1 ? '' : 's'} <span style={{ color: '#3D5C3C' }}>waiting.</span></>
-                : <>{name ? `${name}'s` : 'Your'} <span style={{ color: '#3D5C3C' }}>verdicts.</span></>}
+              {!labResult ? 'Your verdicts live here.'
+                : complete ? 'Every verdict, earned.'
+                : preReintro ? `${total} trial${total === 1 ? '' : 's'} waiting for day 57.`
+                : `${name ? `${name}'s` : 'Your'} Food Map, so far.`}
             </div>
+            <div style={{ fontSize: 14, color: '#737B73', marginTop: 6, lineHeight: 1.5 }}>Each verdict is ruled by a fourteen-day single-food trial on your own daily record. Nothing is assumed.</div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={s.bignum}>{ruledCount}<span style={s.bigden}> / {total || '—'}</span></div>
-            <div style={s.countLabel}>RULED · EARNED</div>
+            <div style={s.bignum}>{ruledCount}<span style={s.bigden}> of {total || 0}</span></div>
+            <div style={{ fontSize: 12.5, color: '#737B73', marginTop: 4 }}>ruled</div>
           </div>
         </div>
 
@@ -336,7 +339,7 @@ export default function FoodMap({ session, profile, labResult }) {
           </div>
         )}
         {labResult && ruledCount > 0 && dayZeroEcho(profile, currentDay) && (
-          <div style={{ fontSize: 13, color: '#73736A', lineHeight: 1.65, margin: '2px 0 14px', fontStyle: 'italic' }}>
+          <div style={{ fontSize: 14, color: '#434B44', lineHeight: 1.6, margin: '2px 0 16px' }}>
             {dayZeroEcho(profile, currentDay)}
           </div>
         )}
@@ -392,36 +395,32 @@ export default function FoodMap({ session, profile, labResult }) {
         {!labResult && <div style={s.awaitNote}>Your lab results choose the foods. Your body rules on each one, day by day. Every card here gets earned.</div>}
         <div style={s.docfoot}>
           <div style={s.legend}>
-            <span style={s.li}><span style={{ ...s.swSq, background: 'rgba(34,48,31,0.35)' }} />ATE THE FOOD</span>
-            <span style={s.li}><span style={{ ...s.swCi, background: 'rgba(34,48,31,0.35)' }} />WASHOUT</span>
-            <span style={s.li}><span style={{ ...s.swSq, background: '#4C7A4A' }} />NO SYMPTOMS</span>
-            <span style={s.li}><span style={{ ...s.swSq, background: '#D64545' }} />SYMPTOMS</span>
+            <span style={{ fontSize: 12.5, color: '#737B73' }}>Tap a ruled food for its day-by-day record.</span>
           </div>
           <div style={s.sealWrap}>
-            <div style={s.fnote}>RULED BY YOUR RECORD<br />NOTHING ASSUMED</div>
-            <div style={{ ...s.seal, ...(complete ? s.sealDone : {}) }}>{ruledCount}/{total || 0}</div>
+            <div style={{ fontSize: 12.5, color: '#737B73', textAlign: 'right', lineHeight: 1.4 }}>Ruled by your record.<br />Nothing assumed.</div>
           </div>
         </div>
       </div>
       {labResult && (ruled.length > 0 || testing.length > 0) && (
-        <div style={s.tapNote}>Tap any trial for its full record.</div>
+        null
       )}
     </div>
   )
 }
 
 const s = {
-  page: { maxWidth: 640, margin: '0 auto', padding: '28px 18px 60px' },
-  doc: { background: 'var(--paper)', border: 'none', borderRadius: 24, overflow: 'hidden', boxShadow: 'var(--shadow-2)' },
-  dochead: { padding: '25px 26px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
+  page: { maxWidth: 1180, margin: '0 auto', padding: '28px 20px 60px' },
+  doc: { background: 'transparent' },
+  dochead: { padding: '8px 0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
   kicker: { fontFamily: 'DM Mono, monospace', fontSize: 10, fontWeight: 500, letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: 8, textTransform: 'uppercase' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: 27, fontWeight: 400, color: '#1C1C1C', lineHeight: 1.1, fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
+  title: { fontFamily: 'Fraunces, serif', fontSize: 30, fontWeight: 300, color: '#151E18', lineHeight: 1.05, letterSpacing: '-0.02em' },
   bignum: { fontFamily: 'Fraunces, serif', fontSize: 27, color: '#3D5C3C', lineHeight: 1 },
   bigden: { color: 'rgba(28,28,28,0.25)', fontSize: 18 },
   countLabel: { fontFamily: 'DM Mono, monospace', fontSize: 7.5, letterSpacing: '1.4px', color: '#9A927E', marginTop: 3 },
-  printRow: { padding: '0 26px 10px', display: 'flex', justifyContent: 'flex-end' },
+  printRow: { padding: '0 0 16px', display: 'flex', justifyContent: 'flex-start' },
   printBtn: { fontSize: 12, letterSpacing: '0.2px', borderRadius: 999, padding: '9px 16px' },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 12, padding: '6px 26px 10px' },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 16, padding: '6px 0 10px' },
   card: { borderRadius: 16, padding: '15px 15px 13px', minHeight: 116, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', gap: 10 },
   dayStamp: { position: 'absolute', top: 12, right: 13, fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.1px', color: '#9A927E' },
   fname: { fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1.6px', textTransform: 'uppercase' },
@@ -438,7 +437,7 @@ const s = {
   recNote: { fontSize: 11, color: '#9A927E', lineHeight: 1.6, padding: '10px 0 8px' },
   recLine: { fontSize: 12, color: '#1C1C1C', lineHeight: 2 },
   awaitNote: { fontSize: 11.5, color: '#9A927E', lineHeight: 1.65, padding: '14px 0 16px' },
-  docfoot: { marginTop: 4, padding: '13px 26px 19px', borderTop: '1px solid rgba(0,0,0,0.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
+  docfoot: { marginTop: 18, padding: '14px 0 0', borderTop: '1px solid rgba(21,30,24,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
   legend: { display: 'flex', gap: 13, alignItems: 'center', flexWrap: 'wrap' },
   li: { display: 'flex', gap: 5, alignItems: 'center', fontFamily: 'DM Mono, monospace', fontSize: 7.5, letterSpacing: '1px', color: '#9A927E' },
   swSq: { width: 9, height: 9, borderRadius: 2.5, display: 'inline-block' },

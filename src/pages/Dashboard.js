@@ -1362,7 +1362,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         </div>
         <div className="snfy-nav-right">
           {/* Refresh 2026-11-13: the rebuilt elimination Home carries its own day counter, so the caps phase pill (a second clock, a second label) is dropped there. */}
-          {!(cockpitActive && screen === 'dashboard' && tab === 'home') && <div className="snfy-phase-pill">{phaseLabel}</div>}
+          {!cockpitActive && <div className="snfy-phase-pill">{phaseLabel}</div>}
           {!isAdmin && (
             <button className="snfy-msg-btn" onClick={() => { setTab('messages'); setScreen('messages') }} title="Support">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
