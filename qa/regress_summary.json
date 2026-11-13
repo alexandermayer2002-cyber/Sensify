@@ -1,7 +1,7 @@
 {
- "date": "2611131650",
- "passed": 57,
- "total": 57,
+ "date": "2611131744",
+ "passed": 29,
+ "total": 29,
  "results": [
   {
    "check": "mkt.example_labels",
@@ -16,7 +16,7 @@
   {
    "check": "p1.intake",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYour intake is complete. Upload your lab results to begin.\n\nAction needed\nUpload"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour intake is complete. Upload your lab results to begin.\n\nAction needed\nUpload y"
   },
   {
    "check": "p1.readback",
@@ -26,12 +26,12 @@
   {
    "check": "p1.flagged_autostart",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nElimination phase\nStarts tomorrow.\nYour elimination ph"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nElimination phase\nStarts tomorrow.\nYour elimination phas"
   },
   {
    "check": "p1.unlock_hero",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\n\nGood afternoon, QA.\n1\nday of reintroduction\n\nTesting is open. Choose your first food.\n\nElimination is done. Ea"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\n\nGood evening, QA.\n1\nday of reintroduction\n\nTesting is open. Choose your first food.\n\nElimination is done. Each"
   },
   {
    "check": "p1.no_false_complete",
@@ -66,32 +66,32 @@
   {
    "check": "p2.no_premature_protocol",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYour results are in. Choose your path.\n\nChoose your path\n\u25be\nHOW THOROUGH DO YOU WANT TO GO?"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour results are in. Choose your path.\n\nChoose your path\n\u25be\nHOW THOROUGH DO YOU WANT TO GO?\nT"
   },
   {
    "check": "p2.decision_present",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYour results are in. Choose your path.\n\nChoose your path\n\u25be\nHOW THOROUGH DO YOU WANT TO GO?"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour results are in. Choose your path.\n\nChoose your path\n\u25be\nHOW THOROUGH DO YOU WANT TO GO?\nT"
   },
   {
    "check": "p2.protocol_started",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nElimination phase\nStarts tomorrow.\nYour elimination ph"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nElimination phase\nStarts tomorrow.\nYour elimination phas"
   },
   {
    "check": "p3.popup_flagged_script",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYour results are in. Choose your path.\n\n\u2715\nYOUR RESULTS ARE IN\nYour flags are real. So is w"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour results are in. Choose your path.\n\n\u2715\nYOUR RESULTS ARE IN\nYour flags are real. So is wha"
   },
   {
    "check": "p3.union_banner",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYour results are in. Choose your path.\n\nChoose your path\n\u25be\nHOW THOROUGH DO YOU WANT TO GO?"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYour results are in. Choose your path.\n\nChoose your path\n\u25be\nHOW THOROUGH DO YOU WANT TO GO?\nT"
   },
   {
    "check": "p4.tracking_landing",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYou're tracking. Log how today goes.\n\nYOUR PATH\nYou're tracking, not testing.\n\nYou've chos"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're tracking. Log how today goes.\n\nYOUR PATH\nYou're tracking, not testing.\n\nYou've chosen"
   },
   {
    "check": "p4.verdicts_tracking_state",
@@ -111,182 +111,42 @@
   {
    "check": "p5.upload_no_error",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood afternoon,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nElimination phase\nStarts tomorrow.\nYour elimination ph"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nElimination phase\nStarts tomorrow.\nYour elimination phas"
   },
   {
    "check": "p5.file_stored",
    "ok": true,
-   "detail": "[{'file_path': '699db4f0-e54e-479e-83fa-2b27254fa5d1-1794607112004.pdf'}]"
+   "detail": "[{'file_path': '849719c7-20ca-4812-87a3-6bfe0ffba260-1794610378537.pdf'}]"
   },
   {
-   "check": "fleet.elimearly.no_overflow",
+   "check": "sentinel.silent_writes",
+   "ok": true,
+   "detail": "0 NEW unchecked writes"
+  },
+  {
+   "check": "sentinel.safety",
    "ok": true,
    "detail": ""
   },
   {
-   "check": "fleet.elimearly.screens_render",
+   "check": "sentinel.rls_boundary",
    "ok": true,
    "detail": ""
   },
   {
-   "check": "fleet.elimearly.no_dead_end",
+   "check": "sentinel.data_integrity",
    "ok": true,
    "detail": ""
   },
   {
-   "check": "fleet.elimearly.seeded",
+   "check": "fault.intake_complete_surfaces",
    "ok": true,
-   "detail": "{\"protocol_start_date\": \"2026-11-11\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+   "detail": "errored=True escaped_to_dashboard=False | \u2190 Back\nSensify.\nStep 5 of 5\nA bit about\nyour normal.\nSleep, stress, and a few habits shape how you feel as much as foo"
   },
   {
-   "check": "fleet.elimearly.day_logged",
+   "check": "fault.meal_log_surfaces",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-13"
-  },
-  {
-   "check": "fleet.elimearly.day_counter",
-   "ok": true,
-   "detail": "shown=3 expected=3 start=2026-11-11"
-  },
-  {
-   "check": "fleet.elimearly.console_clean",
-   "ok": true,
-   "detail": "[]"
-  },
-  {
-   "check": "fleet.elimlate.no_overflow",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.elimlate.screens_render",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.elimlate.no_dead_end",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.elimlate.seeded",
-   "ok": true,
-   "detail": "{\"protocol_start_date\": \"2026-10-02\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
-  },
-  {
-   "check": "fleet.elimlate.day_logged",
-   "ok": true,
-   "detail": "no daily_factors row for 2026-11-13"
-  },
-  {
-   "check": "fleet.elimlate.day_counter",
-   "ok": true,
-   "detail": "shown=43 expected=43 start=2026-10-02"
-  },
-  {
-   "check": "fleet.elimlate.console_clean",
-   "ok": true,
-   "detail": "[]"
-  },
-  {
-   "check": "fleet.audit.no_overflow",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.audit.screens_render",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.audit.no_dead_end",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.audit.seeded",
-   "ok": true,
-   "detail": "{\"protocol_start_date\": \"2026-11-02\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
-  },
-  {
-   "check": "fleet.audit.day_logged",
-   "ok": true,
-   "detail": "no daily_factors row for 2026-11-13"
-  },
-  {
-   "check": "fleet.audit.day_counter",
-   "ok": true,
-   "detail": "shown=12 expected=12 start=2026-11-02"
-  },
-  {
-   "check": "fleet.audit.console_clean",
-   "ok": true,
-   "detail": "[]"
-  },
-  {
-   "check": "fleet.reintro.no_overflow",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.reintro.screens_render",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.reintro.no_dead_end",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.reintro.seeded",
-   "ok": true,
-   "detail": "{\"protocol_start_date\": \"2026-09-03\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
-  },
-  {
-   "check": "fleet.reintro.day_logged",
-   "ok": true,
-   "detail": "no daily_factors row for 2026-11-13"
-  },
-  {
-   "check": "fleet.reintro.verdict_count",
-   "ok": true,
-   "detail": "shown=1 of 3\nruled db_ruled=1"
-  },
-  {
-   "check": "fleet.reintro.console_clean",
-   "ok": true,
-   "detail": "[]"
-  },
-  {
-   "check": "fleet.tracking.no_overflow",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.tracking.screens_render",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.tracking.no_dead_end",
-   "ok": true,
-   "detail": ""
-  },
-  {
-   "check": "fleet.tracking.seeded",
-   "ok": true,
-   "detail": "{\"protocol_start_date\": null, \"program_phase\": \"tracking\", \"protocol_track\": \"common\", \"track_decision\": \"declined\"}"
-  },
-  {
-   "check": "fleet.tracking.day_logged",
-   "ok": true,
-   "detail": "no daily_factors row for 2026-11-13"
-  },
-  {
-   "check": "fleet.tracking.console_clean",
-   "ok": true,
-   "detail": "[]"
+   "detail": "retry=True false_success=False"
   }
  ]
 }
