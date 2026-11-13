@@ -122,7 +122,9 @@ export default function HomeElimination({
     headline = 'Your record is building.'
     lede = weeksLogged >= 1
       ? `${Cap(words(weeksLogged))} weekly check-in${weeksLogged === 1 ? '' : 's'} on the record against your starting point. The trials begin on day 57; nothing is ruled before then.`
-      : 'Your first weekly check-in opens at the end of week one. Until then, the nightly log is the whole job.'
+      : weeklyDue
+        ? 'Your weekly check-in is open. It is the only place your symptoms get scored against day zero, so it is worth the five minutes.'
+        : 'The nightly log is the whole job this week. Your weekly check-in scores the week against day zero when it opens.'
   } else {
     headline = 'Testing begins on day 57. Your order is set.'
     lede = `${Cap(words(daysLeft))} clean night${daysLeft === 1 ? '' : 's'} to go. Your suspects will be tried one at a time, in the order below, and your body rules on each.`
@@ -162,7 +164,7 @@ export default function HomeElimination({
     <aside className="ob-paper he-ledger">
       <h3>Your weeks against your starting point</h3>
       {weeksLogged === 0 ? (
-        <p className="he-ledger-empty">Your first weekly check-in opens at the end of week one. Each week adds a point here.</p>
+        <p className="he-ledger-empty">{day <= 7 ? 'Your first weekly check-in opens at the end of week one. Each week adds a point here.' : weeklyDue ? 'No weekly check-in on the record yet. One is open now; each one adds a point here.' : 'No weekly check-in on the record yet. Each one adds a point here.'}</p>
       ) : series.length === 0 ? (
         <p className="he-ledger-empty">{Cap(words(weeksLogged))} weekly check-in{weeksLogged === 1 ? '' : 's'} on the record. Your day-zero baseline was not scored, so there is nothing to compare against yet.</p>
       ) : (

@@ -176,7 +176,7 @@ const BTN = {
   tonight: { label: "Start tonight's check-in", time: '2 minutes' },
   logged: { label: 'Logged tonight. See you tomorrow.', time: null },
   washout: { label: "Log tonight's washout check", time: '1 minute' },
-  catchup: { label: 'Catch up on last night', time: null },
+  catchup: { label: 'Catch up on your weekly check-in', time: '5 minutes' },
   weekly: { label: 'Weekly check-in is open', time: '5 minutes' },
 }
 export function CheckinButton({ state = 'tonight', onClick, block = false, className = '' }) {
