@@ -162,7 +162,7 @@ input, textarea, select, button { font-family: var(--font-body); }
 .sn-chip-on { background: var(--forest-500); color: #fff; box-shadow: var(--shadow-pill); }
 
 /* Verdict stamps: the ONLY place verdict colors appear as fills */
-.sn-stamp { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; border-radius: var(--r-pill); padding: 6px 12px; }
+.sn-stamp { font-family: var(--font-body); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; border-radius: var(--r-pill); padding: 6px 12px; }
 .sn-stamp-safe { background: var(--safe-100); color: #1F7465; }
 .sn-stamp-limit { background: var(--limit-100); color: var(--limit-700); }
 .sn-stamp-avoid { background: var(--avoid-100); color: var(--avoid-700); }

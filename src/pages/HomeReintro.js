@@ -238,14 +238,14 @@ export default function HomeReintro({
             {action}
             {weeklyDue && state !== 'verdict' && state !== 'complete' && state !== 'loading' ? <button type="button" className="hr-link" onClick={onOpenWeekly}>{checkinLate ? 'Catch up on your weekly check-in' : 'Weekly check-in is open'}</button> : null}
           </div>
-          {state !== 'complete' && state !== 'loading' && state !== 'nofoods' ? <StreakLine state={streakState} count={streak} loggedTonight={loggedToday || dailyDone} className="hr-streak" /> : null}
+          {state !== 'complete' && state !== 'loading' && state !== 'nofoods' && state !== 'stalled' && state !== 'verdict' ? <StreakLine state={streakState} count={streak} loggedTonight={loggedToday || dailyDone} className="hr-streak" /> : null}
           {readError ? <p className="hr-quiet" style={{ marginTop: 10 }}>Your trial record could not be read just now, so the map below may be incomplete. It will refresh on the next load.</p> : null}
         </div>
 
         {showCycleCard && (
           <aside className="ob-paper hr-cycle">
             <h3>{food} on trial</h3>
-            <p>{state === 'pending' ? 'Starts soon.' : clock.inExposure ? `Exposure, day ${Math.min(14, clock.cycleDay)} of 14.` : `Washout, day ${Math.min(14, clock.cycleDay)} of 14.`} Three exposure days, then eleven of watching. One square per day.</p>
+            <p>Three exposure days, then eleven washout days. One square per day.</p>
             <Strip days={stripDays} size="md" label={`${food} cycle`} />
             <div className="hr-legend"><span><i className="exposure" />exposure</span><span><i className="on" />washout, logged</span><span><i className="today" />today</span></div>
           </aside>
@@ -297,7 +297,7 @@ export default function HomeReintro({
               ? <button type="button" className="hr-link" onClick={onOpenReintro}>See retests and what comes next</button>
               : !loggedToday && !dailyDone ? <button type="button" className="hr-link" onClick={onOpenDaily}>Open tonight’s check-in</button> : <p className="hr-quiet">Tonight’s check-in is in. Tomorrow’s has the same place.</p>}
           </div>
-          <HouseholdShareCard session={session} profile={profile} variant="panel" phase={state === 'complete' ? 'complete' : 'reintroduction'} foods={offPlate} trialFood={trialFood} />
+          <HouseholdShareCard session={session} profile={profile} variant="panel" tone={state === 'complete' ? 'paper' : 'forest'} phase={state === 'complete' ? 'complete' : 'reintroduction'} foods={offPlate} trialFood={trialFood} />
         </section>
       )}
     </div>

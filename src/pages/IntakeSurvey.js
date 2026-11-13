@@ -25,7 +25,7 @@ const FREQUENCY_OPTIONS = [
   { label: 'Never', value: 'never' },
 ]
 
-// Lifestyle baseline options — captured at intake as the personal "normal" that
+// Lifestyle baseline options. captured at intake as the personal "normal" that
 // daily check-in factors are later compared against to detect divergence.
 const SLEEP_BANDS = [
   { label: 'Under 6 hours', value: 'under6' },
@@ -139,7 +139,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
   const [selectedCategories, setSelectedCategories] = useState([])
   const [answers, setAnswers] = useState({})
   const [foodFrequency, setFoodFrequency] = useState({})
-  // Lifestyle baselines (sleep/stress/hydration/gender/alcohol) — the personal
+  // Lifestyle baselines (sleep/stress/hydration/gender/alcohol). the personal
   // "normal" that daily check-in factors are compared against for divergence.
   const [lifestyle, setLifestyle] = useState({})
   const [openPad, setOpenPad] = useState(null)
@@ -178,7 +178,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           setLifestyle(d.lifestyle || {})
         }
       }
-    } catch (e) { /* storage unavailable — intake still works, just unsaved */ }
+    } catch (e) { /* storage unavailable. intake still works, just unsaved */ }
     setHydrated(true)
     })()
     // eslint-disable-next-line
@@ -192,7 +192,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
 
   // Write-behind to the profile on step changes (QA 2026-10-31 #2): localStorage
   // dies on a device switch, private mode, or a cleared webview. Defensive on
-  // purpose — until INTAKE_DRAFT_MIGRATION.sql adds the column, the write
+  // purpose. until INTAKE_DRAFT_MIGRATION.sql adds the column, the write
   // errors quietly and localStorage remains the only net.
   useEffect(() => {
     if (!hydrated || step < 0) return
@@ -278,7 +278,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     const scales = []
     const a = answers
 
-    // Digestive scales — only if they said they have these symptoms
+    // Digestive scales. only if they said they have these symptoms
     if (hasDigestive || hasGeneral) {
       if (!isNever(a.bloating_freq) || !isNever(a.general_digestion)) {
         scales.push({ id: 'baseline_bloating', label: 'In a typical week, how would you rate your bloating?', low: 'None at all', high: 'Severe' })
@@ -297,7 +297,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       }
     }
 
-    // Energy scales — only if they said they have these symptoms
+    // Energy scales. only if they said they have these symptoms
     if (hasEnergy || hasGeneral) {
       if (a.fatigue_freq && a.fatigue_freq !== 'Rarely tired') {
         scales.push({ id: 'baseline_energy', label: 'In a typical week, how would you rate your energy?', low: 'Exhausted', high: 'Full energy' })
@@ -364,7 +364,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       food_frequency: foodFrequency,
       gender: lifestyle.gender,
       // Numbers stored as numbers (QA 2026-11-06 full-run #13, approved by
-      // Alex): "4" and "7" went in as strings — the same type-looseness that
+      // Alex): "4" and "7" went in as strings. the same type-looseness that
       // caused the sleep band-map bug. Blank stays null, never NaN.
       baseline_avg_sleep: lifestyle.avg_sleep !== '' && lifestyle.avg_sleep != null && isFinite(parseFloat(lifestyle.avg_sleep)) ? parseFloat(lifestyle.avg_sleep) : null,
       baseline_avg_stress: lifestyle.avg_stress !== '' && lifestyle.avg_stress != null && isFinite(parseFloat(lifestyle.avg_stress)) ? parseFloat(lifestyle.avg_stress) : lifestyle.avg_stress ?? null,
@@ -379,12 +379,12 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     })
     // THE FINAL SAVE IS CHECKED (QA 2026-11-01 #1, worst silent-write found):
     // a failed upsert used to delete the draft and route to the dashboard
-    // anyway — one network blip at the last tap and ~15 minutes of answers
+    // anyway. one network blip at the last tap and ~15 minutes of answers
     // plus the signed consent vanished behind a success screen. On failure
     // the draft stays, the user stays here, and retry is free.
     if (saveError) {
       setSaving(false)
-      setCompleteError("Your answers couldn't save — nothing was lost, they're all still here. Check your connection and tap Complete intake again.")
+      setCompleteError("Your answers couldn't save. nothing was lost, they're all still here. Check your connection and tap Complete intake again.")
       return
     }
     // Optional research consent rides the milestones KV (the column that
@@ -406,7 +406,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
 
   const canProceedFromAgreement = agreed && signatureName.trim().length >= 2
 
-  // STEP -1 — Agreement
+  // STEP -1. Agreement
   if (step === -1) return (
     <div style={s.wrap}>
       <style>{PAGE_CSS}</style>
@@ -526,7 +526,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     </div>
   )
 
-  // STEP 0 — Category selection
+  // STEP 0. Category selection
   if (step === 0) return (
     <div style={s.wrap}>
       <style>{PAGE_CSS}</style>
@@ -574,7 +574,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     </div>
   )
 
-  // STEP 1 — Adaptive symptom questions
+  // STEP 1. Adaptive symptom questions
   if (step === 1) return (
     <div style={s.wrap}>
       <style>{PAGE_CSS}</style>
@@ -624,7 +624,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       <div style={s.footer}>
         {!allSymptomAnswered && (
           <div style={{ fontSize: 12, color: '#9A6212', background: '#FBF0DF', borderRadius: 10, padding: '8px 12px', marginBottom: 8, lineHeight: 1.5 }}>
-            {requiredSymptomQuestions.filter(q => !answers[q.id]).length} question{requiredSymptomQuestions.filter(q => !answers[q.id]).length === 1 ? '' : 's'} above still need{requiredSymptomQuestions.filter(q => !answers[q.id]).length === 1 ? 's' : ''} an answer — scroll up to the unanswered ones.
+            {requiredSymptomQuestions.filter(q => !answers[q.id]).length} question{requiredSymptomQuestions.filter(q => !answers[q.id]).length === 1 ? '' : 's'} above still need{requiredSymptomQuestions.filter(q => !answers[q.id]).length === 1 ? 's' : ''} an answer. scroll up to the unanswered ones.
           </div>
         )}
         <button className="sn-btn" style={s.cta} disabled={!allSymptomAnswered} onClick={() => setStep(2)}>Continue</button>
@@ -632,7 +632,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     </div>
   )
 
-  // STEP 2 — Dynamic baseline scores
+  // STEP 2. Dynamic baseline scores
   if (step === 2) return (
     <div style={s.wrap}>
       <style>{PAGE_CSS}</style>
@@ -656,7 +656,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             : 'Rate how you\'re feeling overall today. This becomes your baseline.'}
         </div>
         <div style={s.importantNote}>
-          Be honest, not hopeful — these scores only help you if they're real.
+          Be honest, not hopeful. these scores only help you if they're real.
         </div>
 
         {baselineScales.length > 0 && (
@@ -682,7 +682,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, color: '#20241F', lineHeight: 1.3 }}>{scale.label}</div>
             {flipped && (
               <div style={{ marginTop: 10, background: '#FBF0DF', color: '#9A6212', borderRadius: 10, padding: '7px 11px', fontSize: 11.5, lineHeight: 1.5, fontWeight: 600 }}>
-                Heads up — this scale runs the other way: 10 is the {goodHigh ? 'good' : 'rough'} end here.
+                Heads up. this scale runs the other way: 10 is the {goodHigh ? 'good' : 'rough'} end here.
               </div>
             )}
             <div style={{ ...s.scaleLabels, margin: '13px 0 8px' }}>
@@ -713,7 +713,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     </div>
   )
 
-  // STEP 3 — Food frequency
+  // STEP 3. Food frequency
   if (step === 3) return (
     <div style={s.wrap}>
       <style>{PAGE_CSS}</style>
@@ -752,7 +752,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         {FOOD_CATEGORIES.map(cat => (
           <div key={cat.category} id={`fcat-${cat.category}`} style={{ scrollMarginTop: 56 }}>
             <div style={s.categoryTitle2}>{cat.category}</div>
-            <div style={{ fontSize: 11.5, color: '#A8A69E', margin: '-6px 0 10px' }}>Blank means you rarely or never eat it — that's a real answer.</div>
+            <div style={{ fontSize: 11.5, color: '#A8A69E', margin: '-6px 0 10px' }}>Blank means you rarely or never eat it. that's a real answer.</div>
             {cat.foods.map((food, foodIndex) => (
               <div
                 key={food}
@@ -779,7 +779,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     </div>
   )
 
-  // STEP 4 — Lifestyle baselines (sleep, stress, hydration, gender, alcohol)
+  // STEP 4. Lifestyle baselines (sleep, stress, hydration, gender, alcohol)
   if (step === 4) {
     const drinks = lifestyle.drinks_alcohol
     const setLife = (k, v) => setLifestyle(prev => ({ ...prev, [k]: v }))
@@ -813,7 +813,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             #11): an out-of-range value used to sit silently behind a dead
             Complete button. */}
         {openPad !== field && lifestyle[field] && !padInRange(field, lifestyle[field]) && (
-          <div style={{ ...s.padWarn, marginTop: 6 }}>That doesn't look right — {PAD_LIMITS[field].warn.toLowerCase()} Tap the field to fix it.</div>
+          <div style={{ ...s.padWarn, marginTop: 6 }}>That doesn't look right. {PAD_LIMITS[field].warn.toLowerCase()} Tap the field to fix it.</div>
         )}
       </>
     )

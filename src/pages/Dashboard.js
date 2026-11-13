@@ -92,7 +92,7 @@ const css = `
     .snfy-signout { font-size: 11px; }
   }
   .snfy-nav-right { display: flex; align-items: center; gap: 10px; }
-  .snfy-phase-pill { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); background: var(--forest-100); padding: 5px 12px; border-radius: var(--r-pill); }
+  .snfy-phase-pill { font-family: var(--font-body); font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--forest-500); background: var(--forest-100); padding: 5px 12px; border-radius: var(--r-pill); }
   .snfy-signout { font-size: 12px; color: var(--gray); background: none; border: none; cursor: pointer; }
   .snfy-signout:hover { color: var(--ink); }
 
@@ -100,7 +100,7 @@ const css = `
   .snfy-heroband { max-width: 1140px; margin: 0 auto; padding: 20px 16px 0; }
   .snfy-hero-top { position: relative; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
   .snfy-hero-big { font-family: var(--font-display); font-size: 29px; font-weight: 300; color: #FAF8F4; line-height: 1.12; letter-spacing: -0.3px; }
-  .snfy-hero-phase { display: inline-block; vertical-align: middle; margin-left: 10px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-900); background: var(--forest-300); border-radius: var(--r-pill); padding: 4px 10px; transform: translateY(-4px); }
+  .snfy-hero-phase { display: inline-block; vertical-align: middle; margin-left: 10px; font-family: var(--font-body); font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--forest-900); background: var(--forest-300); border-radius: var(--r-pill); padding: 4px 10px; transform: translateY(-4px); }
   @media (min-width: 900px) {
     .snfy-heroband { padding: 24px 28px 0; }
     .snfy-hero-big { font-size: 38px; }
@@ -143,12 +143,12 @@ const css = `
   .snfy-phase-orb { position: absolute; top: -70px; right: -70px; width: 240px; height: 240px; border-radius: 50%; background: #8BAE8A; animation: snfyGlow 5s ease-in-out infinite; pointer-events: none; }
   .snfy-phase-orb2 { position: absolute; bottom: -90px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: #8BAE8A; opacity: 0.04; pointer-events: none; }
   @keyframes snfyGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
-  .snfy-phase-eyebrow { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(250,248,244,0.55); margin-bottom: 10px; }
+  .snfy-phase-eyebrow { font-family: var(--font-body); font-size: 10px; font-weight: 500; text-transform: none; letter-spacing: 0; color: rgba(250,248,244,0.55); margin-bottom: 10px; }
   .snfy-phase-day { font-family: var(--font-display); font-size: 64px; font-weight: 300; line-height: 0.9; color: white; margin-bottom: 4px; font-variant-numeric: lining-nums; }
   .snfy-phase-of { font-size: 13px; color: rgba(250,248,244,0.45); margin-bottom: 18px; }
   .snfy-pbar { position: relative; background: rgba(250,248,244,0.13); border-radius: 5px; height: 9px; margin-bottom: 9px; }
   .snfy-pfill { position: absolute; top: 0; bottom: 0; left: 0; background: linear-gradient(90deg, var(--forest-150), var(--forest-300)); border-radius: 5px; box-shadow: 0 0 12px rgba(139, 174, 138, 0.75); transition: width 0.6s var(--ease); }
-  .snfy-plabel { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(250,248,244,0.55); display: flex; justify-content: space-between; }
+  .snfy-plabel { font-family: var(--font-body); font-size: 12px; letter-spacing: 0; text-transform: none; color: rgba(250,248,244,0.55); display: flex; justify-content: space-between; }
   .snfy-phase-streak { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
   .snfy-streak-dot { width: 7px; height: 7px; border-radius: 50%; background: #8BAE8A; flex-shrink: 0; }
   .snfy-streak-text { font-size: 12px; color: rgba(250,248,244,0.45); }
@@ -156,7 +156,7 @@ const css = `
 
   /* Action cards */
   .snfy-action { background: var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 22px; margin-bottom: 14px; }
-  .snfy-action-tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); background: var(--forest-100); padding: 5px 11px; border-radius: var(--r-pill); margin-bottom: 12px; }
+  .snfy-action-tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-body); font-size: 10px; font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--forest-500); background: var(--forest-100); padding: 5px 11px; border-radius: var(--r-pill); margin-bottom: 12px; }
   .snfy-action-tag.amber { color: var(--limit-700); background: var(--limit-100); }
   .snfy-action-tag.red { color: var(--avoid-700); background: var(--avoid-100); }
   .snfy-action-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--forest-500); animation: snfy-pulse 2s infinite; }
@@ -188,7 +188,7 @@ const css = `
   .snfy-dot.away .snfy-dot-day { color: #3D5C3C; }
   .snfy-dot.away .snfy-dot-mark { color: #8BAE8A; }
   .snfy-dot.today { box-shadow: 0 0 0 2px var(--forest-500); }
-  .snfy-dot-day { font-size: 8px; font-weight: 700; letter-spacing: 0.3px; }
+  .snfy-dot-day { font-size: 12px; font-weight: 700; letter-spacing: 0.3px; }
   .snfy-dot.yes .snfy-dot-day, .snfy-dot.no .snfy-dot-day { color: rgba(255,255,255,0.85); }
   .snfy-dot.empty .snfy-dot-day, .snfy-dot.future .snfy-dot-day { color: #A8A69E; }
   .snfy-dot.missed .snfy-dot-day { color: #6A6A62; }
@@ -205,7 +205,7 @@ const css = `
   .snfy-audit-pending { background: var(--tint-warm); border: none; border-radius: var(--r-md); box-shadow: var(--shadow-1); padding: 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
   .snfy-audit-icon { width: 34px; height: 34px; background: var(--forest-100); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-  /* Avoiding list — full categorized */
+  /* Avoiding list. full categorized */
   .snfy-avoiding { background: var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 22px; margin-bottom: 0; }
   .snfy-avoid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .snfy-avoid-bar { display: flex; gap: 2px; height: 9px; border-radius: 5px; overflow: hidden; margin-bottom: 20px; }
@@ -217,7 +217,7 @@ const css = `
   .snfy-avoid-chips { display: flex; flex-wrap: wrap; gap: 7px; }
   .snfy-avoid-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; padding: 7px 13px; border-radius: var(--r-sm); font-weight: 500; }
 
-  /* Weekly insight — instrument style */
+  /* Weekly insight. instrument style */
   .snfy-insight { background: linear-gradient(135deg, rgba(139,174,138,0.08), rgba(139,174,138,0.03)), var(--paper); border: none; border-radius: var(--r-lg); box-shadow: var(--shadow-2); padding: 22px; margin-top: 16px; }
   .snfy-weekly-card { margin-top: 14px; }
   .snfy-trends { margin-top: 14px; }
@@ -229,7 +229,7 @@ const css = `
 
   .snfy-loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; font-size: 14px; color: var(--gray); }
 `
-// Confetti overlay — brand colors, 3.5 seconds, fades out
+// Confetti overlay. brand colors, 3.5 seconds, fades out
 function ConfettiOverlay() {
   const canvasRef = React.useRef(null)
   const pieces = React.useRef([])
@@ -439,7 +439,7 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
         </div>
         <div style={{ flex: 1, background: 'var(--tint-warm)', borderRadius: 'var(--r-md)', padding: '11px 13px' }}>
           <div className="sn-micro sn-micro-dim" style={{ marginBottom: '4px' }}>Latest</div>
-          <div className="sn-num" style={{ fontSize: '22px', color: improved ? '#4A8C6A' : change === 0 ? 'var(--ink)' : '#C95B5B' }}>{latest?.val ?? '—'}</div>
+          <div className="sn-num" style={{ fontSize: '22px', color: improved ? '#4A8C6A' : change === 0 ? 'var(--ink)' : '#C95B5B' }}>{latest?.val ?? ', '}</div>
         </div>
         <div style={{ flex: 1, background: 'var(--tint-warm)', borderRadius: 'var(--r-md)', padding: '11px 13px' }}>
           <div className="sn-micro sn-micro-dim" style={{ marginBottom: '4px' }}>Check-ins</div>
@@ -451,7 +451,7 @@ function SymptomGraph({ profile, checkins, activeMetric, setActiveMetric }) {
 }
 
 // ============================================================
-// WeekFactorCards — expandable summary cards for daily factors.
+// WeekFactorCards. expandable summary cards for daily factors.
 // Collapsed: icon + name + "norm X · this week Y". Tap → accordion
 // opens: Your norm vs This week, then a 7-day bar chart (M–S).
 // Bar height = the band they reported. Missed days show a dash.
@@ -748,7 +748,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   useEffect(() => { loadData() }, [screen])
 
   // Pick up server-side changes (lab approval, track assignment) when the
-  // user returns to the tab — there is no realtime subscription, so without
+  // user returns to the tab. there is no realtime subscription, so without
   // this the "under review" card survives an approval until a full reload
   // (QA 2026-10-22 #3).
   useEffect(() => {
@@ -924,7 +924,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         // Calculate check-in availability based on protocol_start_date
         const protocolStart = p?.protocol_start_date
         if (protocolStart) {
-          // Parse as LOCAL date — same as calculateProtocolDay — so both agree
+          // Parse as LOCAL date. same as calculateProtocolDay. so both agree
           const [sy, sm, sd] = protocolStart.split('T')[0].split('-').map(Number)
           const startDate = new Date(sy, sm - 1, sd)
           const now = new Date()
@@ -934,7 +934,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
           // Windows open every 7 days: day 7, 14, 21, 28...
           // On-time window is 48 hours (days 7-8, 14-15...). If missed, the
-          // check-in stays available as LATE until the next window opens —
+          // check-in stays available as LATE until the next window opens , 
           // users are never silently stranded with a gap week.
           if (daysSinceStart >= 7) {
             const currentWindowWeek = Math.floor(daysSinceStart / 7) // which week we're in
@@ -961,7 +961,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           setWeeklyDue(false)
         }
 
-        // No improvement detection — after week 4 with high compliance
+        // No improvement detection. after week 4 with high compliance
         const protocolDayNum = p?.protocol_start_date
           ? protocolDay(p.protocol_start_date)
           : 0
@@ -969,8 +969,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         if (protocolDayNum >= 28 && c && c.length >= 4) {
           // Measure only dimensions with BOTH a baseline and a latest reading
           // (QA 2026-10-23 #6): the old `: 100` fallbacks scored missing data
-          // as 100% improvement, so sparse-data users — the exact customers
-          // this net exists for — could never trip it. No measurable
+          // as 100% improvement, so sparse-data users. the exact customers
+          // this net exists for. could never trip it. No measurable
           // dimension at all = insufficient data, not improvement.
           const dims = []
           const baselineBloating = p?.baseline_bloating
@@ -1043,7 +1043,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const checkMilestones = async (p, lab, c) => {
     if (!p?.protocol_start_date) return
     // Tone-awareness: if the latest weekly check-in shows symptoms broadly worsening
-    // vs baseline, suppress celebration confetti (milestone messages still show —
+    // vs baseline, suppress celebration confetti (milestone messages still show , 
     // reaching day 14 on a rough week deserves acknowledgment, not a party).
     const roughWeek = (() => {
       try {
@@ -1070,7 +1070,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     const name = session?.user?.user_metadata?.full_name?.split(' ')[0] || 'there'
     const day = protocolDay(p.protocol_start_date)
 
-    // Day 1 — message stays visible for all of day 1 (re-shown on every load),
+    // Day 1. message stays visible for all of day 1 (re-shown on every load),
     // but the confetti celebration only fires the first time.
     if (day === 1) {
       try {
@@ -1094,7 +1094,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
     // Windows, not exact days (QA 2026-10-23 #1): a customer who doesn't open
     // the app on precisely day 3/14/28 used to lose that milestone forever.
     // Each window still fires once (the shown-once guard), on the first visit
-    // inside it — the same pattern day 57 already used.
+    // inside it. the same pattern day 57 already used.
     else if (day >= 3 && day < 14) {
       const shown = await checkMilestoneShown(supabase, session.user.id, 'day3')
       if (!shown) {
@@ -1150,9 +1150,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   }
 
   // Streak = consecutive calendar days with a completed daily check-in.
-  // Walks real DATES (a missed day breaks it — missing rows used to be
+  // Walks real DATES (a missed day breaks it. missing rows used to be
   // skipped over, inflating the count), and counts doing-the-survey, not
-  // answering YES — an honest "I slipped" day still continues the streak.
+  // answering YES. an honest "I slipped" day still continues the streak.
   const cleanDays = (() => {
     const logged = new Set(weekFactors.map(f => f.log_date))
     let count = 0
@@ -1277,7 +1277,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
   const cockpitActive = (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && profile?.protocol_start_date && currentDay >= 1 && !needsCommonDecision && !isTracking && !showIntakeCard && !showLabCard && !showPendingLabCard
   // showReintroCard deleted (QA 2026-11-06 #7): current_reintro_day was
   // written 1 and incremented by nothing, so its "day 14" hero could never
-  // fire — the live path is verdictReadyFood off the cycle row.
+  // fire. the live path is verdictReadyFood off the cycle row.
 
   const phaseLabel = calculatedPhase === 'elimination' ? 'Elimination'
     : calculatedPhase === 'reintroduction' ? 'Reintroduction'
@@ -1342,7 +1342,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         <style>{css}</style>
         <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '24px', gap: 12 }}>
           <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 300, color: 'var(--ink)' }}>Can't reach your program.</div>
-          <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.6, maxWidth: 320 }}>Your data is safe — we just couldn't load it right now. Check your connection and try again.</div>
+          <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.6, maxWidth: 320 }}>Your data is safe. we just couldn't load it right now. Check your connection and try again.</div>
           <button className="snfy-btn" style={{ maxWidth: 220 }} onClick={() => loadData()}>Try again</button>
         </div>
       </div>
@@ -1374,7 +1374,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
         </div>
       </nav>
 
-      {/* BOTTOM TAB BAR — phones only (design item 5). Thumb-reach nav;
+      {/* BOTTOM TAB BAR. phones only (design item 5). Thumb-reach nav;
           History, Maintain and Sign out live behind More. */}
       <div className="snfy-bottombar">
         {[['Home', 'home'], ['Reintro', 'reintro'], ['Verdicts', 'verdicts'], ['Ask Sensify', 'ask-sensify']].map(([t, key]) => (
@@ -1444,7 +1444,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ maxWidth: 470, width: '100%' }}>
 
                     <div style={{ textAlign: 'center', marginBottom: 24, animation: 'askMsgIn 0.5s ease both' }}>
-                      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, letterSpacing: '2.5px', color: '#C9A227', marginBottom: 12 }}>LOCKED · UNLOCKS WITH YOUR RESULTS</div>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, letterSpacing: '0', color: '#C9A227', marginBottom: 12 }}>LOCKED · UNLOCKS WITH YOUR RESULTS</div>
                       <div style={{ fontFamily: 'Fraunces, serif', fontSize: 36, fontWeight: 300, color: '#1C1C1C', lineHeight: 1.1 }}>A guide that knows<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>your body.</em></div>
                     </div>
 
@@ -1453,34 +1453,34 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                       <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative' }}>
-                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · ASSISTANT</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 9.5, letterSpacing: '0', color: '#8BAE8A' }}>SENSIFY · ASSISTANT</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8941F' }} />
-                          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.55)' }}>PREVIEW</span>
+                          <span style={{ fontFamily: 'var(--font-body)', fontSize: 8.5, letterSpacing: '0', color: 'rgba(250,248,244,0.55)' }}>PREVIEW</span>
                         </div>
                       </div>
 
                       <div style={{ position: 'relative', animation: 'askMsgIn 0.6s ease 0.5s both' }}>
-                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: 'rgba(250,248,244,0.45)', marginBottom: 6 }}>YOU</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 9, fontWeight: 700, letterSpacing: '0', color: 'rgba(250,248,244,0.45)', marginBottom: 6 }}>YOU</div>
                         <div style={{ fontSize: 15.5, lineHeight: 1.6, color: 'rgba(250,248,244,0.92)', fontWeight: 300 }}>Dinner at a Thai place tonight. What should I order and what should I skip?</div>
                       </div>
 
                       <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 16, paddingTop: 16, animation: 'askMsgIn 0.6s ease 1.1s both' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 7 }}>
                           <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 10px rgba(139,174,138,0.8)' }} />
-                          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: '#8BAE8A' }}>SENSIFY</span>
+                          <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, fontWeight: 700, letterSpacing: '0', color: '#8BAE8A' }}>SENSIFY</span>
                         </div>
                         <div style={{ fontSize: 15.5, lineHeight: 1.7, color: '#FAF8F4', fontWeight: 300 }}>Good news: most curries are built on coconut milk, which is clear on your map. Watch the <span style={{ background: 'rgba(214,69,69,0.22)', border: '1px solid rgba(214,69,69,0.45)', padding: '2px 9px', borderRadius: 20, color: '#F2A0A0', fontWeight: 500, boxShadow: '0 0 14px rgba(214,69,69,0.25)' }}>soy</span> in the stir-fries and ask about <span style={{ background: 'rgba(232,148,31,0.18)', border: '1px solid rgba(232,148,31,0.45)', padding: '2px 9px', borderRadius: 20, color: '#F2C078', fontWeight: 500, boxShadow: '0 0 14px rgba(232,148,31,0.22)' }}>peanut</span> garnishes. Pad see ew is the one to skip.</div>
                       </div>
 
                       <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 16, paddingTop: 16, animation: 'askMsgIn 0.6s ease 1.9s both' }}>
-                        <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: 'rgba(250,248,244,0.45)', marginBottom: 6 }}>YOU</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 9, fontWeight: 700, letterSpacing: '0', color: 'rgba(250,248,244,0.45)', marginBottom: 6 }}>YOU</div>
                         <div style={{ fontSize: 15.5, lineHeight: 1.6, color: 'rgba(250,248,244,0.92)', fontWeight: 300 }}>What about the mango sticky rice?</div>
                       </div>
 
                       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, animation: 'askMsgIn 0.6s ease 2.5s both' }}>
                         <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 10px rgba(139,174,138,0.8)' }} />
-                        <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', color: '#8BAE8A' }}>SENSIFY</span>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, fontWeight: 700, letterSpacing: '0', color: '#8BAE8A' }}>SENSIFY</span>
                         <span style={{ display: 'inline-flex', gap: 4, marginLeft: 3 }}>
                           {[0, 1, 2].map(i => (
                             <span key={i} style={{ width: 5.5, height: 5.5, borderRadius: '50%', background: '#8BAE8A', animation: `askDotPulse 1.2s ease-in-out ${i * 0.18}s infinite` }} />
@@ -1490,7 +1490,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
                       <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                         {['MENUS', 'LABELS', 'RECIPES', 'PHOTOS'].map(w => (
-                          <div key={w} style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1.5px', color: 'rgba(250,248,244,0.45)' }}>{w}</div>
+                          <div key={w} style={{ fontFamily: 'var(--font-body)', fontSize: 8.5, letterSpacing: '0', color: 'rgba(250,248,244,0.45)' }}>{w}</div>
                         ))}
                       </div>
                     </div>
@@ -1530,7 +1530,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               ) : (
                 <>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 400, color: 'var(--ink)', marginBottom: 10 }}>Reintroduction unlocks later.</div>
-                  <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.65, marginBottom: 18 }}>First comes your elimination stretch. Then, from day 57, this is where you eat each flagged food again — one at a time, on purpose — to find out which ones actually cause your symptoms.</div>
+                  <div style={{ fontSize: 13.5, color: 'var(--ink-soft)', lineHeight: 1.65, marginBottom: 18 }}>First comes your elimination stretch. Then, from day 57, this is where you eat each flagged food again. one at a time, on purpose. to find out which ones actually cause your symptoms.</div>
                 </>
               )}
               <button className="sn-btn" style={{ maxWidth: 240 }} onClick={() => goTab('Home')}>Back to Home</button>
@@ -1700,7 +1700,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             </div>
             )}
 
-            {/* COMMON TRACK DECISION — shown when assigned common but not yet decided */}
+            {/* COMMON TRACK DECISION. shown when assigned common but not yet decided */}
             {needsCommonDecision && (
               <CommonTrackDecision
                 session={session}
@@ -1710,7 +1710,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               />
             )}
 
-            {/* TRACKING LANDING — shown when user declined and is self-tracking */}
+            {/* TRACKING LANDING. shown when user declined and is self-tracking */}
             {isTracking && (
               <TrackingLanding
                 session={session}
@@ -1721,7 +1721,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               />
             )}
 
-            {/* DAILY CHECK-IN PROMPT — shown when active and today's check-in isn't done.
+            {/* DAILY CHECK-IN PROMPT. shown when active and today's check-in isn't done.
                 Only once the protocol has actually begun (currentDay >= 1), so it
                 doesn't appear the day before, while elimination "starts tomorrow". */}
             {!cockpitActive && !dailyDone && !needsCommonDecision && !showIntakeCard && !showLabCard && !showPendingLabCard &&
@@ -1850,7 +1850,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 <div className="snfy-phase-eyebrow">Your program</div>
                 <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, color: 'white', marginBottom: '8px' }}>Awaiting <em style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>approval.</em></div>
                 {/* Shown precisely when setup IS complete (QA 2026-11-02 #5). */}
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>Setup complete — your results are in review</div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>Setup complete. your results are in review</div>
                 <div className="snfy-pbar" style={{ marginTop: '16px' }}><div className="snfy-pfill" style={{ width: '4%' }}></div></div>
                 {/* Length is food-count-dependent, and the count is known here
                     (QA 2026-11-03 #6): 8 weeks elimination + ~2 weeks/food. */}
@@ -1910,13 +1910,13 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Guidance being prepared</div>
-                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Usually ready within a day — it will meet you here.</div>
+                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Usually ready within a day. it will meet you here.</div>
                 </div>
               </div>
             )}
 
             {/* THE GUIDANCE ARRIVES (QA 2026-10-24 #1): the promised response
-                used to be written by the review and read by nothing — the
+                used to be written by the review and read by nothing. the
                 pending card just vanished. Alex's outcome + note, 7 days. */}
             {!pendingAudit && auditGuidance && (
               <div className="sn-card sn-rise-2" style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.14), rgba(139,174,138,0.04)), var(--paper)', marginTop: 14 }}>
@@ -1925,9 +1925,9 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>{auditGuidance.admin_outcome === 'Reset clock' ? 'Fresh start: your elimination clock has been reset.' : auditGuidance.admin_outcome}</div>
                 )}
                 <div style={{ fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.65 }}>
-                  {auditGuidance.admin_note?.trim() || 'Reviewed personally. Keep logging exactly as you have been — honest days, on-plan or not, are what make your results trustworthy.'}
+                  {auditGuidance.admin_note?.trim() || 'Reviewed personally. Keep logging exactly as you have been. honest days, on-plan or not, are what make your results trustworthy.'}
                 </div>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1.2px', color: '#9A927E', marginTop: 10 }}>REVIEWED PERSONALLY · {auditGuidance.responded_at ? new Date(auditGuidance.responded_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase() : ''}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 8, letterSpacing: '0', color: '#9A927E', marginTop: 10 }}>REVIEWED PERSONALLY · {auditGuidance.responded_at ? new Date(auditGuidance.responded_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase() : ''}</div>
               </div>
             )}
 
@@ -1948,7 +1948,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <div>
-                  <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Slip-up logged — thank you</div>
+                  <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Slip-up logged. thank you</div>
                   <div style={{ fontSize: '12px', color: '#7A7A72' }}>It's on the record and feeds this week's insight. Tomorrow is a fresh start.</div>
                 </div>
               </div>
@@ -1991,7 +1991,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
-            {/* I TOOK THE TEST — persistent pleasant card until clicked (finding #14) */}
+            {/* I TOOK THE TEST. persistent pleasant card until clicked (finding #14) */}
             {!labResult && !normalizeMilestones(profile?.shown_milestones).test_taken && (showIntakeCard || showLabCard || showPendingLabCard) && (
               <div className="sn-card sn-rise-2" style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.12), rgba(139,174,138,0.04)), var(--paper)', marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
@@ -2016,12 +2016,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 here until results actually exist. */}
             {!labResult && normalizeMilestones(profile?.shown_milestones).test_taken && (showIntakeCard || showLabCard) && (
               <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '10px 14px', background: 'var(--tint-warm)', borderRadius: 'var(--r-md)' }}>
-                <div style={{ fontSize: 12.5, color: 'var(--ink-soft)', lineHeight: 1.5 }}>You told us your test is done — enter or upload your results whenever they arrive.</div>
+                <div style={{ fontSize: 12.5, color: 'var(--ink-soft)', lineHeight: 1.5 }}>You told us your test is done. enter or upload your results whenever they arrive.</div>
                 <button onClick={async () => { const sm = serializeMilestones({ ...normalizeMilestones(profile?.shown_milestones), test_taken: false }); await supabase.from('profiles').update({ shown_milestones: sm }).eq('id', session.user.id); window.location.reload() }} style={{ background: 'none', border: 'none', color: 'var(--ink-soft)', fontSize: 12, fontWeight: 600, textDecoration: 'underline', cursor: 'pointer', flexShrink: 0 }}>Undo</button>
               </div>
             )}
 
-            {/* THE PROTOCOL — designed explainer for the common track (week 1 + eve). Static copy, deliberately not the AI voice.
+            {/* THE PROTOCOL. designed explainer for the common track (week 1 + eve). Static copy, deliberately not the AI voice.
                 Gated on an ACTIVE choice: during awaiting_decision there is no protocol to explain (finding 10). */}
             {profile?.protocol_track === 'common' && profile?.track_decision === 'active' && currentDay <= 7 && (
               <div className="sn-card sn-rise-2" style={{ marginTop: 14 }}>
@@ -2037,12 +2037,12 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               </div>
             )}
 
-            {/* THE SUSPECT BOARD — what happens next, so it outranks the meters */}
+            {/* THE SUSPECT BOARD. what happens next, so it outranks the meters */}
             {labResult && (calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
               <div className="sn-rise-2" style={{ marginTop: 14 }}><SuspectBoard session={session} profile={profile} labResult={labResult} onOpenReintro={() => goTab('Reintro')} /></div>
             )}
 
-            {/* AI INSIGHT — the voice card. A stale insight says so
+            {/* AI INSIGHT. the voice card. A stale insight says so
                 (QA 2026-11-05 #4): a weeks-old "this week" used to front the
                 dashboard in the present tense with no cue it was old. */}
             <div className="snfy-insight sn-rise-3" style={{ marginTop: 14 }}>
@@ -2074,7 +2074,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               )}
             </div>
 
-            {/* WEEKLY CHECK-IN — slim state card */}
+            {/* WEEKLY CHECK-IN. slim state card */}
             <div className="snfy-weekly-card">
             {showCheckinCard ? (
               <div className={checkinLate ? 'sn-row' : 'sn-row sn-row-up'} style={{ justifyContent: 'space-between', marginTop: 14, background: checkinLate ? 'var(--limit-100)' : undefined }}>
@@ -2095,7 +2095,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             )}
             </div>
 
-            {/* BASELINE SHARPNESS — the invisible work of elimination, made visible */}
+            {/* BASELINE SHARPNESS. the invisible work of elimination, made visible */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
               <div className="sn-rise-4" style={{ marginTop: 14 }}><BaselineSharpness session={session} profile={profile} /></div>
             )}
@@ -2135,7 +2135,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     else if (profile?.protocol_start_date && dateStr < String(profile.protocol_start_date).split('T')[0]) { cls = 'future'; mark = ''; prestart = true }  // pre-protocol days: dropped below (QA 2026-11-10 first-timer #6)
                     else if (isToday) { cls = 'empty'; mark = '\u00b7' }                   // today, pending - not missed yet
                     else if (awayDates.has(dateStr)) { cls = 'away'; mark = '\u25cb' }     // away, on plan (user's word): pauses, never resets
-                    else { cls = 'missed'; mark = '\u2013' }  // forgot — the only streak-breaker
+                    else { cls = 'missed'; mark = '\u2013' }  // forgot. the only streak-breaker
                     return { day, cls: cls + (isToday ? ' today' : ''), mark, dateStr, isFuture, prestart }
                   }).filter(d => !d.prestart)  // days before Day 1 never render: seven chips under a "DAYS 1–4" header read as "I'm on day 7" (QA 2026-11-10 #6)
                   // Early in the protocol the trailing window reaches before day 1;
@@ -2167,7 +2167,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', label: 'No check-in' },
                         ].map((l, i) => (
                           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <span style={{ width: '14px', height: '14px', borderRadius: '4px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, flexShrink: 0 }}>{l.m}</span>
+                            <span style={{ width: '14px', height: '14px', borderRadius: '4px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>{l.m}</span>
                             <span style={{ fontSize: '10px', color: '#8A8A82' }}>{l.label}</span>
                           </div>
                         ))}
@@ -2179,7 +2179,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           screen saying otherwise. */}
                       {days.some(d => d.cls.startsWith('missed')) && (
                         <div style={{ fontSize: '11px', color: '#8A8A82', lineHeight: 1.55, marginTop: '9px', textAlign: 'center' }}>
-                          Missed days never stop your protocol. The clock keeps running and your end date hasn't moved — a blank day just adds no data. Tonight's check-in picks right back up.
+                          Missed days never stop your protocol. The clock keeps running and your end date hasn't moved. a blank day just adds no data. Tonight's check-in picks right back up.
                         </div>
                       )}
                       {legendOpen && (
@@ -2187,8 +2187,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                           {[
                             { bg: '#4A8C6A', fg: 'white', m: '\u2713', title: 'On plan', text: 'You checked in and stayed on your plan. A clean day. Builds your streak.' },
                             { bg: '#D64545', fg: 'white', m: '\u2717', title: 'Slipped', text: 'You checked in and honestly logged eating something off-plan. Your streak keeps going. An honest slip is real data, and it never counts against you.' },
-                            { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', title: 'No check-in', text: 'The day went unlogged with no explanation, so there is no data and no word. This is the one that resets your streak. A slip we can work with. A blank we cannot. One thing a blank never does: stop your protocol. The clock keeps running, your end date stays where it was, and your baseline is not ruined — you only lose that day’s data. Tonight’s check-in picks right back up.' },
-                            { bg: 'transparent', bd: '1.5px solid #8BAE8A', fg: '#3D5C3C', m: '\u25cb', title: 'Away, on plan', text: 'You were away for a stretch, and when you returned you told us you stayed on your plan. We take your word for the days, so your streak pauses instead of resetting. But only a check-in creates data, so these days stay out of your analysis. We only ask after a longer absence (four days or more) — shorter gaps simply show as blanks.' },
+                            { bg: '#DDDAD1', fg: '#6A6A62', m: '\u2013', title: 'No check-in', text: 'The day went unlogged with no explanation, so there is no data and no word. This is the one that resets your streak. A slip we can work with. A blank we cannot. One thing a blank never does: stop your protocol. The clock keeps running, your end date stays where it was, and your baseline is not ruined. you only lose that day’s data. Tonight’s check-in picks right back up.' },
+                            { bg: 'transparent', bd: '1.5px solid #8BAE8A', fg: '#3D5C3C', m: '\u25cb', title: 'Away, on plan', text: 'You were away for a stretch, and when you returned you told us you stayed on your plan. We take your word for the days, so your streak pauses instead of resetting. But only a check-in creates data, so these days stay out of your analysis. We only ask after a longer absence (four days or more). shorter gaps simply show as blanks.' },
                           ].map((l, i) => (
                             <div key={i} style={{ display: 'flex', gap: '10px', background: 'var(--tint-warm)', borderRadius: 'var(--r-sm)', padding: '10px 12px' }}>
                               <span style={{ width: '18px', height: '18px', borderRadius: '5px', background: l.bg, color: l.fg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0, marginTop: '1px' , border: l.bd || 'none' }}>{l.m}</span>
@@ -2210,7 +2210,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
           {/* RIGHT COLUMN */}
           <div>
-            {/* FIRST WEEK GUIDE (#19, button + panel form) — days 1-7, retires after first weekly check-in */}
+            {/* FIRST WEEK GUIDE (#19, button + panel form). days 1-7, retires after first weekly check-in */}
             {calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 7 && checkins.length === 0 && (() => {
               const flagged = (labResult?.foods || []).filter(f => f.level !== 'No sensitivity')
               const goto = (t, s) => { setGuideOpen(false); window.scrollTo(0, 0); setTab(t); setScreen(s) }
@@ -2313,7 +2313,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
 
                     return (
                       <>
-                        {/* Proportion bar — whole sensitivity profile at a glance */}
+                        {/* Proportion bar. whole sensitivity profile at a glance */}
                         <div className="snfy-avoid-bar">
                           {grouped.map(g => (
                             <div key={g.level} className="snfy-avoid-bar-seg" style={{ flex: g.foods.length, background: barTints[g.level] }} />
@@ -2351,7 +2351,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 <div style={{ padding: '20px 0', textAlign: 'center' }}>
                   <div style={{ fontSize: '13px', fontWeight: 500, color: '#1C1C1C', marginBottom: '6px' }}>No foods yet</div>
                   <div style={{ fontSize: '12px', color: '#7A7A72', lineHeight: 1.65 }}>
-                    {!labResult ? 'Your elimination list — the foods you\'ll avoid for 8 weeks — appears here once your results are in and we\'ve reviewed them (usually within a day).'
+                    {!labResult ? 'Your elimination list. the foods you\'ll avoid for 8 weeks. appears here once your results are in and we\'ve reviewed them (usually within a day).'
                       : labResult.status === 'pending_review' ? 'Your lab results are under review.'
                       : 'No foods flagged on your elimination list.'}
                   </div>
@@ -2363,27 +2363,27 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
             {/* Collapsed by default (QA 2026-10-23/11-04 test-only note): the
                 open panel overlapped real content at 430px for 12 nights. */}
             {isTestAccount(session?.user?.email) && (
-              <details style={{ position: 'fixed', bottom: window.innerWidth <= 640 ? 86 : 14, right: 14, zIndex: 70, fontFamily: 'DM Mono, monospace' }}>
-                <summary style={{ listStyle: 'none', cursor: 'pointer', background: '#FFFFFF', border: '1.5px dashed #C07A28', borderRadius: 999, padding: '6px 10px', fontSize: 9, letterSpacing: '1px', color: '#C07A28', boxShadow: '0 4px 14px rgba(0,0,0,0.12)', userSelect: 'none' }}>⏱ TM</summary>
+              <details style={{ position: 'fixed', bottom: window.innerWidth <= 640 ? 86 : 14, right: 14, zIndex: 70, fontFamily: 'var(--font-body)' }}>
+                <summary style={{ listStyle: 'none', cursor: 'pointer', background: '#FFFFFF', border: '1.5px dashed #C07A28', borderRadius: 999, padding: '6px 10px', fontSize: 9, letterSpacing: '0', color: '#C07A28', boxShadow: '0 4px 14px rgba(0,0,0,0.12)', userSelect: 'none' }}>⏱ TM</summary>
                 <div style={{ marginTop: 6, background: '#FFFFFF', border: '1.5px dashed #C07A28', borderRadius: 12, padding: '10px 12px', boxShadow: '0 6px 20px rgba(0,0,0,0.12)' }}>
-                  <div style={{ fontSize: 8, letterSpacing: '1.4px', color: '#C07A28', marginBottom: 7 }}>TEST MODE · TIME MACHINE</div>
+                  <div style={{ fontSize: 8, letterSpacing: '0', color: '#C07A28', marginBottom: 7 }}>TEST MODE · TIME MACHINE</div>
                   <div style={{ display: 'flex', gap: 6 }}>
                     {[1, 7, 11, 43].map(d => (
-                      <button key={d} onClick={async (ev) => { ev.currentTarget.disabled = true; await testSkipDays(supabase, session.user.id, d); window.location.reload() }} style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(192,122,40,0.4)', background: '#FBF0DF', color: '#9A6212', cursor: 'pointer' }}>+{d}d</button>
+                      <button key={d} onClick={async (ev) => { ev.currentTarget.disabled = true; await testSkipDays(supabase, session.user.id, d); window.location.reload() }} style={{ fontFamily: 'var(--font-body)', fontSize: 10, padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(192,122,40,0.4)', background: '#FBF0DF', color: '#9A6212', cursor: 'pointer' }}>+{d}d</button>
                     ))}
                   </div>
                 </div>
               </details>
             )}
-            {/* HOUSEHOLD CARD — utility row, column footer per the design direction */}
+            {/* HOUSEHOLD CARD. utility row, column footer per the design direction */}
             {(calculatedPhase === 'elimination' || calculatedPhase === 'reintroduction') && (
               <div className="sn-rise-3" style={{ marginTop: 14 }}><HouseholdShareCard session={session} profile={profile} /></div>
             )}
 
-            {/* THE LEAF CONSTELLATION — 28 nights, one star per logged day, randomized per user; the leaf reveals at 28 */}
+            {/* THE LEAF CONSTELLATION. 28 nights, one star per logged day, randomized per user; the leaf reveals at 28 */}
             {/* Lives through all of elimination, not just day 42 (QA 2026-11-03
                 #4): a slow logger past day 42 with <28 stars used to lose the
-                card — and its "pattern detection unlocks" promise — mid-story.
+                card. and its "pattern detection unlocks" promise. mid-story.
                 Day 57 hands off to the reintro hero naturally. */}
             {((calculatedPhase === 'elimination' && currentDay >= 1 && currentDay <= 56) || (!profile?.protocol_start_date && (showLabCard || showPendingLabCard))) && (() => {
               const preP = !profile?.protocol_start_date
@@ -2391,7 +2391,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               const todayIso = localDateString(new Date())
               const awayN = preP ? 0 : [...awayDates].filter(d => d >= pStartIso && d <= todayIso).length
               // Away-on-plan nights hang stars too (Alex's ruling): your word counts in the sky.
-              // They render as hollow rings — same ○ language as the week calendar — so the
+              // They render as hollow rings. same ○ language as the week calendar. so the
               // record stays legible: filled = logged, ring = on your word.
               // Only LOGGED nights advance the 28 (QA 2026-10-23 #4): pattern
               // detection needs real data, and the compliance legend already
@@ -2422,7 +2422,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                     {preP ? <>Your sky is <span style={{ color: '#3D5C3C' }}>waiting.</span></> : complete ? <>Your pattern <span style={{ color: '#3D5C3C' }}>took shape.</span></> : starCount < 8 ? <>Every check-in <span style={{ color: '#3D5C3C' }}>hangs a star.</span></> : <>Sensify is <span style={{ color: '#3D5C3C' }}>connecting your days.</span></>}
                   </div>
                   <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginBottom: 10 }}>
-                    {preP ? <>Every day you log becomes a star. At 28 nights — four clean weeks of check-ins — they form a constellation, and pattern detection unlocks: we start cross-referencing your sleep, stress, and symptoms for connections. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <b style={{ color: '#1C1C1C', fontWeight: 600 }}>Pattern detection is live</b>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{awayN > 0 ? <> ({awayN} away night{awayN === 1 ? '' : 's'} on your word, held out of the count)</> : ''}{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <b style={{ color: '#1C1C1C', fontWeight: 600 }}>pattern detection unlocks</b>: sleep, stress, and symptoms, cross-referenced for connections.</>}
+                    {preP ? <>Every day you log becomes a star. At 28 nights. four clean weeks of check-ins. they form a constellation, and pattern detection unlocks: we start cross-referencing your sleep, stress, and symptoms for connections. Your first check-in hangs the first star.</> : complete ? <>Your constellation is complete. <b style={{ color: '#1C1C1C', fontWeight: 600 }}>Pattern detection is live</b>: sleep, stress, and symptoms, cross-referenced from here on.</> : <><b style={{ color: '#1C1C1C', fontWeight: 600 }}>{starCount}</b> night{starCount === 1 ? '' : 's'} on the record{awayN > 0 ? <> ({awayN} away night{awayN === 1 ? '' : 's'} on your word, held out of the count)</> : ''}{recordStats.events > 0 ? <>, <b style={{ color: '#1C1C1C', fontWeight: 600 }}>{recordStats.events}</b> symptom event{recordStats.events === 1 ? '' : 's'}</> : ''}. At 28, your stars form a <b style={{ color: '#1C1C1C', fontWeight: 600 }}>constellation</b>, and <b style={{ color: '#1C1C1C', fontWeight: 600 }}>pattern detection unlocks</b>: sleep, stress, and symptoms, cross-referenced for connections.</>}
                   </div>
                   <svg width="100%" viewBox="0 0 280 195" style={{ display: 'block', borderRadius: 14 }}>
                     <defs>
@@ -2472,7 +2472,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               )
             })()}
 
-            {/* SYMPTOM TRENDS — ambient monitor */}
+            {/* SYMPTOM TRENDS. ambient monitor */}
             <div className="snfy-trends">
               <SymptomGraph profile={profile} checkins={checkins} activeMetric={activeGraphMetric} setActiveMetric={setActiveGraphMetric} />
             </div>

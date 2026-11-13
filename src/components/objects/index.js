@@ -168,7 +168,7 @@ export function StreakLine({ state = 'none', count = 0, loggedTonight = false, c
   } else if (loggedTonight) {
     body = <><b>One night on the record.</b> Tomorrow makes two.</>
   } else {
-    body = <>Your streak starts with tonight's check-in.</>
+    body = <>Your streak starts with tonight\u2019s check-in.</>
   }
   return <p className={`ob-streak ${className}`}>{body}</p>
 }
@@ -177,9 +177,9 @@ export function StreakLine({ state = 'none', count = 0, loggedTonight = false, c
 /* 6. Check-in button                                                  */
 /* state: 'tonight' | 'logged' | 'washout' | 'catchup' | 'weekly'       */
 const BTN = {
-  tonight: { label: "Start tonight's check-in", time: '2 minutes' },
+  tonight: { label: 'Start tonight\u2019s check-in', time: '2 minutes' },
   logged: { label: 'Logged tonight. See you tomorrow.', time: null },
-  washout: { label: "Log tonight's washout check", time: '1 minute' },
+  washout: { label: 'Log tonight\u2019s washout check', time: '1 minute' },
   catchup: { label: 'Catch up on your weekly check-in', time: '5 minutes' },
   weekly: { label: 'Weekly check-in is open', time: '5 minutes' },
 }

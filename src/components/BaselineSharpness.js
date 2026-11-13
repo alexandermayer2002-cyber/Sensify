@@ -176,7 +176,7 @@ export default function BaselineSharpness({ session, profile }) {
 
       <div style={b.statRow}>
         <span style={b.statVal}>{fmt1(cur.baseline)}</span>
-        <span style={b.statMargin}>±{fmt1(cur.uncertainty)}</span>
+        <span style={b.statMargin}>give or take {fmt1(cur.uncertainty)}</span>
         <span style={b.statusChip}>{status}</span>
       </div>
       <div style={b.statName}>your normal {cur.label}, and how much that reading still wobbles</div>
@@ -196,7 +196,7 @@ export default function BaselineSharpness({ session, profile }) {
         {/* Gap-aware, always true (QA 2026-11-10 first-timer #5, approved by
             Alex): the old caption cited a day-3 figure that may never have been
             logged and said "narrowed" even when gaps had widened the margin. */}
-        Day one starts at ±{fmt1(U_START)}. Logged days narrow it, unlogged days leave it wider. Not a symptom score: how you feel week to week lives in the Weekly Insight.
+        Day one starts at give or take {fmt1(U_START)}. Logged days narrow it, unlogged days leave it wider. Not a symptom score: how you feel week to week lives in the Weekly Insight.
       </div>
     </div>
   )
@@ -226,7 +226,7 @@ const b = {
     lineHeight: 1,
   },
   statMargin: {
-    fontFamily: 'DM Mono, monospace', fontSize: 14, color: '#3D5C3C', fontWeight: 500,
+    fontFamily: 'var(--font-body)', fontSize: 14, color: '#3D5C3C', fontWeight: 500,
   },
   statusChip: {
     marginLeft: 'auto', background: '#EFF3EE', color: '#3D5C3C', borderRadius: 999,

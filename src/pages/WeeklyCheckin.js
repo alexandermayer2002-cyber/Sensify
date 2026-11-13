@@ -76,7 +76,7 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
   const scales = getSymptomScales(profile)
 
   // ---- Daily adherence (descriptive only) ----
-  // The insight may state these FACTS but never interpret daily factors —
+  // The insight may state these FACTS but never interpret daily factors , 
   // causal connections are Layer 2's job, gated behind physician sign-off.
   let adherenceLine = ''
   let weekFactorRows = []
@@ -303,7 +303,7 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
     ? "PRIOR CHECK-IN'S SCORES (week unknown)"
     : prevGap <= 1
     ? "LAST WEEK'S SCORES"
-    : `WEEK ${prevWeekNum} SCORES (their most recent check-in, ${prevGap} weeks before this one — do NOT call it "last week")`
+    : `WEEK ${prevWeekNum} SCORES (their most recent check-in, ${prevGap} weeks before this one. do NOT call it "last week")`
 
   const contextItems = answers.context_changes?.filter(c => c !== 'Nothing unusual, a normal week') || []
   const contextStr = contextItems.length > 0 ? contextItems.join(', ') : 'None flagged by user (this does not mean nothing happened)'
@@ -354,10 +354,10 @@ CRITICAL STYLE RULE: Do not use the em dash character or use hyphens as sentence
   const raw = await aiPrompt(prompt, 300)
   // Hard guarantee: convert any dash punctuation that slips through
   return raw
-    .replace(/(\d)\s*[—–-]\s*(\d)/g, '$1 to $2')
-    .replace(/\s+[—–]\s+/g, ', ')
+    .replace(/(\d)\s*[, –-]\s*(\d)/g, '$1 to $2')
+    .replace(/\s+[, –]\s+/g, ', ')
     .replace(/\s+-\s+/g, ', ')
-    .replace(/[—–]/g, ', ')
+    .replace(/[, –]/g, ', ')
 }
 
 function ConfettiCanvas() {
@@ -477,14 +477,14 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       const { data: dupe } = await supabase.from('weekly_checkins')
         .select('id').eq('user_id', session.user.id).eq('week_number', weekNumber).limit(1).maybeSingle()
       if (dupe) {
-        setSubmitError('This week is already on your record — it may have been submitted in another tab. Your dashboard has the latest.')
+        setSubmitError('This week is already on your record. it may have been submitted in another tab. Your dashboard has the latest.')
         setSubmitting(false)
         return
       }
     } catch (e) { /* guard is best-effort; the DB constraint is the backstop */ }
 
     // THE WEEK'S DATA LANDS FIRST (QA 2026-10-25 #1): the insert used to run
-    // after the slow AI call with its result unchecked — a failure showed
+    // after the slow AI call with its result unchecked. a failure showed
     // "on the record" while the week silently vanished. Now the row is written
     // and verified before anything celebrates; the insight backfills after.
     const { data: inserted, error: insErr } = await supabase.from('weekly_checkins').insert({
@@ -495,7 +495,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       submitted_at: new Date().toISOString(),
     }).select().single()
     if (insErr || !inserted) {
-      setSubmitError("Your check-in didn't save — your answers are still here. Tap Submit to try again.")
+      setSubmitError("Your check-in didn't save. your answers are still here. Tap Submit to try again.")
       setSubmitting(false)
       return
     }
@@ -512,7 +512,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       aiInsight = await generateInsight({ name, weekNumber, profile, answers, previousAnswers, currentFoods, phase, session })
       if (!aiInsight || aiInsight.trim().length === 0) throw new Error('empty insight')
       setInsight(aiInsight)
-      // Backfill the saved row + the dashboard pointer — cosmetic, best-effort.
+      // Backfill the saved row + the dashboard pointer. cosmetic, best-effort.
       try {
         await supabase.from('weekly_checkins').update({ ai_insight: aiInsight }).eq('id', inserted.id)
         await supabase.from('profiles').update({ latest_insight: aiInsight, latest_insight_week: weekNumber }).eq('id', session.user.id)
@@ -573,7 +573,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         }
         const msg = earnedStreak
           ? (STREAK_MSGS[weekNumber] || `Week ${weekNumber} done, every week of it compliant. Keep going.`)
-          : `Week ${weekNumber} logged — this one was a good week. Every honest check-in counts, compliant or not.`
+          : `Week ${weekNumber} logged. this one was a good week. Every honest check-in counts, compliant or not.`
         setStreakMessage(msg)
         setShowStreakCard(true)
       }, 3500)
@@ -596,7 +596,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         </div>
         <div className="sn-rise" style={s.content}>
 
-          {/* Streak celebration card — appears after confetti */}
+          {/* Streak celebration card. appears after confetti */}
           {showStreakCard && (
             <div className="sn-hero" style={{ borderRadius: '24px', padding: '22px 20px', marginBottom: '16px', animation: 'slideUp 0.4s ease' }}>
               <div className="sn-micro sn-micro-dark" style={{ marginBottom: '8px' }}>Week {weekNumber} complete</div>
@@ -652,7 +652,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
                           {rest.map(scale => (
                             <div key={scale.id} style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 12 }}>
                               <div className="sn-num" style={{ fontSize: 22, color: scale.improved === true ? '#8BAE8A' : '#FAF8F4' }}>{scale.cur}</div>
-                              <div className="sn-micro sn-micro-dark" style={{ fontSize: 8, letterSpacing: '0.5px', marginTop: 4 }}>{scale.id.toUpperCase()}{scale.bl != null ? ` · WAS ${scale.bl}` : ''}</div>
+                              <div className="sn-micro sn-micro-dark" style={{ fontSize: 8, letterSpacing: '0', marginTop: 4 }}>{scale.id.toUpperCase()}{scale.bl != null ? ` · WAS ${scale.bl}` : ''}</div>
                             </div>
                           ))}
                         </div>
@@ -671,7 +671,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
                 ) : insightError ? (
                   // Honest failure copy (QA 2026-10-25 #2): nothing retries or
                   // backfills a missed insight, so nothing is promised.
-                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontSize: 13.5, color: 'rgba(250,248,244,0.85)', lineHeight: 1.7, fontWeight: 300 }}>Your scores are saved and your trends updated. The written insight didn't generate this time — next week's will read this week's data too.</div>
+                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontSize: 13.5, color: 'rgba(250,248,244,0.85)', lineHeight: 1.7, fontWeight: 300 }}>Your scores are saved and your trends updated. The written insight didn't generate this time. next week's will read this week's data too.</div>
                 ) : null}
               </div>
             )
@@ -721,7 +721,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
             <div style={s.questionLabel}>{scale.label}</div>
             {flipped && (
               <div style={{ margin: '0 0 8px', background: '#FBF0DF', color: '#9A6212', borderRadius: 10, padding: '7px 11px', fontSize: 11.5, lineHeight: 1.5, fontWeight: 600 }}>
-                Heads up — this scale runs the other way: 10 is the {goodHigh ? 'good' : 'rough'} end here.
+                Heads up. this scale runs the other way: 10 is the {goodHigh ? 'good' : 'rough'} end here.
               </div>
             )}
             <div style={s.scaleLabels}>
@@ -776,7 +776,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
 
         <div className="sn-card" style={s.questionBlock}>
           {/* Phase-aware (QA 2026-11-05 #5): mid-reintro, eating the test food
-              IS the plan — "the elimination plan" made honest answers impossible
+              IS the plan. "the elimination plan" made honest answers impossible
               on exposure days. */}
           <div style={s.questionLabel}>How closely did you follow your protocol this week?</div>
           {phase === 'reintroduction' && (

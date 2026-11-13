@@ -212,7 +212,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       drinks: isDrinker ? (drinks === '' ? null : parseInt(drinks, 10)) : null,
     }
     // Phase-aware: persist the reintro log + exposure counting in the same
-    // save. BOTH WRITES ARE CHECKED (QA 2026-11-06 #2 — the last silent write
+    // save. BOTH WRITES ARE CHECKED (QA 2026-11-06 #2. the last silent write
     // on the verdict path): a failed exposure log silently corrupted the
     // verdict's evidence, and a failed count update desynced the washout
     // clock. A failure stops the save with every answer still on screen.
@@ -251,7 +251,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         }
       } catch (e) {
         setSaving(false)
-        alert("Your " + activeReintro.food.toLowerCase() + " log didn't save — nothing was lost, your answers are still here. Tap Done to try again." + (e?.message ? ` (${e.message})` : ''))
+        alert("Your " + activeReintro.food.toLowerCase() + " log didn't save. nothing was lost, your answers are still here. Tap Done to try again." + (e?.message ? ` (${e.message})` : ''))
         return
       }
     }
@@ -350,7 +350,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         if (logged.has(ds)) streak++
         else break
       }
-      // This week's 7 cells — the PROTOCOL week (day 1 → 7, left to right, today
+      // This week's 7 cells. the PROTOCOL week (day 1 → 7, left to right, today
       // wherever it falls), matching the dashboard's framing. Trailing-7-day
       // window (today pinned right) only as fallback when not on a protocol.
       const dow = ['Su','Mo','Tu','We','Th','Fr','Sa']
@@ -373,12 +373,12 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         })
       }
       const loggedThisWeek = weekDays.filter(w => w.done).length
-      // A gentle, SAFE reflection — info/encouragement only, never judgment.
+      // A gentle, SAFE reflection. info/encouragement only, never judgment.
       let reflection
       if (streak >= 7) reflection = `${streak} days in a row. You're building a really clear picture of your body.`
       else if (streak >= 3) reflection = `${streak}-day streak. Consistency like this is exactly what makes your insights sharper.`
       else if (loggedThisWeek >= 2) reflection = `That's ${loggedThisWeek} check-ins this week. Every one adds to the picture.`
-      else reflection = `Logged for today. Each check-in helps us understand what's really going on.`
+      else reflection = `Logged for tonight. Each check-in sharpens the record your verdicts are read against.`
       setReward({ streak, weekDays, reflection, onRecord })
     } catch (e) {
       onComplete && onComplete()  // if reward calc fails, just exit normally
@@ -635,7 +635,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                       {/* Silently dropped foods get named as a possibility
                           (QA 2026-11-06 full-run #7, approved by Alex): corn
                           once vanished from a recall with no hint. */}
-                      <div style={{ fontSize: '11.5px', color: '#A0A096', lineHeight: 1.5, marginTop: '6px' }}>Typed a food that isn't tagged above? We couldn't read that one — your exact words are saved with the log either way.</div>
+                      <div style={{ fontSize: '11.5px', color: '#A0A096', lineHeight: 1.5, marginTop: '6px' }}>Typed a food that isn't tagged above? We couldn't read that one. your exact words are saved with the log either way.</div>
                     </div>
                   )}
                   {recallTags && recallTags.length === 0 && recallText.trim().length > 2 && (

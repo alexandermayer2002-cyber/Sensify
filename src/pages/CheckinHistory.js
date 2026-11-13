@@ -68,7 +68,7 @@ function SymptomProgress({ profile, checkins }) {
 
   const pg = {
     card: { background: 'var(--paper)', border: 'none', borderRadius: '24px', boxShadow: 'var(--shadow-2)', padding: '22px', marginBottom: '16px' },
-    title: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '12px' },
+    title: { fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', marginBottom: '12px' },
     toggle: { display: 'flex', gap: '4px', background: '#F0EEE7', borderRadius: '999px', padding: '3px', marginBottom: '18px' },
     tOn: { flex: 1, textAlign: 'center', fontSize: '12.5px', fontWeight: 600, color: '#1C1C1C', background: '#fff', padding: '7px 0', borderRadius: '999px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', cursor: 'pointer', border: 'none' },
     tOff: { flex: 1, textAlign: 'center', fontSize: '12.5px', fontWeight: 400, color: '#8A8A82', background: 'transparent', padding: '7px 0', borderRadius: '999px', cursor: 'pointer', border: 'none' },
@@ -84,12 +84,12 @@ function SymptomProgress({ profile, checkins }) {
     row: { marginBottom: '16px' },
     rtop: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '7px' },
     rname: { fontSize: '13px', fontWeight: 500, color: '#1C1C1C' },
-    rdelta: { fontSize: '11px', fontFamily: 'DM Mono, monospace', fontWeight: 500 },
+    rdelta: { fontSize: '11px', fontFamily: 'var(--font-body)', fontWeight: 500 },
     tube: { position: 'relative', height: '9px', background: '#F1EFE8', borderRadius: '5px' },
     base: { position: 'absolute', top: '-3.5px', width: '2px', height: '16px', background: '#999', borderRadius: '1px', zIndex: 2 },
     now: { position: 'absolute', height: '9px', borderRadius: '5px', top: 0 },
     scaleline: { display: 'flex', justifyContent: 'space-between', marginTop: '5px' },
-    sc: { fontSize: '9px', color: '#C8C6BE', fontFamily: 'DM Mono, monospace' },
+    sc: { fontSize: '12px', color: '#C8C6BE', fontFamily: 'var(--font-body)' },
   }
   const deltaColor = { good: '#2C9D8A', bad: '#D4894A', flat: '#A8A69E' }
 
@@ -247,7 +247,7 @@ function CheckinCard({ checkin: c, index: i, fallbackWeek, profile, formatDate, 
   const weekNum = c.week_number || fallbackWeek || i + 1
 
   const scores = SCORE_METRICS.filter(m => c.answers?.[m.id] !== undefined)
-  const contextChanges = c.answers?.context_changes?.filter(ch => ch !== 'Nothing unusual — normal week' && ch !== 'Nothing unusual, a normal week') || []
+  const contextChanges = c.answers?.context_changes?.filter(ch => ch !== 'Nothing unusual. normal week' && ch !== 'Nothing unusual, a normal week') || []
   const overallFeeling = c.answers?.overall_feeling
   const notes = c.answers?.notes
 
@@ -266,7 +266,7 @@ function CheckinCard({ checkin: c, index: i, fallbackWeek, profile, formatDate, 
         </div>
       </div>
 
-      {/* Always visible — scores */}
+      {/* Always visible. scores */}
       <div style={s.checkinScores}>
         {scores.map(m => {
           const val = c.answers[m.id]
@@ -356,7 +356,7 @@ const s = {
 
   // Due state
   dueCard: { background: 'var(--paper)', border: 'none', borderRadius: '24px', boxShadow: 'var(--shadow-2)', padding: '20px', marginBottom: '20px' },
-  dueTag: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: '#3D5C3C', background: '#EDF3ED', padding: '4px 11px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' },
+  dueTag: { fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: '#3D5C3C', background: '#EDF3ED', padding: '4px 11px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' },
   dueTitle: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 300, marginBottom: '6px' },
   dueTitleEm: { fontStyle: 'italic', color: '#3D5C3C' },
   dueSub: { fontSize: '13px', color: '#7A7A72', lineHeight: 1.6, marginBottom: '14px' },
@@ -364,7 +364,7 @@ const s = {
 
   // Chart
   chartCard: { background: 'var(--paper)', border: 'none', borderRadius: '24px', boxShadow: 'var(--shadow-1)', padding: '18px', marginBottom: '16px' },
-  chartLabel: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '14px' },
+  chartLabel: { fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', marginBottom: '14px' },
   chartArea: { position: 'relative', height: '100px', display: 'flex', alignItems: 'flex-end', gap: '8px', borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: '8px', marginBottom: '8px' },
   chartBar: { flex: 1, borderRadius: '4px 4px 0 0', minHeight: '4px', transition: 'height 0.3s ease' },
   chartWeekLabels: { display: 'flex', gap: '8px' },
@@ -374,19 +374,19 @@ const s = {
   chartLegendDot: { width: '8px', height: '8px', borderRadius: '50%' },
 
   // Check-in cards
-  secLabel: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '10px' },
+  secLabel: { fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', marginBottom: '10px' },
   checkinCard: { background: 'var(--paper)', border: 'none', borderRadius: '16px', boxShadow: 'var(--shadow-1)', padding: '17px 18px', marginBottom: '12px' },
   checkinHeader: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' },
   checkinWeek: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300 },
   checkinWeekEm: { fontStyle: 'italic', color: '#3D5C3C' },
-  checkinDate: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gray-faint)' },
+  checkinDate: { fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, letterSpacing: '0', textTransform: 'none', color: 'var(--gray-faint)' },
   checkinScores: { display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' },
   scoreChip: { display: 'flex', align: 'center', gap: '5px', background: 'var(--tint-warm)', border: 'none', borderRadius: '10px', padding: '7px 11px' },
-  scoreLabel: { fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#7A7A72', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em' },
+  scoreLabel: { fontFamily: 'var(--font-body)', fontSize: '12px', color: '#7A7A72', fontWeight: 500, textTransform: 'none', letterSpacing: '0' },
   scoreVal: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, lineHeight: 1, marginTop: '1px' },
   compliancePill: { fontSize: '11px', fontWeight: 500, padding: '4px 11px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' },
   insightBox: { background: '#EDF3ED', borderRadius: '16px', padding: '11px 13px' },
-  insightTag: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '5px' },
+  insightTag: { fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', marginBottom: '5px' },
   insightText: { fontSize: '12px', color: '#1C1C1C', lineHeight: 1.65 },
 
   // Empty state
@@ -438,7 +438,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
   }
 
   // One clock everywhere (QA 2026-10-25 #3): windows open on PROTOCOL days
-  // (7, 14, 21...), same math the Dashboard uses — never submitted_at + 7,
+  // (7, 14, 21...), same math the Dashboard uses. never submitted_at + 7,
   // which drifted with every late check-in.
   const daysUntilNext = () => {
     const start = profile?.protocol_start_date
@@ -458,7 +458,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
 
   const programNotStarted = !profile?.program_phase || profile?.program_phase === 'awaiting_results' || profile?.program_phase === 'pending_review'
   // Weekly check-ins only exist in elimination/reintroduction (Dashboard only
-  // ever arms weeklyDue there) — a complete/tracking customer used to see a
+  // ever arms weeklyDue there). a complete/tracking customer used to see a
   // perpetual "T-MINUS Nd" countdown for a check-in that never unlocks
   // (QA 2026-11-05 #3). They get a closing state instead.
   const programFinished = !programNotStarted
@@ -485,10 +485,10 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'chDueGlow 4s ease-in-out infinite', pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, position: 'relative' }}>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · RECORD</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 9.5, letterSpacing: '0', color: '#8BAE8A' }}>SENSIFY · RECORD</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.9)' }} />
-                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: '#8BAE8A' }}>CHECK-IN OPEN</span>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 8.5, letterSpacing: '0', color: '#8BAE8A' }}>CHECK-IN OPEN</span>
                 </div>
               </div>
               <div style={{ fontFamily: 'Fraunces, serif', fontSize: 23, fontWeight: 300, color: '#FAF8F4', position: 'relative', lineHeight: 1.2 }}>Your weekly <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>check-in is ready.</em></div>
@@ -499,15 +499,15 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
         )}
 
         {/* LOCKED STATE */}
-        {/* RECORD COMPLETE — no countdown for a check-in that never unlocks */}
+        {/* RECORD COMPLETE. no countdown for a check-in that never unlocks */}
         {programFinished && checkins.length > 0 && (
           <div style={{ position: 'relative', background: '#22301F', borderRadius: 24, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: 'var(--shadow-3)', marginBottom: 20 }}>
             <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', opacity: 0.08, pointerEvents: 'none' }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, position: 'relative' }}>
-              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · RECORD</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 9.5, letterSpacing: '0', color: '#8BAE8A' }}>SENSIFY · RECORD</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.9)' }} />
-                <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: '#8BAE8A' }}>COMPLETE</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 8.5, letterSpacing: '0', color: '#8BAE8A' }}>COMPLETE</span>
               </div>
             </div>
             <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, fontWeight: 300, color: '#FAF8F4', position: 'relative', lineHeight: 1.25 }}>Your record is <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>complete.</em></div>
@@ -530,10 +530,10 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
                   <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'chLkGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
                   <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, position: 'relative' }}>
-                    <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9.5, letterSpacing: '1.5px', color: '#8BAE8A' }}>SENSIFY · RECORD</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 9.5, letterSpacing: '0', color: '#8BAE8A' }}>SENSIFY · RECORD</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8941F' }} />
-                      <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 8.5, letterSpacing: '1px', color: 'rgba(250,248,244,0.55)' }}>T-MINUS {remaining}D</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 8.5, letterSpacing: '0', color: 'rgba(250,248,244,0.55)' }}>T-MINUS {remaining}D</span>
                     </div>
                   </div>
                   <div style={{ position: 'relative', width: 110, height: 110, margin: '0 auto 14px', animation: 'chLkIn 0.6s ease 0.3s both' }}>
@@ -544,10 +544,10 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
                     </svg>
                     <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                       <div style={{ fontFamily: 'Fraunces, serif', fontSize: 30, fontWeight: 300, color: '#FAF8F4', lineHeight: 1 }}>{remaining}</div>
-                      <div style={{ fontSize: 8, color: 'rgba(250,248,244,0.55)', fontFamily: 'DM Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.6px', marginTop: 3 }}>{remaining === 1 ? 'day to go' : 'days to go'}</div>
+                      <div style={{ fontSize: 8, color: 'rgba(250,248,244,0.55)', fontFamily: 'var(--font-body)', textTransform: 'none', letterSpacing: '0', marginTop: 3 }}>{remaining === 1 ? 'day to go' : 'days to go'}</div>
                     </div>
                   </div>
-                  <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, textTransform: 'uppercase', letterSpacing: '1.2px', color: '#8BAE8A', marginBottom: 8, position: 'relative', animation: 'chLkIn 0.6s ease 0.5s both' }}>Weekly cycle · {dayOfCycle === 0 ? 'Fresh week' : `Day ${dayOfCycle} of 7`}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 9, textTransform: 'none', letterSpacing: '0', color: '#8BAE8A', marginBottom: 8, position: 'relative', animation: 'chLkIn 0.6s ease 0.5s both' }}>Weekly cycle · {dayOfCycle === 0 ? 'Fresh week' : `Day ${dayOfCycle} of 7`}</div>
                   <div style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 300, color: '#FAF8F4', position: 'relative', animation: 'chLkIn 0.6s ease 0.6s both' }}>Next check-in <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>coming soon.</em></div>
                   <div style={{ fontSize: 12.5, color: 'rgba(250,248,244,0.7)', lineHeight: 1.65, maxWidth: 300, margin: '8px auto 0', position: 'relative', fontWeight: 300, animation: 'chLkIn 0.6s ease 0.75s both' }}>Weekly check-ins unlock every 7 days to keep your symptom data consistent and your insights accurate.</div>
                 </div>
@@ -567,7 +567,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
             <div style={{ position: 'relative', background: '#22301F', borderRadius: 24, padding: '28px 22px 22px', overflow: 'hidden', boxShadow: 'var(--shadow-3)', animation: 'chRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 18 }}>
               <div style={{ position: 'absolute', top: -70, right: -50, width: 210, height: 210, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
 
-              <div style={{ position: 'relative', fontFamily: 'DM Mono, monospace', fontSize: 9, letterSpacing: '1.8px', color: '#C9A227', textTransform: 'uppercase', marginBottom: 16 }}>Your record</div>
+              <div style={{ position: 'relative', fontFamily: 'var(--font-body)', fontSize: 9, letterSpacing: '0', color: '#C9A227', textTransform: 'none', marginBottom: 16 }}>Your record</div>
               <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 26, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.15, marginBottom: 10 }}>The story of how<br />you got better.</div>
               <div style={{ position: 'relative', fontSize: 13, color: 'rgba(250,248,244,0.6)', lineHeight: 1.6, marginBottom: 24 }}>Written one week at a time. Every check-in adds a line. In six months, you will see exactly what changed and when.</div>
 
@@ -599,7 +599,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
           </>
         )}
 
-        {/* SYMPTOM PROGRESS — all tracked symptoms vs baseline */}
+        {/* SYMPTOM PROGRESS. all tracked symptoms vs baseline */}
         {checkins.length >= 1 && (
           <SymptomProgress profile={profile} checkins={checkins} />
         )}
@@ -624,7 +624,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               const unlock = new Date(start); unlock.setDate(start.getDate() + 56)
               rows.push({ t: 'Reintroduction unlocked', d: unlock.toISOString() })
             }
-            rows.push({ t: 'Day 1 — protocol started', d: profile.protocol_start_date })
+            rows.push({ t: 'Day 1. protocol started', d: profile.protocol_start_date })
           }
           if (rows.length === 0) return null
           rows.sort((a, b) => new Date(b.d) - new Date(a.d))
@@ -661,7 +661,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
           </>
         )}
 
-        {/* EMPTY STATE — program started but no check-ins yet */}
+        {/* EMPTY STATE. program started but no check-ins yet */}
         {!loading && checkins.length === 0 && !programNotStarted && !weeklyDue && (
           <div style={s.emptyWrap}>
             <div style={s.emptyIcon}>

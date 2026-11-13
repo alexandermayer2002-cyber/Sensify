@@ -10,7 +10,7 @@ const s = {
   logo: { fontFamily: 'var(--font-display)', fontSize: '19px', fontWeight: 500, color: 'var(--ink)' },
   logoEm: { color: '#3D5C3C', fontStyle: 'italic' },
   back: { fontSize: '13px', color: 'var(--gray)', cursor: 'pointer', background: 'none', border: 'none' },
-  day14Badge: { fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--forest-500)', background: 'var(--forest-100)', padding: '6px 12px', borderRadius: '999px' },
+  day14Badge: { fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500, letterSpacing: '0', textTransform: 'none', color: 'var(--forest-500)', background: 'var(--forest-100)', padding: '6px 12px', borderRadius: '999px' },
   content: { flex: 1, padding: '28px 24px 100px', maxWidth: '620px', margin: '0 auto', width: '100%', boxSizing: 'border-box' },
   foodName: { fontFamily: 'var(--font-display)', fontSize: '38px', fontWeight: 300, color: '#3D5C3C', fontStyle: 'italic', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '4px' },
   title: { fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, letterSpacing: '-0.3px', marginBottom: '8px' },
@@ -20,7 +20,7 @@ const s = {
   contextRowLast: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', fontSize: '13px' },
   contextLabel: { color: 'var(--gray)' },
   contextValue: { fontWeight: 500 },
-  sectionLabel: { fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '14px' },
+  sectionLabel: { fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', marginBottom: '14px' },
   questionBlock: { marginBottom: '28px' },
   questionSub: { fontSize: '12.5px', color: 'var(--gray)', lineHeight: 1.55, marginTop: '-4px', marginBottom: '12px' },
   summaryCard: { position: 'relative', overflow: 'hidden', color: '#FAF8F4', borderRadius: 'var(--r-lg)', padding: '24px 22px', marginBottom: '28px', background: 'radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.32), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', boxShadow: 'var(--shadow-3)' },
@@ -46,7 +46,7 @@ const s = {
   verdictTitle: { fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 400, marginBottom: '6px' },
   verdictSub: { fontSize: '13px', opacity: 0.8, lineHeight: 1.6 },
   analysisCard: { background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(139,174,138,0.04)), #FFFFFF', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px 20px', marginBottom: '12px' },
-  analysisTag: { fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--forest-500)', background: 'var(--forest-100)', padding: '4px 10px', borderRadius: '999px', display: 'inline-block', marginBottom: '8px' },
+  analysisTag: { fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', background: 'var(--forest-100)', padding: '4px 10px', borderRadius: '999px', display: 'inline-block', marginBottom: '8px' },
   analysisText: { fontSize: '13px', color: 'var(--ink)', lineHeight: 1.65 },
   spinner: { width: '32px', height: '32px', border: '3px solid #EDF3ED', borderTopColor: '#3D5C3C', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '40px auto 16px' },
   processingText: { textAlign: 'center', fontSize: '14px', color: 'var(--gray)', fontFamily: 'var(--font-display)' },
@@ -200,14 +200,14 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
 
   // No logs, no ruling (QA 2026-11-06 protocol critique #12, approved by
   // Alex 2026-11-10): a cycle with zero logged days used to default to
-  // 'Limit' (AI-adjustable) — a verdict minted from nothing, against every
+  // 'Limit' (AI-adjustable). a verdict minted from nothing, against every
   // "earned from your own record" promise. Refuse to rule; offer a restart.
   if (logsLoaded && dailyLogs.length === 0 && activeReintroId) return (
     <div style={s.wrap}>
       <div style={{ padding: '60px 24px', textAlign: 'center' }}>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: 12 }}>There's nothing to rule from.</div>
         <div style={{ fontSize: '14px', color: '#3B4036', lineHeight: 1.7, maxWidth: 360, margin: '0 auto 20px' }}>
-          Not a single day of this {food.toLowerCase()} cycle was logged, and every verdict here is earned from your own record — so no verdict can honestly be entered. Restart the cycle to test {food.toLowerCase()} properly, or write to Support if you'd rather set this food aside.
+          Not a single day of this {food.toLowerCase()} cycle was logged, and every verdict here is earned from your own record. so no verdict can honestly be entered. Restart the cycle to test {food.toLowerCase()} properly, or write to Support if you'd rather set this food aside.
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
           <button className="sn-btn" disabled={restarting} onClick={async () => {
@@ -224,7 +224,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
               if (error) throw error
               onBack()
             } catch (e) {
-              alert("Couldn't restart the cycle — nothing was changed. " + (e?.message || ''))
+              alert("Couldn't restart the cycle. nothing was changed. " + (e?.message || ''))
               setRestarting(false)
             }
           }}>{restarting ? 'Restarting…' : `Restart the ${food.toLowerCase()} cycle`}</button>
@@ -275,7 +275,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
       } catch (e) {}
     }
 
-    // AI refines (may adjust by one level with reason) — never against data
+    // AI refines (may adjust by one level with reason). never against data
     let aiReason = ''
     try {
       const aiResult = await generateReintroVerdict({
@@ -326,7 +326,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
       writeFailed = !!error
     }
     if (writeFailed) {
-      setSubmitError("Your verdict couldn't be saved — nothing was lost, and your answers are still here. Tap “Get my verdict” to try again.")
+      setSubmitError("Your verdict couldn't be saved. nothing was lost, and your answers are still here. Tap “Get my verdict” to try again.")
       setSubmitting(false)
       return
     }
@@ -375,13 +375,13 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
         </div>
         <div style={s.verdictWrap}>
           <div style={{ textAlign: 'center', marginBottom: 22, marginTop: 8 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray-faint)', textTransform: 'uppercase', marginBottom: 10 }}>{(() => { const n = new Set((dailyLogs || []).filter(l => l && l.log_date).map(l => String(l.log_date).slice(0, 10))).size; return n > 0 ? `Verdict entered · ${n} logged day${n === 1 ? '' : 's'}` : 'Verdict entered' })()}</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500, letterSpacing: '0', color: 'var(--gray-faint)', textTransform: 'none', marginBottom: 10 }}>{(() => { const n = new Set((dailyLogs || []).filter(l => l && l.log_date).map(l => String(l.log_date).slice(0, 10))).size; return n > 0 ? `Verdict entered · ${n} logged day${n === 1 ? '' : 's'}` : 'Verdict entered' })()}</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, color: 'var(--ink)', marginBottom: 2 }}>{food}</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '56px', fontWeight: 300, letterSpacing: '-0.02em', color: config.color, lineHeight: 1.1, textShadow: config.glow.replace('0 0 24px', '0 0 38px') }}>{verdict}.</div>
             <div style={{ width: '38px', height: '2px', background: config.color, opacity: 0.45, margin: '14px auto 12px' }} />
             {/* Honest sub-copy by provenance (QA 2026-10-26 #4): the canned
                 "clear, repeatable pattern" line must never ship on a verdict
-                the testimony earned — the analysis below tells that story. */}
+                the testimony earned. the analysis below tells that story. */}
             <div style={{ fontSize: '13.5px', color: '#5A5A52', lineHeight: 1.6, maxWidth: 420, margin: '0 auto' }}>
               {accuracy && accuracy !== 'accurate'
                 ? `Your daily logs and your account of the two weeks were weighed together. ${food} has been added to your ${verdict} list.`
@@ -390,33 +390,33 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
           </div>
 
           <div style={{ background: 'linear-gradient(180deg, #FDFBF6, #F8F4EA)', border: 'none', borderRadius: 'var(--r-md)', padding: '14px 16px', marginBottom: '14px', boxShadow: '0 10px 26px -8px rgba(60,50,30,0.16), 0 2px 6px rgba(60,50,30,0.05), inset 0 0 30px rgba(201,162,39,0.03)' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', fontWeight: 500, letterSpacing: '1.2px', color: '#9A927E', marginBottom: 8 }}>ENTERED IN YOUR VERDICTS</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '7px', fontWeight: 500, letterSpacing: '0', color: '#9A927E', marginBottom: 8 }}>ENTERED IN YOUR VERDICTS</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                 <span style={{ width: 8, height: 8, borderRadius: 2, background: verdict === 'Safe' ? '#2C9D8A' : verdict === 'Limit' ? '#E8941F' : '#D64545', flexShrink: 0 }}></span>
                 <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C' }}>{food}</span>
               </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.6px', color: '#8A8474' }}>{accuracy && accuracy !== 'accurate' ? 'RULED WITH YOUR ACCOUNT' : verdict === 'Safe' ? 'NO REACTION' : verdict === 'Limit' ? 'MILD / MIXED' : 'SYMPTOMS ON RECORD'}</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '7px', letterSpacing: '0', color: '#8A8474' }}>{accuracy && accuracy !== 'accurate' ? 'RULED WITH YOUR ACCOUNT' : verdict === 'Safe' ? 'NO REACTION' : verdict === 'Limit' ? 'MILD / MIXED' : 'SYMPTOMS ON RECORD'}</span>
             </div>
           </div>
 
           <div style={s.analysisCard}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 9 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--forest-300)', boxShadow: '0 0 8px rgba(139,174,138,0.75)' }}></span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)' }}>The analysis</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)' }}>The analysis</span>
             </div>
             <div style={s.analysisText}>{analysis}</div>
           </div>
 
           {wasConflicted && (
             <div style={{ background: 'var(--tint-warm)', border: 'none', borderRadius: 'var(--r-md)', padding: '14px 16px', marginBottom: '12px' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray)', textTransform: 'uppercase', marginBottom: 7 }}>Ruled on conflicting evidence</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500, letterSpacing: '0', color: 'var(--gray)', textTransform: 'none', marginBottom: 7 }}>Ruled on conflicting evidence</div>
               <div style={{ fontSize: '12.5px', color: '#5A5A52', lineHeight: 1.65 }}>Your logs and what you told us disagreed, so this verdict moved one careful step and no further. When you want a firmer answer, you can re-run this trial from your Reintro tab; the newest verdict replaces this one.</div>
             </div>
           )}
 
           <div style={{ padding: '14px 16px', marginBottom: '12px' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray-faint)', textTransform: 'uppercase', marginBottom: 7 }}>Worth knowing</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500, letterSpacing: '0', color: 'var(--gray-faint)', textTransform: 'none', marginBottom: 7 }}>Worth knowing</div>
             <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.65 }}>This isn't necessarily permanent. Sensitivities can shift over time. If a verdict was ruled on conflicting evidence, you'll be offered a retest; for anything else, reach out through Support and we'll set one up with you.</div>
           </div>
         </div>
@@ -440,7 +440,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
         <div style={s.title}>Your {food.toLowerCase()} results.</div>
         <div style={s.hint}>One last step before we map {food} on your Food Map. Confirm what you logged, and tell us if anything unusual happened.</div>
 
-        {/* BLOCK 1 — Their logged data in plain sentences */}
+        {/* BLOCK 1. Their logged data in plain sentences */}
         <div style={s.sectionLabel}>What you logged</div>
         <div style={s.summaryCard}>
           {logsLoaded ? <div style={s.summaryText}>{buildSummary(dailyLogs, food)}</div> : <div style={s.summaryText}>Loading your cycle…</div>}
@@ -448,14 +448,14 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
 
         {(noiseFloor?.totalDays > 0 || sleepOverlap || cycleOverlap) && (
           <div style={{ background: 'var(--tint-warm)', border: 'none', borderRadius: 'var(--r-md)', padding: '13px 14px', marginBottom: '14px' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, letterSpacing: '0.17em', color: 'var(--gray-faint)', textTransform: 'uppercase', marginBottom: 6 }}>Worth weighing</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500, letterSpacing: '0', color: 'var(--gray-faint)', textTransform: 'none', marginBottom: 6 }}>Worth weighing</div>
             {noiseFloor?.totalDays > 0 && <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6 }}>During clean elimination weeks you logged symptoms about {noiseFloor.daysPerWeek} day{noiseFloor.daysPerWeek === 1 ? '' : 's'} a week. That background is part of how this cycle gets read.</div>}
             {sleepOverlap && <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6, marginTop: noiseFloor?.totalDays > 0 ? 6 : 0 }}>{sleepOverlap.overlap} of your {sleepOverlap.symDays} symptom days were also among your worst sleep nights this cycle. The analysis weighs that too.</div>}
             {cycleOverlap && <div style={{ fontSize: '12px', color: '#5A5A52', lineHeight: 1.6, marginTop: (noiseFloor?.totalDays > 0 || sleepOverlap) ? 6 : 0 }}>{cycleOverlap.overlap} of your {cycleOverlap.symDays} symptom days fell on period days you logged. Hormonal timing can look like a food reaction, so the analysis weighs that honestly too.</div>}
           </div>
         )}
 
-        {/* BLOCK 2 — Confirm accuracy */}
+        {/* BLOCK 2. Confirm accuracy */}
         <div style={s.questionBlock}>
           <div style={s.questionLabel}>Does that sound right?</div>
           <div style={s.questionSub}>This is what you told us day by day. If anything looks off, let us know and we'll factor it in.</div>
@@ -470,7 +470,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
           </div>
         </div>
 
-        {/* BLOCK 2.5 — Disagreement follow-up: the gap, in the user's words.
+        {/* BLOCK 2.5. Disagreement follow-up: the gap, in the user's words.
             Neutral questions only; the ruling weighs these, nothing leads. */}
         {disagreeing && (
           <div style={{ ...s.questionBlock, background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px' }}>
@@ -525,7 +525,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
           </div>
         )}
 
-        {/* BLOCK 3 — Confounders, free text, no examples */}
+        {/* BLOCK 3. Confounders, free text, no examples */}
         <div style={s.questionBlock}>
           <div style={s.questionLabel}>Was anything else going on? (optional)</div>
           <div style={s.questionSub}>Things outside of {food.toLowerCase()} can affect how you feel. If anything notable happened these past two weeks, jot it down. If not, leave it blank.</div>

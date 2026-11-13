@@ -52,7 +52,7 @@ function MaintainPreview({ profile, session }) {
       if (!res.ok || !data.ok) throw new Error(data.error || 'cancel failed')
     } catch (e) {
       setBusy(false)
-      alert("That didn't go through — your reservation wasn't cancelled and your card is unchanged. Please try again.")
+      alert("That didn't go through. your reservation wasn't cancelled and your card is unchanged. Please try again.")
       return
     }
     window.location.reload()
@@ -83,7 +83,7 @@ function MaintainPreview({ profile, session }) {
         <div style={{ position: 'relative' }}>
           {features.map((f, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '13px 0', borderBottom: i < features.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none', animation: `mtRowIn 0.55s ease ${0.4 + i * 0.15}s both` }}>
-              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', color: '#8BAE8A', width: '20px' }}>{`0${i + 1}`}</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', color: '#8BAE8A', width: '20px' }}>{`0${i + 1}`}</span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAF8F4' }}>{f.t}</div>
                 <div style={{ fontSize: '11.5px', color: 'rgba(250,248,244,0.6)', marginTop: '2px' }}>{f.d}</div>
@@ -94,9 +94,9 @@ function MaintainPreview({ profile, session }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', position: 'relative', animation: 'mtRowIn 0.55s ease 1.1s both' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
             <span style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontStyle: 'normal', color: '#FAF8F4' }}>$12.99</span>
-            <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', color: 'rgba(250,248,244,0.7)', letterSpacing: '0.5px' }}>/MO</span>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'rgba(250,248,244,0.7)', letterSpacing: '0' }}>/MO</span>
           </div>
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '8.5px', color: 'rgba(250,248,244,0.7)', letterSpacing: '0.5px' }}>CANCEL ANYTIME</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'rgba(250,248,244,0.7)', letterSpacing: '0' }}>CANCEL ANYTIME</div>
         </div>
       </div>
 
@@ -119,7 +119,7 @@ function MaintainPreview({ profile, session }) {
         </div>
       )}
 
-      {/* MAP HEALTH — the drift-detection promise, shown live as a preview
+      {/* MAP HEALTH. the drift-detection promise, shown live as a preview
           of what Maintain's monthly report looks like on the user's own data */}
       <div style={{ marginTop: 18 }}>
         <div className="sn-micro sn-micro-dim" style={{ display: 'block', textAlign: 'center', marginBottom: 8 }}>What drift detection looks like</div>
@@ -173,7 +173,7 @@ function MaintainHubInner({ session, profile }) {
       ])
       // The map subscribers pay for reads the UNION (QA 2026-10-29 #3):
       // reintroduction_results is the source of truth, legacy food_map the
-      // best-effort mirror — a silently failed upsert must never blank this.
+      // best-effort mirror. a silently failed upsert must never blank this.
       const byFood = {}
       for (const row of (fm.data || [])) if (row.verdict) byFood[(row.food || '').toLowerCase()] = { food: row.food, verdict: row.verdict }
       for (const cy of (rr.data || [])) byFood[(cy.food || '').toLowerCase()] = { food: cy.food, verdict: cy.verdict }  // ascending: latest trial wins
@@ -287,7 +287,7 @@ function MapRow({ tier, foods }) {
     <div style={{ marginBottom: '12px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '7px' }}>
         <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: t.dot }} />
-        <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: t.text }}>{tier}</span>
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: t.text }}>{tier}</span>
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
         {foods.map((f, i) => <span key={i} style={{ fontSize: '12.5px', fontWeight: 500, padding: '5px 12px', borderRadius: '999px', background: t.bg, color: t.text }}>{f.food}</span>)}
@@ -331,11 +331,11 @@ function SymptomReport({ session, onBack }) {
     setSaving(true)
     setSaveErr('')
     // Checked write (QA 2026-10-29 #6, 10th silent-write sighting): symptom
-    // logs are drift detection's only signal — a lost one must never read as
+    // logs are drift detection's only signal. a lost one must never read as
     // "Logged. Thanks."
     const { error } = await supabase.from('symptom_logs').insert({ user_id: session.user.id, symptom, severity, note: note || null })
     if (error) {
-      setSaveErr("That didn't save — your note is still here, tap Log it to try again.")
+      setSaveErr("That didn't save. your note is still here, tap Log it to try again.")
       setSaving(false)
       return
     }
@@ -488,7 +488,7 @@ const s = {
   greet: { fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300 },
   em: { fontStyle: 'italic', color: '#3D5C3C' },
   subgreet: { fontSize: '13px', color: '#7A7A72', marginTop: '3px', marginBottom: '22px' },
-  sectionLabel: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', margin: '24px 0 11px' },
+  sectionLabel: { fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', margin: '24px 0 11px' },
   muted: { fontSize: '13px', color: '#A8A69E', lineHeight: 1.5 },
 
   hero: { padding: '22px 20px', cursor: 'pointer' },
@@ -510,7 +510,7 @@ const s = {
   actRow: { marginBottom: '8px' },
   actDot: { width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0 },
   actTxt: { fontSize: '12px', flex: 1, lineHeight: 1.4 },
-  actTime: { fontSize: '10px', color: '#A8A69E', fontFamily: 'DM Mono, monospace', flexShrink: 0 },
+  actTime: { fontSize: '10px', color: '#A8A69E', fontFamily: 'var(--font-body)', flexShrink: 0 },
 
   backBar: { display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px' },
   backBtn: { width: '32px', height: '32px', borderRadius: '10px', border: 'none', background: '#F1EFE8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-1)' },
@@ -523,7 +523,7 @@ const s = {
   disclaimer: { fontSize: '11px', color: '#A8A69E', textAlign: 'center', marginTop: '14px', lineHeight: 1.5 },
 
   histTabs: { display: 'flex', gap: '8px', marginBottom: '20px' },
-  histDate: { fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '9px' },
+  histDate: { fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', marginBottom: '9px' },
   histRow: { alignItems: 'flex-start', marginBottom: '8px' },
   histFoods: { fontSize: '13.5px', lineHeight: 1.4 },
   histFlag: { fontSize: '11px', color: '#8A5410', marginTop: '3px' },

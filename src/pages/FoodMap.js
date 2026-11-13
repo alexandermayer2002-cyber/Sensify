@@ -7,11 +7,11 @@ import { evidenceLine } from '../utils/evidence'
 // The Food Map download is a real generated PDF (vector, full color, no print
 // dialog). jsPDF and the embedded fonts load only when the button is tapped.
 
-// THE FOOD MAP — the trial-strip ledger. Every food is one row: its name, its real
+// THE FOOD MAP. the trial-strip ledger. Every food is one row: its name, its real
 // 14-day trial rendered mark by mark from reintro_daily_logs, and the verdict it
 // earned, set in serif at the row's end. Shape = phase (square: ate it, circle:
 // washout). Color = outcome (green clean, red symptoms; symptom marks run larger
-// for colorblind legibility). Faint specks are days without a record — absence
+// for colorblind legibility). Faint specks are days without a record. absence
 // stays visible. Nothing on this document is assumed.
 
 const V_COLOR = { Safe: '#3D5C3C', Limit: '#C07A28', Avoid: '#C0392B' }
@@ -68,7 +68,7 @@ export default function FoodMap({ session, profile, labResult }) {
   const [pdfError, setPdfError] = useState(false)
 
   // Named + retryable (QA 2026-10-27 #4): a failed fetch used to render a
-  // confident "0 / N RULED" board — earned verdicts shown as nothing.
+  // confident "0 / N RULED" board. earned verdicts shown as nothing.
   const loadVerdicts = async () => {
     if (!session?.user?.id) return
     setLoadError(false)
@@ -88,7 +88,7 @@ export default function FoodMap({ session, profile, labResult }) {
   const currentDay = profile?.protocol_start_date ? protocolDay(profile.protocol_start_date) : 0
   const today = localDate(new Date())
 
-  // The food universe comes from the resolver — the seam. Never the raw lab.
+  // The food universe comes from the resolver. the seam. Never the raw lab.
   const resolved = labResult ? getProtocolFoods(profile, labResult) : null
   const universe = (resolved?.foods || []).filter(f => {
     const freq = profile?.food_frequency?.[f.name]
@@ -165,7 +165,7 @@ export default function FoodMap({ session, profile, labResult }) {
         {rows.length === 0 && <div style={s.recLine}>No daily records exist for this trial.</div>}
         {rows.map((l, i) => (
           <div key={i} style={s.recLine}>
-            <span style={{ fontFamily: 'DM Mono, monospace', fontSize: 9, color: '#9A927E', letterSpacing: '0.5px' }}>{l.log_date}</span>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: '#9A927E', letterSpacing: '0' }}>{l.log_date}</span>
             <span style={{ margin: '0 8px', color: '#C9C5B8' }}>·</span>
             {l.ate_food === true ? 'Ate it' : 'Washout'}
             <span style={{ margin: '0 8px', color: '#C9C5B8' }}>·</span>
@@ -225,7 +225,7 @@ export default function FoodMap({ session, profile, labResult }) {
         <div className="sn-rise" style={s.doc}>
           <div style={s.dochead}>
             <div>
-              <div style={s.kicker}>SENSIFY · THE VERDICTS</div>
+              <div style={s.kicker}>The verdicts</div>
               <div style={s.title}>Earned by <span style={{ color: '#3D5C3C' }}>testing.</span></div>
             </div>
           </div>
@@ -238,14 +238,14 @@ export default function FoodMap({ session, profile, labResult }) {
     )
   }
 
-  // THE COVER — elimination era: the finished example wall + the countdown that unlocks theirs.
+  // THE COVER. elimination era: the finished example wall + the countdown that unlocks theirs.
   if (labResult && preReintro && loaded) {
     const daysLeft = Math.max(1, 57 - currentDay)
     const pct = Math.max(2, Math.min(100, (currentDay / 56) * 100))
     const exCard = (nm, wd, sub, color, bg, bd) => (
       <div key={nm} style={{ borderRadius: 16, padding: '12px 12px 11px', minHeight: 64, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: bg }}>
         <div>
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.3px', color: '#7A7A72' }}>{nm}</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 7, letterSpacing: '0', color: '#7A7A72' }}>{nm}</div>
           <div style={{ fontFamily: 'Fraunces, serif', fontSize: 19, lineHeight: 1, marginTop: 4, color, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{wd}</div>
         </div>
         <div style={{ fontSize: 8.5, color: '#7A7A72', lineHeight: 1.4, marginTop: 7 }}>{sub}</div>
@@ -254,14 +254,14 @@ export default function FoodMap({ session, profile, labResult }) {
     return (
       <div style={s.page}>
         <div className="sn-rise" style={{ ...s.doc, padding: '24px 24px 20px' }}>
-          <div style={s.kicker}>SENSIFY · THE VERDICTS</div>
-          <div style={{ ...s.title, fontSize: 25 }}>This is what you're <span style={{ color: '#3D5C3C' }}>working toward.</span></div>
+          <div style={s.kicker}>The verdicts</div>
+          <div style={{ ...s.title, fontSize: 25 }}>This is what you're working toward.</div>
           <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginTop: 8 }}>A finished wall, shown as an example: every food ruled by a real 14 day trial on a real body. Yours gets earned the same way, one trial at a time.</div>
 
           <div style={{ marginTop: 18 }}>
             <style>{`@keyframes fmExGlow { 0%,100% { box-shadow: 0 0 0 3px rgba(139,174,138,0.18), 0 0 18px rgba(139,174,138,0.35) } 50% { box-shadow: 0 0 0 3px rgba(139,174,138,0.08), 0 0 7px rgba(139,174,138,0.15) } }`}</style>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-              <div style={{ background: '#EDF3ED', border: '1.5px solid #8BAE8A', borderRadius: 999, padding: '8px 18px', fontFamily: 'DM Mono, monospace', fontSize: 10, fontWeight: 500, letterSpacing: '2.2px', color: '#3D5C3C', animation: 'fmExGlow 2.8s ease-in-out infinite' }}>EXAMPLE · NOT YOURS YET</div>
+              <div style={{ background: '#EDF3ED', border: '1.5px solid #8BAE8A', borderRadius: 999, padding: '8px 18px', fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, letterSpacing: '0', color: '#3D5C3C', animation: 'fmExGlow 2.8s ease-in-out infinite' }}>Example, not yours yet</div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, opacity: 0.82 }}>
               {exCard('WHEAT', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.13)')}
@@ -272,10 +272,10 @@ export default function FoodMap({ session, profile, labResult }) {
               {exCard('EGGS', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.13)')}
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 11 }}>
-              <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 6, letterSpacing: '1.2px', color: '#9A927E' }}>EXAMPLE · YOURS IS EARNED FROM YOUR OWN TRIALS</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 6, letterSpacing: '0', color: '#9A927E' }}>Example. Yours is earned from your own trials.</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'DM Mono, monospace', fontSize: 6.5, color: '#FAF8F4' }}>6/6</div>
-                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 6, letterSpacing: '1px', color: '#3D5C3C', lineHeight: 1.6 }}>SENSIFY<br />VERIFIED</div>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', fontSize: 6.5, color: '#FAF8F4' }}>6/6</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 6, letterSpacing: '0', color: '#3D5C3C', lineHeight: 1.6 }}>SENSIFY<br />VERIFIED</div>
               </div>
             </div>
           </div>
@@ -288,8 +288,8 @@ export default function FoodMap({ session, profile, labResult }) {
             <div className="sn-fill" style={{ width: `${pct}%` }} />
             <div className="sn-dot" style={{ left: `${pct}%` }} />
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'DM Mono, monospace', fontSize: 6, letterSpacing: '1px', color: '#9A927E', marginTop: 7 }}>
-            <span>DAY 1</span><span>TRIALS BEGIN · DAY 57</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-body)', fontSize: 6, letterSpacing: '0', color: '#9A927E', marginTop: 7 }}>
+            <span>Day 1</span><span>Trials begin on day 57</span>
           </div>
         </div>
       </div>
@@ -301,9 +301,9 @@ export default function FoodMap({ session, profile, labResult }) {
     return (
       <div style={s.page}>
         <div className="sn-rise" style={{ ...s.doc, padding: '26px 24px', textAlign: 'center' }}>
-          <div style={s.kicker}>SENSIFY · THE VERDICTS</div>
+          <div style={s.kicker}>The verdicts</div>
           <div style={{ ...s.title, marginTop: 6 }}>Couldn't load your <span style={{ color: '#3D5C3C' }}>verdicts.</span></div>
-          <div style={{ fontSize: 12.5, color: '#5A5A52', lineHeight: 1.6, margin: '10px 0 16px' }}>Your earned verdicts are safe — this page just couldn't reach them. Check your connection and try again.</div>
+          <div style={{ fontSize: 12.5, color: '#5A5A52', lineHeight: 1.6, margin: '10px 0 16px' }}>Your earned verdicts are safe. this page just couldn't reach them. Check your connection and try again.</div>
           <button className="sn-btn" style={{ width: '100%' }} onClick={() => { setLoaded(false); loadVerdicts() }}>Try again</button>
         </div>
       </div>
@@ -320,7 +320,7 @@ export default function FoodMap({ session, profile, labResult }) {
               {!labResult ? 'Your verdicts live here.'
                 : complete ? 'Every verdict, earned.'
                 : preReintro ? `${total} trial${total === 1 ? '' : 's'} waiting for day 57.`
-                : `${name ? `${name}'s` : 'Your'} Food Map, so far.`}
+                : 'Your Food Map, so far.'}
             </div>
             <div style={{ fontSize: 14, color: '#737B73', marginTop: 6, lineHeight: 1.5 }}>Each verdict is ruled by a fourteen-day single-food trial on your own daily record. Nothing is assumed.</div>
           </div>
@@ -335,7 +335,7 @@ export default function FoodMap({ session, profile, labResult }) {
             broken" until the explanation was found a scroll below. */}
         {labResult && preReintro && (
           <div style={{ fontSize: 12.5, color: '#73736A', lineHeight: 1.6, margin: '2px 0 12px' }}>
-            The faded rows are your trials to come — they unlock on day 57. Nothing here is broken, just not earned yet.
+            The faded rows are your trials to come. they unlock on day 57. Nothing here is broken, just not earned yet.
           </div>
         )}
         {labResult && ruledCount > 0 && dayZeroEcho(profile, currentDay) && (
@@ -372,7 +372,7 @@ export default function FoodMap({ session, profile, labResult }) {
             >
               {pdfBusy ? 'Preparing your Food Map...' : 'Download your Food Map'}
             </button>
-            {pdfError && <div style={{ fontSize: 12, color: '#C0392B', marginTop: 6 }}>The download didn't start — try again.</div>}
+            {pdfError && <div style={{ fontSize: 12, color: '#C0392B', marginTop: 6 }}>The download didn't start. try again.</div>}
           </div>
         )}
 
@@ -389,7 +389,7 @@ export default function FoodMap({ session, profile, labResult }) {
             <Card key={f.name} food={f} cycle={byFood[f.name.toLowerCase()]} />
           ))}
           {labResult && queue.map((f, i) => (
-            <Card key={f.name} food={f} ghost tag={i === 0 ? (preReintro ? 'DAY 57' : 'NEXT') : ''} />
+            <Card key={f.name} food={f} ghost tag={i === 0 && testing.length === 0 ? (preReintro ? 'DAY 57' : 'NEXT') : ''} />
           ))}
         </div>
         {!labResult && <div style={s.awaitNote}>Your lab results choose the foods. Your body rules on each one, day by day. Every card here gets earned.</div>}
@@ -413,20 +413,20 @@ const s = {
   page: { maxWidth: 1180, margin: '0 auto', padding: '28px 20px 60px' },
   doc: { background: 'transparent' },
   dochead: { padding: '8px 0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
-  kicker: { fontFamily: 'DM Mono, monospace', fontSize: 10, fontWeight: 500, letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: 8, textTransform: 'uppercase' },
+  kicker: { fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, letterSpacing: '0', color: 'var(--forest-500)', marginBottom: 8, textTransform: 'none' },
   title: { fontFamily: 'Fraunces, serif', fontSize: 30, fontWeight: 300, color: '#151E18', lineHeight: 1.05, letterSpacing: '-0.02em' },
   bignum: { fontFamily: 'Fraunces, serif', fontSize: 27, color: '#3D5C3C', lineHeight: 1 },
   bigden: { color: 'rgba(28,28,28,0.25)', fontSize: 18 },
-  countLabel: { fontFamily: 'DM Mono, monospace', fontSize: 7.5, letterSpacing: '1.4px', color: '#9A927E', marginTop: 3 },
+  countLabel: { fontFamily: 'var(--font-body)', fontSize: 7.5, letterSpacing: '0', color: '#9A927E', marginTop: 3 },
   printRow: { padding: '0 0 16px', display: 'flex', justifyContent: 'flex-start' },
-  printBtn: { fontSize: 12, letterSpacing: '0.2px', borderRadius: 999, padding: '9px 16px' },
+  printBtn: { fontSize: 12, letterSpacing: '0', borderRadius: 999, padding: '9px 16px' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 16, padding: '6px 0 10px' },
   card: { borderRadius: 16, padding: '15px 15px 13px', minHeight: 116, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', gap: 10 },
-  dayStamp: { position: 'absolute', top: 12, right: 13, fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.1px', color: '#9A927E' },
-  fname: { fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '1.6px', textTransform: 'uppercase' },
+  dayStamp: { position: 'absolute', top: 12, right: 13, fontFamily: 'var(--font-body)', fontSize: 6.5, letterSpacing: '0', color: '#9A927E' },
+  fname: { fontFamily: 'var(--font-body)', fontSize: 8, letterSpacing: '0', textTransform: 'none' },
   vword: { fontFamily: 'Fraunces, serif', fontSize: 32, lineHeight: 1, marginTop: 7, fontWeight: 400, fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
   vGhost: { fontSize: 20 },
-  ghostCorner: { position: 'absolute', top: 12, right: 13, fontFamily: 'DM Mono, monospace', fontSize: 6.5, letterSpacing: '1.1px', color: 'rgba(122,122,114,0.55)' },
+  ghostCorner: { position: 'absolute', top: 12, right: 13, fontFamily: 'var(--font-body)', fontSize: 6.5, letterSpacing: '0', color: 'rgba(122,122,114,0.55)' },
   strip: { display: 'flex', gap: 4, alignItems: 'center', flex: 1, flexWrap: 'wrap' },
   sq: { width: 10, height: 10, borderRadius: 3, flexShrink: 0, boxShadow: '0 1px 3px rgba(32,36,31,0.16)' },
   ci: { width: 9, height: 9, borderRadius: '50%', flexShrink: 0, boxShadow: '0 1px 3px rgba(32,36,31,0.16)' },
@@ -439,12 +439,12 @@ const s = {
   awaitNote: { fontSize: 11.5, color: '#9A927E', lineHeight: 1.65, padding: '14px 0 16px' },
   docfoot: { marginTop: 18, padding: '14px 0 0', borderTop: '1px solid rgba(21,30,24,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
   legend: { display: 'flex', gap: 13, alignItems: 'center', flexWrap: 'wrap' },
-  li: { display: 'flex', gap: 5, alignItems: 'center', fontFamily: 'DM Mono, monospace', fontSize: 7.5, letterSpacing: '1px', color: '#9A927E' },
+  li: { display: 'flex', gap: 5, alignItems: 'center', fontFamily: 'var(--font-body)', fontSize: 7.5, letterSpacing: '0', color: '#9A927E' },
   swSq: { width: 9, height: 9, borderRadius: 2.5, display: 'inline-block' },
   swCi: { width: 8, height: 8, borderRadius: '50%', display: 'inline-block' },
   sealWrap: { display: 'flex', alignItems: 'center', gap: 9 },
-  fnote: { fontFamily: 'DM Mono, monospace', fontSize: 7, letterSpacing: '1.1px', color: '#9A927E', textAlign: 'right', lineHeight: 1.8 },
-  seal: { width: 34, height: 34, borderRadius: '50%', border: '1.5px dashed rgba(61,92,60,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'DM Mono, monospace', fontSize: 8, color: '#3D5C3C', flexShrink: 0 },
+  fnote: { fontFamily: 'var(--font-body)', fontSize: 7, letterSpacing: '0', color: '#9A927E', textAlign: 'right', lineHeight: 1.8 },
+  seal: { width: 34, height: 34, borderRadius: '50%', border: '1.5px dashed rgba(61,92,60,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', fontSize: 8, color: '#3D5C3C', flexShrink: 0 },
   sealDone: { background: '#3D5C3C', border: 'none', color: '#FAF8F4' },
-  tapNote: { fontFamily: 'DM Mono, monospace', fontSize: 7.5, letterSpacing: '1.2px', color: '#B5AF9F', textAlign: 'center', marginTop: 12, textTransform: 'uppercase' },
+  tapNote: { fontFamily: 'var(--font-body)', fontSize: 7.5, letterSpacing: '0', color: '#B5AF9F', textAlign: 'center', marginTop: 12, textTransform: 'none' },
 }

@@ -141,7 +141,7 @@ export default function HomeElimination({
       <p className="he-lede">{lede}</p>
       <div className="he-actions">
         <CheckinButton state={btnState} onClick={btnClick} />
-        {weeklyDue && !dailyDone ? <button type="button" className="he-link" onClick={onOpenDaily}>Tonight's check-in first</button> : null}
+        {weeklyDue && !dailyDone ? <button type="button" className="he-link" onClick={onOpenDaily}>Tonight\u2019s check-in first</button> : null}
       </div>
       <StreakLine state={streakState} count={streak} loggedTonight={dailyDone} className="he-streak" />
     </div>
@@ -216,9 +216,9 @@ export default function HomeElimination({
   const Panels = (
     <section className="he-panels">
       <div className="ob-paper he-panel">
-        <h3>Rough night? Tell us what you ate.</h3>
-        <p>If tonight is worse than usual, write down today's meals in your own words inside the check-in. We keep it on file against the night. It is a lead for later, never a ruling.</p>
-        {!dailyDone ? <button type="button" className="he-link" onClick={onOpenDaily}>It goes in tonight's check-in</button> : <p className="he-quiet">Tonight's check-in is in. Tomorrow's has the same box.</p>}
+        <h3>Rough night? Say so in the check-in.</h3>
+        <p>If tonight is worse than usual, the check-in has a place to say what you felt and what you ate today. It is kept on file against the night, as a lead for later, never a ruling.</p>
+        {!dailyDone ? <button type="button" className="he-link" onClick={onOpenDaily}>Open tonight\u2019s check-in</button> : <p className="he-quiet">Tonight\u2019s check-in is in. Tomorrow\u2019s has the same place.</p>}
       </div>
       <HouseholdShareCard session={session} profile={profile} variant="panel" phase="elimination" foods={suspectNames} />
     </section>
