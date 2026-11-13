@@ -144,7 +144,7 @@ const sc = {
 const mintToken = () =>
   Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('')
 
-export function HouseholdShareCard({ session, profile, variant, phase, foods = [] }) {
+export function HouseholdShareCard({ session, profile, variant, phase, foods = [], trialFood = null }) {
   const [token, setToken] = useState(() => normalizeMilestones(profile?.shown_milestones).household_token || null)
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -220,7 +220,7 @@ export function HouseholdShareCard({ session, profile, variant, phase, foods = [
     // Refresh 2026-11-13: the Home panel form. Same logic, one dark panel,
     // sentences not labels, no raw URL on screen (the input stays for the
     // clipboard fallback only).
-    const what = phase === 'reintroduction' ? 'what is off your plate and this week\u2019s trial' : phase === 'complete' ? 'which foods you avoid' : 'what is off your plate right now'
+    const what = trialFood ? `what is off your plate and that ${String(trialFood).toLowerCase()} is on trial` : phase === 'complete' ? 'which foods you avoid' : 'what is off your plate right now'
     return (
       <div style={hp.panel}>
         <div>
@@ -230,8 +230,8 @@ export function HouseholdShareCard({ session, profile, variant, phase, foods = [
               ? `Anyone with your link sees ${what}, nothing more. It updates itself as the protocol moves, so nobody has to ask.`
               : `One link that shows ${what}, nothing more. It updates itself as the protocol moves, so nobody has to ask.`}
           </p>
-          {foods.length > 0 && (
-            <div style={hp.chips}>{foods.map(f => <span key={f} style={hp.chip}>{f}</span>)}</div>
+          {(foods.length > 0 || trialFood) && (
+            <div style={hp.chips}>{trialFood ? <span key="trial" style={{ ...hp.chip, background: 'rgba(236,231,220,.14)' }}>{trialFood}, on trial</span> : null}{foods.map(f => <span key={f} style={hp.chip}>{f}</span>)}</div>
           )}
           {error && <p style={{ ...hp.p, color: '#F2C7C7', marginTop: 10 }}>{error}</p>}
         </div>

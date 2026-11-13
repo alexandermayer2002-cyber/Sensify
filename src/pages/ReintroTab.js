@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Strip, CheckinButton } from '../components/objects'
 import { supabase } from '../supabase'
 import { getTestingOrder } from '../utils/protocolEngine'
 import { parseSymptoms } from '../utils/verdictEngine'
@@ -242,7 +243,7 @@ function ProgramComplete({ session, profile, labResult, completedFoods }) {
 // Asked once, at completion, stored in the milestones KV with a timestamp.
 // Honest by construction: it never suggests an answer and 0-10 includes
 // "no better at all", because a recorded disappointment is real data too.
-function OutcomeQuestion({ session, profile }) {
+export function OutcomeQuestion({ session, profile }) {
   const already = normalizeMilestones(profile?.shown_milestones).outcome_score
   const [score, setScore] = useState(null)
   const [note, setNote] = useState('')
@@ -1016,110 +1017,106 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
     <div className="rt-wrap">
       <style>{css}</style>
       <div className="rt-content">
-        <div className="rt-header">
-          <div className="rt-title">Reintro<em>duction.</em></div>
-          <div className="rt-sub">One food at a time. 14 days per cycle, verdict the morning after. Every answer earns a verdict.</div>
-        </div>
+        {/* Refresh 2026-11-13: the header answers the state's one question
+            (qa/SCREENS.md Reintro tab entries) instead of restating the tab. */}
+        {(() => {
+          const allDone = lowUnlocked && !activeReintro && getRemainingFoods('Low').length === 0 && getRemainingFoods('Moderate').length === 0 && getRemainingFoods('High').length === 0
+          const f = activeReintro?.food || ''
+          const title = activeReintro
+            ? (cycleDay < 1 ? `${f} starts ${cycleDay === 0 ? 'tomorrow' : `in ${1 - cycleDay} days`}.`
+              : isVerdictDay ? `${f} reintroduction complete.`
+              : isExposure ? `Exposure day ${Math.min(3, nextExposureNumber)} of 3. Eat ${f.toLowerCase()}.`
+              : washoutDay <= 1 ? `Exposure complete. Washout begins tomorrow.`
+              : `Washout day ${washoutDay - 1} of ${WASHOUT_LENGTH}. Avoid ${f.toLowerCase()}.`)
+            : allDone ? 'Reintroduction complete.'
+            : completedCycles.length === 0 ? 'Testing is open.'
+            : 'Choose your next food.'
+          const sub = activeReintro
+            ? (isVerdictDay ? 'Fourteen days are on the record. One survey, then the ruling.' : 'One food at a time. Three days of eating it, eleven of watching, then the verdict on day fourteen.')
+            : allDone ? 'Every suspect has been tried. Every verdict was earned from your own record.'
+            : 'One food at a time. Fourteen days per trial. Each one earns a verdict.'
+          return (
+            <div className="rt-header">
+              <div className="rt-title" style={{ fontSize: 30, lineHeight: 1.05 }}>{title}</div>
+              <div className="rt-sub">{sub}</div>
+            </div>
+          )
+        })()}
 
         {/* ACTIVE REINTRODUCTION */}
         {activeReintro && (
           <>
-            <div className="rt-active-card sn-rise">
-              <div className="rt-active-eyebrow">Currently testing</div>
-              <div className="rt-active-food"><em>{activeReintro.food}</em></div>
-              <div className="rt-active-sub">{cycleDay < 1 ? `14-day reintroduction cycle · ${cycleDay === 0 ? 'Starts tomorrow' : `Starts in ${1 - cycleDay} days`}` : cycleDay > 14 ? '14-day cycle complete · verdict ready' : `14-day reintroduction cycle · Day ${cycleDay} of 14`}</div>
-
-              <div className={`rt-phase-badge ${isVerdictDay ? 'exposure' : isExposure ? 'exposure' : 'washout'}`}>
-                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isVerdictDay ? '#AECDAD' : isExposure ? '#AECDAD' : '#C9D8C8', flexShrink: 0 }}></div>
-                {isVerdictDay ? 'Cycle complete' : isExposure ? 'Exposure phase: eat this food' : washoutDay <= 1 ? 'Exposure complete' : 'Washout phase: avoid this food'}
+            {/* Refresh 2026-11-13: the active trial as one paper card built
+                from the shared objects. One clock, one instruction, one action. */}
+            <div className="ob-paper sn-rise" style={{ padding: '22px 22px 20px', marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 400, letterSpacing: '-0.015em', lineHeight: 1.1 }}>{activeReintro.food} on trial</div>
+                <div style={{ fontSize: 13.5, color: 'var(--ob-mute)' }}>{cycleDay < 1 ? (cycleDay === 0 ? 'Starts tomorrow' : `Starts in ${1 - cycleDay} days`) : `Day ${Math.min(14, cycleDay)} of 14`}</div>
               </div>
-              {!isVerdictDay && (
-                <div style={{ marginTop: '10px', padding: '9px 12px', background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 'var(--r-sm)', fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.8px', color: 'rgba(250,248,244,0.75)' }}>ONLY {activeReintro.food.toUpperCase()} COMES BACK · EVERY OTHER FOOD ON YOUR LIST STAYS ELIMINATED</div>
-              )}
-
-              {isVerdictDay && (
-              <div style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-md)', boxShadow: 'var(--shadow-2)', padding: '18px', marginBottom: '14px', color: 'var(--ink)' }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--forest-500)', background: 'var(--forest-100)', padding: '4px 10px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' }}>Day 14 · Verdict ready</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '21px', fontWeight: 400, marginBottom: '6px' }}><span style={{ color: '#3D5C3C' }}>{activeReintro.food}</span> reintroduction complete.</div>
-                <div style={{ fontSize: '13px', color: 'var(--gray)', marginBottom: '14px', lineHeight: 1.6 }}>One last survey. Your answers and fourteen days of logs decide the verdict: Safe, Limit, or Avoid.</div>
-                <button style={{ background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-sm)', padding: '12px 20px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)' }} onClick={() => onStartVerdictSurvey(activeReintro.food)}>
-                  Get my verdict →
-                </button>
-              </div>
-            )}
-
-              {/* 14-day timeline */}
-              <div className="rt-timeline">
-                {[...Array(14)].map((_, i) => {
+              <p style={{ fontSize: 13.5, color: 'var(--ob-mute)', margin: '6px 0 0', lineHeight: 1.5 }}>Only {activeReintro.food.toLowerCase()} comes back. Every other food on your list stays out.</p>
+              {/* 14-day strip: the shared object (src/components/objects). */}
+              {(() => {
+                const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+                const days = [...Array(14)].map((_, i) => {
                   const day = i + 1
-                  const isPast = day < cycleDay
-                  const isCurrent = day === cycleDay
                   const isExp = day <= 3
-                  const dayDate = cycleStart ? (() => { const d = new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + day - 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` })() : null
-                  const wasLogged = dayDate && dailyLogs?.some(l => String(l.log_date).slice(0, 10) === dayDate)
-                  return (
-                    <div key={i} className={`rt-day-dot ${day === 3 ? 'exp-divider ' : ''}${isPast ? (wasLogged ? 'past-logged' : 'past-skipped') : isCurrent ? (wasLogged ? 'past-logged current' : 'current') : isExp ? 'exposure-future' : 'washout-future'}`} />
-                  )
-                })}
-              </div>
-              {/* Labels no longer wrap at 430px (QA 2026-10-26 minor, fixed
-                  11-06): the left label had ~80px and broke to three lines. */}
-              <div className="rt-timeline-labels" style={{ justifyContent: 'space-between', gap: 8 }}>
-                <span style={{ whiteSpace: 'nowrap' }}>Exposure · days 1–3</span>
-                <span style={{ whiteSpace: 'nowrap' }}>Washout · days 4–14</span>
-              </div>
+                  if (!cycleStart) return isExp ? 'exposure-planned' : 'future'
+                  const d = new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + day - 1)
+                  const dayDate = iso(d)
+                  const wasLogged = dailyLogs?.some(l => String(l.log_date).slice(0, 10) === dayDate)
+                  if (day === cycleDay) return isExp ? (wasLogged ? 'exposure' : 'today-exposure') : (wasLogged ? 'today-on' : 'today')
+                  if (day > cycleDay) return isExp ? 'exposure-planned' : 'future'
+                  if (isExp) return wasLogged ? 'exposure' : 'none'
+                  return wasLogged ? 'on' : 'none'
+                })
+                return (
+                  <div style={{ margin: '16px 0 4px' }}>
+                    <Strip days={days} size="md" label={`${activeReintro.food} cycle, day ${Math.min(14, Math.max(1, cycleDay))} of 14`} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginTop: 8, fontSize: 12, color: 'var(--ob-mute)' }}>
+                      <span>Exposure, days 1 to 3</span>
+                      <span>Washout, days 4 to 14</span>
+                    </div>
+                  </div>
+                )
+              })()}
 
-              {!isVerdictDay && (<>
-              <div className="rt-instruction">
-                <div className="rt-instruction-label">Today's instruction</div>
-                <div className="rt-instruction-text">
-                  {cycleDay < 1
-                    ? (cycleDay === 0
-                      ? `Nothing to do yet. Day 1 begins tomorrow, eat ${activeReintro.food} as you normally would then. Tonight's check-in is just your usual sleep, water, and stress.`
-                      : `Nothing to do yet. Day 1 begins in ${1 - cycleDay} days, eat ${activeReintro.food} as you normally would then. Until then your elimination holds exactly as it is.`)
-                    : isVerdictDay
-                    ? `Your ${activeReintro.food} cycle is complete. Complete your verdict survey to get your result.`
-                    // Logged-today wins over the live instruction (QA 2026-11-06
-                    // full-run #4, approved by Alex 2026-11-10): an evening
-                    // logger used to see "Eat it today · day 2 of 3" and
-                    // "Logged for today" on the same screen.
-                    : loggedToday
-                    ? `Today's log is in — nothing more to eat or do until tomorrow. ${isExposure ? 'Tomorrow picks up your next exposure day.' : 'The washout continues tomorrow.'}`
-                    : isExposure
-                    ? `Eat ${activeReintro.food} today as you normally would. You're on exposure day ${nextExposureNumber} of 3. Every other food on your elimination list stays off the plate.`
-                    : washoutDay <= 1
-                    // The 3rd exposure day is not a washout day (QA 2026-10-26
-                    // minor, fixed 11-06): the badge used to say "avoid this
-                    // food" on the very day the plan had them eat it.
-                    ? `Exposure complete — all 3 ${activeReintro.food.toLowerCase()} days are logged. Washout begins tomorrow: from then, avoid it completely while we watch for delayed reactions.`
-                    : `Avoid ${activeReintro.food} completely today. This is washout day ${washoutDay - 1} of ${WASHOUT_LENGTH}. Continue your elimination diet as usual.`}
+              {isVerdictDay ? (
+                <div style={{ marginTop: 16 }}>
+                  <p style={{ fontSize: 15, color: 'var(--ob-ink-2)', lineHeight: 1.55, margin: '0 0 14px' }}>Fourteen days are on the record. One short survey, then the ruling: Safe, Limit or Avoid. Nothing is decided until you answer.</p>
+                  <button type="button" className="ob-btn tonight" onClick={() => onStartVerdictSurvey(activeReintro.food)}>Get my verdict</button>
                 </div>
-                {cycleDay < 1 && (
-                  <div style={{ marginTop: '12px', fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.8px', color: 'rgba(250,248,244,0.55)' }}>YOUR FIRST CHECK-IN UNLOCKS WITH DAY 1</div>
-                )}
-                {!isVerdictDay && cycleDay >= 1 && (
-                  loggedToday ? (
-                    <div style={{ marginTop: '14px', fontSize: '12px', color: '#AECDAD', fontWeight: 600 }}>✓ Logged for today. See you tomorrow.</div>
-                  ) : (
-                    <button
-                      onClick={() => onOpenDailyCheckin && onOpenDailyCheckin()}
-                      style={{ marginTop: '14px', background: 'var(--forest-300)', color: 'var(--forest-900)', border: 'none', borderRadius: 'var(--r-sm)', padding: '12px 20px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 10px 24px -6px rgba(139,174,138,0.4)' }}
-                    >
-                      {isExposure ? 'Log today\u2019s check-in \u2192' : 'Log washout check \u2192'}
-                    </button>
-                  )
-                )}
-              </div>
-              </>)}
+              ) : (
+                <div style={{ marginTop: 16 }}>
+                  <p style={{ fontSize: 15, color: 'var(--ob-ink-2)', lineHeight: 1.55, margin: 0 }}>
+                    {cycleDay < 1
+                      ? (cycleDay === 0
+                        ? `Nothing to do yet. Day 1 begins tomorrow; eat ${activeReintro.food.toLowerCase()} as you normally would then. Tonight's check-in is just your usual sleep, water and stress.`
+                        : `Nothing to do yet. Day 1 begins in ${1 - cycleDay} days. Until then your elimination holds exactly as it is.`)
+                      : loggedToday
+                      ? `Today's log is in. Nothing more to eat or do until tomorrow. ${isExposure ? 'Tomorrow picks up your next exposure day.' : 'The washout continues tomorrow.'}`
+                      : isExposure
+                      ? `Eat ${activeReintro.food.toLowerCase()} today as you normally would, a normal serving at your usual time. Exposure day ${nextExposureNumber} of 3.`
+                      : washoutDay <= 1
+                      ? `Exposure complete. All 3 ${activeReintro.food.toLowerCase()} days are logged. Washout begins tomorrow: from then, keep it out completely while we watch for delayed reactions.`
+                      : `Keep ${activeReintro.food.toLowerCase()} out today. Washout day ${washoutDay - 1} of ${WASHOUT_LENGTH}. Your elimination continues as usual.`}
+                  </p>
+                  {cycleDay < 1 && <p style={{ marginTop: 10, fontSize: 13, color: 'var(--ob-mute)' }}>Your first check-in for this trial unlocks with day 1.</p>}
+                  {cycleDay >= 1 && (
+                    <div style={{ marginTop: 14 }}>
+                      {loggedToday ? <CheckinButton state="logged" /> : <CheckinButton state={isExposure ? 'tonight' : 'washout'} onClick={() => onOpenDailyCheckin && onOpenDailyCheckin()} />}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Food briefing */}
-            {loadingBriefing && (
+            {loadingBriefing && isExposure && (
               <div style={{ background: 'var(--paper)', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-1)', padding: '16px', marginBottom: '14px', textAlign: 'center' }}>
                 <div style={{ fontSize: '12px', color: 'var(--gray)', fontStyle: 'italic' }}>Getting your personalized briefing...</div>
               </div>
             )}
-            {foodBriefing && !loadingBriefing && !isVerdictDay && (
+            {foodBriefing && !loadingBriefing && !isVerdictDay && isExposure && (
               <div className="sn-rise-2" style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(139,174,138,0.04)), #FFFFFF', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px', marginBottom: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '9px' }}>
                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--forest-300)', animation: 'snfyPulse 1.6s infinite', flexShrink: 0 }}></span>
@@ -1262,7 +1259,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
         {/* AVAILABLE FOODS BY TIER */}
         {!activeReintro && (
           <>
-            {completedCycles.length > 0 && (
+            {completedCycles.length > 0 && getRemainingFoods('Low').length > 0 && (
               <div className="sn-rise" style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(139,174,138,0.04)), #FFFFFF', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '20px', marginBottom: '16px' }}>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--forest-500)', marginBottom: '8px' }}>Cycle complete · {completedCycles.length} verdict{completedCycles.length !== 1 ? 's' : ''} earned</div>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 400, letterSpacing: '-0.3px', color: 'var(--ink)', marginBottom: '4px' }}>Choose your next food.</div>
@@ -1280,10 +1277,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             )}
             {lowUnlocked && (
               <>
-                <div className="rt-section-label">
-                  Your foods · unlocked
-                  {getRemainingFoods('Low').length === 0 && ' · none to test'}
-                </div>
+                {getRemainingFoods('Low').length > 0 && <div className="rt-section-label">Your foods, in order</div>}
                 {getRemainingFoods('Low').map((food, i) => (
                   <div key={food.name} className={`rt-food-card${i === 0 ? ' recommended' : ''} ${['sn-rise', 'sn-rise-2', 'sn-rise-3', 'sn-rise-4'][Math.min(i, 3)]}`}>
                     <div className="rt-food-left">
@@ -1294,15 +1288,11 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                           {i === 0 && <span className="rt-rec-badge">Recommended</span>}
                         </div>
                         <div className="rt-food-freq">{FREQ_LABEL[foodFrequency[food.name]] || ''}</div>
-                        {/* Projected verdict date: queue position i finishes a 14-day
-                            cycle starting today for i=0, today + 14*i for the rest. */}
-                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.4px', color: '#8A8A82', marginTop: '2px' }}>
-                          Verdict by ~{(() => { const t = new Date(); const d = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 14 * (i + 1) + 1); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) })()}
-                        </div>
+
                       </div>
                     </div>
                     <button className="rt-start-btn" disabled={!!starting} onClick={() => { setShowDatePick(false); setFarPick(null); setPendingStart({ food: food.name, level: food.level }) }}>
-                      {starting === food.name ? 'Starting...' : 'Start cycle →'}
+                      {starting === food.name ? 'Starting...' : 'Start cycle'}
                     </button>
                   </div>
                 ))}
@@ -1319,19 +1309,19 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                 replaces the old one everywhere. */}
             {lowUnlocked && retestable.length > 0 && (
               <>
-                <div className="rt-section-label" style={{ marginTop: '22px' }}>Retest available · ruled on conflicting evidence</div>
+                <div className="rt-section-label" style={{ marginTop: '22px' }}>Retest available: ruled on conflicting evidence</div>
                 {retestable.map(cyc => (
                   <div key={'retest-' + cyc.food} className="rt-food-card sn-rise-4">
                     <div className="rt-food-left">
                       <div className="rt-food-rank">↻</div>
                       <div>
                         <div className="rt-food-name">{cyc.food}</div>
-                        <div className="rt-food-freq">Ruled {cyc.verdict} · your logs and your account of it disagreed</div>
+                        <div className="rt-food-freq">Ruled {cyc.verdict}. Your logs and your account of it disagreed.</div>
                         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.4px', color: '#8A8A82', marginTop: '2px' }}>A re-run replaces this verdict with whatever the new trial earns</div>
                       </div>
                     </div>
                     <button className="rt-start-btn" disabled={!!starting} onClick={() => { setShowDatePick(false); setFarPick(null); setPendingStart({ food: cyc.food, level: cyc.sensitivity_level || 'Low' }) }}>
-                      {starting === cyc.food ? 'Starting...' : 'Retest →'}
+                      {starting === cyc.food ? 'Starting...' : 'Retest'}
                     </button>
                   </div>
                 ))}

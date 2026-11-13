@@ -155,14 +155,18 @@ export function SuspectCard({ food, meta, state = 'suspect', line, className = '
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty']
 const numWord = n => (n >= 0 && n <= 20 ? WORDS[n] : String(n))
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1)
-export function StreakLine({ state = 'none', count = 0, className = '' }) {
+export function StreakLine({ state = 'none', count = 0, loggedTonight = false, className = '' }) {
   let body
-  if (state === 'active' && count > 0) {
+  if (state === 'active' && count > 0 && loggedTonight) {
+    body = <><b>{cap(numWord(count))} night{count === 1 ? '' : 's'} in a row,</b> tonight included.</>
+  } else if (state === 'active' && count > 0) {
     body = <><b>{cap(numWord(count))} night{count === 1 ? '' : 's'} in a row.</b> Tonight makes {numWord(count + 1)}.</>
   } else if (state === 'broken') {
     body = <>Streak reset last night. <b>Tonight starts a new one.</b></>
   } else if (state === 'away') {
     body = <><b>Away, on plan.</b> Your streak is paused, not broken.</>
+  } else if (loggedTonight) {
+    body = <><b>One night on the record.</b> Tomorrow makes two.</>
   } else {
     body = <>Your streak starts with tonight's check-in.</>
   }

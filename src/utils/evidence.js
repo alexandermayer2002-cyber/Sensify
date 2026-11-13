@@ -29,7 +29,7 @@ export function evidenceLine(cycle, logs) {
     const expReacted = exposure.filter(reacted).length
     const washReacted = logged.filter(l => l.ate_food !== true).filter(reacted).length
     if (expReacted === 0 && washReacted === 0) {
-      return logged.length >= 10 ? 'No reaction across 14 days' : 'No reaction on any logged day'
+      return logged.length >= 14 ? 'No reaction across 14 days' : `No reaction across ${logged.length} logged day${logged.length === 1 ? '' : 's'}`
     }
     if (expReacted > 0 && washReacted > 0) {
       return `Reacted on ${expReacted} of ${exposure.length} exposure days, with symptoms into washout`
@@ -39,6 +39,9 @@ export function evidenceLine(cycle, logs) {
     }
     return `Clean on exposure days, symptoms on ${washReacted} washout day${washReacted === 1 ? '' : 's'}`
   }
-  return { Safe: 'No reaction across 14 days', Limit: 'Mild reaction at full servings', Avoid: 'Reacted during the trial' }[cycle?.verdict] || ''
+  // No logs at all: say only what is known, never a threshold or a count.
+  const reason = String(cycle?.verdict_reason || '').trim()
+  if (reason) return reason.split(/(?<=\.)\s/)[0]
+  return cycle?.verdict ? `Ruled ${cycle.verdict} on the trial record` : ''
 }
 

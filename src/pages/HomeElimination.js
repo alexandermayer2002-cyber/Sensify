@@ -143,7 +143,7 @@ export default function HomeElimination({
         <CheckinButton state={btnState} onClick={btnClick} />
         {weeklyDue && !dailyDone ? <button type="button" className="he-link" onClick={onOpenDaily}>Tonight's check-in first</button> : null}
       </div>
-      <StreakLine state={streakState} count={streak} className="he-streak" />
+      <StreakLine state={streakState} count={streak} loggedTonight={dailyDone} className="he-streak" />
     </div>
   )
 
@@ -156,7 +156,7 @@ export default function HomeElimination({
         </div>
         {onOpenHistory ? <button type="button" className="he-link" onClick={onOpenHistory}>See the whole record</button> : null}
       </div>
-      <Strip days={stripDays} size={stretch === "early" ? "md" : "lg"} startDay={firstStripDay} label={`Nights ${firstStripDay} to ${day}`} />
+      <Strip days={stripDays} size={stretch === "early" ? "sm" : "lg"} startDay={firstStripDay} label={`Nights ${firstStripDay} to ${day}`} />
     </section>
   )
 
@@ -169,7 +169,7 @@ export default function HomeElimination({
         <p className="he-ledger-empty">{Cap(words(weeksLogged))} weekly check-in{weeksLogged === 1 ? '' : 's'} on the record. Your day-zero baseline was not scored, so there is nothing to compare against yet.</p>
       ) : (
         <>
-          <p className="he-ledger-sub">Weekly check-in scores, 1 to 10, against what you told us on day zero. {weeksLogged < 3 ? `${Cap(words(weeksLogged))} week${weeksLogged === 1 ? '' : 's'} so far; a line appears at three.` : ''}</p>
+          <p className="he-ledger-sub">Weekly check-in scores, 1 to 10. The dotted line is your day-zero score. {weeksLogged < 3 ? `${Cap(words(weeksLogged))} week${weeksLogged === 1 ? '' : 's'} so far; a line appears at three.` : ''}</p>
           {series.map(s => (
             <div className="he-lrow" key={s.id}>
               <div className="he-lname">{s.label}<span>{s.lowerIsBetter ? 'lower is better' : 'higher is better'}</span></div>
@@ -198,8 +198,8 @@ export default function HomeElimination({
 
   const SuspectsFull = (
     <section className="he-map">
-      <h2>{stretch === 'late' ? 'Your order, from day 57.' : 'Off the plate, for now.'}</h2>
-      <p className="he-sub">{suspectIntro} Your body rules on each, in turn, from day 57.</p>
+      <h2>{suspects.length === 0 ? 'Nothing to put on trial yet.' : stretch === 'late' ? 'Your order, from day 57.' : 'Off the plate, for now.'}</h2>
+      <p className="he-sub">{suspectIntro}{suspects.length ? ' Your body rules on each, in turn, from day 57.' : ' If that is a surprise, write to us.'}</p>
       {SuspectCards}
     </section>
   )
@@ -207,7 +207,7 @@ export default function HomeElimination({
     <section className="ob-paper he-compact">
       <div>
         <h3>Off the plate, for now</h3>
-        <p>{suspectNames.length ? suspectNames.join(', ') : 'No suspects listed yet'}. {suspects.length === 1 ? 'It goes on trial from day 57.' : 'They go on trial one at a time, from day 57, in this order.'}</p>
+        <p>{suspectNames.length === 0 ? 'Your protocol has no suspects listed, so there is nothing to put on trial yet. If that is a surprise, write to us.' : `${suspectNames.join(', ')}. ${suspects.length === 1 ? 'It goes on trial from day 57.' : 'They go on trial one at a time, from day 57, in this order.'}`}</p>
       </div>
       <button type="button" className="he-link" onClick={onOpenReintro}>See the order</button>
     </section>
