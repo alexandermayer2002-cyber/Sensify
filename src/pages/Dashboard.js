@@ -40,28 +40,32 @@ const css = `
   .snfy-app { min-height: 100vh; color: var(--ink); }
 
   .snfy-nav {
-    background: rgba(255,255,255,0.88);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 1px 0 rgba(56,62,48,0.06);
-    padding: 0 24px;
+    background: rgba(232,227,216,0.86);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 1px 0 rgba(21,30,24,0.08);
+    padding: 0 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 56px;
+    height: 64px;
     position: sticky;
     top: 0;
     z-index: 100;
   }
-  .snfy-logo { font-family: var(--font-display); font-size: 20px; font-weight: 500; color: var(--ink); letter-spacing: -0.3px; }
+  .snfy-logo { font-family: var(--font-display); font-size: 24px; font-weight: 400; color: #151E18; letter-spacing: -0.01em; }
   .snfy-msg-btn { position: relative; width: 38px; height: 38px; border-radius: var(--r-sm); border: none; background: var(--paper); box-shadow: var(--shadow-1); cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .snfy-msg-btn:hover { background: var(--forest-050); }
   .snfy-msg-icon { font-size: 16px; color: var(--forest-500); }
   .snfy-msg-badge { position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--forest-500); color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
   .snfy-logo em { color: var(--forest-500); font-style: italic; }
-  .snfy-nav-tabs { display: flex; gap: 2px; }
-  .snfy-tab { font-size: 13px; font-weight: 500; color: var(--gray); padding: 6px 12px; border: none; background: none; cursor: pointer; transition: color var(--t-fast) var(--ease); letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
-  .snfy-tab.active { color: var(--ink); font-weight: 600; border-bottom: 2px solid var(--forest-500); }
+  .snfy-nav-tabs { display: flex; gap: 6px; }
+  /* Refresh 2026-11-13: the app shell sits on the stone surface the rebuilt screens were designed for. */
+  .snfy-app { background: #E8E3D8; }
+  .snfy-app::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(1100px 600px at 80% 0%, rgba(255,255,255,.55), transparent 60%); }
+  .snfy-app > * { position: relative; z-index: 1; }
+  .snfy-tab { font-size: 15px; font-weight: 500; color: #737B73; padding: 6px 14px; border: none; background: none; cursor: pointer; transition: color var(--t-fast) var(--ease); letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
+  .snfy-tab.active { color: #151E18; font-weight: 500; border-bottom: 2px solid #151E18; }
   .snfy-tab:hover:not(.active) { color: var(--ink); }
   .snfy-bottombar { display: none; }
   .snfy-more-sheet { display: none; }

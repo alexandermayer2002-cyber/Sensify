@@ -225,7 +225,7 @@ def daily_checkin(r, stage, v):
         for lbl in ["Felt fine", "No, felt fine"]:
             if r.click(lbl, exact=False, required=False): break
     r.cta(r"Done for today"); r.sleep(2.2); r.wait_ready(10)
-    r.cta(r"Done"); r.sleep(1.2)
+    r.cta(r"^Done$|Back to Home"); r.sleep(1.2)
     return True
 
 def live_day(r, stage, v):

@@ -137,8 +137,8 @@ export default function BaselineSharpness({ session, profile }) {
   return (
     <div className="sn-card">
       <div style={b.header}>
-        <span className="sn-micro">Baseline Sharpness</span>
-        <span className="sn-micro sn-micro-dim">
+        <span style={{ fontSize: 13.5, color: '#737B73' }}>Baseline sharpness</span>
+        <span style={{ fontSize: 13, color: '#737B73' }}>
           {data.loggedDays} {data.loggedDays === 1 ? 'day' : 'days'} logged
         </span>
       </div>
@@ -187,8 +187,8 @@ export default function BaselineSharpness({ session, profile }) {
           <div className="sn-dot" style={{ left: `${fillPct}%` }} />
         </div>
         <div style={b.endpoints}>
-          <span className="sn-micro sn-micro-dim">Day 1 · ±{fmt1(U_START)}</span>
-          <span className="sn-micro">Verdict-ready · ±{fmt1(U_FLOOR)}</span>
+          <span style={{ fontSize: 12, color: '#737B73' }}>Day 1, within {fmt1(U_START)}</span>
+          <span style={{ fontSize: 12, color: '#434B44' }}>Verdict-ready, within {fmt1(U_FLOOR)}</span>
         </div>
       </div>
 
