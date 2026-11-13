@@ -322,7 +322,7 @@ def check_numbers(r, stage, check):
         ruled_db = len({(c.get("food") or "").lower() for c in rows if c.get("verdict")})
         nav_tab(r, "Verdicts"); r.sleep(1.2)
         t = r.text()
-        m = re.search(r"(\d+)\s*/\s*(\d+)\s*\n?\s*RULED", t, re.I) or re.search(r"(\d+)\s*/\s*(\d+)", t)
+        m = re.search(r"(\d+)\s*(?:/|of)\s*(\d+)\s*\n?\s*RULED", t, re.I) or re.search(r"(\d+)\s*(?:/|of)\s*(\d+)", t)
         ok = bool(m) and int(m.group(1)) == ruled_db
         check(f"fleet.{stage}.verdict_count", ok,
               f"shown={m.group(0).strip() if m else 'none'} db_ruled={ruled_db}")
