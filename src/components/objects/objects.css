@@ -1,0 +1,87 @@
+/* THE SEVEN SHARED OBJECTS
+   Approved by Alex 2026-11-13 from the objects sheet. These are the only
+   drawings of the strip, the curve, the verdict card, the suspect card, the
+   streak line, the check-in button and the day counter. No screen may draw
+   its own version. Verdict colors (safe / limit / avoid) appear only on the
+   three rulings. Nothing projected, nothing invented. See qa/SCREENS.md §3. */
+
+:root {
+  --ob-stone: #E8E3D8;
+  --ob-paper: #FBF9F4;
+  --ob-paper-2: #EFEBE1;
+  --ob-ink: #151E18;
+  --ob-ink-2: #434B44;
+  --ob-mute: #737B73;
+  --ob-moss: #3C6A4B;
+  --ob-forest: #1E3327;
+  --ob-sage: #A9CFB2;
+  --ob-slip: #8A7A52;
+  --ob-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35), 0 8px 18px -14px rgba(22,31,25,.2);
+}
+
+.ob-paper {
+  background: var(--ob-paper);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: var(--ob-shadow);
+  color: var(--ob-ink);
+}
+
+/* ---- 14-day strip ---- */
+.ob-strip { display: flex; gap: 6px; }
+.ob-strip i { width: 18px; height: 18px; border-radius: 4px; background: var(--ob-paper-2); display: block; position: relative; flex: none; }
+.ob-strip.ob-sm i { width: 12px; height: 12px; border-radius: 3px; }
+.ob-strip.ob-sm { gap: 4px; }
+.ob-strip.ob-lg i { width: 28px; height: 28px; border-radius: 6px; }
+.ob-strip.ob-lg { gap: 8px; }
+.ob-strip .on { background: var(--ob-moss); }
+.ob-strip .exposure { background: var(--ob-ink); }
+.ob-strip .exposure-planned { background: var(--ob-ink); opacity: .32; }
+.ob-strip .slipped { background: repeating-linear-gradient(135deg, var(--ob-slip) 0 3px, transparent 3px 6px); outline: 1px solid var(--ob-slip); outline-offset: -1px; }
+.ob-strip .none { background: transparent; outline: 1px dashed rgba(21,30,24,.35); outline-offset: -1px; }
+.ob-strip .away { background: var(--ob-paper-2); }
+.ob-strip .away::after { content: ""; position: absolute; inset: 33%; border-radius: 50%; background: var(--ob-moss); }
+.ob-strip .today { background: var(--ob-paper); outline: 2px solid var(--ob-ink); outline-offset: -2px; }
+.ob-strip .today.exposure { background: var(--ob-ink); outline-color: var(--ob-sage); }
+.ob-strip .future { background: var(--ob-paper-2); }
+
+/* ---- Symptom curve ---- */
+.ob-curve { display: block; width: 100%; height: auto; overflow: visible; }
+.ob-curve text { font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif); }
+
+/* ---- Verdict card ---- */
+.ob-vc { min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; }
+.ob-vc .ob-food { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 24px; letter-spacing: -.01em; line-height: 1.05; }
+.ob-vc .ob-v { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 40px; letter-spacing: -.03em; line-height: 1; margin-top: 18px; }
+.ob-vc .ob-ev { font-size: 13px; color: var(--ob-ink-2); line-height: 1.4; margin-top: 6px; }
+.ob-vc .ob-tag { display: inline-block; margin-top: 10px; font-size: 12px; color: var(--ob-ink-2); border: 1px solid rgba(21,30,24,.18); border-radius: 999px; padding: 4px 10px; }
+.ob-v.safe { color: var(--safe, #1F9C87); }
+.ob-v.limit { color: var(--limit, #D98A1C); }
+.ob-v.avoid { color: var(--avoid, #CF4B4B); }
+.ob-v.quiet { color: var(--ob-mute); }
+
+/* ---- Suspect card ---- */
+.ob-sc .ob-food { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 24px; letter-spacing: -.01em; line-height: 1.05; }
+.ob-sc .ob-meta { font-size: 13px; color: var(--ob-mute); margin-top: 4px; }
+.ob-sc .ob-state { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 30px; letter-spacing: -.03em; margin-top: 16px; line-height: 1; }
+.ob-sc .ob-line { font-size: 13px; color: var(--ob-ink-2); margin-top: 6px; line-height: 1.4; }
+
+/* ---- Streak line ---- */
+.ob-streak { font-size: 16px; color: var(--ob-ink-2); line-height: 1.4; }
+.ob-streak b { color: var(--ob-ink); font-weight: 500; }
+
+/* ---- Check-in button ---- */
+.ob-btn { display: inline-flex; align-items: baseline; gap: 12px; border-radius: 999px; padding: 16px 24px; font-size: 16px; font-weight: 600; letter-spacing: -.01em; border: 0; cursor: pointer; font-family: inherit; text-decoration: none; transition: transform 160ms ease; }
+.ob-btn:active { transform: scale(.985); }
+.ob-btn small { font-weight: 500; font-size: 13px; }
+.ob-btn.tonight, .ob-btn.washout { background: var(--ob-ink); color: var(--ob-paper); box-shadow: 0 22px 50px -22px rgba(22,31,25,.55); }
+.ob-btn.tonight small, .ob-btn.washout small { color: rgba(251,249,244,.6); }
+.ob-btn.logged { background: transparent; color: var(--ob-ink-2); border: 1px solid rgba(21,30,24,.2); cursor: default; }
+.ob-btn.catchup { background: var(--ob-paper); color: var(--ob-ink); box-shadow: var(--ob-shadow); }
+.ob-btn.weekly { background: var(--ob-forest); color: #ECE7DC; }
+.ob-btn.weekly small { color: rgba(236,231,220,.6); }
+.ob-btn.ob-block { width: 100%; justify-content: center; }
+
+/* ---- Day counter ---- */
+.ob-day { font-size: 16px; color: var(--ob-ink-2); display: inline-flex; align-items: baseline; gap: 8px; }
+.ob-day b { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 30px; color: var(--ob-ink); letter-spacing: -.02em; line-height: 1; }
