@@ -49,7 +49,7 @@ export default function HouseholdCard({ token }) {
   if (state === 'loading') return (
     <div style={s.wrap}>
       <div style={s.card}>
-        <div className="sn-micro sn-micro-dim" style={s.micro}>Sensify · Household card</div>
+        <div className="sn-micro sn-micro-dim" style={s.micro}>Sensify household card</div>
         <div style={s.centerText}>Loading the card...</div>
       </div>
     </div>
@@ -58,7 +58,7 @@ export default function HouseholdCard({ token }) {
   if (state === 'notfound' || state === 'error') return (
     <div style={s.wrap}>
       <div style={s.card}>
-        <div className="sn-micro sn-micro-dim" style={s.micro}>Sensify · Household card</div>
+        <div className="sn-micro sn-micro-dim" style={s.micro}>Sensify household card</div>
         <div style={{ ...s.headline, fontSize: '24px' }}>This card is not available.</div>
         <div style={{ ...s.centerText, textAlign: 'left' }}>
           {state === 'notfound'
@@ -76,7 +76,7 @@ export default function HouseholdCard({ token }) {
   return (
     <div style={s.wrap}>
       <div style={s.card}>
-        <div className="sn-micro sn-micro-dim" style={s.micro}>Sensify · Household card</div>
+        <div className="sn-micro sn-micro-dim" style={s.micro}>Sensify household card</div>
         <div style={s.headline}>Cooking for {name}?</div>
 
         <div className="sn-micro" style={s.sectionLabel}>Currently off the plate</div>
@@ -90,7 +90,7 @@ export default function HouseholdCard({ token }) {
               return (
                 <span key={nm} style={s.chip}>
                   {nm}
-                  {stLabel && <span style={{ marginLeft: 6, fontFamily: 'DM Mono, monospace', fontSize: 8, letterSpacing: '0.8px', color: f.status === 'avoid' ? '#A32D2D' : '#8A5410' }}>{stLabel}</span>}
+                  {stLabel && <span style={{ marginLeft: 6, fontFamily: 'var(--font-body)', fontSize: 8, letterSpacing: '0', color: f.status === 'avoid' ? '#A32D2D' : '#8A5410' }}>{stLabel}</span>}
                 </span>
               )
             })}
@@ -132,7 +132,7 @@ const sc = {
   line: { fontSize: '12px', lineHeight: 1.5, color: 'var(--gray)' },
   btn: { background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-md)', padding: '11px 16px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)', whiteSpace: 'nowrap', flexShrink: 0 },
   linkRow: { display: 'flex', gap: '8px', marginTop: '12px' },
-  linkInput: { flex: 1, minWidth: 0, border: 'none', borderRadius: 'var(--r-sm)', padding: '10px 12px', fontSize: '12.5px', background: 'var(--tint-warm)', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--font-mono)', boxSizing: 'border-box' },
+  linkInput: { flex: 1, minWidth: 0, border: 'none', borderRadius: 'var(--r-sm)', padding: '10px 12px', fontSize: '12.5px', background: 'var(--tint-warm)', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--font-body)', boxSizing: 'border-box' },
   copyBtn: { background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-sm)', padding: '10px 14px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' },
   statusRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '10px' },
   liveNote: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--gray)' },
@@ -144,7 +144,7 @@ const sc = {
 const mintToken = () =>
   Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('')
 
-export function HouseholdShareCard({ session, profile }) {
+export function HouseholdShareCard({ session, profile, variant, phase, foods = [], trialFood = null, tone = 'forest' }) {
   const [token, setToken] = useState(() => normalizeMilestones(profile?.shown_milestones).household_token || null)
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -216,6 +216,40 @@ export function HouseholdShareCard({ session, profile }) {
     }
   }
 
+  if (variant === 'panel') {
+    // Refresh 2026-11-13: the Home panel form. Same logic, one dark panel,
+    // sentences not labels, no raw URL on screen (the input stays for the
+    // clipboard fallback only).
+    const what = trialFood ? `what is off your plate and that ${String(trialFood).toLowerCase()} is on trial` : phase === 'complete' ? 'which foods you avoid' : 'what is off your plate right now'
+    return (
+      <div style={tone === 'paper' ? hp.panelPaper : hp.panel}>
+        <div>
+          <h3 style={{ ...hp.h3, color: tone === 'paper' ? '#151E18' : undefined }}>{token ? 'Your household card is live.' : 'A card for whoever cooks for you.'}</h3>
+          <p style={{ ...hp.p, color: tone === 'paper' ? '#434B44' : hp.p.color }}>
+            {token
+              ? `Anyone with your link sees ${what}, nothing more. It updates itself as the protocol moves, so nobody has to ask.`
+              : `One link that shows ${what}, nothing more. It updates itself as the protocol moves, so nobody has to ask.`}
+          </p>
+          {(foods.length > 0 || trialFood) && (
+            <div style={hp.chips}>{tone === 'paper' ? null : null}{trialFood ? <span key="trial" style={{ ...hp.chip, background: 'rgba(236,231,220,.14)' }}>{trialFood}, on trial</span> : null}{foods.map(f => <span key={f} style={tone === 'paper' ? { ...hp.chip, border: '1px solid rgba(21,30,24,.18)', color: '#151E18' } : hp.chip}>{f}</span>)}</div>
+          )}
+          {error && <p style={{ ...hp.p, color: '#F2C7C7', marginTop: 10 }}>{error}</p>}
+        </div>
+        <div style={hp.actions}>
+          {token ? (
+            <>
+              <button style={{ ...(tone === 'paper' ? hp.btnInk : hp.btn), opacity: busy ? 0.6 : 1 }} onClick={copyLink} disabled={busy}>{copied ? 'Link copied' : 'Copy the link'}</button>
+              <button style={{ ...hp.quiet, color: tone === 'paper' ? '#737B73' : hp.quiet.color, opacity: busy ? 0.6 : 1 }} onClick={turnOff} disabled={busy}>Turn the link off</button>
+              <input ref={inputRef} value={link} readOnly aria-hidden="true" tabIndex={-1} style={hp.hidden} onFocus={e => e.target.select()} />
+            </>
+          ) : (
+            <button style={{ ...(tone === 'paper' ? hp.btnInk : hp.btn), opacity: busy ? 0.6 : 1 }} onClick={createLink} disabled={busy}>{busy ? 'Creating the link' : 'Create the link'}</button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="sn-card" style={sc.card}>
       <div style={sc.row}>
@@ -252,4 +286,18 @@ export function HouseholdShareCard({ session, profile }) {
       )}
     </div>
   )
+}
+
+const hp = {
+  panelPaper: { background: '#FBF9F4', color: '#151E18', borderRadius: 18, padding: '26px 28px', minHeight: 240, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35)' },
+  btnInk: { background: '#151E18', color: '#FBF9F4', border: 0, borderRadius: 999, padding: '14px 22px', fontWeight: 600, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit' },
+  panel: { background: '#1E3327', color: '#ECE7DC', borderRadius: 18, padding: '26px 28px', minHeight: 240, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20 },
+  h3: { fontFamily: "var(--font-display, 'Fraunces', serif)", fontWeight: 400, fontSize: 22, letterSpacing: '-.015em', margin: '0 0 8px', lineHeight: 1.1 },
+  p: { fontSize: 15, lineHeight: 1.55, color: 'rgba(236,231,220,.78)', margin: 0 },
+  chips: { display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 16 },
+  chip: { border: '1px solid rgba(236,231,220,.3)', borderRadius: 999, padding: '6px 12px', fontSize: 13 },
+  actions: { display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' },
+  btn: { background: '#ECE7DC', color: '#1E3327', border: 0, borderRadius: 999, padding: '14px 22px', fontWeight: 600, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit' },
+  quiet: { background: 'none', border: 0, padding: 0, color: 'rgba(236,231,220,.6)', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'underline', textUnderlineOffset: 4 },
+  hidden: { position: 'absolute', opacity: 0, width: 1, height: 1, pointerEvents: 'none' },
 }

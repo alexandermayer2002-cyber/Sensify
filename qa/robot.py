@@ -4,6 +4,29 @@ import os, time, json, re
 from playwright.sync_api import sync_playwright
 
 SITE = "https://singular-starship-09b1f1.netlify.app"
+# Branch testing (2026-11-13): set SENSIFY_LOCAL_BUILD=/path/to/build and the
+# robot serves that build at a fake https host via route interception, while
+# the Netlify functions (doors, time machine) keep hitting the live site.
+LOCAL_BUILD = os.environ.get("SENSIFY_LOCAL_BUILD")
+if LOCAL_BUILD:
+    SITE = "https://local-sensify.test"
+import mimetypes
+LIVE_SITE = "https://singular-starship-09b1f1.netlify.app"
+def _serve_local(route):
+    full = route.request.url[len(SITE):]
+    path = full.split("?")[0].split("#")[0]
+    if path.startswith("/.netlify/functions"):
+        # Functions (doors, time machine, PDF reader) are not in the build: proxy to live.
+        try:
+            resp = route.fetch(url=LIVE_SITE + full)
+            route.fulfill(response=resp)
+        except Exception as e:
+            route.fulfill(status=502, body=str(e))
+        return
+    if path in ("", "/"): path = "/index.html"
+    fp = os.path.join(LOCAL_BUILD, path.lstrip("/"))
+    if not os.path.isfile(fp): fp = os.path.join(LOCAL_BUILD, "index.html")
+    route.fulfill(status=200, body=open(fp, "rb").read(), content_type=mimetypes.guess_type(fp)[0] or "application/octet-stream")
 SHOTS = os.environ.get("QA_SHOTS", "/tmp/claude-0/-home-claude-sensify/512e85e3-e74e-5efe-bd56-1a6472a82975/scratchpad/qa")
 os.makedirs(SHOTS, exist_ok=True)
 
@@ -17,6 +40,7 @@ class Robot:
         proxy = os.environ.get("HTTPS_PROXY")
         self.browser = self.pw.chromium.launch(headless=True, proxy={"server": proxy} if proxy else None)
         self.ctx = self.browser.new_context(viewport={"width": 430, "height": 932}, ignore_https_errors=True)
+        if LOCAL_BUILD: self.ctx.route(SITE + "/**", _serve_local)
         self.page = self.ctx.new_page()
         self.page.on("console", lambda m: self.console.append(m.text[:300]) if m.type == "error" else None)
         self.page.on("pageerror", lambda e: self.console.append("PAGEERROR " + str(e)[:300]))

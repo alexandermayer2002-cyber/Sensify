@@ -137,8 +137,8 @@ export default function BaselineSharpness({ session, profile }) {
   return (
     <div className="sn-card">
       <div style={b.header}>
-        <span className="sn-micro">Baseline Sharpness</span>
-        <span className="sn-micro sn-micro-dim">
+        <span style={{ fontSize: 13.5, color: '#737B73' }}>Baseline sharpness</span>
+        <span style={{ fontSize: 13, color: '#737B73' }}>
           {data.loggedDays} {data.loggedDays === 1 ? 'day' : 'days'} logged
         </span>
       </div>
@@ -176,7 +176,7 @@ export default function BaselineSharpness({ session, profile }) {
 
       <div style={b.statRow}>
         <span style={b.statVal}>{fmt1(cur.baseline)}</span>
-        <span style={b.statMargin}>±{fmt1(cur.uncertainty)}</span>
+        <span style={b.statMargin}>give or take {fmt1(cur.uncertainty)}</span>
         <span style={b.statusChip}>{status}</span>
       </div>
       <div style={b.statName}>your normal {cur.label}, and how much that reading still wobbles</div>
@@ -187,8 +187,8 @@ export default function BaselineSharpness({ session, profile }) {
           <div className="sn-dot" style={{ left: `${fillPct}%` }} />
         </div>
         <div style={b.endpoints}>
-          <span className="sn-micro sn-micro-dim">Day 1 · ±{fmt1(U_START)}</span>
-          <span className="sn-micro">Verdict-ready · ±{fmt1(U_FLOOR)}</span>
+          <span style={{ fontSize: 12, color: '#737B73' }}>Day 1, within {fmt1(U_START)}</span>
+          <span style={{ fontSize: 12, color: '#434B44' }}>Verdict-ready, within {fmt1(U_FLOOR)}</span>
         </div>
       </div>
 
@@ -196,7 +196,7 @@ export default function BaselineSharpness({ session, profile }) {
         {/* Gap-aware, always true (QA 2026-11-10 first-timer #5, approved by
             Alex): the old caption cited a day-3 figure that may never have been
             logged and said "narrowed" even when gaps had widened the margin. */}
-        Day one starts at ±{fmt1(U_START)}. Logged days narrow it, unlogged days leave it wider. Not a symptom score: how you feel week to week lives in the Weekly Insight.
+        Day one starts at give or take {fmt1(U_START)}. Logged days narrow it, unlogged days leave it wider. Not a symptom score: how you feel week to week lives in the Weekly Insight.
       </div>
     </div>
   )
@@ -226,7 +226,7 @@ const b = {
     lineHeight: 1,
   },
   statMargin: {
-    fontFamily: 'DM Mono, monospace', fontSize: 14, color: '#3D5C3C', fontWeight: 500,
+    fontFamily: 'var(--font-body)', fontSize: 14, color: '#3D5C3C', fontWeight: 500,
   },
   statusChip: {
     marginLeft: 'auto', background: '#EFF3EE', color: '#3D5C3C', borderRadius: 999,

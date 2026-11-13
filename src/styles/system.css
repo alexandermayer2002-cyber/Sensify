@@ -113,12 +113,16 @@ input, textarea, select, button { font-family: var(--font-body); }
 
 /* ---- THE one micro-label system (mono, wide, quiet) ---- */
 .sn-micro {
-  font-family: var(--font-mono);
-  font-size: 10px;
+  /* Refresh 2026-11-13: the one label system is a quiet sentence, not a
+     mono caps tag. Same class everywhere, so every remaining label on
+     screens not yet rebuilt drops the "software" register at once. The
+     regression harness matches text case-insensitively. */
+  font-family: var(--font-body);
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.17em;
-  text-transform: uppercase;
-  color: var(--forest-500);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--gray);
 }
 .sn-micro-dim { color: var(--gray-faint); }
 .sn-micro-dark { color: rgba(250, 248, 244, 0.55); }
@@ -158,7 +162,7 @@ input, textarea, select, button { font-family: var(--font-body); }
 .sn-chip-on { background: var(--forest-500); color: #fff; box-shadow: var(--shadow-pill); }
 
 /* Verdict stamps: the ONLY place verdict colors appear as fills */
-.sn-stamp { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; border-radius: var(--r-pill); padding: 6px 12px; }
+.sn-stamp { font-family: var(--font-body); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; border-radius: var(--r-pill); padding: 6px 12px; }
 .sn-stamp-safe { background: var(--safe-100); color: #1F7465; }
 .sn-stamp-limit { background: var(--limit-100); color: var(--limit-700); }
 .sn-stamp-avoid { background: var(--avoid-100); color: var(--avoid-700); }

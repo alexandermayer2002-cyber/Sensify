@@ -55,7 +55,7 @@ def expo_day(idx, symptom=None):
     r.xclick("your stress", "Low", required=False)
     if r.click("Tap to enter", required=False): r.numpad("6")
     r.cta(r"Done for today"); r.sleep(2.5); r.wait_ready(10)
-    r.cta(r"Done"); r.sleep(1.5)
+    r.cta(r"^Done$|Back to Home"); r.sleep(1.5)
 
 try:
     signup_or_login(r, EMAIL, NAME, PW)

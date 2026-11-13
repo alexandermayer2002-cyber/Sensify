@@ -81,7 +81,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
         image: sentImage ? { data: sentImage.data, mediaType: sentImage.mediaType } : null,
       })
 
-      // Log any meal the assistant detected — CHECKED (QA 2026-10-28 #1/#2):
+      // Log any meal the assistant detected. CHECKED (QA 2026-10-28 #1/#2):
       // the confirmation card renders only when the row truly landed, and a
       // failure shows an inline retry instead of confident success copy.
       let logged = null
@@ -115,7 +115,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
     const file = e.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { alert('Please choose an image.'); return }
-    if (file.size > 15 * 1024 * 1024) { alert('That image is very large — please use one under 15MB.'); return }
+    if (file.size > 15 * 1024 * 1024) { alert('That image is very large. please use one under 15MB.'); return }
     const url = URL.createObjectURL(file)
     const img = new Image()
     img.onload = () => {
@@ -227,7 +227,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                 {m.guide && <div style={s.aiMeta}>Based on your map</div>}
                 <div style={s.aiText}>{m.content}</div>
 
-                {/* Type A — verdict readout */}
+                {/* Type A. verdict readout */}
                 {m.verdict && m.verdict.label && (
                   <div style={s.readout}>
                     <div style={{ ...s.readoutAccent, background: verdictColor(m.verdict.label) }} />
@@ -241,7 +241,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                   </div>
                 )}
 
-                {/* Type B — guidance list */}
+                {/* Type B. guidance list */}
                 {m.guide && (m.guide.safe.length > 0 || m.guide.skip.length > 0 || m.guide.ask.length > 0) && (
                   <div style={s.guide}>
                     {m.guide.safe.length > 0 && <GuideRow dot="#2C9D8A" label="Safe picks" items={m.guide.safe} />}
@@ -250,7 +250,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                   </div>
                 )}
 
-                {/* Type C — log confirmation (only when the row truly saved) */}
+                {/* Type C. log confirmation (only when the row truly saved) */}
                 {m.logged && m.logged.length > 0 && (
                   <div style={s.log}>
                     <div style={s.logCheck}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -263,7 +263,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                 {/* Save failed: honest + retryable, never silent (#2) */}
                 {m.logRetry && (
                   <button onClick={() => retryLog(i)} style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', borderRadius: '16px', background: '#FAEAEA', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
-                    <span style={{ fontSize: '12.5px', color: '#8B2E2E', fontWeight: 600 }}>Couldn't add this to your log — tap to retry</span>
+                    <span style={{ fontSize: '12.5px', color: '#8B2E2E', fontWeight: 600 }}>Couldn't add this to your log. tap to retry</span>
                   </button>
                 )}
               </div>
@@ -326,7 +326,7 @@ const css = `
 function verdictLabel(label) {
   return { SAFE: 'Safe to eat', LIMIT: 'Limit', HOLD: 'Hold for now', AVOID: 'Avoid' }[label] || label
 }
-// HOLD reads gold (still eliminated, trial pending) — red is reserved for
+// HOLD reads gold (still eliminated, trial pending). red is reserved for
 // confirmed AVOID, matching the rest of the product (QA 2026-10-28 #3).
 function verdictColor(label) {
   return { SAFE: '#2C9D8A', LIMIT: '#E8941F', HOLD: '#C9A227', AVOID: '#D64545' }[label] || '#E8941F'
@@ -337,16 +337,16 @@ function verdictTextColor(label) {
 
 const s = {
   priorReveal: { display: 'flex', margin: '4px auto 16px', color: '#7A7A72' },
-  priorHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--gray-faint)', margin: '4px 0 12px' },
-  priorHide: { background: 'none', border: 'none', color: 'var(--forest-500)', fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.17em' },
-  priorDivider: { textAlign: 'center', fontFamily: 'DM Mono, monospace', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.17em', color: 'var(--gray-faint)', margin: '8px 0 16px', paddingTop: '12px', borderTop: '1px solid rgba(0,0,0,0.06)' },
+  priorHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--gray-faint)', margin: '4px 0 12px' },
+  priorHide: { background: 'none', border: 'none', color: 'var(--forest-500)', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, cursor: 'pointer', textTransform: 'none', letterSpacing: '0' },
+  priorDivider: { textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--gray-faint)', margin: '8px 0 16px', paddingTop: '12px', borderTop: '1px solid rgba(0,0,0,0.06)' },
   wrap: { display: 'flex', flexDirection: 'column', height: 'calc(100% - 24px)', maxWidth: '680px', margin: '12px auto', width: 'calc(100% - 24px)', background: 'var(--paper)', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '24px', overflow: 'hidden' },
   header: { padding: '20px 20px 14px', background: 'var(--paper)' },
   headerTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300 },
   em: { fontStyle: 'italic', color: '#3D5C3C' },
   headerStatus: { display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' },
   statusDot: { width: '6px', height: '6px', borderRadius: '50%', background: 'var(--forest-300)', boxShadow: '0 0 8px rgba(139,174,138,0.8)', animation: 'asPulse 1.6s infinite' },
-  statusText: { fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#7A7A72', letterSpacing: '0.8px' },
+  statusText: { fontFamily: 'var(--font-body)', fontSize: '12px', color: '#7A7A72', letterSpacing: '0' },
   thread: { flex: 1, overflowY: 'auto', padding: '8px 16px 16px', display: 'flex', flexDirection: 'column', gap: '12px' },
   empty: { textAlign: 'center', padding: '36px 16px', margin: 'auto 0' },
   emptyTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '10px' },
@@ -362,15 +362,15 @@ const s = {
   aiRow: { display: 'flex', justifyContent: 'flex-start' },
   userBubble: { background: 'var(--forest-100)', color: 'var(--forest-900)', padding: '11px 16px', borderRadius: '18px 18px 6px 18px', fontSize: '14px', lineHeight: 1.5, maxWidth: '80%', whiteSpace: 'pre-wrap' },
   aiPanel: { background: 'var(--paper)', border: 'none', borderRadius: '18px 18px 18px 6px', padding: '17px 18px', maxWidth: '90%', boxShadow: 'var(--shadow-1)' },
-  aiMeta: { fontFamily: 'DM Mono, monospace', fontSize: '9px', color: '#A8A69E', letterSpacing: '0.8px', textTransform: 'uppercase', marginBottom: '9px' },
+  aiMeta: { fontFamily: 'var(--font-body)', fontSize: '12px', color: '#A8A69E', letterSpacing: '0', textTransform: 'none', marginBottom: '9px' },
   aiText: { color: '#1C1C1C', fontSize: '14px', lineHeight: 1.65, whiteSpace: 'pre-wrap' },
 
   readout: { display: 'flex', borderRadius: '16px', overflow: 'hidden', border: 'none', boxShadow: 'var(--shadow-1)', marginTop: '14px' },
   readoutAccent: { width: '4px', flexShrink: 0 },
   readoutBody: { flex: 1, padding: '11px 14px', background: '#FCFBF9' },
   readoutTop: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2px' },
-  readoutVerdict: { fontSize: '12.5px', fontWeight: 700, letterSpacing: '0.2px' },
-  readoutMeta: { fontFamily: 'DM Mono, monospace', fontSize: '9.5px', color: '#A8A69E' },
+  readoutVerdict: { fontSize: '12.5px', fontWeight: 700, letterSpacing: '0' },
+  readoutMeta: { fontFamily: 'var(--font-body)', fontSize: '12px', color: '#A8A69E' },
   readoutDetail: { fontSize: '11.5px', color: '#7A7A72', lineHeight: 1.4 },
 
   guide: { marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '7px' },
@@ -381,9 +381,9 @@ const s = {
   log: { marginTop: '14px', display: 'flex', alignItems: 'center', gap: '11px', padding: '12px 14px', borderRadius: '16px', background: 'var(--forest-050)', border: 'none' },
   logCheck: { width: '26px', height: '26px', borderRadius: '50%', background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   logText: { fontSize: '12.5px', color: '#2D4A2C', fontWeight: 600 },
-  logFoods: { fontFamily: 'DM Mono, monospace', fontSize: '10px', color: '#7A7A72', marginTop: '2px' },
+  logFoods: { fontFamily: 'var(--font-body)', fontSize: '10px', color: '#7A7A72', marginTop: '2px' },
 
-  dots: { letterSpacing: '2px', color: '#3D5C3C', animation: 'asPulse 1.2s infinite' },
+  dots: { letterSpacing: '0', color: '#3D5C3C', animation: 'asPulse 1.2s infinite' },
   inputBar: { display: 'flex', gap: '8px', padding: '8px 8px 8px 10px', margin: '6px 14px 10px', alignItems: 'flex-end', background: 'var(--paper)', borderRadius: '24px', boxShadow: 'var(--shadow-2)' },
   camera: { width: '42px', height: '42px', borderRadius: '999px', border: 'none', background: 'var(--forest-100)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   previewBar: { display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', margin: '0 14px', background: 'var(--forest-050)', borderRadius: '16px' },

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Strip, StreakLine } from '../components/objects'
 import { supabase } from '../supabase'
 import { protocolDay } from '../utils/protocolDay'
 import NumPad from '../components/NumPad'
@@ -65,17 +66,17 @@ const s = {
   logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#20241F' },
   content: { flex: 1, maxWidth: '560px', width: '100%', margin: '0 auto', padding: '28px 24px 40px' },
   eyebrow: { display: 'block', marginBottom: '10px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, lineHeight: 1.2, marginBottom: '6px', color: '#20241F', fontVariationSettings: "'SOFT' 60, 'WONK' 1" },
+  title: { fontFamily: 'Fraunces, serif', fontSize: '38px', fontWeight: 300, lineHeight: 1.05, letterSpacing: '-0.02em', marginBottom: '10px', color: '#151E18' },
   titleEm: { color: '#3D5C3C' },
-  hint: { fontSize: '13px', color: '#73736A', lineHeight: 1.6, marginBottom: '28px' },
+  hint: { fontSize: '15px', color: '#434B44', lineHeight: 1.55, marginBottom: '26px', maxWidth: 480 },
   block: { padding: '18px', marginBottom: '12px' },
-  label: { fontSize: '14.5px', fontWeight: 600, marginBottom: '11px', lineHeight: 1.5, color: '#20241F' },
+  label: { fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 400, letterSpacing: '-0.01em', marginBottom: '12px', lineHeight: 1.3, color: '#151E18' },
   opts: { display: 'flex', gap: '6px', flexWrap: 'wrap' },
-  opt: { padding: '11px 14px', borderRadius: '999px', border: 'none', background: '#F7F5EE', fontSize: '13px', cursor: 'pointer', color: '#5A5A52', fontWeight: 600, flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', transition: 'all 0.12s' },
-  optOn: { padding: '11px 14px', borderRadius: '999px', border: 'none', background: '#3D5C3C', fontSize: '13px', cursor: 'pointer', color: '#FFFFFF', fontWeight: 600, flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', boxShadow: 'var(--shadow-pill)' },
+  opt: { padding: '14px 18px', borderRadius: '999px', border: 'none', background: '#EFEBE1', fontSize: '15px', cursor: 'pointer', color: '#5A5A52', fontWeight: 600, flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', transition: 'all 0.12s' },
+  optOn: { padding: '14px 18px', borderRadius: '999px', border: 'none', background: '#151E18', fontSize: '15px', cursor: 'pointer', color: '#FFFFFF', fontWeight: 600, flex: '1 1 auto', minWidth: 'fit-content', textAlign: 'center', boxShadow: 'var(--shadow-pill)' },
   yn: { display: 'flex', gap: '8px' },
-  ynBtn: { flex: 1, padding: '14px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FFFFFF', fontSize: '15px', fontWeight: 500, cursor: 'pointer', color: '#20241F' },
-  ynYes: { flex: 1, padding: '14px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-pill)', background: '#3D5C3C', fontSize: '15px', fontWeight: 600, cursor: 'pointer', color: 'white' },
+  ynBtn: { flex: 1, padding: '18px 14px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FBF9F4', fontSize: '16px', fontWeight: 500, cursor: 'pointer', color: '#151E18' },
+  ynYes: { flex: 1, padding: '18px 14px', borderRadius: '16px', border: 'none', boxShadow: '0 18px 40px -20px rgba(21,30,24,.6)', background: '#151E18', fontSize: '16px', fontWeight: 600, cursor: 'pointer', color: '#FBF9F4' },
   ynNo: { flex: 1, padding: '14px', borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#73736A', fontSize: '15px', fontWeight: 600, cursor: 'pointer', color: 'white' },
   drinksRow: { display: 'flex', alignItems: 'center', gap: '12px' },
   stepper: { display: 'flex', alignItems: 'center', gap: '14px' },
@@ -211,7 +212,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
       drinks: isDrinker ? (drinks === '' ? null : parseInt(drinks, 10)) : null,
     }
     // Phase-aware: persist the reintro log + exposure counting in the same
-    // save. BOTH WRITES ARE CHECKED (QA 2026-11-06 #2 — the last silent write
+    // save. BOTH WRITES ARE CHECKED (QA 2026-11-06 #2. the last silent write
     // on the verdict path): a failed exposure log silently corrupted the
     // verdict's evidence, and a failed count update desynced the washout
     // clock. A failure stops the save with every answer still on screen.
@@ -250,7 +251,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         }
       } catch (e) {
         setSaving(false)
-        alert("Your " + activeReintro.food.toLowerCase() + " log didn't save — nothing was lost, your answers are still here. Tap Done to try again." + (e?.message ? ` (${e.message})` : ''))
+        alert("Your " + activeReintro.food.toLowerCase() + " log didn't save. nothing was lost, your answers are still here. Tap Done to try again." + (e?.message ? ` (${e.message})` : ''))
         return
       }
     }
@@ -349,7 +350,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         if (logged.has(ds)) streak++
         else break
       }
-      // This week's 7 cells — the PROTOCOL week (day 1 → 7, left to right, today
+      // This week's 7 cells. the PROTOCOL week (day 1 → 7, left to right, today
       // wherever it falls), matching the dashboard's framing. Trailing-7-day
       // window (today pinned right) only as fallback when not on a protocol.
       const dow = ['Su','Mo','Tu','We','Th','Fr','Sa']
@@ -372,12 +373,12 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         })
       }
       const loggedThisWeek = weekDays.filter(w => w.done).length
-      // A gentle, SAFE reflection — info/encouragement only, never judgment.
+      // A gentle, SAFE reflection. info/encouragement only, never judgment.
       let reflection
       if (streak >= 7) reflection = `${streak} days in a row. You're building a really clear picture of your body.`
       else if (streak >= 3) reflection = `${streak}-day streak. Consistency like this is exactly what makes your insights sharper.`
       else if (loggedThisWeek >= 2) reflection = `That's ${loggedThisWeek} check-ins this week. Every one adds to the picture.`
-      else reflection = `Logged for today. Each check-in helps us understand what's really going on.`
+      else reflection = `Logged for tonight. Each check-in sharpens the record your verdicts are read against.`
       setReward({ streak, weekDays, reflection, onRecord })
     } catch (e) {
       onComplete && onComplete()  // if reward calc fails, just exit normally
@@ -393,6 +394,10 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
   )
 
   if (reward) {
+    // Payoff (qa/SCREENS.md Daily check-in / Payoff): did that register? One
+    // headline, the week as the shared strip with tonight filled, the streak
+    // line in its own words, one line about what the log adds, one button.
+    const days = reward.weekDays.map(d => d.isToday ? 'today-on' : d.done ? 'on' : 'none')
     return (
       <div style={s.wrap}>
         <style>{PAGE_CSS}</style>
@@ -401,39 +406,19 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
           <div style={{ width: 40 }} />
         </div>
-        <div className="sn-rise" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', textAlign: 'center' }}>
-          <div style={{ width: 68, height: 68, borderRadius: '50%', background: '#22301F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#8BAE8A', marginBottom: 22, boxShadow: 'var(--shadow-3), 0 0 0 8px rgba(139,174,138,0.08)' }}>✓</div>
-          <div className="sn-headline" style={{ fontSize: 38, marginBottom: 8 }}>Today, logged.</div>
-          {reward.streak > 1 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 24 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 8px rgba(139,174,138,0.7)' }}></span>
-              <span className="sn-micro" style={{ fontSize: 11 }}>{reward.streak} day streak, unbroken</span>
+        <div className="sn-rise" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 28px', maxWidth: 560, width: '100%', margin: '0 auto' }}>
+          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 44, fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.02, color: '#151E18', marginBottom: 14 }}>Logged for tonight.</div>
+          <StreakLine state={reward.streak > 0 ? 'active' : 'none'} count={Math.max(0, reward.streak - 1)} loggedTonight className="" />
+          <div className="ob-paper" style={{ marginTop: 26, padding: '18px 20px', width: '100%' }}>
+            <div style={{ fontSize: 13.5, color: '#737B73', marginBottom: 12 }}>This week, one square per night</div>
+            <Strip days={days} size="lg" label="This week" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 12, color: '#737B73' }}>
+              {reward.weekDays.map((d, i) => <span key={i} style={{ width: 28, textAlign: 'center' }}>{d.label}</span>)}
             </div>
-          )}
-          {/* Week row */}
-          <div style={{ display: 'flex', gap: 10, marginBottom: 28 }}>
-            {reward.weekDays.map((d, i) => (
-              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                <div style={{
-                  width: 30, height: 30, borderRadius: '50%',
-                  background: d.done ? '#3D5C3C' : 'transparent',
-                  border: d.done ? 'none' : '1.5px dashed #C3CDBF',
-                  color: d.done ? 'white' : '#C3CDBF',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13,
-                  boxShadow: d.isToday ? '0 0 0 3px rgba(61,92,60,0.15)' : 'none',
-                }}>{d.done ? '✓' : ''}</div>
-                <div style={{ fontSize: 10, color: d.isToday ? '#3D5C3C' : '#A0A096', fontWeight: d.isToday ? 700 : 500 }}>{d.label}</div>
-              </div>
-            ))}
           </div>
-          <div style={{ fontSize: 15, lineHeight: 1.6, color: '#4A4A45', maxWidth: 320, marginBottom: reward.onRecord ? 14 : 32 }}>{reward.reflection}</div>
-          {reward.onRecord && (
-            <div style={{ background: '#FFFFFF', border: 'none', boxShadow: 'var(--shadow-1)', borderRadius: 16, padding: '11px 15px', marginBottom: 28, maxWidth: 320 }}>
-              <div className="sn-micro" style={{ fontSize: 8.5, marginBottom: 5, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 5, height: 5, borderRadius: '50%', background: '#8BAE8A', boxShadow: '0 0 7px rgba(139,174,138,0.7)' }}></span>On the record</div>
-              <div style={{ fontSize: 12.5, color: '#4A4A45', lineHeight: 1.55 }}>{reward.onRecord}</div>
-            </div>
-          )}
-          <button className="sn-btn" style={{ ...s.cta, maxWidth: 280 }} onClick={() => { onComplete && onComplete() }}>Done →</button>
+          <p style={{ fontSize: 16, lineHeight: 1.55, color: '#434B44', marginTop: 24, maxWidth: 440 }}>{reward.reflection}</p>
+          {reward.onRecord && <p style={{ fontSize: 14, lineHeight: 1.55, color: '#737B73', marginTop: 10, maxWidth: 440 }}>{reward.onRecord}</p>}
+          <button type="button" className="ob-btn tonight" style={{ marginTop: 30 }} onClick={() => { onComplete && onComplete() }}>Back to Home</button>
         </div>
       </div>
     )
@@ -448,13 +433,12 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         <div style={{ width: 40 }} />
       </div>
       <div className="sn-rise" style={s.content}>
-        <div className="sn-micro" style={s.eyebrow}>Daily check-in</div>
-        <div style={s.title}>How's today?</div>
-        <div style={s.hint}>A few quick taps. This tracks the things that move how you feel as much as food does, so we can tell a real change from an ordinary day. Best at the end of your day — these questions cover the whole day, and sleep means last night. Early is allowed, but evening is when the picture is complete.</div>
+        <div style={s.title}>{new Date().getHours() >= 17 ? 'Tonight\u2019s check-in.' : 'Today\u2019s check-in.'}</div>
+        <div style={s.hint}>Two minutes. Sleep, stress and water move how you feel as much as food does, so logging them is how a real change gets told apart from an ordinary day.</div>
 
         {showReintroBlock && (
           <div style={{ background: 'linear-gradient(135deg, rgba(139,174,138,0.10), rgba(44,157,138,0.04)), #FFFFFF', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '24px', padding: '18px', marginBottom: '18px' }}>
-            <div className="sn-micro" style={{ marginBottom: '12px' }}>Reintroduction · {activeReintro.food}</div>
+            <div style={{ fontSize: 13.5, color: '#737B73', marginBottom: 12 }}>{activeReintro.food} is on trial</div>
             {reintroPhase === 'exposure' && (
               <div style={{ marginBottom: ateFood !== null ? 16 : 0 }}>
                 <div style={s.label}>Did you eat {activeReintro.food.toLowerCase()} today?</div>
@@ -511,9 +495,9 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                   </div>
                 )}
                 {showSevereWarning && (
-                  <div style={{ background: '#FAEAEA', border: '1px solid rgba(201,91,91,0.3)', borderRadius: '12px', padding: '14px', marginTop: '12px' }}>
-                    <div style={{ fontSize: '13px', color: '#8B2E2E', fontWeight: 600, marginBottom: '6px' }}>Severe reaction noted</div>
-                    <div style={{ fontSize: '12.5px', color: '#1C1C1C', lineHeight: 1.6 }}>A severe response is a clear answer on its own. You can stop this cycle from the Reintro tab and {activeReintro.food.toLowerCase()} will be marked Avoid, or keep logging and finish the cycle. If symptoms feel serious, please seek medical care.</div>
+                  <div style={{ background: '#1E3327', color: '#ECE7DC', borderRadius: '14px', padding: '16px 18px', marginTop: '12px' }}>
+                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 400, marginBottom: '6px' }}>If this feels serious, get medical care first.</div>
+                    <div style={{ fontSize: '14px', lineHeight: 1.6, color: 'rgba(236,231,220,.85)' }}>Stop eating {activeReintro.food.toLowerCase()} for now. A severe response is a clear answer on its own: from the Reintro tab you can stop this trial and it will be ruled Avoid, or you can keep logging and let the fourteen days decide. Nothing is ruled until you choose.</div>
                   </div>
                 )}
               </div>
@@ -639,7 +623,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                   )}
                   {recallTags && recallTags.length > 0 && (
                     <div style={{ marginTop: '10px' }}>
-                      <div className="sn-micro sn-micro-dim" style={{ marginBottom: '6px' }}>We read it as · tap anything we got wrong</div>
+                      <div style={{ fontSize: 13, color: '#737B73', marginBottom: 6 }}>We read it as the foods below. Tap anything we got wrong.</div>
                       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                         {recallTags.map((t, i) => (
                           <button key={i} type="button" onClick={() => setRecallTags(recallTags.filter((_, j) => j !== i))}
@@ -651,7 +635,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                       {/* Silently dropped foods get named as a possibility
                           (QA 2026-11-06 full-run #7, approved by Alex): corn
                           once vanished from a recall with no hint. */}
-                      <div style={{ fontSize: '11.5px', color: '#A0A096', lineHeight: 1.5, marginTop: '6px' }}>Typed a food that isn't tagged above? We couldn't read that one — your exact words are saved with the log either way.</div>
+                      <div style={{ fontSize: '11.5px', color: '#A0A096', lineHeight: 1.5, marginTop: '6px' }}>Typed a food that isn't tagged above? We couldn't read that one. your exact words are saved with the log either way.</div>
                     </div>
                   )}
                   {recallTags && recallTags.length === 0 && recallText.trim().length > 2 && (
@@ -667,7 +651,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
 
       <div style={s.footer}>
         <button className="sn-btn" style={s.cta} disabled={!complete || saving} onClick={submit}>
-          {saving ? 'Saving...' : 'Done for today →'}
+          {saving ? 'Saving' : 'Done for today'}
         </button>
       </div>
     </div>
