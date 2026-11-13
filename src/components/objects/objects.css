@@ -55,6 +55,7 @@
 .ob-vc { min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; }
 .ob-vc .ob-food { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 24px; letter-spacing: -.01em; line-height: 1.05; }
 .ob-vc .ob-v { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 40px; letter-spacing: -.03em; line-height: 1; margin-top: 18px; }
+.ob-vc .ob-meta { font-size: 13px; color: var(--ob-mute); margin-top: 4px; }
 .ob-vc .ob-ev { font-size: 13px; color: var(--ob-ink-2); line-height: 1.4; margin-top: 6px; }
 .ob-vc .ob-tag { display: inline-block; margin-top: 10px; font-size: 12px; color: var(--ob-ink-2); border: 1px solid rgba(21,30,24,.18); border-radius: 999px; padding: 4px 10px; }
 .ob-v.safe { color: var(--safe, #1F9C87); }

@@ -220,7 +220,7 @@ export function HouseholdShareCard({ session, profile, variant, phase, foods = [
     // Refresh 2026-11-13: the Home panel form. Same logic, one dark panel,
     // sentences not labels, no raw URL on screen (the input stays for the
     // clipboard fallback only).
-    const what = phase === 'reintroduction' ? 'what is off your plate and this week\u2019s trial' : 'what is off your plate right now'
+    const what = phase === 'reintroduction' ? 'what is off your plate and this week\u2019s trial' : phase === 'complete' ? 'which foods you avoid' : 'what is off your plate right now'
     return (
       <div style={hp.panel}>
         <div>

@@ -111,7 +111,7 @@ export function SymptomCurve({ points = [], baseline = null, max = 5, width = 26
 /* verdict (ruled only): 'Safe' | 'Limit' | 'Avoid'                     */
 /* evidence: one sentence. conflicted / stoppedEarly: booleans (tags).  */
 const VERDICT_CLASS = { Safe: 'safe', Limit: 'limit', Avoid: 'avoid' }
-export function VerdictCard({ food, state = 'untested', verdict, evidence, conflicted = false, stoppedEarly = false, className = '', style }) {
+export function VerdictCard({ food, meta, state = 'untested', verdict, evidence, conflicted = false, stoppedEarly = false, className = '', style }) {
   let word, cls = 'quiet', ev = evidence
   if (state === 'untested') { word = 'Not yet.'; ev = ev || 'Still off your plate. No data.' }
   else if (state === 'next') { word = 'Next.' }
@@ -120,10 +120,10 @@ export function VerdictCard({ food, state = 'untested', verdict, evidence, confl
   else { word = 'Not yet.'; ev = ev || 'Nothing to rule from.' }
   return (
     <div className={`ob-paper ob-vc ${className}`} style={style}>
-      <div><div className="ob-food">{food}</div></div>
+      <div><div className="ob-food">{food}</div>{meta ? <div className="ob-meta">{meta}</div> : null}</div>
       <div>
         <div className={`ob-v ${cls}`}>{word}</div>
-        {ev ? <div className="ob-ev">{ev}</div> : null}
+        {ev ? <div className="ob-ev">{/[.!?]$/.test(ev.trim()) ? ev : ev.trim() + '.'}</div> : null}
         {state === 'ruled' && conflicted ? <span className="ob-tag">Conflicting evidence. Retest offered</span> : null}
         {state === 'ruled' && stoppedEarly ? <span className="ob-tag">Stopped early</span> : null}
       </div>
