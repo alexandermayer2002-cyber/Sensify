@@ -175,7 +175,7 @@ export default function HomeReintro({
     lede = ruled.length === 0
       ? 'Elimination is done. Each suspect now gets its own fourteen-day trial: three days of eating it, eleven of watching. Your body rules on each.'
       : `${Cap(words(ruled.length))} of ${words(foods.length)} ruled. ${Cap(words(unruled.length))} to go, one at a time. The next trial starts the day you pick it.`
-    action = <button type="button" className="ob-btn tonight" onClick={onOpenReintro}>{ruled.length === 0 ? 'Pick your first food' : 'Pick your next food'}</button>
+    action = <button type="button" className="ob-btn tonight" onClick={onOpenReintro}>Pick your next food</button>
   } else if (state === 'pending') {
     const n = 1 - clock.cycleDay
     headline = n === 1 ? `${Cap(foodL)} starts tomorrow.` : `${Cap(foodL)} starts in ${words(n)} days.`
