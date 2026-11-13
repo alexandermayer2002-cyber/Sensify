@@ -113,12 +113,16 @@ input, textarea, select, button { font-family: var(--font-body); }
 
 /* ---- THE one micro-label system (mono, wide, quiet) ---- */
 .sn-micro {
-  font-family: var(--font-mono);
-  font-size: 10px;
+  /* Refresh 2026-11-13: the one label system is a quiet sentence, not a
+     mono caps tag. Same class everywhere, so every remaining label on
+     screens not yet rebuilt drops the "software" register at once. The
+     regression harness matches text case-insensitively. */
+  font-family: var(--font-body);
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.17em;
-  text-transform: uppercase;
-  color: var(--forest-500);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--gray);
 }
 .sn-micro-dim { color: var(--gray-faint); }
 .sn-micro-dark { color: rgba(250, 248, 244, 0.55); }
