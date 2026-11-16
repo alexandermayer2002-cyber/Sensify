@@ -251,7 +251,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         }
       } catch (e) {
         setSaving(false)
-        alert("Your " + activeReintro.food.toLowerCase() + " log didn't save. nothing was lost, your answers are still here. Tap Done to try again." + (e?.message ? ` (${e.message})` : ''))
+        alert("Your " + activeReintro.food.toLowerCase() + " log didn't save, nothing was lost, your answers are still here. Tap Done to try again." + (e?.message ? ` (${e.message})` : ''))
         return
       }
     }
@@ -433,7 +433,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
         <div style={{ width: 40 }} />
       </div>
       <div className="sn-rise" style={s.content}>
-        <div style={s.title}>{new Date().getHours() >= 17 ? 'Tonight\u2019s check-in.' : 'Today\u2019s check-in.'}</div>
+        <div style={s.title}>{new Date().getHours() >= 17 ? 'Tonight’s check-in.' : 'Today’s check-in.'}</div>
         <div style={s.hint}>Two minutes. Sleep, stress and water move how you feel as much as food does, so logging them is how a real change gets told apart from an ordinary day.</div>
 
         {showReintroBlock && (
@@ -635,7 +635,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                       {/* Silently dropped foods get named as a possibility
                           (QA 2026-11-06 full-run #7, approved by Alex): corn
                           once vanished from a recall with no hint. */}
-                      <div style={{ fontSize: '11.5px', color: '#A0A096', lineHeight: 1.5, marginTop: '6px' }}>Typed a food that isn't tagged above? We couldn't read that one. your exact words are saved with the log either way.</div>
+                      <div style={{ fontSize: '11.5px', color: '#A0A096', lineHeight: 1.5, marginTop: '6px' }}>Typed a food that isn't tagged above? We couldn't read that one, your exact words are saved with the log either way.</div>
                     </div>
                   )}
                   {recallTags && recallTags.length === 0 && recallText.trim().length > 2 && (

@@ -176,7 +176,10 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
               // "worst sleep nights" ranking was a no-op and the overlap it
               // asserted (on screen and in the verdict prompt) was arbitrary.
               const ranked = (dfs || []).map(d => ({ ...d, _hrs: sleepHours(d.sleep) })).filter(d => d._hrs != null).sort((a, b) => a._hrs - b._hrs)
-              const worst = new Set(ranked.slice(0, Math.max(2, symDays.length)).map(d => d.log_date))
+              // Ties are not a pattern (QA 2026-11-15 X08): with no real spread in sleep
+              // (under 1 hour between best and worst night) there is no "worst" night.
+              const spread = ranked.length ? ranked[ranked.length - 1]._hrs - ranked[0]._hrs : 0
+              const worst = new Set(spread >= 1 ? ranked.slice(0, Math.max(2, symDays.length)).filter(d => d._hrs < ranked[ranked.length - 1]._hrs).map(d => d.log_date) : [])
               const overlap = symDays.filter(d => worst.has(d)).length
               if (overlap >= 2) setSleepOverlap({ overlap, symDays: symDays.length })
               // Cycle cross-ref: symptom days vs logged period days
@@ -207,7 +210,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
       <div style={{ padding: '60px 24px', textAlign: 'center' }}>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: 12 }}>There's nothing to rule from.</div>
         <div style={{ fontSize: '14px', color: '#3B4036', lineHeight: 1.7, maxWidth: 360, margin: '0 auto 20px' }}>
-          Not a single day of this {food.toLowerCase()} cycle was logged, and every verdict here is earned from your own record. so no verdict can honestly be entered. Restart the cycle to test {food.toLowerCase()} properly, or write to Support if you'd rather set this food aside.
+          Not a single day of this {food.toLowerCase()} cycle was logged, and every verdict here is earned from your own record, so no verdict can honestly be entered. Restart the cycle to test {food.toLowerCase()} properly, or write to Support if you'd rather set this food aside.
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
           <button className="sn-btn" disabled={restarting} onClick={async () => {
@@ -224,7 +227,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
               if (error) throw error
               onBack()
             } catch (e) {
-              alert("Couldn't restart the cycle. nothing was changed. " + (e?.message || ''))
+              alert("Couldn't restart the cycle, nothing was changed. " + (e?.message || ''))
               setRestarting(false)
             }
           }}>{restarting ? 'Restarting…' : `Restart the ${food.toLowerCase()} cycle`}</button>
@@ -246,6 +249,8 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
   )
 
   const handleSubmit = async () => {
+    // No logged days means no honest verdict: never default to 'Limit' on an empty record.
+    if (!dailyLogs || dailyLogs.length === 0) { setSubmitError('There are no logged days in this cycle, so there is nothing to rule on yet. Restart the cycle to try this food again.'); return }
     setSubmitting(true)
 
     // Compute provisional verdict from logged data
@@ -326,7 +331,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
       writeFailed = !!error
     }
     if (writeFailed) {
-      setSubmitError("Your verdict couldn't be saved. nothing was lost, and your answers are still here. Tap “Get my verdict” to try again.")
+      setSubmitError("Your verdict couldn't be saved, nothing was lost, and your answers are still here. Tap “Get my verdict” to try again.")
       setSubmitting(false)
       return
     }
@@ -381,7 +386,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
             <div style={{ width: '38px', height: '2px', background: config.color, opacity: 0.45, margin: '14px auto 12px' }} />
             {/* Honest sub-copy by provenance (QA 2026-10-26 #4): the canned
                 "clear, repeatable pattern" line must never ship on a verdict
-                the testimony earned. the analysis below tells that story. */}
+                the testimony earned, the analysis below tells that story. */}
             <div style={{ fontSize: '13.5px', color: '#5A5A52', lineHeight: 1.6, maxWidth: 420, margin: '0 auto' }}>
               {accuracy && accuracy !== 'accurate'
                 ? `Your daily logs and your account of the two weeks were weighed together. ${food} has been added to your ${verdict} list.`

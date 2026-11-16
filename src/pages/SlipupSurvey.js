@@ -168,7 +168,7 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
 
         {loadingAi ? (
           <div style={{ ...s.infoCard, marginBottom: '12px', textAlign: 'center' }}>
-            <div style={{ fontSize: '12px', color: '#3D5C3C', fontStyle: 'italic' }}>Getting your personalized guidance...</div>
+            <div style={{ fontSize: '12px', color: '#3D5C3C' }}>Getting your personalized guidance...</div>
           </div>
         ) : aiMessage ? (
           <div style={{ ...s.infoCard, marginBottom: '12px' }}>

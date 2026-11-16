@@ -71,9 +71,9 @@ export const computeProvisionalVerdict = (logs = []) => {
   // "bloating/moderate + gas/moderate" used to count 2 and jump straight to
   // Avoid, bypassing the 2-day consistency requirement.
   const moderateDays = new Set(
-    logs.filter(l => parseSymptoms(l.symptoms).some(s => s.intensity === 'moderate')).map(l => l.log_date)
+    logs.filter(l => parseSymptoms(l.symptoms).some(s => String(s.intensity || '').toLowerCase() === 'moderate')).map(l => l.log_date)
   ).size
-  const mildCount = allSymptoms.filter(s => s.intensity === 'mild').length
+  const mildCount = allSymptoms.filter(s => String(s.intensity || '').toLowerCase() === 'mild').length
   const washoutFlareDays = washoutLogs.filter(l => l.had_symptoms).length
 
   let idx // index into LEVELS

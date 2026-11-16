@@ -178,7 +178,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           setLifestyle(d.lifestyle || {})
         }
       }
-    } catch (e) { /* storage unavailable. intake still works, just unsaved */ }
+    } catch (e) { /* storage unavailable, intake still works, just unsaved */ }
     setHydrated(true)
     })()
     // eslint-disable-next-line
@@ -384,7 +384,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     // the draft stays, the user stays here, and retry is free.
     if (saveError) {
       setSaving(false)
-      setCompleteError("Your answers couldn't save. nothing was lost, they're all still here. Check your connection and tap Complete intake again.")
+      setCompleteError("Your answers couldn't save, nothing was lost, they're all still here. Check your connection and tap Complete intake again.")
       return
     }
     // Optional research consent rides the milestones KV (the column that
@@ -624,7 +624,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
       <div style={s.footer}>
         {!allSymptomAnswered && (
           <div style={{ fontSize: 12, color: '#9A6212', background: '#FBF0DF', borderRadius: 10, padding: '8px 12px', marginBottom: 8, lineHeight: 1.5 }}>
-            {requiredSymptomQuestions.filter(q => !answers[q.id]).length} question{requiredSymptomQuestions.filter(q => !answers[q.id]).length === 1 ? '' : 's'} above still need{requiredSymptomQuestions.filter(q => !answers[q.id]).length === 1 ? 's' : ''} an answer. scroll up to the unanswered ones.
+            {requiredSymptomQuestions.filter(q => !answers[q.id]).length} question{requiredSymptomQuestions.filter(q => !answers[q.id]).length === 1 ? '' : 's'} above still need{requiredSymptomQuestions.filter(q => !answers[q.id]).length === 1 ? 's' : ''} an answer, scroll up to the unanswered ones.
           </div>
         )}
         <button className="sn-btn" style={s.cta} disabled={!allSymptomAnswered} onClick={() => setStep(2)}>Continue</button>
@@ -656,7 +656,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             : 'Rate how you\'re feeling overall today. This becomes your baseline.'}
         </div>
         <div style={s.importantNote}>
-          Be honest, not hopeful. these scores only help you if they're real.
+          Be honest, not hopeful, these scores only help you if they're real.
         </div>
 
         {baselineScales.length > 0 && (
@@ -682,7 +682,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             <div style={{ fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, color: '#20241F', lineHeight: 1.3 }}>{scale.label}</div>
             {flipped && (
               <div style={{ marginTop: 10, background: '#FBF0DF', color: '#9A6212', borderRadius: 10, padding: '7px 11px', fontSize: 11.5, lineHeight: 1.5, fontWeight: 600 }}>
-                Heads up. this scale runs the other way: 10 is the {goodHigh ? 'good' : 'rough'} end here.
+                Heads up, this scale runs the other way: 10 is the {goodHigh ? 'good' : 'rough'} end here.
               </div>
             )}
             <div style={{ ...s.scaleLabels, margin: '13px 0 8px' }}>
@@ -752,7 +752,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         {FOOD_CATEGORIES.map(cat => (
           <div key={cat.category} id={`fcat-${cat.category}`} style={{ scrollMarginTop: 56 }}>
             <div style={s.categoryTitle2}>{cat.category}</div>
-            <div style={{ fontSize: 11.5, color: '#A8A69E', margin: '-6px 0 10px' }}>Blank means you rarely or never eat it. that's a real answer.</div>
+            <div style={{ fontSize: 11.5, color: '#A8A69E', margin: '-6px 0 10px' }}>Blank means you rarely or never eat it, that's a real answer.</div>
             {cat.foods.map((food, foodIndex) => (
               <div
                 key={food}

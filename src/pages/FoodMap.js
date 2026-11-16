@@ -45,7 +45,7 @@ export const dayZeroEcho = (profile, days) => {
   }[a.bloating_timing]
   if (!sym && !dur) return null
   const came = sym && dur ? `${sym}, ${dur}` : (sym || `digestive symptoms ${dur}`)
-  return days > 0 ? `You came in with ${came}. ${days} days of your record later:` : `You came in with ${came}.`
+  return days > 0 ? `You came in with ${came}. Here is what your own record showed.` : `You came in with ${came}.`
 }
 
 const localDate = (d) => {
@@ -303,7 +303,7 @@ export default function FoodMap({ session, profile, labResult }) {
         <div className="sn-rise" style={{ ...s.doc, padding: '26px 24px', textAlign: 'center' }}>
           <div style={s.kicker}>The verdicts</div>
           <div style={{ ...s.title, marginTop: 6 }}>Couldn't load your <span style={{ color: '#3D5C3C' }}>verdicts.</span></div>
-          <div style={{ fontSize: 12.5, color: '#5A5A52', lineHeight: 1.6, margin: '10px 0 16px' }}>Your earned verdicts are safe. this page just couldn't reach them. Check your connection and try again.</div>
+          <div style={{ fontSize: 12.5, color: '#5A5A52', lineHeight: 1.6, margin: '10px 0 16px' }}>Your earned verdicts are safe, this page just couldn't reach them. Check your connection and try again.</div>
           <button className="sn-btn" style={{ width: '100%' }} onClick={() => { setLoaded(false); loadVerdicts() }}>Try again</button>
         </div>
       </div>
@@ -335,7 +335,7 @@ export default function FoodMap({ session, profile, labResult }) {
             broken" until the explanation was found a scroll below. */}
         {labResult && preReintro && (
           <div style={{ fontSize: 12.5, color: '#73736A', lineHeight: 1.6, margin: '2px 0 12px' }}>
-            The faded rows are your trials to come. they unlock on day 57. Nothing here is broken, just not earned yet.
+            The faded rows are your trials to come, they unlock on day 57. Nothing here is broken, just not earned yet.
           </div>
         )}
         {labResult && ruledCount > 0 && dayZeroEcho(profile, currentDay) && (
@@ -372,7 +372,7 @@ export default function FoodMap({ session, profile, labResult }) {
             >
               {pdfBusy ? 'Preparing your Food Map...' : 'Download your Food Map'}
             </button>
-            {pdfError && <div style={{ fontSize: 12, color: '#C0392B', marginTop: 6 }}>The download didn't start. try again.</div>}
+            {pdfError && <div style={{ fontSize: 12, color: '#C0392B', marginTop: 6 }}>The download didn't start, try again.</div>}
           </div>
         )}
 

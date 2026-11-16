@@ -247,7 +247,7 @@ function CheckinCard({ checkin: c, index: i, fallbackWeek, profile, formatDate, 
   const weekNum = c.week_number || fallbackWeek || i + 1
 
   const scores = SCORE_METRICS.filter(m => c.answers?.[m.id] !== undefined)
-  const contextChanges = c.answers?.context_changes?.filter(ch => ch !== 'Nothing unusual. normal week' && ch !== 'Nothing unusual, a normal week') || []
+  const contextChanges = c.answers?.context_changes?.filter(ch => ch !== 'Nothing unusual, normal week' && ch !== 'Nothing unusual, a normal week') || []
   const overallFeeling = c.answers?.overall_feeling
   const notes = c.answers?.notes
 
@@ -624,7 +624,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               const unlock = new Date(start); unlock.setDate(start.getDate() + 56)
               rows.push({ t: 'Reintroduction unlocked', d: unlock.toISOString() })
             }
-            rows.push({ t: 'Day 1. protocol started', d: profile.protocol_start_date })
+            rows.push({ t: 'Day 1, protocol started', d: profile.protocol_start_date })
           }
           if (rows.length === 0) return null
           rows.sort((a, b) => new Date(b.d) - new Date(a.d))

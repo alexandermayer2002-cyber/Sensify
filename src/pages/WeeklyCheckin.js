@@ -303,7 +303,7 @@ const generateInsight = async ({ name, weekNumber, profile, answers, previousAns
     ? "PRIOR CHECK-IN'S SCORES (week unknown)"
     : prevGap <= 1
     ? "LAST WEEK'S SCORES"
-    : `WEEK ${prevWeekNum} SCORES (their most recent check-in, ${prevGap} weeks before this one. do NOT call it "last week")`
+    : `WEEK ${prevWeekNum} SCORES (their most recent check-in, ${prevGap} weeks before this one, do NOT call it "last week")`
 
   const contextItems = answers.context_changes?.filter(c => c !== 'Nothing unusual, a normal week') || []
   const contextStr = contextItems.length > 0 ? contextItems.join(', ') : 'None flagged by user (this does not mean nothing happened)'
@@ -354,10 +354,10 @@ CRITICAL STYLE RULE: Do not use the em dash character or use hyphens as sentence
   const raw = await aiPrompt(prompt, 300)
   // Hard guarantee: convert any dash punctuation that slips through
   return raw
-    .replace(/(\d)\s*[, –-]\s*(\d)/g, '$1 to $2')
-    .replace(/\s+[, –]\s+/g, ', ')
+    .replace(/(\d)\s*[\u2014\u2013-]\s*(\d)/g, '$1 to $2')
+    .replace(/\s+[\u2014\u2013]\s+/g, ', ')
     .replace(/\s+-\s+/g, ', ')
-    .replace(/[, –]/g, ', ')
+    .replace(/[\u2014\u2013]/g, ', ')
 }
 
 function ConfettiCanvas() {
@@ -477,7 +477,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       const { data: dupe } = await supabase.from('weekly_checkins')
         .select('id').eq('user_id', session.user.id).eq('week_number', weekNumber).limit(1).maybeSingle()
       if (dupe) {
-        setSubmitError('This week is already on your record. it may have been submitted in another tab. Your dashboard has the latest.')
+        setSubmitError('This week is already on your record, it may have been submitted in another tab. Your dashboard has the latest.')
         setSubmitting(false)
         return
       }
@@ -495,7 +495,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       submitted_at: new Date().toISOString(),
     }).select().single()
     if (insErr || !inserted) {
-      setSubmitError("Your check-in didn't save. your answers are still here. Tap Submit to try again.")
+      setSubmitError("Your check-in didn't save, your answers are still here. Tap Submit to try again.")
       setSubmitting(false)
       return
     }
@@ -573,7 +573,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         }
         const msg = earnedStreak
           ? (STREAK_MSGS[weekNumber] || `Week ${weekNumber} done, every week of it compliant. Keep going.`)
-          : `Week ${weekNumber} logged. this one was a good week. Every honest check-in counts, compliant or not.`
+          : `Week ${weekNumber} logged, this one was a good week. Every honest check-in counts, compliant or not.`
         setStreakMessage(msg)
         setShowStreakCard(true)
       }, 3500)
@@ -671,7 +671,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
                 ) : insightError ? (
                   // Honest failure copy (QA 2026-10-25 #2): nothing retries or
                   // backfills a missed insight, so nothing is promised.
-                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontSize: 13.5, color: 'rgba(250,248,244,0.85)', lineHeight: 1.7, fontWeight: 300 }}>Your scores are saved and your trends updated. The written insight didn't generate this time. next week's will read this week's data too.</div>
+                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontSize: 13.5, color: 'rgba(250,248,244,0.85)', lineHeight: 1.7, fontWeight: 300 }}>Your scores are saved and your trends updated. The written insight didn't generate this time, next week's will read this week's data too.</div>
                 ) : null}
               </div>
             )
@@ -721,7 +721,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
             <div style={s.questionLabel}>{scale.label}</div>
             {flipped && (
               <div style={{ margin: '0 0 8px', background: '#FBF0DF', color: '#9A6212', borderRadius: 10, padding: '7px 11px', fontSize: 11.5, lineHeight: 1.5, fontWeight: 600 }}>
-                Heads up. this scale runs the other way: 10 is the {goodHigh ? 'good' : 'rough'} end here.
+                Heads up, this scale runs the other way: 10 is the {goodHigh ? 'good' : 'rough'} end here.
               </div>
             )}
             <div style={s.scaleLabels}>

@@ -115,7 +115,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
     const file = e.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { alert('Please choose an image.'); return }
-    if (file.size > 15 * 1024 * 1024) { alert('That image is very large. please use one under 15MB.'); return }
+    if (file.size > 15 * 1024 * 1024) { alert('That image is very large, please use one under 15MB.'); return }
     const url = URL.createObjectURL(file)
     const img = new Image()
     img.onload = () => {
@@ -263,7 +263,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                 {/* Save failed: honest + retryable, never silent (#2) */}
                 {m.logRetry && (
                   <button onClick={() => retryLog(i)} style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', borderRadius: '16px', background: '#FAEAEA', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
-                    <span style={{ fontSize: '12.5px', color: '#8B2E2E', fontWeight: 600 }}>Couldn't add this to your log. tap to retry</span>
+                    <span style={{ fontSize: '12.5px', color: '#8B2E2E', fontWeight: 600 }}>Couldn't add this to your log, tap to retry</span>
                   </button>
                 )}
               </div>

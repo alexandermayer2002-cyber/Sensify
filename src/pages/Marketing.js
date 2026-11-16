@@ -347,7 +347,7 @@ const CheckIcon = () => (
 )
 
 const SHOWCASE_CAPTIONS = {
-  'Dashboard': 'The day, the phase, the streak, your symptoms against baseline, and this week\u2019s insight. One glance and you\u2019re oriented.',
+  'Dashboard': 'The day, the phase, the streak, your symptoms against baseline, and this week’s insight. One glance and you’re oriented.',
   'History': 'Every week on the record, measured against your own baseline.',
   'Reintro': 'Three days eating it, eleven days watching clean. Then the verdict.',
   'Verdicts': 'Safe. Limit. Avoid. Each one a card you earned, with the 14-day trial that proves it.',

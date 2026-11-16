@@ -135,7 +135,7 @@ function TierEscalation({ session, profile, completedFoods, onFinish }) {
           ? "You tested dairy and gluten and neither came back as a clear trigger. That's useful to know. But if you're still dealing with symptoms, the next step is to test more of the common culprits, including foods that often cause issues but rarely show up on a lab."
           : "You've finished testing dairy and gluten. If you're still dealing with symptoms beyond what you've found, you can go deeper and test more of the common triggers."}
       </div>
-      <div className="rt-esc-foods">The full panel adds: eggs, soy, tree nuts, corn, onion and garlic, and legumes. Testing them starts with a fresh elimination. about 8 weeks of clean baseline before the new foods unlock.</div>
+      <div className="rt-esc-foods">The full panel adds: eggs, soy, tree nuts, corn, onion and garlic, and legumes. Testing them starts with a fresh elimination, about 8 weeks of clean baseline before the new foods unlock.</div>
       {/* Confirm step (QA 2026-10-26 #5): escalating restarts the whole program
           clock; nobody should re-enter 8 weeks of elimination on one tap. */}
       {!confirming ? (
@@ -153,7 +153,7 @@ function TierEscalation({ session, profile, completedFoods, onFinish }) {
             Just so it's said plainly: this restarts elimination. Roughly 8 weeks of clean baseline come first, then the new foods unlock for trials. Your earned verdicts stay yours.
           </div>
           <button className="rt-esc-go" disabled={saving} onClick={escalate}>
-            {saving ? 'Setting up...' : 'Yes. restart with the full panel'}
+            {saving ? 'Setting up...' : 'Yes, restart with the full panel'}
           </button>
           <button className="rt-esc-finish" disabled={saving} onClick={() => setConfirming(false)}>
             Not now
@@ -268,7 +268,7 @@ export function OutcomeQuestion({ session, profile }) {
       if (error || !updated || updated.length === 0) throw new Error(error?.message || 'no row updated')
       setSaved(true)
     } catch (e) {
-      setSaveErr("That didn't save. your number is still selected, tap Record it to try again.")
+      setSaveErr("That didn't save, your number is still selected, tap Record it to try again.")
     }
     setBusy(false)
   }
@@ -663,7 +663,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
       .update({ stopped_early: true, verdict: 'Avoid', verdict_reason: 'Cycle stopped early due to a severe reaction.' })
       .eq('id', activeReintro.id).select()
     if (error || !updated || updated.length === 0) {
-      setStopErr("That didn't save. please try again. If it keeps failing, your logs are safe and you can stop the cycle later.")
+      setStopErr("That didn't save, please try again. If it keeps failing, your logs are safe and you can stop the cycle later.")
       return
     }
     // Legacy mirror; reintroduction_results above is the source of truth.
@@ -838,12 +838,12 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, letterSpacing: '0', textTransform: 'none', color: 'var(--avoid-700)', marginBottom: '10px' }}>Severe reaction on the record</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 300, letterSpacing: '-0.3px', marginBottom: '12px' }}>This cycle already gave its answer.</div>
             <p style={{ fontSize: '14px', color: 'var(--gray)', lineHeight: 1.7, marginBottom: '20px' }}>
-              You logged a severe reaction to {activeReintro.food.toLowerCase()} during this cycle. That is a clear result. there is no need to eat it again. We'll close the cycle, rule {activeReintro.food.toLowerCase()} Avoid, and keep every day you logged on the record. If symptoms feel serious, please seek medical care.
+              You logged a severe reaction to {activeReintro.food.toLowerCase()} during this cycle. That is a clear result, there is no need to eat it again. We'll close the cycle, rule {activeReintro.food.toLowerCase()} Avoid, and keep every day you logged on the record. If symptoms feel serious, please seek medical care.
             </p>
             {stopErr && <div style={{ fontSize: '12.5px', color: 'var(--avoid-700)', lineHeight: 1.5, marginBottom: '12px' }}>{stopErr}</div>}
             <button onClick={handleStopCycle}
               style={{ width: '100%', background: 'var(--forest-500)', color: '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '14px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)' }}>
-              Close the cycle. rule {activeReintro.food} Avoid
+              Close the cycle, rule {activeReintro.food} Avoid
             </button>
           </div>
         </div>
@@ -1083,7 +1083,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
 
             {/* THE SEVERE OFF-RAMP (QA 2026-10-26 #1): the daily check-in has
                 always SAID a severe reaction can stop the cycle from this tab.
-                This is the control that makes it true. loud when a severe day
+                This is the control that makes it true, loud when a severe day
                 is on the log, a quiet door otherwise. */}
             {!isVerdictDay && cycleDay >= 1 && (
               <div className="sn-rise-4" style={{ marginTop: 14 }}>
@@ -1093,15 +1093,15 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                     <div style={{ fontSize: 12.5, color: 'var(--gray)', lineHeight: 1.6, marginBottom: 12 }}>It will be ruled Avoid on the strength of this cycle, every day you logged stays on the record, and nothing gets eaten again. This can't be undone from here (a future retest can).</div>
                     {stopErr && <div style={{ fontSize: 12.5, color: 'var(--avoid-700)', lineHeight: 1.5, marginBottom: 10 }}>{stopErr}</div>}
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button onClick={handleStopCycle} style={{ flex: 1, background: 'var(--avoid-700)', color: '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '12px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Stop. rule it Avoid</button>
+                      <button onClick={handleStopCycle} style={{ flex: 1, background: 'var(--avoid-700)', color: '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '12px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Stop, rule it Avoid</button>
                       <button onClick={() => { setConfirmStop(false); setStopErr('') }} style={{ flex: 1, background: 'var(--tint-warm)', color: 'var(--ink)', border: 'none', borderRadius: 'var(--r-md)', padding: '12px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Keep the cycle going</button>
                     </div>
                   </div>
                 ) : hasSevereLog ? (
                   <div style={{ background: 'var(--avoid-100)', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '16px 18px' }}>
                     <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--avoid-700)', marginBottom: 6 }}>You logged a severe reaction</div>
-                    <div style={{ fontSize: 12.5, color: '#1C1C1C', lineHeight: 1.6, marginBottom: 12 }}>A severe response is a clear answer on its own. You can stop this cycle now and {activeReintro.food.toLowerCase()} will be ruled Avoid. no more exposures needed. If symptoms feel serious, please seek medical care.</div>
-                    <button onClick={() => setConfirmStop(true)} style={{ width: '100%', background: 'var(--avoid-700)', color: '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '13px', fontSize: 13.5, fontWeight: 700, cursor: 'pointer' }}>Stop this cycle. rule {activeReintro.food} Avoid</button>
+                    <div style={{ fontSize: 12.5, color: '#1C1C1C', lineHeight: 1.6, marginBottom: 12 }}>A severe response is a clear answer on its own. You can stop this cycle now and {activeReintro.food.toLowerCase()} will be ruled Avoid, no more exposures needed. If symptoms feel serious, please seek medical care.</div>
+                    <button onClick={() => setConfirmStop(true)} style={{ width: '100%', background: 'var(--avoid-700)', color: '#FFFFFF', border: 'none', borderRadius: 'var(--r-md)', padding: '13px', fontSize: 13.5, fontWeight: 700, cursor: 'pointer' }}>Stop this cycle, rule {activeReintro.food} Avoid</button>
                   </div>
                 ) : (
                   <button onClick={() => setConfirmStop(true)} style={{ width: '100%', textAlign: 'center', background: 'transparent', border: 'none', padding: '6px', fontSize: 12, color: 'var(--gray)', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer' }}>
@@ -1120,7 +1120,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <div className="sn-rise" style={{ background: 'var(--paper)', borderRadius: 'var(--r-lg)', padding: '24px', maxWidth: '380px', width: '100%', boxShadow: 'var(--shadow-3)' }} onClick={e => e.stopPropagation()}>
               <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', marginBottom: '8px' }}>{pendingStart.food} cycle</div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, letterSpacing: '-0.3px', color: 'var(--ink)', marginBottom: '6px' }}>When should day 1 begin?</div>
-              <div style={{ fontSize: '13px', color: 'var(--gray)', lineHeight: 1.55, marginBottom: '16px' }}>Only {pendingStart.food.toLowerCase()} comes back during this cycle. Everything else on your list stays eliminated. Day 1 is an exposure day, you'll want a real chance to eat {pendingStart.food.toLowerCase()} that day.{new Date().getHours() >= 17 ? ' It\u2019s getting late, so starting tomorrow is probably the honest choice.' : ''}</div>
+              <div style={{ fontSize: '13px', color: 'var(--gray)', lineHeight: 1.55, marginBottom: '16px' }}>Only {pendingStart.food.toLowerCase()} comes back during this cycle. Everything else on your list stays eliminated. Day 1 is an exposure day, you'll want a real chance to eat {pendingStart.food.toLowerCase()} that day.{new Date().getHours() >= 17 ? ' It’s getting late, so starting tomorrow is probably the honest choice.' : ''}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <button disabled={!!starting} onClick={() => { const t = new Date(); const tm = new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1); const s = `${tm.getFullYear()}-${String(tm.getMonth() + 1).padStart(2, '0')}-${String(tm.getDate()).padStart(2, '0')}`; startReintro(pendingStart.food, pendingStart.level, s); setPendingStart(null); setShowDatePick(false); setFarPick(null) }}
                   style={{ background: new Date().getHours() >= 17 ? 'var(--forest-500)' : 'var(--tint-warm)', color: new Date().getHours() >= 17 ? '#FFFFFF' : 'var(--ink)', border: 'none', borderRadius: 'var(--r-md)', padding: '13px', fontSize: '13.5px', fontWeight: 700, cursor: 'pointer', boxShadow: new Date().getHours() >= 17 ? 'var(--shadow-pill)' : 'none' }}>

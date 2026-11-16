@@ -169,7 +169,7 @@ export default function LabResults({ session, onComplete, onBack }) {
 
     const isPDF = file.type === 'application/pdf'
     if (isPDF && file.size > 4.5 * 1024 * 1024) {
-      setError('That PDF is too large to read automatically (over 4.5MB). Try exporting a smaller copy, or enter your results manually. it only takes a minute.')
+      setError('That PDF is too large to read automatically (over 4.5MB). Try exporting a smaller copy, or enter your results manually, it only takes a minute.')
       setProcessing(false)
       return
     }
@@ -243,7 +243,7 @@ Rules:
       setExtractedFoods(foods)
       setProcessingMsg('')
     } catch (err) {
-      setError("That report couldn't be read in one pass. long multi-page panels sometimes overflow the reader. Try one page at a time, or enter the flagged foods manually (it only takes a minute).")
+      setError("That report couldn't be read in one pass, long multi-page panels sometimes overflow the reader. Try one page at a time, or enter the flagged foods manually (it only takes a minute).")
     }
 
     setProcessing(false)
@@ -413,7 +413,7 @@ Rules:
       My report shows no sensitivities
       <div style={{ fontSize: '12px', color: '#73736A', fontWeight: 400, marginTop: '3px', lineHeight: 1.5 }}>
         {hasManualFlags
-          ? "You've flagged foods above. clear them first if your report truly shows none."
+          ? "You've flagged foods above, clear them first if your report truly shows none."
           : "That's a real result. We'll review it and recommend the right path, often testing common trigger foods instead."}
       </div>
     </button>
@@ -432,11 +432,11 @@ Rules:
         <div className="sn-micro" style={{ marginBottom: '8px' }}>Your lab results</div>
         <div style={s.title}>Add your test results.</div>
         {/* Plain words before lab vocabulary (QA 2026-11-06 First-Timer #13). */}
-        <div style={s.sub}>Your test report lists foods with a reaction level next to each (words like "elevated", "high", or a colored band). Here, only add the foods your report flagged. anything you leave out is treated as clear. Upload the report and we'll read it for you, or type the flagged foods in yourself.</div>
+        <div style={s.sub}>Your test report lists foods with a reaction level next to each (words like "elevated", "high", or a colored band). Here, only add the foods your report flagged, anything you leave out is treated as clear. Upload the report and we'll read it for you, or type the flagged foods in yourself.</div>
         {/* Data handling said at the moment data is handed over (QA 2026-11-06
             Doubter #5, approved by Alex 2026-11-10). Claims match privacy.html. */}
         <div style={{ fontSize: '12px', color: '#A0A096', lineHeight: 1.55, marginTop: '8px', marginBottom: '4px' }}>
-          Your results are stored privately and used only to build your protocol. never sold, never shared outside Sensify. <a href="/privacy.html" target="_blank" rel="noopener noreferrer" style={{ color: '#3D5C3C', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Privacy</a>
+          Your results are stored privately and used only to build your protocol, never sold, never shared outside Sensify. <a href="/privacy.html" target="_blank" rel="noopener noreferrer" style={{ color: '#3D5C3C', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Privacy</a>
         </div>
 
         <div style={s.methodRow}>
@@ -623,8 +623,8 @@ Rules:
                   {searchResolvesToKnown ? (
                     <>
                       <div style={{ fontSize: 14, fontWeight: 500, color: '#20241F', marginBottom: 4 }}>Did you mean “{canonOfSearch}”?</div>
-                      <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.55, marginBottom: 11 }}>That looks like a food already on our list. using the listed name keeps your results tied together.</div>
-                      <button className="sn-btn sn-btn-quiet" style={{ width: '100%' }} onClick={() => setSearch(canonOfSearch)}>Yes. show “{canonOfSearch}”</button>
+                      <div style={{ fontSize: 12.5, color: '#7A7A72', lineHeight: 1.55, marginBottom: 11 }}>That looks like a food already on our list, using the listed name keeps your results tied together.</div>
+                      <button className="sn-btn sn-btn-quiet" style={{ width: '100%' }} onClick={() => setSearch(canonOfSearch)}>Yes, show “{canonOfSearch}”</button>
                     </>
                   ) : (
                     <>

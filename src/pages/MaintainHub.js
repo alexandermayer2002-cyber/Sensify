@@ -52,7 +52,7 @@ function MaintainPreview({ profile, session }) {
       if (!res.ok || !data.ok) throw new Error(data.error || 'cancel failed')
     } catch (e) {
       setBusy(false)
-      alert("That didn't go through. your reservation wasn't cancelled and your card is unchanged. Please try again.")
+      alert("That didn't go through, your reservation wasn't cancelled and your card is unchanged. Please try again.")
       return
     }
     window.location.reload()
@@ -335,7 +335,7 @@ function SymptomReport({ session, onBack }) {
     // "Logged. Thanks."
     const { error } = await supabase.from('symptom_logs').insert({ user_id: session.user.id, symptom, severity, note: note || null })
     if (error) {
-      setSaveErr("That didn't save. your note is still here, tap Log it to try again.")
+      setSaveErr("That didn't save, your note is still here, tap Log it to try again.")
       setSaving(false)
       return
     }
