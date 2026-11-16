@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Strip, SymptomCurve, SuspectCard, StreakLine, CheckinButton, DayCounter } from '../components/objects'
+import { Strip, SymptomCurve, SuspectCard, StreakLine, CheckinButton } from '../components/objects'
 import { getTestingOrder, getProtocolFoods } from '../utils/protocolEngine'
 import { todayLocal, localDateString } from '../utils/dateUtils'
 import { HouseholdShareCard } from './HouseholdCard'
@@ -126,7 +126,7 @@ export default function HomeElimination({
         ? 'Your weekly check-in is open. It is the only place your symptoms get scored against day zero, so it is worth the five minutes.'
         : 'The nightly log is the whole job this week. Your weekly check-in scores the week against day zero when it opens.'
   } else {
-    headline = 'Testing begins on day 57. Your order is set.'
+    headline = 'Testing begins on day 57.'
     lede = `${Cap(words(daysLeft))} clean night${daysLeft === 1 ? '' : 's'} to go. Your suspects will be tried one at a time, in the order below, and your body rules on each.`
   }
 
@@ -136,7 +136,7 @@ export default function HomeElimination({
   // ---- Blocks ----
   const Hero = (
     <div className="he-herotext">
-      <p className="he-hello">{greeting}{firstName ? `, ${firstName}` : ''}. <DayCounter n={day} of={56} label="elimination" className="he-day" /></p>
+      <p className="he-hello">{greeting}{firstName ? `, ${firstName}` : ''}. Day {day} of 56, elimination.</p>
       <h1 className="he-h1">{headline}</h1>
       <p className="he-lede">{lede}</p>
       <div className="he-actions">
@@ -258,18 +258,18 @@ export default function HomeElimination({
 
 const CSS = `
 .he-page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 72px; color: var(--ob-ink); }
-.he-hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: start; padding: 12px 0 0; }
+.he-hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 32px; align-items: stretch; padding: 8px 0 0; }
 .he-hero-solo { grid-template-columns: 1fr; }
-.he-hero-solo .he-h1 { max-width: 900px; }
-.he-hello { font-size: 15px; color: var(--ob-ink-2); margin: 0 0 16px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.he-day b { font-size: 22px; }
-.he-h1 { font-family: var(--font-display, 'Fraunces', serif); font-weight: 300; font-size: clamp(38px, 5.4vw, 70px); line-height: .98; letter-spacing: -.022em; margin: 0 0 18px; color: var(--ob-ink); }
-.he-lede { font-size: 17px; line-height: 1.5; color: var(--ob-ink-2); max-width: 540px; margin: 0 0 26px; }
+.he-hero-solo .he-h1 { max-width: 820px; }
+.he-herotext { display: flex; flex-direction: column; justify-content: center; }
+.he-hello { font-size: 15px; color: var(--ob-ink-2); margin: 0 0 10px; }
+.he-h1 { font-family: var(--font-display, 'Fraunces', serif); font-weight: 300; font-size: clamp(34px, 3.6vw, 50px); line-height: 1.04; letter-spacing: -.02em; margin: 0 0 12px; color: var(--ob-ink); }
+.he-lede { font-size: 16.5px; line-height: 1.5; color: var(--ob-ink-2); max-width: 520px; margin: 0 0 18px; }
 .he-actions { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
 .he-link { background: none; border: 0; padding: 0; font: inherit; font-size: 14px; font-weight: 500; color: var(--ob-moss); text-decoration: underline; text-decoration-color: rgba(60,106,75,.35); text-underline-offset: 5px; cursor: pointer; white-space: nowrap; }
-.he-streak { margin-top: 16px; font-size: 14px; }
+.he-streak { margin-top: 12px; font-size: 14px; }
 .he-ledger h3, .he-strip h3, .he-note h3, .he-panel h3, .he-compact h3 { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 22px; letter-spacing: -.015em; margin: 0 0 4px; line-height: 1.1; }
-.he-ledger { padding: 22px 24px 14px; }
+.he-ledger { padding: 22px 24px 14px; display: flex; flex-direction: column; justify-content: center; }
 .he-ledger-sub, .he-ledger-empty { font-size: 13px; color: var(--ob-mute); margin: 0 0 12px; line-height: 1.5; }
 .he-ledger-empty { margin: 8px 0 6px; }
 .he-lrow { display: grid; grid-template-columns: 118px 1fr 72px; gap: 14px; align-items: center; padding: 12px 0; border-top: 1px solid rgba(21,30,24,.08); }
@@ -278,7 +278,7 @@ const CSS = `
 .he-lvals { font-family: var(--font-display, 'Fraunces', serif); font-size: 24px; letter-spacing: -.02em; text-align: right; line-height: 1; }
 .he-lvals i { font-style: normal; font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif); font-size: 12px; color: var(--ob-mute); margin: 0 4px; position: relative; top: -2px; }
 .he-strip { padding: 22px 24px 24px; }
-.he-hero .he-strip { margin-top: 8px; }
+.he-hero .he-strip { margin-top: 0; display: flex; flex-direction: column; justify-content: center; }
 .he-page > .he-strip, .he-sharp, .he-compact, .he-note { margin-top: 24px; }
 .he-strip-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
 .he-strip-head p { font-size: 13.5px; color: var(--ob-mute); margin: 0; line-height: 1.5; }

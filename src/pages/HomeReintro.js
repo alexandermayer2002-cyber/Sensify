@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../supabase'
-import { Strip, VerdictCard, SuspectCard, StreakLine, CheckinButton, DayCounter } from '../components/objects'
+import { Strip, VerdictCard, SuspectCard, StreakLine, CheckinButton } from '../components/objects'
 import { getTestingOrder, getProtocolFoods } from '../utils/protocolEngine'
 import { todayLocal, localDateString } from '../utils/dateUtils'
 import { HouseholdShareCard } from './HouseholdCard'
@@ -192,7 +192,7 @@ export default function HomeReintro({
   } else if (state === 'exposure') {
     const next = Math.min(EXPOSURE_TARGET, clock.done + 1)
     if (loggedToday && todayLog.ate_food === true) {
-      headline = `${Cap(foodL)}, exposure day ${words(clock.done)} is in.`
+      headline = `Exposure day ${words(clock.done)} is in.`
       lede = 'Nothing more to eat or do until tomorrow. If your body does anything tonight, it goes in tomorrow’s check-in.'
     } else if (loggedToday) {
       headline = 'Tonight is logged, without a serving.'
@@ -207,7 +207,7 @@ export default function HomeReintro({
       headline = 'Exposure complete. Washout begins tomorrow.'
       lede = `All three ${foodL} days are logged. From tomorrow, keep it out completely while the record watches for anything delayed.`
     } else {
-      headline = `${Cap(foodL)} washout, day ${words(clock.washoutDay)} of eleven.`
+      headline = `Washout day ${words(clock.washoutDay)} of eleven.`
       lede = `Keep ${foodL} out. Tonight’s check asks one thing: anything your body did today. The verdict opens the day after washout ends.`
     }
     action = <CheckinButton state={loggedToday ? 'logged' : 'washout'} onClick={onOpenDaily} />
@@ -231,7 +231,7 @@ export default function HomeReintro({
 
       <section className={`hr-hero ${showCycleCard ? '' : 'hr-hero-solo'}`}>
         <div>
-          <p className="hr-hello">{greeting}{firstName ? `, ${firstName}` : ''}. {helloClock ? <span className="hr-quiet">{helloClock}</span> : state === 'between' ? <DayCounter n={reintroDay} label={reintroDay === 1 ? 'day of reintroduction' : 'days of reintroduction'} className="hr-day" /> : null}</p>
+          <p className="hr-hello">{greeting}{firstName ? `, ${firstName}` : ''}.{helloClock ? ` ${helloClock}.` : state === 'between' ? ` Day ${reintroDay} of reintroduction.` : ''}</p>
           <h1 className="hr-h1">{headline}</h1>
           <p className="hr-lede">{lede}</p>
           <div className="hr-actions">
@@ -244,7 +244,7 @@ export default function HomeReintro({
 
         {showCycleCard && (
           <aside className="ob-paper hr-cycle">
-            <h3>{food} on trial</h3>
+            <div className="hr-cycle-head"><h3>{food} on trial</h3><span>{state === 'pending' ? 'Starts soon' : `Day ${Math.max(1, Math.min(14, clock.cycleDay))} of 14`}</span></div>
             <p>Three exposure days, then eleven washout days. One square per day.</p>
             <Strip days={stripDays} size="md" label={`${food} cycle`} />
             <div className="hr-legend"><span><i className="exposure" />exposure</span><span><i className="on" />washout, logged</span><span><i className="today" />today</span></div>
@@ -306,20 +306,22 @@ export default function HomeReintro({
 
 const CSS = `
 .hr-page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 72px; color: var(--ob-ink); }
-.hr-hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: start; padding: 12px 0 0; }
+.hr-hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 32px; align-items: stretch; padding: 8px 0 0; }
 .hr-hero-solo { grid-template-columns: 1fr; }
-.hr-hero-solo .hr-h1 { max-width: 900px; }
-.hr-hello { font-size: 15px; color: var(--ob-ink-2); margin: 0 0 16px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.hr-day b { font-size: 22px; }
+.hr-hero-solo .hr-h1 { max-width: 820px; }
+.hr-hero > div:first-child { display: flex; flex-direction: column; justify-content: center; }
+.hr-hello { font-size: 15px; color: var(--ob-ink-2); margin: 0 0 10px; }
 .hr-quiet { color: var(--ob-mute); font-size: 14px; }
-.hr-h1 { font-family: var(--font-display, 'Fraunces', serif); font-weight: 300; font-size: clamp(38px, 5.4vw, 70px); line-height: .98; letter-spacing: -.022em; margin: 0 0 18px; color: var(--ob-ink); }
-.hr-lede { font-size: 17px; line-height: 1.5; color: var(--ob-ink-2); max-width: 560px; margin: 0 0 26px; }
+.hr-h1 { font-family: var(--font-display, 'Fraunces', serif); font-weight: 300; font-size: clamp(34px, 3.6vw, 50px); line-height: 1.04; letter-spacing: -.02em; margin: 0 0 12px; color: var(--ob-ink); }
+.hr-lede { font-size: 16.5px; line-height: 1.5; color: var(--ob-ink-2); max-width: 520px; margin: 0 0 18px; }
 .hr-actions { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
 .hr-link { background: none; border: 0; padding: 0; font: inherit; font-size: 14px; font-weight: 500; color: var(--ob-moss); text-decoration: underline; text-decoration-color: rgba(60,106,75,.35); text-underline-offset: 5px; cursor: pointer; white-space: nowrap; }
-.hr-streak { margin-top: 16px; font-size: 14px; }
-.hr-cycle { padding: 22px 24px; margin-top: 8px; }
+.hr-streak { margin-top: 12px; font-size: 14px; }
+.hr-cycle { padding: 24px 26px; margin-top: 0; display: flex; flex-direction: column; justify-content: center; }
+.hr-cycle-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.hr-cycle-head span { font-size: 14px; color: var(--ob-mute); white-space: nowrap; }
 .hr-cycle h3, .hr-panel h3 { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 22px; letter-spacing: -.015em; margin: 0 0 4px; line-height: 1.1; }
-.hr-cycle p { font-size: 13.5px; color: var(--ob-mute); margin: 0 0 16px; line-height: 1.5; }
+.hr-cycle p { font-size: 13.5px; color: var(--ob-mute); margin: 0 0 18px; line-height: 1.5; }
 .hr-cycle .ob-strip { flex-wrap: wrap; }
 .hr-cycle-wide { margin-top: 28px; }
 .hr-legend { display: flex; gap: 18px; margin-top: 14px; font-size: 12px; color: var(--ob-mute); flex-wrap: wrap; }
