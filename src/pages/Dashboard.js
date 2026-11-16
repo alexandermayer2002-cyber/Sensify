@@ -40,7 +40,7 @@ const css = `
   .snfy-app { min-height: 100vh; color: var(--ink); }
 
   .snfy-nav {
-    background: rgba(232,227,216,0.86);
+    background: rgba(227,228,220,0.88);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     box-shadow: 0 1px 0 rgba(21,30,24,0.08);
@@ -61,8 +61,8 @@ const css = `
   .snfy-logo em { color: var(--forest-500); font-style: italic; }
   .snfy-nav-tabs { display: flex; gap: 6px; }
   /* Refresh 2026-11-13: the app shell sits on the stone surface the rebuilt screens were designed for. */
-  .snfy-app { background: #E8E3D8; }
-  .snfy-app::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(1100px 600px at 80% 0%, rgba(255,255,255,.55), transparent 60%); }
+  .snfy-app { background: #E3E4DC; }
+  .snfy-app::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(900px 500px at 85% 0%, rgba(255,255,255,.22), transparent 60%); }
   .snfy-app > * { position: relative; z-index: 1; }
   .snfy-tab { font-size: 15px; font-weight: 500; color: #737B73; padding: 6px 14px; border: none; background: none; cursor: pointer; transition: color var(--t-fast) var(--ease); letter-spacing: -0.1px; border-bottom: 2px solid transparent; }
   .snfy-tab.active { color: #151E18; font-weight: 500; border-bottom: 2px solid #151E18; }

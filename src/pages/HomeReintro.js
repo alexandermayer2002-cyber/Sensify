@@ -230,7 +230,7 @@ export default function HomeReintro({
       <style>{CSS}</style>
 
       <section className={`hr-hero ${showCycleCard ? '' : 'hr-hero-solo'}`}>
-        <div>
+        <div className="ob-paper hr-herocard">
           <p className="hr-hello">{greeting}{firstName ? `, ${firstName}` : ''}.{helloClock ? ` ${helloClock}.` : state === 'between' ? ` Day ${reintroDay} of reintroduction.` : ''}</p>
           <h1 className="hr-h1">{headline}</h1>
           <p className="hr-lede">{lede}</p>
@@ -309,7 +309,8 @@ const CSS = `
 .hr-hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 32px; align-items: stretch; padding: 8px 0 0; }
 .hr-hero-solo { grid-template-columns: 1fr; }
 .hr-hero-solo .hr-h1 { max-width: 820px; }
-.hr-hero > div:first-child { display: flex; flex-direction: column; justify-content: center; }
+.hr-hero-solo .hr-herocard { padding: 34px 36px; }
+.hr-herocard { display: flex; flex-direction: column; justify-content: center; padding: 30px 32px; }
 .hr-hello { font-size: 15px; color: var(--ob-ink-2); margin: 0 0 10px; }
 .hr-quiet { color: var(--ob-mute); font-size: 14px; }
 .hr-h1 { font-family: var(--font-display, 'Fraunces', serif); font-weight: 300; font-size: clamp(34px, 3.6vw, 50px); line-height: 1.04; letter-spacing: -.02em; margin: 0 0 12px; color: var(--ob-ink); }

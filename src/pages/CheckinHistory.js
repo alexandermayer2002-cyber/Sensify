@@ -67,7 +67,7 @@ function SymptomProgress({ profile, checkins }) {
   const weekCount = sorted.length
 
   const pg = {
-    card: { background: '#FBF9F4', border: 'none', borderRadius: '18px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35)', padding: '24px', marginBottom: '16px' },
+    card: { background: '#FCFBF8', border: 'none', borderRadius: '18px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35)', padding: '24px', marginBottom: '16px' },
     title: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, letterSpacing: '-0.015em', color: '#151E18', marginBottom: '12px' },
     toggle: { display: 'flex', gap: '4px', background: '#F0EEE7', borderRadius: '999px', padding: '3px', marginBottom: '18px' },
     tOn: { flex: 1, textAlign: 'center', fontSize: '12.5px', fontWeight: 600, color: '#1C1C1C', background: '#fff', padding: '7px 0', borderRadius: '999px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', cursor: 'pointer', border: 'none' },
@@ -355,7 +355,7 @@ const s = {
   countdownLabel: { fontSize: '12px', color: '#3D5C3C', fontWeight: 500 },
 
   // Due state
-  dueCard: { background: '#FBF9F4', border: 'none', borderRadius: '18px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35)', padding: '22px 24px', marginBottom: '20px' },
+  dueCard: { background: '#FCFBF8', border: 'none', borderRadius: '18px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35)', padding: '22px 24px', marginBottom: '20px' },
   dueTag: { fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 500, color: '#3C6A4B', display: 'inline-block', marginBottom: '8px' },
   dueTitle: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 300, marginBottom: '6px' },
   dueTitleEm: { fontStyle: 'normal', color: '#3D5C3C' },
@@ -363,7 +363,7 @@ const s = {
   dueBtn: { background: '#3D5C3C', color: 'white', border: 'none', borderRadius: '16px', padding: '11px 20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', boxShadow: 'var(--shadow-pill)' },
 
   // Chart
-  chartCard: { background: '#FBF9F4', border: 'none', borderRadius: '18px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35)', padding: '22px 24px', marginBottom: '16px' },
+  chartCard: { background: '#FCFBF8', border: 'none', borderRadius: '18px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35)', padding: '22px 24px', marginBottom: '16px' },
   chartLabel: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, letterSpacing: '-0.015em', color: '#151E18', marginBottom: '14px' },
   chartArea: { position: 'relative', height: '100px', display: 'flex', alignItems: 'flex-end', gap: '8px', borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: '8px', marginBottom: '8px' },
   chartBar: { flex: 1, borderRadius: '4px 4px 0 0', minHeight: '4px', transition: 'height 0.3s ease' },
@@ -375,7 +375,7 @@ const s = {
 
   // Check-in cards
   secLabel: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, letterSpacing: '-0.015em', color: '#151E18', margin: '28px 0 12px' },
-  checkinCard: { background: '#FBF9F4', border: 'none', borderRadius: '14px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 16px 32px -24px rgba(22,31,25,.3)', padding: '18px 20px', marginBottom: '12px' },
+  checkinCard: { background: '#FCFBF8', border: 'none', borderRadius: '14px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 16px 32px -24px rgba(22,31,25,.3)', padding: '18px 20px', marginBottom: '12px' },
   checkinHeader: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' },
   checkinWeek: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300 },
   checkinWeekEm: { fontStyle: 'normal', color: '#3D5C3C' },

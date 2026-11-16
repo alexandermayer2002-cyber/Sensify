@@ -135,7 +135,7 @@ export default function HomeElimination({
 
   // ---- Blocks ----
   const Hero = (
-    <div className="he-herotext">
+    <div className="ob-paper he-herotext">
       <p className="he-hello">{greeting}{firstName ? `, ${firstName}` : ''}. Day {day} of 56, elimination.</p>
       <h1 className="he-h1">{headline}</h1>
       <p className="he-lede">{lede}</p>
@@ -246,9 +246,9 @@ export default function HomeElimination({
       )}
       {stretch === 'late' && (
         <>
-          <section className="he-hero he-hero-solo">{Hero}</section>
+          <section className="he-hero">{Hero}{StripCard}</section>
           {SuspectsFull}
-          <section className="he-two">{StripCard}{Ledger}</section>
+          <section className="he-two he-two-solo">{Ledger}</section>
           {Panels}
         </>
       )}
@@ -261,7 +261,8 @@ const CSS = `
 .he-hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 32px; align-items: stretch; padding: 8px 0 0; }
 .he-hero-solo { grid-template-columns: 1fr; }
 .he-hero-solo .he-h1 { max-width: 820px; }
-.he-herotext { display: flex; flex-direction: column; justify-content: center; }
+.he-herotext { display: flex; flex-direction: column; justify-content: center; padding: 30px 32px; }
+.he-hero-solo .he-herotext { padding: 34px 36px; }
 .he-hello { font-size: 15px; color: var(--ob-ink-2); margin: 0 0 10px; }
 .he-h1 { font-family: var(--font-display, 'Fraunces', serif); font-weight: 300; font-size: clamp(34px, 3.6vw, 50px); line-height: 1.04; letter-spacing: -.02em; margin: 0 0 12px; color: var(--ob-ink); }
 .he-lede { font-size: 16.5px; line-height: 1.5; color: var(--ob-ink-2); max-width: 520px; margin: 0 0 18px; }
@@ -294,6 +295,7 @@ const CSS = `
 .he-cards .ob-sc { min-height: 200px; }
 .he-cards .ob-meta { min-height: 2.6em; }
 .he-two { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; margin-top: 36px; align-items: start; }
+.he-two-solo { grid-template-columns: 1fr; }
 .he-panels { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; margin-top: 36px; }
 .he-panel { padding: 26px 28px; display: flex; flex-direction: column; justify-content: flex-start; gap: 14px; border-radius: 18px; }
 .he-panel .he-link, .he-panel .he-quiet { align-self: flex-start; margin-top: 6px; }

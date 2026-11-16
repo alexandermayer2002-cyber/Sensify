@@ -289,8 +289,8 @@ export function HouseholdShareCard({ session, profile, variant, phase, foods = [
 }
 
 const hp = {
-  panelPaper: { background: '#FBF9F4', color: '#151E18', borderRadius: 18, padding: '26px 28px', minHeight: 240, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35)' },
-  btnInk: { background: '#151E18', color: '#FBF9F4', border: 0, borderRadius: 999, padding: '14px 22px', fontWeight: 600, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit' },
+  panelPaper: { background: '#FCFBF8', color: '#151E18', borderRadius: 18, padding: '26px 28px', minHeight: 240, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35)' },
+  btnInk: { background: '#151E18', color: '#FCFBF8', border: 0, borderRadius: 999, padding: '14px 22px', fontWeight: 600, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit' },
   panel: { background: '#1E3327', color: '#ECE7DC', borderRadius: 18, padding: '26px 28px', minHeight: 240, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20 },
   h3: { fontFamily: "var(--font-display, 'Fraunces', serif)", fontWeight: 400, fontSize: 22, letterSpacing: '-.015em', margin: '0 0 8px', lineHeight: 1.1 },
   p: { fontSize: 15, lineHeight: 1.55, color: 'rgba(236,231,220,.78)', margin: 0 },
