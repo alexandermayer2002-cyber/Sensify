@@ -16,6 +16,8 @@ have closed some of these; night one must re-test every item rather than trust t
 
 ## OPEN
 
+**Fixed in code and deployed 2026-11-16 (74331b6, bundle main.0f38604a), awaiting the fresh live re-test tonight before closing:** X01, X03, N03 (all fragments in be556f2 added user-facing lines), X08 (no sleep overlap without 1h spread), X23, X07, X10, X13, X20 (foods total only). Not done, need a decision or are bigger: X02, X21, X16, X17, X18, X04, X05, X06, X09, X11, X15, F02, F05, F13.
+
 **Re-test 2026-11-16 (Monday, no deploys in 36h, no deep walk):** every OPEN row re-tested by probe where one exists, otherwise unchanged by git log (no src/netlify/public commits since 11-13). Probes: M03 FAIL, M01 FAIL, D01 FAIL (still open, Alex decisions); M07 probe now PASSES ('clinical standard' x0): candidate to close once the "certainty" overclaim is re-read on the next walk. M06/M08/M09/M09b/M12/D17/D03 PASS. No item closed tonight. No new items. X25 extended: day_logged date FAILs again (elimearly, elimlate, audit; sandbox date vs app date) and one 502 console error on fleet.elimlate (environmental, single occurrence). N02 reconfirmed: regress_all fleet portion still ~15+ min; run cut at 40 PASS / 4 FAIL.
 
 ### Protocol (method) — source: 2026-11-06-protocol-critique.md
