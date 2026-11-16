@@ -16,6 +16,8 @@ have closed some of these; night one must re-test every item rather than trust t
 
 ## OPEN
 
+**Re-test 2026-11-16 (Monday, no deploys in 36h, no deep walk):** every OPEN row re-tested by probe where one exists, otherwise unchanged by git log (no src/netlify/public commits since 11-13). Probes: M03 FAIL, M01 FAIL, D01 FAIL (still open, Alex decisions); M07 probe now PASSES ('clinical standard' x0): candidate to close once the "certainty" overclaim is re-read on the next walk. M06/M08/M09/M09b/M12/D17/D03 PASS. No item closed tonight. No new items. X25 extended: day_logged date FAILs again (elimearly, elimlate, audit; sandbox date vs app date) and one 502 console error on fleet.elimlate (environmental, single occurrence). N02 reconfirmed: regress_all fleet portion still ~15+ min; run cut at 40 PASS / 4 FAIL.
+
 ### Protocol (method) — source: 2026-11-06-protocol-critique.md
 | id | found | area | sev | finding | fix | probe | status |
 |---|---|---|---|---|---|---|---|
