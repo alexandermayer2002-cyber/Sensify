@@ -16,6 +16,8 @@ have closed some of these; night one must re-test every item rather than trust t
 
 ## OPEN
 
+**Re-test 2026-11-17 (Tuesday; deploys ce4732c, 99e5e26, 74331b6 within 36h; bundle main.dbcfe342):** X03 closed (no literal \u escape in JSX text in src or bundle except new N05). X01, X08, X23, X07, X10, X13, X20, N03 fixes verified in code only (regex at WeeklyCheckin.js:357-361 correct, verdictEngine.js:74 lowercased); still OPEN until a live text walk passes (owed Sunday 11-22). Probes M03/M01/D01 FAIL (Alex decisions), rest PASS.
+
 **Fixed in code and deployed 2026-11-16 (74331b6, bundle main.0f38604a), awaiting the fresh live re-test tonight before closing:** X01, X03, N03 (all fragments in be556f2 added user-facing lines), X08 (no sleep overlap without 1h spread), X23, X07, X10, X13, X20 (foods total only). Not done, need a decision or are bigger: X02, X21, X16, X17, X18, X04, X05, X06, X09, X11, X15, F02, F05, F13.
 
 **Re-test 2026-11-16 (Monday, no deploys in 36h, no deep walk):** every OPEN row re-tested by probe where one exists, otherwise unchanged by git log (no src/netlify/public commits since 11-13). Probes: M03 FAIL, M01 FAIL, D01 FAIL (still open, Alex decisions); M07 probe now PASSES ('clinical standard' x0): candidate to close once the "certainty" overclaim is re-read on the next walk. M06/M08/M09/M09b/M12/D17/D03 PASS. No item closed tonight. No new items. X25 extended: day_logged date FAILs again (elimearly, elimlate, audit; sandbox date vs app date) and one 502 console error on fleet.elimlate (environmental, single occurrence). N02 reconfirmed: regress_all fleet portion still ~15+ min; run cut at 40 PASS / 4 FAIL.
@@ -91,12 +93,16 @@ have closed some of these; night one must re-test every item rather than trust t
 | N03 | 11-14 | home/all | MED | The 11-13 "em-dashes removed" sweep (be556f2) swapped each dash for a period, leaving lowercase mid-sentence fragments live on Home: "Your elimination list. the foods you'll avoid for 8 weeks. appears here once your results are in" (Dashboard.js:2354); "At 28 nights. four clean weeks of check-ins. they form a constellation" (2425); "Setup complete. your results are in review" (1853); "Usually ready within a day. it will meet you here." (1913); "Slip-up logged. thank you" (1951); "Your data is safe. we just couldn't load it" (1345). Also the safety panel: "That didn't save. please try again." (ReintroTab.js:666), WeeklyCheckin.js:480, FoodMap.js:306, LabResults.js:172,626, ReintroTab.js:138. | replace each ". lowercase" with a comma, colon or a full new sentence; grep `[a-z]\. [a-z]{3,}` inside string literals | curl main.js, grep -c "Your elimination list. the foods" (0 when fixed) | OPEN (found 2026-11-14; live bundle main.7f82e092) |
 | N04 | 11-14 | harness | LOW | regress_all p1.unlock_hero FAILed once on the first run (page text was only "Sensify."; page not ready after skip57) and PASSed on immediate re-run: flaky wait, not a product regression | wait_ready after gate(r) in run_p1 before reading text | - | OPEN (found 2026-11-14) |
 
+### New (Critic, 2026-11-17)
+| id | found | area | sev | finding | fix | probe | status |
+|---|---|---|---|---|---|---|---|
+| N05 | 11-17 | maintain | MED | After opting into Maintain, the green check circle renders the literal text `\u2713` (MaintainHub.js:106, JSX text does not process escapes; live bundle has children:"\\u2713"). Same bug class as X03 | change to `{'\u2713'}` or the character | curl main.js, fail if `children:"\\\\u` appears | OPEN (2026-11-17) |
+
 ### New (Critic, 2026-11-15 Sunday full pass)
 | id | found | area | sev | finding | fix | probe | status |
 |---|---|---|---|---|---|---|---|
 | X01 | 11-15 | weekly/history | HIGH | Weekly insight renders "Bloating, dropped, from, 6, to, 5, , a, 17%, improvement". WeeklyCheckin.js:357-360: sweep be556f2 turned `[—–-]` into `[, –]`, so every space becomes ", ". Saved insight in History corrupted the same way (CONFIRMED in source tonight) | restore `[—–-]` at 357, 358, 360 (as aiInsights.js:6-11) | submit weekly, assert no `\w, \w, \w` | OPEN (2026-11-15) |
 | X02 | 11-15 | daily/slipup | HIGH | After a "No" (3 in a row) Home shows no "Tell us what happened"/audit entry; showSlipupCard/showAuditCard (Dashboard.js:1223,1934) only in legacy branch, HomeElimination has none; SlipupSurvey+ComplianceAudit unreachable, slip_up_reason stays null | add slip-up/audit rows to HomeElimination | log 3 Nos, assert "Tell us what happened" on Home | OPEN (2026-11-15; one agent walk, live) |
-| X03 | 11-15 | home | HIGH | Literal "\u2019" on screen: "Tonight\u2019s check-in first", "Open tonight\u2019s check-in", "Start tonight\u2019s check-in", "Log tonight\u2019s washout check" (HomeElimination.js:144,221; components/objects/index.js:171,180,182; JSX text does not decode escapes; CONFIRMED in source). Also MaintainHub.js:106 literal check mark | use real ’ or {'\u2019'} | `/\\u[0-9a-f]{4}/` on Home text | OPEN (2026-11-15) |
 | N03 | (extended 11-15) | all | MED | full list of lowercase fragments from sweep: AskSensify 118,266; MaintainHub 55,338; ReintroductionSurvey 210,227,329; ReintroTab 138,156,271,666,841,846,1086,1096,1103,1104; LabResults 172,246,416,435,439,626,627; DailyCheckin 254,638; Dashboard 1345,1533,1853,1913,1951,2019,2190,2354,2425; WeeklyCheckin 480,498,576,674,724; FoodMap 306,338,375; IntakeSurvey 387,659,685,755; CheckinHistory 627 | capitalise or comma | grep `\. [a-z]` in string literals | OPEN (2026-11-15) |
 | X04 | 11-15 | daily | MED | out-of-range sleep (75) stays after closing the pad; "Done for today" disabled with no message | persistent inline error | enter 75, tap Stress, assert "Between 0 and 14" | OPEN |
 | X05 | 11-15 | reintro washout | MED | "Tonight's check asks one thing" / "1 minute" but form asks plan, sleep, stress, water, cycle | align | - | OPEN |
@@ -123,6 +129,7 @@ have closed some of these; night one must re-test every item rather than trust t
 ## FIXED
 | id | evidence (tonight's fresh re-test) |
 |---|---|
+|  X03 | FIXED (2026-11-17, 74331b6; src has no \u escape in JSX text for Home/objects; live bundle shows escapes only inside JS strings; residual N05 in MaintainHub) |
 |  P05 | FIXED (2026-11-15, found by fresh live walk; live: no running-verdict needle on Home or Reintro tab mid-cycle) |
 |  P12 | FIXED (2026-11-15, found by fresh live walk; live: zero-log cycle blocked on Home ("needs a fresh start"), no survey button (code residual: N-X07 guard)) |
 |  M04 | FIXED (2026-11-15, found by fresh live walk; live: price card with CTA follows The Outcome) |
