@@ -16,6 +16,8 @@ have closed some of these; night one must re-test every item rather than trust t
 
 ## OPEN
 
+**Re-test 2026-11-18 (Wednesday; no src/netlify/public commits in 36h, bundle main.dbcfe342 unchanged, no deep walk):** probes M03/M01/D01 FAIL (Alex decisions), M06 M07 M08 M09 M09b M12 D17 D03 PASS. N03 and N05 still present in live bundle (grep 1 each). X25 unchanged (4 fleet day_logged FAILs, sandbox vs app date). No item closed, none new. Code-fixed items (X01, X08, X23, X07, X10, X13, X20) still await the Sunday 11-22 live walk.
+
 **Re-test 2026-11-17 (Tuesday; deploys ce4732c, 99e5e26, 74331b6 within 36h; bundle main.dbcfe342):** X03 closed (no literal \u escape in JSX text in src or bundle except new N05). X01, X08, X23, X07, X10, X13, X20, N03 fixes verified in code only (regex at WeeklyCheckin.js:357-361 correct, verdictEngine.js:74 lowercased); still OPEN until a live text walk passes (owed Sunday 11-22). Probes M03/M01/D01 FAIL (Alex decisions), rest PASS.
 
 **Fixed in code and deployed 2026-11-16 (74331b6, bundle main.0f38604a), awaiting the fresh live re-test tonight before closing:** X01, X03, N03 (all fragments in be556f2 added user-facing lines), X08 (no sleep overlap without 1h spread), X23, X07, X10, X13, X20 (foods total only). Not done, need a decision or are bigger: X02, X21, X16, X17, X18, X04, X05, X06, X09, X11, X15, F02, F05, F13.
