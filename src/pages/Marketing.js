@@ -565,7 +565,16 @@ function ShowcaseScreen({ tab }) {
 }
 
 export default function Marketing({ onGetStarted, onSignIn }) {
-  const [tab, setTab] = useState('home')
+  // X18: /science, /faq, /pricing, /how-it-works, /about open the matching tab; the URL follows the tab.
+  const PATH_TAB = { '/how-it-works': 'how', '/how': 'how', '/science': 'science', '/pricing': 'pricing', '/faq': 'faq', '/about': 'about' }
+  const TAB_PATH = { how: '/how-it-works', science: '/science', pricing: '/pricing', faq: '/faq', about: '/about', home: '/' }
+  const [tab, setTabState] = useState(() => {
+    try { return PATH_TAB[window.location.pathname.replace(/\/+$/, '')] || 'home' } catch (e) { return 'home' }
+  })
+  const setTab = t => {
+    setTabState(t)
+    try { window.history.replaceState(null, '', TAB_PATH[t] || '/') } catch (e) { /* path sync is cosmetic */ }
+  }
   const [menuOpen, setMenuOpen] = useState(false)
   const [homeFaq, setHomeFaq] = useState(null)
 

@@ -526,6 +526,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
               {padWarning === 'sleep' && <div style={s.padWarn}>{PAD_LIMITS.sleep.warn}</div>}
             </div>
           )}
+          {openPad !== 'sleep' && sleep !== '' && !padInRange('sleep', sleep) && <div style={s.padWarn}>{PAD_LIMITS.sleep.warn} Tap to fix it.</div>}
         </div>
 
         <div className="sn-card" style={s.block}>
@@ -544,6 +545,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
               {padWarning === 'hydration' && <div style={s.padWarn}>{PAD_LIMITS.hydration.warn}</div>}
             </div>
           )}
+          {openPad !== 'hydration' && hydration !== '' && !padInRange('hydration', hydration) && <div style={s.padWarn}>{PAD_LIMITS.hydration.warn} Tap to fix it.</div>}
         </div>
 
         {isWoman && (
@@ -565,6 +567,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
                 {padWarning === 'drinks' && <div style={s.padWarn}>{PAD_LIMITS.drinks.warn}</div>}
               </div>
             )}
+            {openPad !== 'drinks' && drinks !== '' && !padInRange('drinks', drinks) && <div style={s.padWarn}>{PAD_LIMITS.drinks.warn} Tap to fix it.</div>}
           </div>
         )}
       </div>

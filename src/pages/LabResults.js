@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { isTestAccount, autoApproveTestLab } from '../utils/testMode'
 import { aiCall } from '../utils/aiClient'
@@ -113,6 +113,11 @@ export default function LabResults({ session, onComplete, onBack }) {
   const [processingMsg, setProcessingMsg] = useState('')
   const [extractedFoods, setExtractedFoods] = useState(null)
   const [error, setError] = useState('')
+  useEffect(() => {
+    if (!error) return
+    const el = document.getElementById('lab-error')
+    if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [error])
   const [search, setSearch] = useState('')
   const [manualFoods, setManualFoods] = useState({})
   // Off-list foods the user added by hand (QA 2026-10-22 #2): real lab panels
@@ -461,7 +466,7 @@ Rules:
           </div>
         </div>
 
-        {error && <div style={s.errorCard}>{error}</div>}
+        {error && <div id="lab-error" style={s.errorCard}>{error}</div>}
         {uploadFailed && !saving && (
           <button className="sn-btn sn-btn-quiet" style={{ width: '100%', marginBottom: '16px' }} onClick={() => { setUploadFailed(false); setError(''); handleSave(true) }}>
             Submit without the original file
@@ -651,6 +656,9 @@ Rules:
               </div>
             )}
 
+            {Object.keys(manualFoods).length === 0 && !noSensitivities && (
+              <div style={{ fontSize: '12px', color: '#6B6B63', marginBottom: '8px', lineHeight: 1.5 }}>Add at least one flagged food, or select "My report shows no sensitivities", to continue.</div>
+            )}
             <button
               className="sn-btn"
               style={s.cta}

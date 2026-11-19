@@ -103,7 +103,7 @@ function MaintainPreview({ profile, session }) {
       {optedIn ? (
         <div style={{ marginTop: '14px', background: '#EDF3ED', borderRadius: '16px', padding: '15px 17px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#3D5C3C', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', flexShrink: 0 }}>\u2713</span>
+            <span style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#3D5C3C', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', flexShrink: 0 }}>{'\u2713'}</span>
             <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#3D5C3C' }}>You're set for Maintain.</span>
           </div>
           <div style={{ fontSize: '12px', color: '#5A6E58', lineHeight: 1.55 }}>Your card is saved but not charged. Maintain begins automatically when your protocol completes.</div>
