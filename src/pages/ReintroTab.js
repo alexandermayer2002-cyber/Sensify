@@ -204,7 +204,7 @@ function ProgramComplete({ session, profile, labResult, completedFoods }) {
   }, [])
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '28px', padding: '30px 26px', marginBottom: '14px', color: '#FAF8F4', background: 'radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.3), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', boxShadow: 'var(--shadow-3)' }}>
+    <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '28px', padding: '30px 26px', marginBottom: '14px', color: '#FAF8F4', background: '#1E3327', boxShadow: 'var(--shadow-3)' }}>
       <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'rgba(250,248,244,0.55)', marginBottom: '10px' }}>Program complete</div>
       <div style={{ fontFamily: 'var(--font-display)', fontSize: '30px', fontWeight: 300, marginBottom: '16px', letterSpacing: '-0.3px' }}>
         Reintroduction complete.
@@ -302,13 +302,16 @@ export function OutcomeQuestion({ session, profile }) {
 
 const css = `
   .rt-wrap { min-height: 100vh; background: transparent; color: var(--ink); }
-  .rt-content { max-width: 680px; margin: 0 auto; padding: 24px 20px 60px; }
+  .rt-content { max-width: 1180px; margin: 0 auto; padding: 24px 20px 72px; }
+  .rt-pre { display: grid; grid-template-columns: 1fr 1.4fr; gap: 28px; align-items: center; }
+  .rt-pre-strip .ob-strip { flex-wrap: wrap; }
+  @media (max-width: 640px) { .rt-pre { grid-template-columns: 1fr; gap: 18px; } }
   .rt-header { margin-bottom: 24px; }
-  .rt-title { font-family: var(--font-display); font-size: 30px; font-weight: 300; margin-bottom: 5px; letter-spacing: -0.3px; }
+  .rt-title { font-family: var(--font-display); font-size: 38px; font-weight: 300; margin-bottom: 8px; letter-spacing: -0.02em; line-height: 1.05; color: #151E18; }
   .rt-title em { font-style: italic; color: #3D5C3C; }
-  .rt-sub { font-size: 13px; color: var(--gray); line-height: 1.55; }
+  .rt-sub { font-size: 15px; color: #434B44; line-height: 1.55; max-width: 620px; }
 
-  .rt-active-card { position: relative; overflow: hidden; color: #FAF8F4; border-radius: 28px; padding: 26px 24px; margin-bottom: 14px; background: radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.32), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%); box-shadow: var(--shadow-3); }
+  .rt-active-card { position: relative; overflow: hidden; color: #FAF8F4; border-radius: 28px; padding: 26px 24px; margin-bottom: 14px; background: #1E3327; box-shadow: var(--shadow-3); }
   .rt-active-eyebrow { font-family: var(--font-body); font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none; color: rgba(250,248,244,0.55); margin-bottom: 8px; }
   .rt-active-food { font-family: var(--font-display); font-size: 38px; font-weight: 300; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 6px; }
   .rt-active-food em { font-style: italic; color: #8BAE8A; }
@@ -346,7 +349,7 @@ const css = `
   .rt-start-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; transform: none; }
 
   .rt-completed-card { background: var(--paper); border: none; border-radius: var(--r-md); box-shadow: var(--shadow-1); padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-  .rt-escalation { position: relative; overflow: hidden; color: #FAF8F4; border-radius: 28px; padding: 28px 26px; margin-top: 20px; background: radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.26), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%); box-shadow: var(--shadow-3); }
+  .rt-escalation { position: relative; overflow: hidden; color: #FAF8F4; border-radius: 28px; padding: 28px 26px; margin-top: 20px; background: #1E3327; box-shadow: var(--shadow-3); }
   .rt-esc-eyebrow { font-family: var(--font-body); font-size: 10px; font-weight: 500; text-transform: none; letter-spacing: 0; color: rgba(139,174,138,0.85); margin-bottom: 12px; }
   .rt-esc-title { font-family: var(--font-display); font-size: 27px; font-weight: 300; letter-spacing: -0.3px; color: #FAF8F4; margin-bottom: 14px; }
   .rt-esc-body { font-size: 14px; line-height: 1.65; margin-bottom: 14px; color: rgba(250,248,244,0.75); }
@@ -904,14 +907,20 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             <div className="rt-sub">
               {!profile?.protocol_start_date
                 ? 'Once your protocol starts, every suspect gets its own fourteen-day trial here. Nothing is scheduled yet.'
-                : <>{daysLeft === 0 ? 'Your last clean night is tonight.' : <><DayCounter n={daysLeft} label={daysLeft === 1 ? 'clean night to go' : 'clean nights to go'} /> </>} Your suspects will be tried one at a time, in the order below, and your body rules on each.</>}
+                : 'Your suspects will be tried one at a time, in the order below, and your body rules on each.'}
             </div>
           </div>
 
-          <div className="ob-paper" style={{ padding: '20px 22px', marginBottom: 14 }}>
+          <div className="ob-paper rt-pre" style={{ padding: '24px 26px', marginBottom: 14 }}>
+            <div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 64, fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1, color: '#151E18' }}>{daysLeft ?? ''}</div>
+              <div style={{ fontSize: 15, color: '#434B44', marginTop: 8 }}>{daysLeft == null ? 'Your protocol has not started.' : daysLeft === 0 ? 'Testing opens tomorrow.' : `clean night${daysLeft === 1 ? '' : 's'} to go`}</div>
+            </div>
+            <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 400, letterSpacing: '-0.015em', marginBottom: 6 }}>How a trial works</div>
-            <Strip days={explainer} size="md" label="A fourteen-day trial" />
+            <div className="rt-pre-strip"><Strip days={explainer} size="md" label="A fourteen-day trial" /></div>
             <p style={{ fontSize: 14.5, color: 'var(--ob-ink-2)', lineHeight: 1.55, margin: '12px 0 0' }}>Three days eating the food, then eleven clean days watching for anything delayed. One food at a time, so the answer can only belong to that food. The verdict is read from your own record on day fourteen.</p>
+            </div>
           </div>
 
           {order.length > 0 && (
@@ -1188,7 +1197,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             {/* DAY-57 CEREMONY: first sight of the unlocked picker, before any
                 cycle has run. Disappears the moment the first verdict lands. */}
             {lowUnlocked && completedCycles.length === 0 && (
-              <div className="sn-rise" style={{ position: 'relative', overflow: 'hidden', background: 'radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.3), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%)', borderRadius: '28px', padding: '24px 22px 26px', marginBottom: '16px', boxShadow: 'var(--shadow-3)' }}>
+              <div className="sn-rise" style={{ position: 'relative', overflow: 'hidden', background: '#1E3327', borderRadius: '28px', padding: '24px 22px 26px', marginBottom: '16px', boxShadow: 'var(--shadow-3)' }}>
                 <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500, letterSpacing: '0', color: '#8BAE8A', textTransform: 'none', marginBottom: '10px' }}>Reintroduction</div>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 400, letterSpacing: '-0.3px', color: '#FAF8F4', lineHeight: 1.25, marginBottom: '8px' }}>56 clean days on the record. Testing begins.</div>
                 <div style={{ fontSize: '13px', color: 'rgba(250,248,244,0.7)', lineHeight: 1.6 }}>Your foods are ordered by how often you eat them. Each one gets a 14 day trial and earns its verdict.</div>

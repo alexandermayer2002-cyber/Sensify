@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { protocolDay } from '../utils/protocolDay'
 import { getProtocolFoods, getTestingOrder } from '../utils/protocolEngine'
-import { VerdictCard, SuspectCard } from '../components/objects'
+import { VerdictCard, SuspectCard, cycleStripDays } from '../components/objects'
 import { evidenceLine } from '../utils/evidence'
 // The Food Map download is a real generated PDF (vector, full color, no print
 // dialog). jsPDF and the embedded fonts load only when the button is tapped.
@@ -209,6 +209,7 @@ export default function FoodMap({ session, profile, labResult }) {
     return (
       <div style={wrap} onClick={onClick}>
         <VerdictCard food={food.name} meta={trials > 1 ? `${ordinal(trials)} trial.` : undefined} state="ruled" verdict={cycle.verdict} evidence={ev}
+          days={cycleStripDays(cycle, logs.filter(l => l.reintro_id === cycle.id), today)}
           conflicted={cycle.answers?.conflicted === true} stoppedEarly={!!cycle.stopped_early} />
         {open && <Record cycle={cycle} />}
       </div>
@@ -240,58 +241,33 @@ export default function FoodMap({ session, profile, labResult }) {
 
   // THE COVER. elimination era: the finished example wall + the countdown that unlocks theirs.
   if (labResult && preReintro && loaded) {
+    // Refresh 2026-11-19 (look audit #2b): no coloured example wall, no
+    // confetti, no verdict colours before a verdict. One calm page: the day
+    // counter, what a verdict is, and the person's own suspects in order.
     const daysLeft = Math.max(1, 57 - currentDay)
-    const pct = Math.max(2, Math.min(100, (currentDay / 56) * 100))
-    const exCard = (nm, wd, sub, color, bg, bd) => (
-      <div key={nm} style={{ borderRadius: 16, padding: '12px 12px 11px', minHeight: 64, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: bg }}>
-        <div>
-          <div style={{ fontFamily: 'var(--font-body)', fontSize: 7, letterSpacing: '0', color: '#7A7A72' }}>{nm}</div>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 19, lineHeight: 1, marginTop: 4, color, fontVariationSettings: "'SOFT' 60, 'WONK' 1" }}>{wd}</div>
-        </div>
-        <div style={{ fontSize: 8.5, color: '#7A7A72', lineHeight: 1.4, marginTop: 7 }}>{sub}</div>
-      </div>
-    )
     return (
       <div style={s.page}>
-        <div className="sn-rise" style={{ ...s.doc, padding: '24px 24px 20px' }}>
-          <div style={s.kicker}>The verdicts</div>
-          <div style={{ ...s.title, fontSize: 25 }}>This is what you're working toward.</div>
-          <div style={{ fontSize: 12, color: '#5A5A52', lineHeight: 1.6, marginTop: 8 }}>A finished wall, shown as an example: every food ruled by a real 14 day trial on a real body. Yours gets earned the same way, one trial at a time.</div>
-
-          <div style={{ marginTop: 18 }}>
-            <style>{`@keyframes fmExGlow { 0%,100% { box-shadow: 0 0 0 3px rgba(139,174,138,0.18), 0 0 18px rgba(139,174,138,0.35) } 50% { box-shadow: 0 0 0 3px rgba(139,174,138,0.08), 0 0 7px rgba(139,174,138,0.15) } }`}</style>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-              <div style={{ background: '#EDF3ED', border: '1.5px solid #8BAE8A', borderRadius: 999, padding: '8px 18px', fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, letterSpacing: '0', color: '#3D5C3C', animation: 'fmExGlow 2.8s ease-in-out infinite' }}>Example, not yours yet</div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, opacity: 0.82 }}>
-              {exCard('WHEAT', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.13)')}
-              {exCard('OATS', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.13)')}
-              {exCard('COFFEE', 'Limit.', 'Mild reaction at full servings', '#C07A28', '#FBF3E4', 'rgba(192,122,40,0.15)')}
-              {exCard('GLUTEN', 'Avoid.', 'Reacted on 2 of 3 test days', '#C0392B', '#F9EAE8', 'rgba(192,57,43,0.13)')}
-              {exCard('DAIRY', 'Avoid.', 'Reacted, then echoed after', '#C0392B', '#F9EAE8', 'rgba(192,57,43,0.13)')}
-              {exCard('EGGS', 'Safe.', 'No reaction across 14 days', '#3D5C3C', '#EDF3ED', 'rgba(61,92,60,0.13)')}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 11 }}>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: 6, letterSpacing: '0', color: '#9A927E' }}>Example. Yours is earned from your own trials.</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', fontSize: 6.5, color: '#FAF8F4' }}>6/6</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: 6, letterSpacing: '0', color: '#3D5C3C', lineHeight: 1.6 }}>SENSIFY<br />VERIFIED</div>
-              </div>
-            </div>
+        <div className="ob-paper sn-rise" style={{ padding: '34px 36px' }}>
+          <div style={s.title}>Your verdicts live here.</div>
+          <div style={{ fontSize: 15, color: '#434B44', lineHeight: 1.55, marginTop: 10, maxWidth: 620 }}>
+            Each one is earned from a fourteen-day trial of a single food on your own record. None exists yet, because no trial has run. The first opens on day 57.
           </div>
-
-          <div style={{ marginTop: 16, background: '#22301F', borderRadius: 16, boxShadow: 'var(--shadow-3)', padding: '13px 15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-            <div style={{ fontSize: 11.5, color: 'rgba(250,248,244,0.85)', lineHeight: 1.5 }}><b style={{ color: '#FAF8F4', fontWeight: 600 }}>Yours unlocks in</b><br />Day {currentDay} of 56 · every clean day counts</div>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22, color: '#8BAE8A', whiteSpace: 'nowrap', lineHeight: 1 }}>{daysLeft} day{daysLeft === 1 ? '' : 's'}</div>
-          </div>
-          <div className="sn-track" style={{ margin: '16px 0 5px' }}>
-            <div className="sn-fill" style={{ width: `${pct}%` }} />
-            <div className="sn-dot" style={{ left: `${pct}%` }} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-body)', fontSize: 6, letterSpacing: '0', color: '#9A927E', marginTop: 7 }}>
-            <span>Day 1</span><span>Trials begin on day 57</span>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginTop: 26 }}>
+            <span style={{ fontFamily: 'Fraunces, serif', fontSize: 64, fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1, color: '#151E18' }}>{daysLeft}</span>
+            <span style={{ fontSize: 16, color: '#434B44' }}>clean night{daysLeft === 1 ? '' : 's'} to go. Day {currentDay} of 56.</span>
           </div>
         </div>
+        {queue.length > 0 && (
+          <>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 26, fontWeight: 300, letterSpacing: '-0.02em', margin: '36px 0 6px', color: '#151E18' }}>What will be ruled, in order.</div>
+            <div style={{ fontSize: 14.5, color: '#434B44', marginBottom: 18 }}>Ordered by how often you eat each food, with the lab level breaking ties.</div>
+            <div style={s.grid}>
+              {queue.map((f, i) => (
+                <SuspectCard key={f.name} food={f.name} meta={f.level && f.level !== 'Common' ? `Lab flagged, ${String(f.level).toLowerCase()}.` : 'Common trigger.'} state="suspect" line={i === 0 ? 'First on trial, from day 57.' : `${['Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth'][i - 1] || `${i + 1}th`} in line.`} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     )
   }
@@ -324,11 +300,41 @@ export default function FoodMap({ session, profile, labResult }) {
             </div>
             <div style={{ fontSize: 14, color: '#737B73', marginTop: 6, lineHeight: 1.5 }}>Each verdict is ruled by a fourteen-day single-food trial on your own daily record. Nothing is assumed.</div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={s.bignum}>{ruledCount}<span style={s.bigden}> of {total || 0}</span></div>
-            <div style={{ fontSize: 12.5, color: '#737B73', marginTop: 4 }}>ruled</div>
+          <div style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+            <span style={s.bignum}>{ruledCount}</span><span style={s.bigden}> of {total || 0} ruled</span>
           </div>
         </div>
+
+        {labResult && ruledCount > 0 && (() => {
+          // Refresh 2026-11-19 (look audit #2): the Food Map as one object you
+          // would keep. Name, date, the rulings grouped, one save action. The
+          // same groups the PDF prints.
+          const groups = ['Safe', 'Limit', 'Avoid'].map(v => ({ v, foods: ruled.filter(f => byFood[f.name.toLowerCase()].verdict === v).map(f => f.name) })).filter(g => g.foods.length)
+          const printedOn = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+          const VC = { Safe: 'var(--safe, #1F9C87)', Limit: 'var(--limit, #D98A1C)', Avoid: 'var(--avoid, #CF4B4B)' }
+          return (
+            <div className="ob-paper fm-keep" style={{ padding: '34px 36px 28px', marginBottom: 28, position: 'relative' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: 34, fontWeight: 300, letterSpacing: '-0.02em', color: '#151E18', lineHeight: 1.05 }}>{name ? `${name}’s` : 'Your'} Food Map.</div>
+                <div style={{ fontSize: 13.5, color: '#737B73' }}>{complete ? 'Complete' : `${ruledCount} of ${total} ruled`}, {printedOn}</div>
+              </div>
+              <div style={{ fontSize: 14.5, color: '#434B44', margin: '8px 0 24px', maxWidth: 640, lineHeight: 1.5 }}>Ruled by your own record. Each verdict is a fourteen-day single-food trial, nothing assumed.</div>
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${groups.length}, 1fr)`, gap: 24 }}>
+                {groups.map(g => (
+                  <div key={g.v}>
+                    <div style={{ fontFamily: 'Fraunces, serif', fontSize: 40, fontWeight: 400, letterSpacing: '-0.03em', lineHeight: 1, color: VC[g.v], marginBottom: 12 }}>{g.v}.</div>
+                    {g.foods.map(fd => <div key={fd} style={{ fontSize: 17, color: '#151E18', padding: '7px 0', borderTop: '1px solid rgba(21,30,24,.08)' }}>{fd}</div>)}
+                  </div>
+                ))}
+              </div>
+              {(testing.length > 0 || queue.length > 0) && (
+                <div style={{ fontSize: 13.5, color: '#737B73', marginTop: 22, lineHeight: 1.5 }}>
+                  {testing.length > 0 ? `On trial now: ${testing.map(f => f.name).join(', ')}. ` : ''}{queue.length > 0 ? `Not yet tried: ${queue.map(f => f.name).join(', ')}.` : ''}
+                </div>
+              )}
+            </div>
+          )
+        })()}
 
         {/* First-paint honesty for the ghosted board (QA 2026-11-10 first-timer
             #9, approved by Alex): near-zero-contrast rows read as "the page is
@@ -348,8 +354,8 @@ export default function FoodMap({ session, profile, labResult }) {
           <div style={s.printRow}>
             <button
               type="button"
-              className="sn-btn sn-btn-quiet"
-              style={{ ...s.printBtn, opacity: pdfBusy ? 0.6 : 1 }}
+              className="ob-btn tonight"
+              style={{ opacity: pdfBusy ? 0.6 : 1 }}
               disabled={pdfBusy}
               onClick={async () => {
                 if (pdfBusy) return
@@ -376,6 +382,9 @@ export default function FoodMap({ session, profile, labResult }) {
           </div>
         )}
 
+        {labResult && ruledCount > 0 && (
+          <div style={{ fontFamily: "'Fraunces', serif", fontSize: 24, letterSpacing: '-.01em', color: '#151E18', margin: '32px 0 14px' }}>Each ruling, with its record.</div>
+        )}
         <div style={s.grid}>
           {!labResult && (
             [{ name: 'Almond' }, { name: 'Coffee' }, { name: 'Dairy' }].map(f => (
@@ -415,10 +424,10 @@ const s = {
   dochead: { padding: '8px 0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
   kicker: { fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, letterSpacing: '0', color: 'var(--forest-500)', marginBottom: 8, textTransform: 'none' },
   title: { fontFamily: 'Fraunces, serif', fontSize: 30, fontWeight: 300, color: '#151E18', lineHeight: 1.05, letterSpacing: '-0.02em' },
-  bignum: { fontFamily: 'Fraunces, serif', fontSize: 27, color: '#3D5C3C', lineHeight: 1 },
+  bignum: { fontFamily: 'Fraunces, serif', fontSize: 30, fontWeight: 300, color: '#151E18', lineHeight: 1, letterSpacing: '-0.02em' },
   bigden: { color: 'rgba(28,28,28,0.25)', fontSize: 18 },
   countLabel: { fontFamily: 'var(--font-body)', fontSize: 7.5, letterSpacing: '0', color: '#9A927E', marginTop: 3 },
-  printRow: { padding: '0 0 16px', display: 'flex', justifyContent: 'flex-start' },
+  printRow: { padding: '0 0 28px', display: 'flex', justifyContent: 'flex-start', marginTop: -10 },
   printBtn: { fontSize: 12, letterSpacing: '0', borderRadius: 999, padding: '9px 16px' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 16, padding: '6px 0 10px' },
   card: { borderRadius: 16, padding: '15px 15px 13px', minHeight: 116, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', gap: 10 },

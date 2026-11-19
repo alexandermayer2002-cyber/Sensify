@@ -11,18 +11,19 @@ import './objects.css'
 /*   'on' | 'exposure' | 'exposure-planned' | 'slipped' | 'none'        */
 /*   | 'away' | 'today' | 'today-exposure' | 'future'                   */
 /* size: 'sm' | 'md' | 'lg'                                             */
-const STRIP_STATES = new Set(['on', 'exposure', 'exposure-planned', 'slipped', 'none', 'away', 'today', 'today-on', 'today-slipped', 'today-exposure', 'future'])
+const STRIP_STATES = new Set(['on', 'exposure', 'exposure-planned', 'slipped', 'none', 'away', 'today', 'today-on', 'today-slipped', 'today-exposure', 'future', 'reacted', 'exposure-reacted'])
 const STRIP_WORDS = {
   on: 'on plan', exposure: 'exposure day', 'exposure-planned': 'exposure day, coming',
   slipped: 'slipped', none: 'no check-in', away: 'away on plan', today: 'today',
   'today-on': 'today, logged', 'today-slipped': 'today, logged a slip', 'today-exposure': 'today, exposure day', future: 'coming',
+  reacted: 'washout, symptoms logged', 'exposure-reacted': 'exposure day, symptoms logged',
 }
 export function Strip({ days = [], size = 'md', label, startDay = 1 }) {
   return (
     <div className={`ob-strip ${size === 'sm' ? 'ob-sm' : size === 'lg' ? 'ob-lg' : ''}`} role="img" aria-label={label || `${days.length} days`}>
       {days.map((s, i) => {
         const st = STRIP_STATES.has(s) ? s : 'future'
-        const cls = st === 'today-exposure' ? 'today exposure' : st === 'today-on' ? 'today on' : st === 'today-slipped' ? 'today slipped' : st
+        const cls = st === 'today-exposure' ? 'today exposure' : st === 'today-on' ? 'today on' : st === 'today-slipped' ? 'today slipped' : st === 'exposure-reacted' ? 'exposure reacted' : st === 'reacted' ? 'on reacted' : st
         return <i key={i} className={cls} title={`Day ${startDay + i}: ${STRIP_WORDS[st]}`} />
       })}
     </div>
@@ -45,6 +46,34 @@ export function reintroStripDays({ logs = [], cycleStart, today, exposureDays = 
     if (log.away) { out.push('away'); continue }
     if (isExposure) { out.push('exposure'); continue }
     out.push(log.on_plan === false ? 'slipped' : 'on')
+  }
+  return out
+}
+
+/* Helper: a cycle's 14 squares from its logs, for the Verdict card.        */
+/* cycle: {started_at, washout_started_at, stopped_early}; logs: [{log_date, ate_food, had_symptoms, symptoms}] */
+export function cycleStripDays(cycle, logs = [], today = null) {
+  const reacted = l => !!(l.had_symptoms || (l.symptoms || []).length)
+  const served = logs.filter(l => l.ate_food === true).sort((a, b) => String(a.log_date).localeCompare(String(b.log_date))).slice(0, 3)
+  const servedDates = new Set(served.map(l => String(l.log_date).slice(0, 10)))
+  const out = []
+  for (let i = 0; i < 3; i++) {
+    const l = served[i]
+    out.push(l ? (reacted(l) ? 'exposure-reacted' : 'exposure') : 'exposure-planned')
+  }
+  const ws = cycle?.washout_started_at ? String(cycle.washout_started_at).slice(0, 10) : null
+  if (ws) {
+    const byDate = new Map(logs.filter(l => !servedDates.has(String(l.log_date).slice(0, 10))).map(l => [String(l.log_date).slice(0, 10), l]))
+    const base = new Date(ws + 'T12:00:00')
+    for (let i = 1; i <= 11; i++) {
+      const d = new Date(base); d.setDate(base.getDate() + i)
+      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      if (today && iso > today) { out.push('future'); continue }
+      const l = byDate.get(iso)
+      out.push(l ? (reacted(l) ? 'reacted' : 'on') : 'none')
+    }
+  } else {
+    for (let i = 0; i < 11; i++) out.push(cycle?.stopped_early ? 'none' : 'future')
   }
   return out
 }
@@ -111,7 +140,7 @@ export function SymptomCurve({ points = [], baseline = null, max = 5, width = 26
 /* verdict (ruled only): 'Safe' | 'Limit' | 'Avoid'                     */
 /* evidence: one sentence. conflicted / stoppedEarly: booleans (tags).  */
 const VERDICT_CLASS = { Safe: 'safe', Limit: 'limit', Avoid: 'avoid' }
-export function VerdictCard({ food, meta, state = 'untested', verdict, evidence, conflicted = false, stoppedEarly = false, className = '', style }) {
+export function VerdictCard({ food, meta, state = 'untested', verdict, evidence, conflicted = false, stoppedEarly = false, days = null, className = '', style }) {
   let word, cls = 'quiet', ev = evidence
   if (state === 'untested') { word = 'Not yet.'; ev = ev || 'Still off your plate. No data.' }
   else if (state === 'next') { word = 'Next.' }
@@ -124,6 +153,7 @@ export function VerdictCard({ food, meta, state = 'untested', verdict, evidence,
       <div>
         <div className={`ob-v ${cls}`}>{word}</div>
         {ev ? <div className="ob-ev">{/[.!?]$/.test(ev.trim()) ? ev : ev.trim() + '.'}</div> : null}
+        {days && days.length ? <div className="ob-vc-strip"><Strip days={days} size="sm" label="Fourteen-day record" /></div> : null}
         {state === 'ruled' && conflicted ? <span className="ob-tag">Conflicting evidence. Retest offered</span> : null}
         {state === 'ruled' && stoppedEarly ? <span className="ob-tag">Stopped early</span> : null}
       </div>

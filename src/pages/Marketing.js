@@ -54,7 +54,7 @@ const css = `
   .mk-hero.dark .mk-hero-orb1 { position: absolute; top: -70px; left: -40px; width: 260px; height: 260px; border-radius: 50%; background: #8BAE8A; opacity: 0.12; pointer-events: none; animation: mkHeroGlow 6s ease-in-out infinite; }
   .mk-hero.dark .mk-hero-orb2 { position: absolute; bottom: -80px; right: -40px; width: 220px; height: 220px; border-radius: 50%; background: #E8941F; opacity: 0.06; pointer-events: none; }
   @keyframes mkHeroGlow { 0%, 100% { opacity: 0.07; } 50% { opacity: 0.14; } }
-  .mk-hero-eyebrow { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.17em; color: rgba(139,174,138,0.95); text-transform: uppercase; margin-bottom: 22px; }
+  .mk-hero-eyebrow { font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: 0; color: rgba(139,174,138,0.95); text-transform: none; margin-bottom: 22px; }
   .mk-price-line { font-size: 13px; color: rgba(250,248,244,0.78); margin-top: 14px; }
   .mk-hero-inner { max-width: 960px; margin: 0 auto; }
   .mk-hero-centered { max-width: 760px; margin: 0 auto; text-align: center; }
@@ -63,7 +63,7 @@ const css = `
   .mk-actions.centered { justify-content: center; }
   .fmshow { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
   @media (max-width: 800px) { .fmshow { grid-template-columns: 1fr; gap: 32px; } }
-  .mk-tag { display: inline-flex; align-items: center; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); margin-bottom: 14px; }
+  .mk-tag { display: inline-flex; align-items: center; font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--forest-500); margin-bottom: 14px; }
   .mk-h1 { font-family: var(--font-display); font-size: 60px; font-weight: 300; line-height: 1.04; margin-bottom: 18px; letter-spacing: -1.5px; max-width: 680px; color: var(--ink); }
   .mk-hero.dark .mk-h1 { color: #FAF8F4; }
   .mk-h1 em { font-style: italic; color: #3D5C3C; }
@@ -82,11 +82,11 @@ const css = `
   .fmcard-orb2 { position: absolute; bottom: -90px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: #E8941F; opacity: 0.05; pointer-events: none; }
   @keyframes mkGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
   .fmcard::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(139,174,138,0.14) 0%, transparent 65%); pointer-events: none; }
-  .fmcard-eyebrow { font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(139,174,138,0.8); margin-bottom: 7px; }
+  .fmcard-eyebrow { font-family: var(--font-body); font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; color: rgba(139,174,138,0.8); margin-bottom: 7px; }
   .fmcard-title { font-family: var(--font-display); font-size: 22px; font-weight: 300; color: white; margin-bottom: 18px; }
   .fmcard-title em { font-style: italic; color: #8BAE8A; }
   .fmcard-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
-  .fmcard-verify { font-family: 'DM Mono', monospace; font-size: 8.5px; color: rgba(255,255,255,0.3); letter-spacing: 0.4px; }
+  .fmcard-verify { font-family: var(--font-body); font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 0; }
 
   .mk-section { padding: 72px 64px; max-width: 100%; }
   .mk-section-inner { max-width: 960px; margin: 0 auto; }
@@ -102,27 +102,27 @@ const css = `
   .mk-section.alt, .mk-section.sage, .mk-section.cream { background: inherit; }
   .mk-section:nth-child(odd of .mk-section).alt, .mk-section:nth-child(odd of .mk-section).sage, .mk-section:nth-child(odd of .mk-section).cream { background: #F9F6EF; }
   @media (max-width: 640px) { .mk-section { margin: 12px 12px; border-radius: 24px; } }
-  .ey { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); margin-bottom: 14px; }
+  .ey { font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--forest-500); margin-bottom: 14px; }
   .sh { font-family: var(--font-display); font-size: 30px; font-weight: 400; line-height: 1.22; margin-bottom: 14px; letter-spacing: -0.4px; color: var(--ink); }
   .sh em { font-style: italic; color: var(--forest-500); }
   .ss { font-size: 14px; color: #73736A; line-height: 1.75; max-width: 560px; margin-bottom: 40px; }
 
   .ph-head { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
-  .ph-badge { font-family: var(--font-mono); font-size: 10px; font-weight: 500; color: white; background: var(--forest-500); padding: 7px 14px; border-radius: var(--r-pill); flex-shrink: 0; letter-spacing: 0.14em; box-shadow: var(--shadow-pill); }
+  .ph-badge { font-family: var(--font-body); font-size: 12px; font-weight: 500; color: white; background: var(--forest-500); padding: 7px 14px; border-radius: var(--r-pill); flex-shrink: 0; letter-spacing: 0; box-shadow: var(--shadow-pill); }
   .ph-name { font-family: var(--font-display); font-size: 28px; font-weight: 300; line-height: 1.05; }
   .ph-name em { font-style: italic; color: var(--forest-500); }
-  .ph-time { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-faint); margin-top: 6px; }
+  .ph-time { font-family: var(--font-body); font-size: 13px; letter-spacing: 0; text-transform: none; color: var(--gray-faint); margin-top: 6px; }
   .spine { position: relative; padding-left: 44px; }
   .spine::before { content: ''; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(#3D5C3C, rgba(61,92,60,0.15)); }
   .spine-step { position: relative; margin-bottom: 26px; }
   .spine-step:last-child { margin-bottom: 0; }
   .spine-dot { position: absolute; left: -36px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: white; border: 3px solid #3D5C3C; }
-  .spine-tag { display: inline-block; font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.15em; color: var(--forest-500); background: var(--forest-100); padding: 4px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+  .spine-tag { display: inline-block; font-family: var(--font-body); font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--forest-500); background: var(--forest-100); padding: 4px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
   .spine-tag.amber { color: #8A887C; background: #EFEDE4; }
   .spine-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
   .spine-desc { font-size: 13px; color: #7A7A72; line-height: 1.65; max-width: 520px; }
   .cyclebox { background: radial-gradient(110% 100% at 90% 0%, rgba(139,174,138,0.2), transparent 55%), linear-gradient(160deg, var(--forest-700), var(--forest-900) 75%); border-radius: var(--r-md); padding: 20px; margin-top: 16px; max-width: 520px; box-shadow: var(--shadow-3); }
-  .cb-label { font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(139,174,138,0.8); margin-bottom: 14px; }
+  .cb-label { font-family: var(--font-body); font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; color: rgba(139,174,138,0.8); margin-bottom: 14px; }
   .cb-dots { display: flex; gap: 3px; margin-bottom: 10px; }
   .cb-dot { flex: 1; height: 9px; border-radius: 3px; }
   .cb-labels { display: flex; font-size: 10px; color: rgba(255,255,255,0.45); }
@@ -135,14 +135,14 @@ const css = `
   .sci-icon { width: 36px; height: 36px; border-radius: 11px; background: #EDF3ED; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
   .sci-t { font-size: 14px; font-weight: 500; margin-bottom: 7px; }
   .sci-d { font-size: 13px; color: #7A7A72; line-height: 1.7; }
-  .sci-badge { display: inline-block; font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; padding: 4px 10px; border-radius: var(--r-pill); background: var(--forest-100); color: var(--forest-500); margin-top: 12px; }
+  .sci-badge { display: inline-block; font-family: var(--font-body); font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; padding: 4px 10px; border-radius: var(--r-pill); background: var(--forest-100); color: var(--forest-500); margin-top: 12px; }
   .sci-compare { background: radial-gradient(120% 90% at 85% 0%, rgba(139,174,138,0.22), transparent 55%), linear-gradient(160deg, var(--forest-700) 0%, var(--forest-900) 70%); border-radius: var(--r-lg); padding: 36px; margin: 8px 0 48px; box-shadow: var(--shadow-3); }
-  .sci-compare-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(139,174,138,0.8); margin-bottom: 26px; text-align: center; }
+  .sci-compare-label { font-family: var(--font-body); font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; color: rgba(139,174,138,0.8); margin-bottom: 26px; text-align: center; }
   .sci-compare-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 22px; align-items: stretch; }
   .sci-cside { padding: 26px; border-radius: 16px; }
   .sci-cside.test { background: rgba(255,255,255,0.06); }
   .sci-cside.verdict { background: rgba(139,174,138,0.14); box-shadow: 0 14px 30px -14px rgba(0,0,0,0.4); }
-  .sci-cside-tag { font-family: var(--font-mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; margin-bottom: 12px; }
+  .sci-cside-tag { font-family: var(--font-body); font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; margin-bottom: 12px; }
   .sci-cside.test .sci-cside-tag { color: rgba(255,255,255,0.4); }
   .sci-cside.verdict .sci-cside-tag { color: #8BAE8A; }
   .sci-cside-title { font-family: var(--font-display); font-size: 24px; font-weight: 300; color: white; margin-bottom: 12px; line-height: 1.2; }
@@ -151,11 +151,11 @@ const css = `
   .sci-arrow { display: flex; align-items: center; justify-content: center; color: rgba(139,174,138,0.6); font-size: 24px; }
   .sci-disclaimers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
   .sci-answer { margin-top: 48px; background: radial-gradient(120% 90% at 15% 0%, rgba(139,174,138,0.2), transparent 55%), linear-gradient(200deg, var(--forest-700) 0%, var(--forest-900) 70%); border-radius: var(--r-lg); padding: 36px; box-shadow: var(--shadow-3); }
-  .sci-answer-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: rgba(139,174,138,0.8); margin-bottom: 12px; }
+  .sci-answer-tag { font-family: var(--font-body); font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; color: rgba(139,174,138,0.8); margin-bottom: 12px; }
   .sci-answer-h { font-family: var(--font-display); font-size: 32px; font-weight: 300; color: white; margin-bottom: 14px; }
   .sci-answer-p { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.72); max-width: 620px; }
   .sci-paths { margin-top: 40px; }
-  .sci-paths-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin-bottom: 10px; }
+  .sci-paths-tag { font-family: var(--font-body); font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--forest-500); margin-bottom: 10px; }
   .sci-paths-h { font-family: var(--font-display); font-size: 26px; font-weight: 400; color: var(--ink); margin-bottom: 22px; max-width: 560px; }
   .sci-paths-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .sci-path { background: var(--card-bg, var(--paper)); border-radius: var(--r-md); padding: 22px; box-shadow: var(--shadow-1); }
@@ -175,7 +175,7 @@ const css = `
 
   .pricing-wrap { max-width: 460px; }
   .pricing-card { background: var(--card-bg, var(--paper)); border: none; border-radius: var(--r-lg); padding: 36px 32px; box-shadow: var(--shadow-2); }
-  .price-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.17em; text-transform: uppercase; color: var(--forest-500); margin-bottom: 12px; }
+  .price-tag { font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--forest-500); margin-bottom: 12px; }
   .price-num { font-family: var(--font-display); font-size: 72px; font-weight: 300; line-height: 1; margin-bottom: 8px; letter-spacing: -0.02em; font-variant-numeric: lining-nums; }
   .price-sub { font-size: 13px; color: #73736A; margin-bottom: 24px; }
   .pricing-card .btn-p { padding: 17px 26px; font-size: 15px; border-radius: var(--r-pill); box-shadow: 0 14px 32px -6px rgba(61,92,60,0.55); }
@@ -188,7 +188,7 @@ const css = `
   .faq-wrap { max-width: 660px; margin: 0 auto; }
   .faq-group { margin-bottom: 32px; }
   .faq-group:last-child { margin-bottom: 0; }
-  .faq-group-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.17em; color: var(--forest-500); margin-bottom: 14px; }
+  .faq-group-label { font-family: var(--font-body); font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--forest-500); margin-bottom: 14px; }
   .faq-list { display: flex; flex-direction: column; gap: 10px; }
   .faq-item { background: var(--card-bg, var(--paper)); border: none; border-radius: var(--r-md); cursor: pointer; padding: 0 20px; box-shadow: var(--shadow-1); transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
   @media (hover: hover) { .faq-item:hover { transform: translateY(-1px); box-shadow: var(--shadow-2); } }
@@ -250,6 +250,7 @@ const css = `
     .sci-compare { padding: 24px; }
     .fmshow { grid-template-columns: 1fr; gap: 28px; }
     .prob-grid { grid-template-columns: 1fr; }
+    .prob-two { grid-template-columns: 1fr !important; gap: 8px !important; }
     .cta-section { padding: 56px 22px !important; }
     .cta-section h2 { font-size: 32px; }
     .mk-footer { padding: 28px 22px; flex-direction: column; gap: 14px; text-align: center; }
@@ -596,7 +597,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <button className="mk-signin" onClick={onSignIn}>Sign in</button>
         {/* Price shown before Stripe sees you (QA 2026-11-06 First-Timer #1):
             the nav CTA used to land on a $399 checkout with no warning. */}
-        <button className="mk-cta" onClick={onGetStarted}>Get started · $399</button>
+        <button className="mk-cta" onClick={onGetStarted}>Get started, $399</button>
       </div>
       {menuOpen && (
         <div className="mk-nav-panel">
@@ -646,7 +647,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <button className="btn-p" onClick={onGetStarted}>Start your program</button>
             <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
           </div>
-          <div className="mk-price-line sn-rise-4" style={{ position: 'relative' }}>$399 · lab test included · one payment</div>
+          <div className="mk-price-line sn-rise-4" style={{ position: 'relative' }}>$399, lab test included, one payment</div>
           <div className="sn-rise-4" style={{ position: 'relative', fontSize: '12.5px', color: 'rgba(250,248,244,0.72)', marginTop: '7px', lineHeight: 1.6, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>Lab test, elimination protocol, daily and weekly check-ins, personalized insights, guided reintroductions, Ask Sensify, and your final verdicts.</div>
         </div>
       </div>
@@ -654,24 +655,24 @@ export default function Marketing({ onGetStarted, onSignIn }) {
       {/* The Verdicts — its own showcase section */}
       <div className="mk-section cream" data-reveal>
         <div className="mk-section-inner">
-          <div className="ey">The problem</div>
-          <div className="sh">Most people suspect food.<br />Almost none ever confirm it.</div>
-          <div className="ss">Food sensitivity tests are more accessible than ever. But buying a test is easy. Knowing what to do with it isn't. Without a structured process, most people eliminate a few things, feel slightly better, give up, and never get real answers.</div>
-          {/* De-boxed (Alex, 2026-11-10): three editorial rows instead of card grid */}
-          <div style={{ marginTop: 26, maxWidth: 640 }}>
-            {[
-              ['01', 'Tests are easy to buy.', 'Following a proper elimination protocol afterward is the part almost nobody does.'],
-              ['02', "Guessing doesn't work.", "Randomly cutting foods with no structure gives you no signal. You don't know what's helping."],
-              ['03', 'No one holds the thread.', 'No daily check-ins, no one tracking your symptoms, no verdicts at the end. Just a list and good luck.'],
-            ].map(([n, t, d]) => (
-              <div key={n} style={{ display: 'flex', gap: 18, alignItems: 'baseline', padding: '15px 0', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#8BAE8A', letterSpacing: '0.1em', flexShrink: 0 }}>{n}</span>
-                <div style={{ fontSize: 14.5, lineHeight: 1.65 }}>
-                  <span style={{ fontWeight: 650, color: '#20241F' }}>{t}</span>{' '}
-                  <span style={{ color: '#73736A' }}>{d}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '48px', alignItems: 'start' }} className="prob-two">
+            <div>
+              <div className="ey">The problem</div>
+              <div className="sh">Most people suspect food.<br />Almost none ever confirm it.</div>
+              <div className="ss">Food sensitivity tests are more accessible than ever. But buying a test is easy. Knowing what to do with it isn't. Without a structured process, most people eliminate a few things, feel slightly better, give up, and never get real answers.</div>
+            </div>
+            <div style={{ paddingTop: 34 }}>
+              {[
+                ['Tests are easy to buy.', 'Following a proper elimination protocol afterward is the part almost nobody does.'],
+                ["Guessing doesn't work.", "Randomly cutting foods with no structure gives you no signal. You don't know what's helping."],
+                ['No one holds the thread.', 'No daily check-ins, no one tracking your symptoms, no verdicts at the end. Just a list and good luck.'],
+              ].map(([t, d]) => (
+                <div key={t} style={{ padding: '18px 0', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: '#20241F', lineHeight: 1.2 }}>{t}</div>
+                  <div style={{ fontSize: 14.5, color: '#73736A', lineHeight: 1.65, marginTop: 6 }}>{d}</div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -697,7 +698,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             ))}
           </div>
           <div style={{ marginTop: '22px' }}>
-            <button className="btn-g" onClick={() => setTab('how')}>See the full program &rarr;</button>
+            <button className="btn-g" onClick={() => setTab('how')}>See the full program</button>
           </div>
         </div>
       </div>
@@ -755,7 +756,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="fmcard">
               <div className="fmcard-orb" />
               <div className="fmcard-orb2" />
-              <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Example · A finished program</div>
+              <div className="fmcard-eyebrow" style={{ position: 'relative' }}>Example: a finished program</div>
               <div className="fmcard-title">A finished <span style={{ color: '#8BAE8A' }}>map.</span></div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 7, marginBottom: 16, position: 'relative' }}>
                 {[
@@ -773,7 +774,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 ))}
               </div>
               <div className="fmcard-foot">
-                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>EXAMPLE · WHAT 140 DAYS OF TESTING PRODUCES</div>
+                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>Example, what 140 days of testing produces</div>
               </div>
             </div>
           </div>
@@ -831,7 +832,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             })}
           </div>
           <div style={{ marginTop: '18px' }}>
-            <button className="btn-g" onClick={() => setTab('faq')}>Read all FAQs &rarr;</button>
+            <button className="btn-g" onClick={() => setTab('faq')}>Read all FAQs</button>
           </div>
         </div>
       </div>
@@ -1108,7 +1109,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             <div className="pricing-card">
               <div className="price-tag">The complete system</div>
               <div className="price-num">$399</div>
-              <div className="price-sub">One-time payment · Lab test included</div>
+              <div className="price-sub">One-time payment, lab test included</div>
               <button className="btn-p" style={{ width: '100%' }} onClick={onGetStarted}>Get started today</button>
               <div className="price-div"></div>
               {[
@@ -1180,9 +1181,9 @@ export default function Marketing({ onGetStarted, onSignIn }) {
         <div className="mk-section-inner">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '36px' }}>
             {[
-              ['01 · THE GUESSING', 'Cutting foods at random', 'Dropping dairy one month, gluten the next. Feeling slightly better, never knowing why, always drifting back. No structure, no signal, no answer.'],
-              ['02 · THE TEST', 'A list, then silence', 'The lab flagged a page of foods and handed over nothing else. No protocol, no guidance, no way to know which flags were real. A list is not an answer.'],
-              ['03 · THE SYSTEM', 'Running it properly', 'A real elimination. Foods tested back one at a time, logged daily, judged on evidence. It worked, and it was brutal to run alone. That became the product.'],
+              ['The guessing', 'Cutting foods at random', 'Dropping dairy one month, gluten the next. Feeling slightly better, never knowing why, always drifting back. No structure, no signal, no answer.'],
+              ['The test', 'A list, then silence', 'The lab flagged a page of foods and handed over nothing else. No protocol, no guidance, no way to know which flags were real. A list is not an answer.'],
+              ['The system', 'Running it properly', 'A real elimination. Foods tested back one at a time, logged daily, judged on evidence. It worked, and it was brutal to run alone. That became the product.'],
             ].map(([n, t, d]) => (
               <div key={n} style={{ borderTop: '2.5px solid #3D5C3C', paddingTop: '18px' }}>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 500, letterSpacing: '0.17em', color: '#8BAE8A', marginBottom: '10px' }}>{n}</div>

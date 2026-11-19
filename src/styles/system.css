@@ -133,20 +133,21 @@ input, textarea, select, button { font-family: var(--font-body); }
 
 /* ---- Buttons ---- */
 .sn-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  /* Refresh 2026-11-19 (look audit #12): one primary button everywhere, the
+     ink pill the shared check-in button uses. Sage and quiet become the one
+     secondary: paper pill. */
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   border: none; cursor: pointer;
-  border-radius: var(--r-md);
-  padding: 14px 20px;
-  font-size: 14px; font-weight: 700; font-family: var(--font-body);
-  background: var(--forest-500); color: #fff;
-  box-shadow: var(--shadow-pill);
+  border-radius: 999px;
+  padding: 16px 24px;
+  font-size: 15px; font-weight: 600; font-family: var(--font-body); letter-spacing: -0.01em;
+  background: #151E18; color: #FCFBF8;
+  box-shadow: 0 18px 40px -20px rgba(21,30,24,.55);
   transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease);
 }
 .sn-btn:active { transform: scale(0.985); }
-@media (hover: hover) { .sn-btn:hover { transform: translateY(-1px); } }
-.sn-btn-sage { background: var(--forest-300); color: var(--forest-900); }
-.sn-btn-quiet { background: var(--tint-warm); color: var(--ink-soft); box-shadow: none; font-weight: 600; }
-.sn-btn:disabled { background: #F0EEE6; color: rgba(32, 36, 31, 0.35); box-shadow: none; cursor: not-allowed; transform: none; }
+.sn-btn-sage, .sn-btn-quiet { background: #FCFBF8; color: #151E18; box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 14px 30px -20px rgba(22,31,25,.4); font-weight: 600; }
+.sn-btn:disabled { background: #EEEFE8; color: rgba(21, 30, 24, 0.4); box-shadow: none; cursor: not-allowed; transform: none; }
 
 /* ---- Chips (filters and selections; NEVER verdict colors) ---- */
 .sn-chip {

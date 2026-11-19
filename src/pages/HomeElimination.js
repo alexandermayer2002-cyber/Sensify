@@ -156,7 +156,8 @@ export default function HomeElimination({
         </div>
         {onOpenHistory ? <button type="button" className="he-link" onClick={onOpenHistory}>See the whole record</button> : null}
       </div>
-      <Strip days={stripDays} size={stretch === "early" ? "sm" : "lg"} startDay={firstStripDay} label={`Nights ${firstStripDay} to ${day}`} />
+      <Strip days={stripDays} size="md" startDay={firstStripDay} label={`Nights ${firstStripDay} to ${day}`} />
+      <p className="he-rough">Rough night? The check-in has a place to say what you felt and what you ate. Kept against the night as a lead, never a ruling.</p>
     </section>
   )
 
@@ -168,16 +169,35 @@ export default function HomeElimination({
       ) : series.length === 0 ? (
         <p className="he-ledger-empty">{Cap(words(weeksLogged))} weekly check-in{weeksLogged === 1 ? '' : 's'} on the record. Your day-zero baseline was not scored, so there is nothing to compare against yet.</p>
       ) : (
-        <>
-          <p className="he-ledger-sub">Weekly check-in scores, 1 to 10. The dotted line is your day-zero score. {weeksLogged < 3 ? `${Cap(words(weeksLogged))} week${weeksLogged === 1 ? '' : 's'} so far; a line appears at three.` : ''}</p>
-          {series.map(s => (
-            <div className="he-lrow" key={s.id}>
-              <div className="he-lname">{s.label}<span>{s.lowerIsBetter ? 'lower is better' : 'higher is better'}</span></div>
-              <SymptomCurve points={s.pts} baseline={s.baseline} max={10} width={200} height={40} minLine={3} caption={false} baselineLabel={false} />
-              <div className="he-lvals">{s.baseline}<i>to</i>{s.latest ?? '–'}</div>
+        weeksLogged < 3 ? (
+          <>
+            <p className="he-ledger-sub">Weekly check-in scores, 1 to 10, against day zero. A curve appears at three weeks.</p>
+            <div className="he-lgrid">
+              {series.map(s => {
+                const d = s.latest == null ? null : s.latest - s.baseline
+                const word = d == null ? '' : d === 0 ? 'no change' : ((s.lowerIsBetter ? d < 0 : d > 0) ? 'better' : 'to watch')
+                return (
+                  <div className="he-lcell" key={s.id}>
+                    <div className="he-lname">{s.label}</div>
+                    <div className="he-lvals">{s.baseline}<i>to</i>{s.latest ?? '\u2013'}</div>
+                    <div className="he-lword">{word}</div>
+                  </div>
+                )
+              })}
             </div>
-          ))}
-        </>
+          </>
+        ) : (
+          <>
+            <p className="he-ledger-sub">Weekly check-in scores, 1 to 10. The dotted line is your day-zero score.</p>
+            {series.map(s => (
+              <div className="he-lrow" key={s.id}>
+                <div className="he-lname">{s.label}<span>{s.lowerIsBetter ? 'lower is better' : 'higher is better'}</span></div>
+                <SymptomCurve points={s.pts} baseline={s.baseline} max={10} width={200} height={40} minLine={3} caption={false} baselineLabel={false} />
+                <div className="he-lvals">{s.baseline}<i>to</i>{s.latest ?? '\u2013'}</div>
+              </div>
+            ))}
+          </>
+        )
       )}
     </aside>
   )
@@ -214,12 +234,7 @@ export default function HomeElimination({
   )
 
   const Panels = (
-    <section className="he-panels">
-      <div className="ob-paper he-panel">
-        <h3>Rough night? Say so in the check-in.</h3>
-        <p>If tonight is worse than usual, the check-in has a place to say what you felt and what you ate today. It is kept on file against the night, as a lead for later, never a ruling.</p>
-        {!dailyDone ? <button type="button" className="he-link" onClick={onOpenDaily}>Open tonight’s check-in</button> : <p className="he-quiet">Tonight’s check-in is in. Tomorrow’s has the same place.</p>}
-      </div>
+    <section className="he-panels he-panels-one">
       <HouseholdShareCard session={session} profile={profile} variant="panel" phase="elimination" foods={suspectNames} />
     </section>
   )
@@ -273,6 +288,10 @@ const CSS = `
 .he-ledger { padding: 22px 24px 14px; display: flex; flex-direction: column; justify-content: center; }
 .he-ledger-sub, .he-ledger-empty { font-size: 13px; color: var(--ob-mute); margin: 0 0 12px; line-height: 1.5; }
 .he-ledger-empty { margin: 8px 0 6px; }
+.he-lgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 18px; }
+.he-lcell { padding: 12px 0 10px; border-top: 1px solid rgba(21,30,24,.08); }
+.he-lcell .he-lvals { text-align: left; margin-top: 6px; }
+.he-lword { font-size: 12.5px; color: var(--ob-mute); margin-top: 4px; }
 .he-lrow { display: grid; grid-template-columns: 118px 1fr 72px; gap: 14px; align-items: center; padding: 12px 0; border-top: 1px solid rgba(21,30,24,.08); }
 .he-lname { font-size: 14px; font-weight: 500; line-height: 1.2; }
 .he-lname span { display: block; font-size: 11px; font-weight: 400; color: var(--ob-mute); margin-top: 2px; }
@@ -284,6 +303,8 @@ const CSS = `
 .he-strip-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
 .he-strip-head p { font-size: 13.5px; color: var(--ob-mute); margin: 0; line-height: 1.5; }
 .he-strip .ob-strip { flex-wrap: wrap; }
+.he-rough { font-size: 13.5px; color: var(--ob-mute); margin: 16px 0 0; line-height: 1.5; }
+
 .he-note { padding: 22px 24px; }
 .he-note p { font-size: 15px; line-height: 1.6; color: var(--ob-ink-2); margin: 0; }
 .he-compact { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px 24px; }
@@ -297,6 +318,7 @@ const CSS = `
 .he-two { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; margin-top: 36px; align-items: start; }
 .he-two-solo { grid-template-columns: 1fr; }
 .he-panels { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; margin-top: 36px; }
+.he-panels-one { grid-template-columns: 1fr; }
 .he-panel { padding: 26px 28px; display: flex; flex-direction: column; justify-content: flex-start; gap: 14px; border-radius: 18px; }
 .he-panel .he-link, .he-panel .he-quiet { align-self: flex-start; margin-top: 6px; }
 .he-panel p { font-size: 15px; line-height: 1.55; color: var(--ob-ink-2); margin: 0; }

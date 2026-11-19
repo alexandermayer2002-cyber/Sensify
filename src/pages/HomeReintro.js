@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../supabase'
-import { Strip, VerdictCard, SuspectCard, StreakLine, CheckinButton } from '../components/objects'
+import { Strip, VerdictCard, SuspectCard, StreakLine, CheckinButton, cycleStripDays } from '../components/objects'
 import { getTestingOrder, getProtocolFoods } from '../utils/protocolEngine'
 import { todayLocal, localDateString } from '../utils/dateUtils'
 import { HouseholdShareCard } from './HouseholdCard'
@@ -248,6 +248,7 @@ export default function HomeReintro({
             <p>Three exposure days, then eleven washout days. One square per day.</p>
             <Strip days={stripDays} size="md" label={`${food} cycle`} />
             <div className="hr-legend"><span><i className="exposure" />exposure</span><span><i className="on" />washout, logged</span><span><i className="today" />today</span></div>
+            <p className="hr-rough">Rough night? The check-in has a place to say what you felt and what you ate. Kept against the night as a lead, never a ruling.</p>
           </aside>
         )}
       </section>
@@ -278,7 +279,7 @@ export default function HomeReintro({
                 const ev = state === 'pending' ? 'Starts soon.' : state === 'stalled' ? `Needs a fresh start. ${Cap(words(clock.done))} of three servings logged.` : state === 'verdict' ? 'Verdict ready.' : clock.inExposure ? `Exposure day ${Math.min(3, clock.done + 1)} of 3.` : `Washout day ${clock.washoutDay} of 11.`
                 return <VerdictCard key={f.name} food={f.name} meta={c ? `Retest. Standing verdict: ${c.verdict}.` : f.meta} state="trial" evidence={ev} />
               }
-              if (c) return <VerdictCard key={f.name} food={f.name} meta={f.meta} state="ruled" verdict={c.verdict} evidence={evidenceLine(c, logsByCycle[c.id] || [])} conflicted={c.answers?.conflicted === true} stoppedEarly={!!c.stopped_early} />
+              if (c) return <VerdictCard key={f.name} food={f.name} meta={f.meta} state="ruled" verdict={c.verdict} evidence={evidenceLine(c, logsByCycle[c.id] || [])} days={cycleStripDays(c, logsByCycle[c.id] || [], today)} conflicted={c.answers?.conflicted === true} stoppedEarly={!!c.stopped_early} />
               const isNext = !clock && unruled[0] && lower(unruled[0].name) === lower(f.name)
               return <SuspectCard key={f.name} food={f.name} meta={f.meta} state={isNext ? 'next' : 'suspect'} line={isNext ? 'Starts the day you pick it.' : 'Still off your plate. Not yet tried.'} onClick={onOpenReintro} />
             })}
@@ -287,16 +288,7 @@ export default function HomeReintro({
       )}
 
       {showPanels && (
-        <section className="hr-panels">
-          <div className="ob-paper hr-panel">
-            <h3>{state === 'complete' ? 'Living with the map.' : 'Rough night? Say so in the check-in.'}</h3>
-            <p>{state === 'complete'
-              ? 'Your verdicts are for the trials you ran. Ask Sensify knows every one of them, and a verdict ruled on conflicting evidence can be retested any time.'
-              : 'If tonight is worse than usual, the check-in has a place to say what you felt and what you ate today. It is kept on file against the night, as a lead for later, never a ruling.'}</p>
-            {state === 'complete'
-              ? <button type="button" className="hr-link" onClick={onOpenReintro}>See retests and what comes next</button>
-              : !loggedToday && !dailyDone ? <button type="button" className="hr-link" onClick={onOpenDaily}>Open tonight’s check-in</button> : <p className="hr-quiet">Tonight’s check-in is in. Tomorrow’s has the same place.</p>}
-          </div>
+        <section className="hr-panels hr-panels-one">
           <HouseholdShareCard session={session} profile={profile} variant="panel" tone={state === 'complete' ? 'paper' : 'forest'} phase={state === 'complete' ? 'complete' : 'reintroduction'} foods={offPlate} trialFood={trialFood} />
         </section>
       )}
@@ -324,6 +316,8 @@ const CSS = `
 .hr-cycle h3, .hr-panel h3 { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 22px; letter-spacing: -.015em; margin: 0 0 4px; line-height: 1.1; }
 .hr-cycle p { font-size: 13.5px; color: var(--ob-mute); margin: 0 0 18px; line-height: 1.5; }
 .hr-cycle .ob-strip { flex-wrap: wrap; }
+.hr-rough { font-size: 13.5px; color: var(--ob-mute); margin: 16px 0 0; line-height: 1.5; }
+
 .hr-cycle-wide { margin-top: 28px; }
 .hr-legend { display: flex; gap: 18px; margin-top: 14px; font-size: 12px; color: var(--ob-mute); flex-wrap: wrap; }
 .hr-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; background: var(--ob-paper-2); }
@@ -336,6 +330,7 @@ const CSS = `
 .hr-cards .ob-vc, .hr-cards .ob-sc { min-height: 200px; }
 .hr-cards .ob-meta { min-height: 2.6em; }
 .hr-panels { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; margin-top: 36px; }
+.hr-panels-one { grid-template-columns: 1fr; }
 .hr-panel { padding: 26px 28px; display: flex; flex-direction: column; gap: 14px; border-radius: 18px; }
 .hr-panel p { font-size: 15px; line-height: 1.55; color: var(--ob-ink-2); margin: 0; }
 .hr-panel .hr-link, .hr-panel .hr-quiet { align-self: flex-start; margin-top: 6px; }

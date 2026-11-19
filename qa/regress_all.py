@@ -201,7 +201,7 @@ def run_marketing():
     try:
         r.goto(); r.sleep(3.0)
         t = r.snap("mkt", 9000)
-        check("mkt.example_labels", "EXAMPLE" in t and "VERIFIED RESULT" not in t)
+        check("mkt.example_labels", "example" in t.lower() and "verified result" not in t.lower())
         check("mkt.console_clean", len(r.console) == 0, str(r.console[:2]))
     except Exception as e:
         check("mkt.walk", False, traceback.format_exc()[-150:])
