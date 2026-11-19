@@ -53,7 +53,7 @@ def run_p1():
         tl = r.text().lower()
         check("p1.flagged_autostart", "starts tomorrow" in tl or "elimination" in tl, r.text()[:200])
         srv_skip(EMAIL, 57)
-        r.goto(); r.sleep(2.5); r.wait_ready(25); gate(r)
+        r.goto(); r.sleep(2.5); r.wait_ready(25); gate(r); r.sleep(2.0); r.wait_ready(25)
         tl = r.text().lower()
         check("p1.unlock_hero", "reintroduction" in tl and ("pick your next food" in tl or "start cycle" in tl), r.text()[:300])
         check("p1.no_false_complete", "cycle complete" not in tl)
@@ -210,12 +210,14 @@ def run_marketing():
 
 if __name__ == "__main__":
     import sys
-    run_marketing()
-    run_p1()
-    run_p2()
-    run_p3()
-    run_p4()
-    run_p5()
+    # --fleet-only (N02): run just the fleet so the base suite and the fleet fit separate nightly windows.
+    if "--fleet-only" not in sys.argv:
+        run_marketing()
+        run_p1()
+        run_p2()
+        run_p3()
+        run_p4()
+        run_p5()
     # DEPTH LAYER (2026-10-23): aged-persona fleet + invariant sweep. Guarded so
     # a fleet crash can never take down the base suite. --no-fleet skips it.
     if "--no-fleet" not in sys.argv:

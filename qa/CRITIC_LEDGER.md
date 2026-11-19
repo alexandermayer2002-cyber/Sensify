@@ -89,13 +89,11 @@ have closed some of these; night one must re-test every item rather than trust t
 | id | found | area | sev | finding | fix | probe | status |
 |---|---|---|---|---|---|---|---|
 | N01 | 11-11 | maintain | LOW | cancel-maintain-setup.js detaches EVERY saved card on the Stripe customer, including the card used for the $399 purchase; the client copy says only the Maintain reservation is cancelled | detach only the PaymentMethod saved by the Maintain setup (store its id), or say "your saved card is removed" in the cancel confirm | - | OPEN (found 2026-11-11, code read only) |
-| N02 | 11-11 | harness | LOW | regress_all.py full run (incl. fleet) exceeds 25 min (11-14: killed at 10 min, only 1 fleet persona ran; sentinel+fault never reached, run separately); tail personas cut off by the timeout so passed/total is partial | split fleet into its own nightly job or parallelise | - | OPEN (found 2026-11-11) |
 
 ### New (Critic, 2026-11-14)
 | id | found | area | sev | finding | fix | probe | status |
 |---|---|---|---|---|---|---|---|
 | N03 | 11-14 | home/all | MED | The 11-13 "em-dashes removed" sweep (be556f2) swapped each dash for a period, leaving lowercase mid-sentence fragments live on Home: "Your elimination list. the foods you'll avoid for 8 weeks. appears here once your results are in" (Dashboard.js:2354); "At 28 nights. four clean weeks of check-ins. they form a constellation" (2425); "Setup complete. your results are in review" (1853); "Usually ready within a day. it will meet you here." (1913); "Slip-up logged. thank you" (1951); "Your data is safe. we just couldn't load it" (1345). Also the safety panel: "That didn't save. please try again." (ReintroTab.js:666), WeeklyCheckin.js:480, FoodMap.js:306, LabResults.js:172,626, ReintroTab.js:138. | replace each ". lowercase" with a comma, colon or a full new sentence; grep `[a-z]\. [a-z]{3,}` inside string literals | curl main.js, grep -c "Your elimination list. the foods" (0 when fixed) | OPEN (found 2026-11-14; live bundle main.7f82e092) |
-| N04 | 11-14 | harness | LOW | regress_all p1.unlock_hero FAILed once on the first run (page text was only "Sensify."; page not ready after skip57) and PASSed on immediate re-run: flaky wait, not a product regression | wait_ready after gate(r) in run_p1 before reading text | - | OPEN (found 2026-11-14) |
 
 ### New (Critic, 2026-11-17)
 | id | found | area | sev | finding | fix | probe | status |
@@ -128,11 +126,13 @@ have closed some of these; night one must re-test every item rather than trust t
 | X22 | 11-15 | ask | MED | askSensify.js ~60-120 has no brief for "is 8 weeks enough / can this hurt me" or "quit and get my data"; red flags cover only severe reactions mid-answer (D14) | static FAQ block in prompt | live ask both, fail on invented policy | OPEN |
 | X23 | 11-15 | engine | LOW | verdictEngine.js:74 moderate check exact-case vs severe lowercased; moderateDays counts washout days (:73-75) | lowercase both; restrict phase | unit call Moderate x2 | OPEN |
 | X24 | 11-15 | admin | LOW | AdminDashboard.js:866,985 say common track "held until physician sign-off" but protocolEngine.js:7-15 COMMON_TRACK_ENABLED = true (P08) | reconcile | grep | OPEN |
-| X25 | 11-15 | harness | LOW | regress_all 11-15: fleet.{elimearly,elimlate,audit,reintro}.day_logged FAIL "no daily_factors row for 2026-11-15" (date.today() in sandbox vs app date); single-persona re-run timed out at goto 9s; p5.file_stored FAIL once, PASS on re-run (flake). Unconfirmed: product vs harness | re-key to app-local date; wait longer | rerun persona by day | OPEN (inconclusive) |
 
 ## FIXED
 | id | evidence (tonight's fresh re-test) |
 |---|---|
+|  N02 | FIXED (2026-11-19, qa/regress_all.py: new --fleet-only flag so base suite and fleet run in separate windows; owed scheduling split) |
+|  N04 | FIXED (2026-11-19, qa/regress_all.py: wait_ready after gate(r) before reading unlock_hero text; owed one clean full run to confirm) |
+|  X25 | FIXED (2026-11-19, qa/fleetkit.py: check-in selector re-keyed to the curly apostrophe in "Start tonight’s check-in" after the 11-16 redesign; all four fleet.*.day_logged PASS live. It was harness drift, not a product bug) |
 |  X03 | FIXED (2026-11-17, 74331b6; src has no \u escape in JSX text for Home/objects; live bundle shows escapes only inside JS strings; residual N05 in MaintainHub) |
 |  P05 | FIXED (2026-11-15, found by fresh live walk; live: no running-verdict needle on Home or Reintro tab mid-cycle) |
 |  P12 | FIXED (2026-11-15, found by fresh live walk; live: zero-log cycle blocked on Home ("needs a fresh start"), no survey button (code residual: N-X07 guard)) |

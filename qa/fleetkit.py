@@ -187,7 +187,7 @@ def maybe_start_cycle(r):
 
 def daily_checkin(r, stage, v):
     opened = False
-    for txt in ["How's today going", re.compile(r"(Today|Tonight)'s check-in")]:
+    for txt in ["How's today going", re.compile(r"(Today|Tonight)['\u2019]s check-in", re.I)]:
         try:
             r.page.get_by_text(txt).first.click(timeout=4000)
             r.sleep(1.6); r.wait_ready(10); opened = True; break
@@ -307,7 +307,11 @@ def check_numbers(r, stage, check):
     today = datetime.date.today().isoformat()
     df = rest(r, f"daily_factors?user_id=eq.@UID@&log_date=eq.{today}&select=log_date")
     logged = isinstance(df.get("body"), list) and len(df["body"]) > 0
-    check(f"fleet.{stage}.day_logged", logged, f"no daily_factors row for {today}")
+    latest = ""
+    if not logged:
+        lr = rest(r, "daily_factors?user_id=eq.@UID@&select=log_date,created_at&order=log_date.desc&limit=3")
+        latest = " | latest rows: " + json.dumps(lr.get("body"))[:160]
+    check(f"fleet.{stage}.day_logged", logged, f"no daily_factors row for {today}{latest}")
     if stage in ("elimearly", "elimlate", "audit") and start:
         expected = protocol_day(start)
         nav_tab(r, "Verdicts"); r.sleep(1.2)
