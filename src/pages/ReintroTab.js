@@ -303,6 +303,9 @@ export function OutcomeQuestion({ session, profile }) {
 const css = `
   .rt-wrap { min-height: 100vh; background: transparent; color: var(--ink); }
   .rt-content { max-width: 1180px; margin: 0 auto; padding: 24px 20px 72px; }
+  .rt-pre { display: grid; grid-template-columns: 1fr 1.4fr; gap: 28px; align-items: center; }
+  .rt-pre-strip .ob-strip { flex-wrap: wrap; }
+  @media (max-width: 640px) { .rt-pre { grid-template-columns: 1fr; gap: 18px; } }
   .rt-header { margin-bottom: 24px; }
   .rt-title { font-family: var(--font-display); font-size: 38px; font-weight: 300; margin-bottom: 8px; letter-spacing: -0.02em; line-height: 1.05; color: #151E18; }
   .rt-title em { font-style: italic; color: #3D5C3C; }
@@ -908,14 +911,14 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
             </div>
           </div>
 
-          <div className="ob-paper" style={{ padding: '24px 26px', marginBottom: 14, display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 28, alignItems: 'center' }}>
+          <div className="ob-paper rt-pre" style={{ padding: '24px 26px', marginBottom: 14 }}>
             <div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 64, fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1, color: '#151E18' }}>{daysLeft ?? ''}</div>
               <div style={{ fontSize: 15, color: '#434B44', marginTop: 8 }}>{daysLeft == null ? 'Your protocol has not started.' : daysLeft === 0 ? 'Testing opens tomorrow.' : `clean night${daysLeft === 1 ? '' : 's'} to go`}</div>
             </div>
             <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 400, letterSpacing: '-0.015em', marginBottom: 6 }}>How a trial works</div>
-            <Strip days={explainer} size="md" label="A fourteen-day trial" />
+            <div className="rt-pre-strip"><Strip days={explainer} size="md" label="A fourteen-day trial" /></div>
             <p style={{ fontSize: 14.5, color: 'var(--ob-ink-2)', lineHeight: 1.55, margin: '12px 0 0' }}>Three days eating the food, then eleven clean days watching for anything delayed. One food at a time, so the answer can only belong to that food. The verdict is read from your own record on day fourteen.</p>
             </div>
           </div>

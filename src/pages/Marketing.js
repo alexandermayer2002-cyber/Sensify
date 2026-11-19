@@ -765,7 +765,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 ))}
               </div>
               <div className="fmcard-foot">
-                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>Example of what 140 days of testing produces</div>
+                <div className="fmcard-verify" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>Example, what 140 days of testing produces</div>
               </div>
             </div>
           </div>
