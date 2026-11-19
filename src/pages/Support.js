@@ -180,7 +180,7 @@ export default function Support({ session, onUnreadChange }) {
               {!isResolved && (
                 <button onClick={async () => { await setTicketStatus({ ticketId: active.id, status: 'resolved' }); setActive({ ...active, status: 'resolved' }) }}
                   style={{ background: 'none', border: 'none', fontFamily: 'DM Mono, monospace', fontSize: 8.5, fontWeight: 700, letterSpacing: '0.8px', color: '#3D5C3C', cursor: 'pointer', flexShrink: 0, padding: 0 }}>
-                  \u2713 MARK RESOLVED
+                  {'\u2713'} MARK RESOLVED
                 </button>
               )}
             </div>
