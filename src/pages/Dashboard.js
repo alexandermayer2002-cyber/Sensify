@@ -93,7 +93,7 @@ const css = `
   }
   .snfy-nav-right { display: flex; align-items: center; gap: 10px; }
   .snfy-phase-pill { font-family: var(--font-body); font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--forest-500); background: var(--forest-100); padding: 5px 12px; border-radius: var(--r-pill); }
-  .snfy-signout { font-size: 12px; color: var(--gray); background: none; border: none; cursor: pointer; }
+  .snfy-signout { font-size: 13px; font-weight: 500; color: #434B44; background: none; border: none; cursor: pointer; padding: 8px 4px; }
   .snfy-signout:hover { color: var(--ink); }
 
   /* Hero band: slim, full-width, one sentence + one CTA + one labeled progress line */

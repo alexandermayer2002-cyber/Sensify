@@ -77,9 +77,7 @@ function MaintainPreview({ profile, session }) {
         <div style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', fontWeight: 300, color: '#1C1C1C', lineHeight: 1.15 }}>The map is yours.<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>Keeping it alive is Maintain.</em></div>
       </div>
 
-      <div style={{ background: '#22301F', borderRadius: '24px', padding: '20px 22px', position: 'relative', overflow: 'hidden', boxShadow: 'var(--shadow-3)', animation: 'mtRise 0.7s cubic-bezier(0.16,1,0.3,1) both' }}>
-        <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'mtGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
+      <div style={{ background: '#1E3327', borderRadius: '24px', padding: '20px 22px', position: 'relative', overflow: 'hidden', boxShadow: 'var(--shadow-3)', animation: 'mtRise 0.7s cubic-bezier(0.16,1,0.3,1) both' }}>
         <div style={{ position: 'relative' }}>
           {features.map((f, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '13px 0', borderBottom: i < features.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none', animation: `mtRowIn 0.55s ease ${0.4 + i * 0.15}s both` }}>
@@ -146,7 +144,7 @@ export default function MaintainHub({ session, profile, isAdmin }) {
           {[['Real state', null], ['Locked', 'locked'], ['Unlocked', 'full']].map(([label, val]) => (
             <button key={label} onClick={() => setAdminView(val)}
               style={{ border: 'none', borderRadius: 999, padding: '5px 11px', fontSize: 11, cursor: 'pointer',
-                background: adminView === val ? '#22301F' : '#EDEBE4', color: adminView === val ? '#FAF8F4' : '#7A7A72', fontWeight: adminView === val ? 600 : 400 }}>{label}</button>
+                background: adminView === val ? '#1E3327' : '#EDEBE4', color: adminView === val ? '#FAF8F4' : '#7A7A72', fontWeight: adminView === val ? 600 : 400 }}>{label}</button>
           ))}
         </div>
       )}

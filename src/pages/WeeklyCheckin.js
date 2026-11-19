@@ -24,30 +24,30 @@ const PAGE_CSS = `
 
 const s = {
   wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column' },
-  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', boxShadow: 'var(--shadow-1)', position: 'sticky', top: 0, zIndex: 10 },
-  logo: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 500, color: '#20241F' },
+  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: 'rgba(227,228,220,0.88)', backdropFilter: 'blur(12px)', boxShadow: '0 1px 0 rgba(21,30,24,0.08)', position: 'sticky', top: 0, zIndex: 10 },
+  logo: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, color: '#151E18' },
   logoEm: { color: '#3D5C3C', fontStyle: 'italic' },
   back: { fontSize: '13px', color: '#73736A', cursor: 'pointer', background: 'none', border: 'none' },
-  weekBadge: { fontSize: '11px', color: '#3D5C3C', background: '#EDF3ED', padding: '4px 10px', borderRadius: '999px', fontWeight: 600 },
+  weekBadge: { fontSize: '13px', color: '#737B73', fontWeight: 500 },
   content: { flex: 1, padding: '28px 24px 100px', maxWidth: '560px', margin: '0 auto', width: '100%' },
   eyebrow: { display: 'block', marginBottom: '10px' },
-  title: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, marginBottom: '6px', letterSpacing: '-0.3px' },
+  title: { fontFamily: 'Fraunces, serif', fontSize: '38px', fontWeight: 300, marginBottom: '10px', letterSpacing: '-0.02em', lineHeight: 1.05, color: '#151E18' },
   titleEm: { fontStyle: 'italic', color: '#3D5C3C' },
-  hint: { fontSize: '13px', color: '#73736A', marginBottom: '28px', lineHeight: 1.65 },
+  hint: { fontSize: '15px', color: '#434B44', marginBottom: '26px', lineHeight: 1.55 },
   sectionDivider: { display: 'flex', alignItems: 'center', gap: '12px', margin: '28px 0 20px' },
   sectionLine: { flex: 1, height: '1px', background: 'rgba(0,0,0,0.07)' },
   sectionLabel: { whiteSpace: 'nowrap' },
-  questionBlock: { marginBottom: '14px', padding: '18px 16px' },
-  questionLabel: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, marginBottom: '12px', lineHeight: 1.3, color: '#20241F' },
-  scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#73736A', marginBottom: '7px' },
+  questionBlock: { marginBottom: '14px', padding: '22px 22px', background: '#FCFBF8', borderRadius: 18, boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.3)' },
+  questionLabel: { fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 400, marginBottom: '12px', lineHeight: 1.3, color: '#151E18', letterSpacing: '-0.01em' },
+  scaleLabels: { display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: '#737B73', marginBottom: '8px' },
   scaleRow: { display: 'flex', gap: '4px' },
-  sbt: { flex: 1, height: '44px', borderRadius: '10px', border: 'none', background: '#EDF3ED', fontSize: '14px', cursor: 'pointer', fontWeight: 400, color: '#5A5A52', transition: 'all 0.12s' },
-  sbtOn: { flex: 1, height: '44px', borderRadius: '10px', border: 'none', background: '#3D5C3C', fontSize: '18px', cursor: 'pointer', fontWeight: 400, color: 'white', fontFamily: 'Fraunces, serif', boxShadow: 'var(--shadow-pill)' },
+  sbt: { flex: 1, height: '48px', borderRadius: '12px', border: 'none', background: '#EEEFE8', fontSize: '15px', cursor: 'pointer', fontWeight: 500, color: '#434B44', transition: 'all 0.12s' },
+  sbtOn: { flex: 1, height: '48px', borderRadius: '12px', border: 'none', background: '#151E18', fontSize: '18px', cursor: 'pointer', fontWeight: 400, color: '#FCFBF8', fontFamily: 'Fraunces, serif' },
   chipRow: { display: 'flex', gap: '7px', flexWrap: 'wrap' },
-  chip: { padding: '10px 14px', borderRadius: '999px', border: 'none', boxShadow: 'var(--shadow-1)', background: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', color: '#73736A', transition: 'all 0.12s', lineHeight: 1.3 },
-  chipOn: { padding: '10px 14px', borderRadius: '999px', border: 'none', boxShadow: 'var(--shadow-pill)', background: '#3D5C3C', fontSize: '13px', fontWeight: 600, cursor: 'pointer', color: 'white', lineHeight: 1.3 },
+  chip: { padding: '12px 16px', borderRadius: '999px', border: 'none', background: '#EEEFE8', fontSize: '14px', fontWeight: 500, cursor: 'pointer', color: '#434B44', transition: 'all 0.12s', lineHeight: 1.3 },
+  chipOn: { padding: '12px 16px', borderRadius: '999px', border: 'none', background: '#151E18', fontSize: '14px', fontWeight: 500, cursor: 'pointer', color: '#FCFBF8', lineHeight: 1.3 },
   textarea: { width: '100%', borderRadius: '14px', padding: '12px 14px', fontSize: '16px', color: '#20241F', resize: 'none', height: '80px' },
-  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: 'rgba(251,248,242,0.92)', backdropFilter: 'blur(8px)', boxShadow: '0 -8px 24px rgba(56,62,48,0.06)' },
+  footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: 'rgba(227,228,220,0.92)', backdropFilter: 'blur(12px)', boxShadow: '0 -1px 0 rgba(21,30,24,0.08)' },
   cta: { width: '100%' },
   ctaDisabled: { width: '100%' },
 }
@@ -591,7 +591,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
         <style>{`@keyframes spin { to { transform: rotate(360deg) } } @keyframes slideUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }` + PAGE_CSS}</style>
         <div style={s.topBar}>
           <div style={{ width: 40 }} />
-          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
           <div style={s.weekBadge}>Week {weekNumber}</div>
         </div>
         <div className="sn-rise" style={s.content}>
@@ -617,10 +617,10 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
             return (
               <div className="sn-hero" style={{ padding: '24px 22px', marginBottom: '14px' }}>
                 <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-                  <span className="sn-micro" style={{ color: '#8BAE8A' }}>SENSIFY · RECORD</span>
-                  <span className="sn-micro sn-micro-dark" style={{ fontSize: 8.5 }}>WEEK {weekNumber} LOGGED</span>
+                  <span className="sn-micro" style={{ color: '#8BAE8A' }}>Your record</span>
+                  <span className="sn-micro sn-micro-dark" style={{ fontSize: 12 }}>Week {weekNumber} logged</span>
                 </div>
-                <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 26, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.2, marginBottom: 4 }}>This week is <em style={{ fontStyle: 'italic', color: '#8BAE8A' }}>on the record.</em></div>
+                <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 26, fontWeight: 300, color: '#FAF8F4', lineHeight: 1.2, marginBottom: 4 }}>This week is on the record.</div>
                 <div style={{ position: 'relative', fontSize: 13, color: 'rgba(250,248,244,0.6)', marginBottom: 20 }}>Every honest week makes your map sharper.</div>
 
                 {(() => {
@@ -645,14 +645,14 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
                     <div style={{ position: 'relative', marginBottom: (insight || generatingInsight) ? 20 : 4 }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
                         <div className="sn-num" style={{ fontSize: 48, color: lead.improved === true ? '#8BAE8A' : '#FAF8F4' }}>{lead.cur}</div>
-                        <div className="sn-micro sn-micro-dark">{lead.id.toUpperCase()}{lead.bl != null ? ` · WAS ${lead.bl}` : ''}</div>
+                        <div className="sn-micro sn-micro-dark">{lead.label || lead.id}{lead.bl != null ? `, was ${lead.bl}` : ''}</div>
                       </div>
                       {rest.length > 0 && (
                         <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
                           {rest.map(scale => (
                             <div key={scale.id} style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 12 }}>
                               <div className="sn-num" style={{ fontSize: 22, color: scale.improved === true ? '#8BAE8A' : '#FAF8F4' }}>{scale.cur}</div>
-                              <div className="sn-micro sn-micro-dark" style={{ fontSize: 8, letterSpacing: '0', marginTop: 4 }}>{scale.id.toUpperCase()}{scale.bl != null ? ` · WAS ${scale.bl}` : ''}</div>
+                              <div className="sn-micro sn-micro-dark" style={{ fontSize: 12, marginTop: 4 }}>{scale.label || scale.id}{scale.bl != null ? `, was ${scale.bl}` : ''}</div>
                             </div>
                           ))}
                         </div>
@@ -662,10 +662,10 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
                 })()}
 
                 {generatingInsight ? (
-                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 13, color: 'rgba(250,248,244,0.6)' }}>Writing your insight…</div>
+                  <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, fontFamily: 'Fraunces, serif', fontStyle: 'normal', fontSize: 14, color: 'rgba(250,248,244,0.7)' }}>Writing your insight.</div>
                 ) : insight ? (
                   <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16 }}>
-                    <div className="sn-micro" style={{ color: '#8BAE8A', marginBottom: 8 }}>YOUR WEEK {weekNumber} INSIGHT</div>
+                    <div className="sn-micro" style={{ color: '#8BAE8A', marginBottom: 8 }}>Your week {weekNumber} insight</div>
                     <div style={{ fontSize: 13.5, color: '#FAF8F4', lineHeight: 1.7, fontWeight: 300 }}>{insight}</div>
                   </div>
                 ) : insightError ? (
@@ -678,11 +678,11 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
           })()}
 
           <button
-            className="sn-btn"
+            className="ob-btn tonight"
             style={{ ...s.cta, marginTop: '8px' }}
             disabled={generatingInsight}
             onClick={onComplete}
-          >{generatingInsight ? 'Saving your insight…' : 'Back to dashboard →'}</button>
+          >{generatingInsight ? 'Saving your insight.' : 'Back to Home'}</button>
         </div>
         {showConfetti && <ConfettiCanvas />}
       </div>
@@ -694,12 +694,12 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }` + PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
         <div style={s.weekBadge}>Week {weekNumber}</div>
       </div>
       <div className="sn-rise" style={s.content}>
-        <div className="sn-micro" style={s.eyebrow}>Week {weekNumber} check-in</div>
-        <div style={s.title}>How was your<br /><em style={s.titleEm}>week?</em></div>
+        <div style={{ fontSize: 14, color: '#737B73', marginBottom: 10 }}>Week {weekNumber}</div>
+        <div style={s.title}>How was your week?</div>
         <div style={s.hint}>Honest answers only, good or bad. This is how we track what's actually working.</div>
 
         {/* ADAPTIVE SYMPTOM SCALES */}
@@ -748,7 +748,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
           <div style={s.questionLabel}>How do you feel overall compared to last week?</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {['Better', 'About the same', 'Worse'].map(opt => (
-              <button key={opt} style={answers.overall_feeling === opt ? { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', textAlign: 'left', fontWeight: 600, boxShadow: 'var(--shadow-pill)' } : { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#F7F5EE', fontSize: '14px', cursor: 'pointer', color: '#3B4036', textAlign: 'left' }} onClick={() => setAnswer('overall_feeling', opt)}>{opt}</button>
+              <button key={opt} style={answers.overall_feeling === opt ? { padding: '15px 18px', borderRadius: '14px', border: 'none', background: '#151E18', fontSize: '15px', cursor: 'pointer', color: '#FCFBF8', textAlign: 'left', fontWeight: 500 } : { padding: '15px 18px', borderRadius: '14px', border: 'none', background: '#EEEFE8', fontSize: '15px', cursor: 'pointer', color: '#434B44', textAlign: 'left' }} onClick={() => setAnswer('overall_feeling', opt)}>{opt}</button>
             ))}
           </div>
         </div>
@@ -784,7 +784,7 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {['Fully', 'Mostly', 'Some slip-ups', 'Not at all'].map(opt => (
-              <button key={opt} style={answers.compliance === opt ? { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#3D5C3C', fontSize: '14px', cursor: 'pointer', color: '#FFFFFF', textAlign: 'left', fontWeight: 600, boxShadow: 'var(--shadow-pill)' } : { padding: '13px 16px', borderRadius: '16px', border: 'none', background: '#F7F5EE', fontSize: '14px', cursor: 'pointer', color: '#3B4036', textAlign: 'left' }} onClick={() => setAnswer('compliance', opt)}>{opt}</button>
+              <button key={opt} style={answers.compliance === opt ? { padding: '15px 18px', borderRadius: '14px', border: 'none', background: '#151E18', fontSize: '15px', cursor: 'pointer', color: '#FCFBF8', textAlign: 'left', fontWeight: 500 } : { padding: '15px 18px', borderRadius: '14px', border: 'none', background: '#EEEFE8', fontSize: '15px', cursor: 'pointer', color: '#434B44', textAlign: 'left' }} onClick={() => setAnswer('compliance', opt)}>{opt}</button>
             ))}
           </div>
         </div>
@@ -805,12 +805,12 @@ export default function WeeklyCheckin({ session, weekNumber = 1, profile, curren
       <div style={s.footer}>
         {submitError && <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 12, padding: '10px 13px', fontSize: 12.5, lineHeight: 1.55, marginBottom: 10 }}>{submitError}</div>}
         <button
-          className="sn-btn"
-          style={s.cta}
+          className="ob-btn tonight ob-block"
+          style={{ ...s.cta, maxWidth: 560, margin: '0 auto', opacity: (!allRequiredAnswered() || submitting) ? 0.5 : 1 }}
           disabled={!allRequiredAnswered() || submitting}
           onClick={handleSubmit}
         >
-          {submitting ? 'Saving...' : 'Submit check-in →'}
+          {submitting ? 'Saving' : 'Submit check-in'}
         </button>
       </div>
     </div>

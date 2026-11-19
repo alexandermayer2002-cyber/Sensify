@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { sleepHours } from '../utils/confoundAnalysis'
 import { computeProvisionalVerdict, applyAiAdjustment } from '../utils/verdictEngine'
 import { generateReintroVerdict } from '../utils/aiInsights'
+import { Strip, cycleStripDays } from '../components/objects'
 
 const s = {
   wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column' },
@@ -39,15 +40,15 @@ const s = {
   triggerBtn: { flex: 1, padding: '13px', borderRadius: 'var(--r-sm)', border: 'none', background: 'var(--paper)', boxShadow: 'var(--shadow-1)', fontSize: '13px', cursor: 'pointer', fontWeight: 500, color: 'var(--ink)', textAlign: 'center', transition: 'all 0.12s' },
   triggerBtnOn: { flex: 1, padding: '13px', borderRadius: 'var(--r-sm)', border: 'none', background: 'var(--forest-500)', boxShadow: 'var(--shadow-pill)', fontSize: '13px', cursor: 'pointer', fontWeight: 600, color: 'white', textAlign: 'center' },
   footer: { position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px 24px', background: 'rgba(251,248,242,0.92)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 -12px 30px rgba(56,62,48,0.08)' },
-  cta: { background: 'var(--forest-500)', color: 'white', border: 'none', borderRadius: 'var(--r-md)', padding: '14px', width: '100%', maxWidth: '572px', margin: '0 auto', display: 'block', fontSize: '14px', fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-pill)' },
+  cta: { background: '#151E18', color: '#FCFBF8', border: 'none', borderRadius: 999, padding: '18px', width: '100%', maxWidth: '572px', margin: '0 auto', display: 'block', fontSize: '16px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 22px 50px -22px rgba(22,31,25,.55)' },
   verdictWrap: { flex: 1, padding: '28px 24px', display: 'flex', flexDirection: 'column', maxWidth: '620px', margin: '0 auto', width: '100%', boxSizing: 'border-box' },
   verdictBox: { borderRadius: 'var(--r-lg)', padding: '28px 24px', textAlign: 'center', marginBottom: '16px' },
   verdictEmoji: { display: 'flex', justifyContent: 'center', marginBottom: '12px' },
   verdictTitle: { fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 400, marginBottom: '6px' },
   verdictSub: { fontSize: '13px', opacity: 0.8, lineHeight: 1.6 },
-  analysisCard: { background: 'linear-gradient(135deg, rgba(139,174,138,0.13), rgba(139,174,138,0.04)), #FFFFFF', border: 'none', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-2)', padding: '18px 20px', marginBottom: '12px' },
+  analysisCard: { background: '#FCFBF8', border: 'none', borderRadius: 18, boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35)', padding: '22px 24px', marginBottom: '12px' },
   analysisTag: { fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', background: 'var(--forest-100)', padding: '4px 10px', borderRadius: '999px', display: 'inline-block', marginBottom: '8px' },
-  analysisText: { fontSize: '13px', color: 'var(--ink)', lineHeight: 1.65 },
+  analysisText: { fontSize: '15px', color: '#434B44', lineHeight: 1.6 },
   spinner: { width: '32px', height: '32px', border: '3px solid #EDF3ED', borderTopColor: '#3D5C3C', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '40px auto 16px' },
   processingText: { textAlign: 'center', fontSize: '14px', color: 'var(--gray)', fontFamily: 'var(--font-display)' },
 }
@@ -379,36 +380,28 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
           <div style={{ width: 40 }}></div>
         </div>
         <div style={s.verdictWrap}>
-          <div style={{ textAlign: 'center', marginBottom: 22, marginTop: 8 }}>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500, letterSpacing: '0', color: 'var(--gray-faint)', textTransform: 'none', marginBottom: 10 }}>{(() => { const n = new Set((dailyLogs || []).filter(l => l && l.log_date).map(l => String(l.log_date).slice(0, 10))).size; return n > 0 ? `Verdict entered · ${n} logged day${n === 1 ? '' : 's'}` : 'Verdict entered' })()}</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, color: 'var(--ink)', marginBottom: 2 }}>{food}</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '56px', fontWeight: 300, letterSpacing: '-0.02em', color: config.color, lineHeight: 1.1, textShadow: config.glow.replace('0 0 24px', '0 0 38px') }}>{verdict}.</div>
-            <div style={{ width: '38px', height: '2px', background: config.color, opacity: 0.45, margin: '14px auto 12px' }} />
-            {/* Honest sub-copy by provenance (QA 2026-10-26 #4): the canned
-                "clear, repeatable pattern" line must never ship on a verdict
-                the testimony earned, the analysis below tells that story. */}
-            <div style={{ fontSize: '13.5px', color: '#5A5A52', lineHeight: 1.6, maxWidth: 420, margin: '0 auto' }}>
+          {/* Refresh 2026-11-19 (look audit #1): the reveal is a ruling, not a
+              card. Food small, the ruling alone at display scale in its colour,
+              the fourteen-day record beneath it as the evidence, then the words. */}
+          <div style={{ textAlign: 'left', margin: '18px 0 26px' }}>
+            <div style={{ fontSize: 15, color: '#737B73', marginBottom: 10 }}>{(() => { const n = new Set((dailyLogs || []).filter(l => l && l.log_date).map(l => String(l.log_date).slice(0, 10))).size; return `${food}. ${n > 0 ? `${n} logged day${n === 1 ? '' : 's'} on the record.` : 'Ruled.'}` })()}</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(84px, 16vw, 132px)', fontWeight: 300, letterSpacing: '-0.04em', color: config.color, lineHeight: .92 }}>{verdict}.</div>
+            <div style={{ margin: '26px 0 18px' }}>
+              <Strip days={cycleStripDays({ washout_started_at: (dailyLogs || []).filter(l => l.ate_food === true).sort((a, b) => String(a.log_date).localeCompare(String(b.log_date)))[2]?.log_date || null }, dailyLogs || [])} size="lg" label="Fourteen-day record" />
+              <div style={{ display: 'flex', gap: 16, marginTop: 10, fontSize: 12.5, color: '#737B73', flexWrap: 'wrap' }}>
+                <span>dark: exposure day</span><span>green: washout, logged</span><span>dot: symptoms logged</span>
+              </div>
+            </div>
+            <div style={{ fontSize: '16px', color: '#434B44', lineHeight: 1.55, maxWidth: 520 }}>
               {accuracy && accuracy !== 'accurate'
                 ? `Your daily logs and your account of the two weeks were weighed together. ${food} has been added to your ${verdict} list.`
                 : config.sub.replace(/{food}/g, food)}
             </div>
           </div>
 
-          <div style={{ background: 'linear-gradient(180deg, #FDFBF6, #F8F4EA)', border: 'none', borderRadius: 'var(--r-md)', padding: '14px 16px', marginBottom: '14px', boxShadow: '0 10px 26px -8px rgba(60,50,30,0.16), 0 2px 6px rgba(60,50,30,0.05), inset 0 0 30px rgba(201,162,39,0.03)' }}>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: '7px', fontWeight: 500, letterSpacing: '0', color: '#9A927E', marginBottom: 8 }}>ENTERED IN YOUR VERDICTS</div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                <span style={{ width: 8, height: 8, borderRadius: 2, background: verdict === 'Safe' ? '#2C9D8A' : verdict === 'Limit' ? '#E8941F' : '#D64545', flexShrink: 0 }}></span>
-                <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#1C1C1C' }}>{food}</span>
-              </div>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '7px', letterSpacing: '0', color: '#8A8474' }}>{accuracy && accuracy !== 'accurate' ? 'RULED WITH YOUR ACCOUNT' : verdict === 'Safe' ? 'NO REACTION' : verdict === 'Limit' ? 'MILD / MIXED' : 'SYMPTOMS ON RECORD'}</span>
-            </div>
-          </div>
-
           <div style={s.analysisCard}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 9 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--forest-300)', boxShadow: '0 0 8px rgba(139,174,138,0.75)' }}></span>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)' }}>The analysis</span>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, letterSpacing: '-0.01em', color: '#151E18' }}>The analysis</span>
             </div>
             <div style={s.analysisText}>{analysis}</div>
           </div>
@@ -426,7 +419,7 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
           </div>
         </div>
         <div style={s.footer}>
-          <button style={allAnswered() ? s.cta : { ...s.cta, background: '#F0EEE6', color: 'rgba(32,36,31,0.35)', border: 'none', boxShadow: 'none', cursor: 'not-allowed' }} onClick={onComplete}>View your verdicts →</button>
+          <button style={allAnswered() ? s.cta : { ...s.cta, background: '#F0EEE6', color: 'rgba(32,36,31,0.35)', border: 'none', boxShadow: 'none', cursor: 'not-allowed' }} onClick={onComplete}>See your Food Map</button>
         </div>
       </div>
     )

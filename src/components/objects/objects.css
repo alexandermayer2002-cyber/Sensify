@@ -46,6 +46,8 @@
 .ob-strip .today.on { background: var(--ob-moss); outline-color: var(--ob-ink); }
 .ob-strip .today.slipped { outline: 2px solid var(--ob-ink); outline-offset: -2px; }
 .ob-strip .future { background: var(--ob-paper-2); }
+.ob-strip .reacted::after { content: ""; position: absolute; inset: 35%; border-radius: 50%; background: var(--ob-paper); }
+.ob-strip .on.reacted { background: var(--ob-ink-2); }
 
 /* ---- Symptom curve ---- */
 .ob-curve { display: block; width: 100%; height: auto; overflow: visible; }
@@ -54,7 +56,9 @@
 /* ---- Verdict card ---- */
 .ob-vc { min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; }
 .ob-vc .ob-food { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 24px; letter-spacing: -.01em; line-height: 1.05; }
-.ob-vc .ob-v { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 40px; letter-spacing: -.03em; line-height: 1; margin-top: 18px; }
+.ob-vc .ob-v { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 52px; letter-spacing: -.035em; line-height: 1; margin-top: 22px; }
+.ob-vc-strip { margin-top: 14px; }
+.ob-vc-strip .ob-strip { flex-wrap: wrap; }
 .ob-vc .ob-meta { font-size: 13px; color: var(--ob-mute); margin-top: 4px; }
 .ob-vc .ob-ev { font-size: 13px; color: var(--ob-ink-2); line-height: 1.4; margin-top: 6px; }
 .ob-vc .ob-tag { display: inline-block; margin-top: 10px; font-size: 12px; color: var(--ob-ink-2); border: 1px solid rgba(21,30,24,.18); border-radius: 999px; padding: 4px 10px; }
@@ -80,7 +84,8 @@
 .ob-btn.tonight, .ob-btn.washout { background: var(--ob-ink); color: var(--ob-paper); box-shadow: 0 22px 50px -22px rgba(22,31,25,.55); }
 .ob-btn.tonight small, .ob-btn.washout small { color: rgba(251,249,244,.6); }
 .ob-btn.logged { background: transparent; color: var(--ob-ink-2); border: 1px solid rgba(21,30,24,.2); cursor: default; }
-.ob-btn.catchup { background: var(--ob-paper); color: var(--ob-ink); box-shadow: var(--ob-shadow); }
+.ob-btn.catchup { background: var(--ob-ink); color: var(--ob-paper); box-shadow: 0 22px 50px -22px rgba(22,31,25,.55); }
+.ob-btn.catchup small { color: rgba(251,249,244,.6); }
 .ob-btn.weekly { background: var(--ob-forest); color: #ECE7DC; }
 .ob-btn.weekly small { color: rgba(236,231,220,.6); }
 .ob-btn.ob-block { width: 100%; justify-content: center; }

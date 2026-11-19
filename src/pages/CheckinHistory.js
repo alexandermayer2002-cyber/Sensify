@@ -481,9 +481,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               @keyframes chDueGlow { 0%, 100% { opacity: 0.06; } 50% { opacity: 0.13; } }
               @keyframes chDueBtn { 0%, 100% { box-shadow: 0 0 0 rgba(139,174,138,0); } 50% { box-shadow: 0 0 22px rgba(139,174,138,0.45); } }
             `}</style>
-            <div style={{ position: 'relative', background: '#22301F', borderRadius: 24, padding: '24px 24px 22px', overflow: 'hidden', boxShadow: 'var(--shadow-3)', animation: 'chDueRise 0.6s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
-              <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'chDueGlow 4s ease-in-out infinite', pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
+            <div style={{ position: 'relative', background: '#1E3327', borderRadius: 24, padding: '24px 24px 22px', overflow: 'hidden', boxShadow: 'var(--shadow-3)', animation: 'chDueRise 0.6s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, position: 'relative' }}>
                 <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, letterSpacing: '0', color: '#A9CFB2' }}>Your record</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -501,8 +499,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
         {/* LOCKED STATE */}
         {/* RECORD COMPLETE. no countdown for a check-in that never unlocks */}
         {programFinished && checkins.length > 0 && (
-          <div style={{ position: 'relative', background: '#22301F', borderRadius: 24, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: 'var(--shadow-3)', marginBottom: 20 }}>
-            <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', opacity: 0.08, pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', background: '#1E3327', borderRadius: 24, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: 'var(--shadow-3)', marginBottom: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, position: 'relative' }}>
               <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, letterSpacing: '0', color: '#A9CFB2' }}>Your record</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -526,9 +523,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
                   @keyframes chLkGlow { 0%, 100% { opacity: 0.05; } 50% { opacity: 0.11; } }
                   @keyframes chLkIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 `}</style>
-                <div style={{ position: 'relative', background: '#22301F', borderRadius: 24, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: 'var(--shadow-3)', animation: 'chLkRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
-                  <div style={{ position: 'absolute', top: -70, right: -70, width: 240, height: 240, borderRadius: '50%', background: '#8BAE8A', animation: 'chLkGlow 5s ease-in-out infinite', pointerEvents: 'none' }} />
-                  <div style={{ position: 'absolute', bottom: -90, left: -60, width: 200, height: 200, borderRadius: '50%', background: '#E8941F', opacity: 0.05, pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', background: '#1E3327', borderRadius: 24, padding: '24px 24px 26px', overflow: 'hidden', textAlign: 'center', boxShadow: 'var(--shadow-3)', animation: 'chLkRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 20 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, position: 'relative' }}>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, letterSpacing: '0', color: '#A9CFB2' }}>Your record</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -564,8 +559,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
               @keyframes chRise { from { opacity: 0; transform: translateY(18px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
               @keyframes chDotPulse { 0%, 60%, 100% { opacity: 0.25; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
             `}</style>
-            <div style={{ position: 'relative', background: '#22301F', borderRadius: 24, padding: '28px 22px 22px', overflow: 'hidden', boxShadow: 'var(--shadow-3)', animation: 'chRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 18 }}>
-              <div style={{ position: 'absolute', top: -70, right: -50, width: 210, height: 210, borderRadius: '50%', background: '#8BAE8A', opacity: 0.1, pointerEvents: 'none' }} />
+            <div style={{ position: 'relative', background: '#1E3327', borderRadius: 24, padding: '28px 22px 22px', overflow: 'hidden', boxShadow: 'var(--shadow-3)', animation: 'chRise 0.7s cubic-bezier(0.16,1,0.3,1) both', marginBottom: 18 }}>
 
               <div style={{ position: 'relative', fontFamily: 'var(--font-body)', fontSize: 9, letterSpacing: '0', color: '#C9A227', textTransform: 'none', marginBottom: 16 }}>Your record</div>
               <div style={{ position: 'relative', fontFamily: 'Fraunces, serif', fontSize: 26, fontWeight: 400, color: '#FAF8F4', lineHeight: 1.15, marginBottom: 10 }}>The story of how<br />you got better.</div>
@@ -573,7 +567,7 @@ export default function CheckinHistory({ session, profile, weeklyDue, onStartChe
 
               <div style={{ position: 'relative' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 2, animation: 'chRowIn 0.6s ease 0.4s both' }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 10, background: '#8BAE8A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><span style={{ fontFamily: 'Fraunces, serif', fontSize: 15, color: '#22301F' }}>1</span></div>
+                  <div style={{ width: 34, height: 34, borderRadius: 10, background: '#8BAE8A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><span style={{ fontFamily: 'Fraunces, serif', fontSize: 15, color: '#1E3327' }}>1</span></div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13.5, fontWeight: 600, color: '#FAF8F4' }}>Week 1 opens your record</div>
                     <div style={{ fontSize: 11.5, color: 'rgba(250,248,244,0.5)' }}>7 days after your program begins</div>
