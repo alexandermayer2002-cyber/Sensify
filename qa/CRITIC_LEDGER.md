@@ -93,12 +93,10 @@ have closed some of these; night one must re-test every item rather than trust t
 ### New (Critic, 2026-11-14)
 | id | found | area | sev | finding | fix | probe | status |
 |---|---|---|---|---|---|---|---|
-| N03 | 11-14 | home/all | MED | The 11-13 "em-dashes removed" sweep (be556f2) swapped each dash for a period, leaving lowercase mid-sentence fragments live on Home: "Your elimination list. the foods you'll avoid for 8 weeks. appears here once your results are in" (Dashboard.js:2354); "At 28 nights. four clean weeks of check-ins. they form a constellation" (2425); "Setup complete. your results are in review" (1853); "Usually ready within a day. it will meet you here." (1913); "Slip-up logged. thank you" (1951); "Your data is safe. we just couldn't load it" (1345). Also the safety panel: "That didn't save. please try again." (ReintroTab.js:666), WeeklyCheckin.js:480, FoodMap.js:306, LabResults.js:172,626, ReintroTab.js:138. | replace each ". lowercase" with a comma, colon or a full new sentence; grep `[a-z]\. [a-z]{3,}` inside string literals | curl main.js, grep -c "Your elimination list. the foods" (0 when fixed) | OPEN (found 2026-11-14; live bundle main.7f82e092) |
 
 ### New (Critic, 2026-11-17)
 | id | found | area | sev | finding | fix | probe | status |
 |---|---|---|---|---|---|---|---|
-| N05 | 11-17 | maintain | MED | After opting into Maintain, the green check circle renders the literal text `\u2713` (MaintainHub.js:106, JSX text does not process escapes; live bundle has children:"\\u2713"). Same bug class as X03 | change to `{'\u2713'}` or the character | curl main.js, fail if `children:"\\\\u` appears | OPEN (2026-11-17) |
 
 ### New (Critic, 2026-11-15 Sunday full pass)
 | id | found | area | sev | finding | fix | probe | status |
@@ -106,7 +104,7 @@ have closed some of these; night one must re-test every item rather than trust t
 | X01 | 11-15 | weekly/history | HIGH | Weekly insight renders "Bloating, dropped, from, 6, to, 5, , a, 17%, improvement". WeeklyCheckin.js:357-360: sweep be556f2 turned `[—–-]` into `[, –]`, so every space becomes ", ". Saved insight in History corrupted the same way (CONFIRMED in source tonight) | restore `[—–-]` at 357, 358, 360 (as aiInsights.js:6-11) | submit weekly, assert no `\w, \w, \w` | OPEN (2026-11-15) |
 | X02 | 11-15 | daily/slipup | HIGH | After a "No" (3 in a row) Home shows no "Tell us what happened"/audit entry; showSlipupCard/showAuditCard (Dashboard.js:1223,1934) only in legacy branch, HomeElimination has none; SlipupSurvey+ComplianceAudit unreachable, slip_up_reason stays null | add slip-up/audit rows to HomeElimination | log 3 Nos, assert "Tell us what happened" on Home | OPEN (2026-11-15; one agent walk, live) |
 | N03 | (extended 11-15) | all | MED | full list of lowercase fragments from sweep: AskSensify 118,266; MaintainHub 55,338; ReintroductionSurvey 210,227,329; ReintroTab 138,156,271,666,841,846,1086,1096,1103,1104; LabResults 172,246,416,435,439,626,627; DailyCheckin 254,638; Dashboard 1345,1533,1853,1913,1951,2019,2190,2354,2425; WeeklyCheckin 480,498,576,674,724; FoodMap 306,338,375; IntakeSurvey 387,659,685,755; CheckinHistory 627 | capitalise or comma | grep `\. [a-z]` in string literals | OPEN (2026-11-15) |
-| X04 | 11-15 | daily | MED | out-of-range sleep (75) stays after closing the pad; "Done for today" disabled with no message | persistent inline error | enter 75, tap Stress, assert "Between 0 and 14" | OPEN |
+| X04 | 11-15 | daily | MED | out-of-range sleep (75) stays after closing the pad; "Done for today" disabled with no message | persistent inline error | enter 75, tap Stress, assert "Between 0 and 14" | OPEN (2026-11-19: fix deployed in ff2a85b, bundle probe PASS in qa/bundle_probes.py; behavioural walk owed Sunday 11-22) |
 | X05 | 11-15 | reintro washout | MED | "Tonight's check asks one thing" / "1 minute" but form asks plan, sleep, stress, water, cycle | align | - | OPEN |
 | X06 | 11-15 | reintro | MED | verdict opens on day 14 (washout day 11 of 11, unlogged) while day-13 copy says "the day after washout ends" | align gate/copy (F06) | - | OPEN |
 | X07 | 11-15 | reintro | MED | Reintro tab "Fourteen days are on the record" vs Home "Five nights"; ReintroductionSurvey.js:253-254 still writes 'Limit' on empty logs if activeReintroId null or query fails | count logged nights; early return in handleSubmit | - | OPEN |
@@ -118,8 +116,7 @@ have closed some of these; night one must re-test every item rather than trust t
 | X14 | 11-15 | jargon | LOW | undefined: washout, day-zero score, baseline sharpness/"within 2.5", FODMAPs, antibody-based, IgG; "cycle" ambiguous (trial vs menstrual) | gloss at first use | - | OPEN |
 | X15 | 11-15 | weekly | LOW | "17% improvement ... clearest signal so far" off a 1-point week-one change; stale-restart reason "five days" vs "fourteen days" | cap claim, align | - | OPEN |
 | X16 | 11-15 | marketing | HIGH | page promises "Complete your lab test from home ... part of the $399" but no code collects shipping address or orders a kit (grep src/netlify empty); home jumps from intake to "I took my test" | [ALEX] say how/when kit arrives or build address capture (ties D02) | grep -rniE "shipping_address" netlify src | OPEN |
-| X17 | 11-15 | lab | MED | submit error rendered at page top (LabResults.js:464), button at bottom (:657): phone user sees nothing; "Review my entry" disabled with no hint (:658) | scrollIntoView / hint line | - | OPEN |
-| X18 | 11-15 | marketing | MED | /science /faq /pricing /how-it-works all render the home page (state tabs, no href) | map path to tab | goto /faq shows "Things people ask us" | OPEN |
+| X17 | 11-15 | lab | MED | submit error rendered at page top (LabResults.js:464), button at bottom (:657): phone user sees nothing; "Review my entry" disabled with no hint (:658) | scrollIntoView / hint line | - | OPEN (2026-11-19: fix deployed in ff2a85b, bundle probe PASS in qa/bundle_probes.py; behavioural walk owed Sunday 11-22) |
 | X19 | 11-15 | marketing/home | MED | "builds your elimination list in seconds" beside "usually within a day" now in marketing too (D04) | one honest timeline | - | OPEN |
 | X20 | 11-15 | home | LOW | "1 foods total"/"0 foods total" (Dashboard.js:2297); "begins tomorrow" x4 on day 1; "day zero" vs Day 1; D11/D12 legend absent on day-27 layout | pluralise, dedupe | - | OPEN |
 | X21 | 11-15 | account | HIGH | D16 confirmed: More sheet (Dashboard.js:1391-1399) has no export/delete; no netlify function; privacy.html silent | add export + delete, or state email-us path + SLA | grep export/delete in More + functions | OPEN (links D16) |
@@ -130,6 +127,9 @@ have closed some of these; night one must re-test every item rather than trust t
 ## FIXED
 | id | evidence (tonight's fresh re-test) |
 |---|---|
+|  X18 | FIXED (2026-11-19, ff2a85b; live /faq /science /pricing open their tab, bundle_probes.py PASS) |
+|  N05 | FIXED (2026-11-19, ff2a85b + 625430c: MaintainHub.js:106 and Support.js:183; bundle_probes.py N05 PASS live) |
+|  N03 | FIXED (2026-11-19, 74331b6 already shipped the fix; the old probe's '.' matched a comma, false positive. bundle_probes.py N03 PASS on main.11b4ad87) |
 |  N02 | FIXED (2026-11-19, qa/regress_all.py: new --fleet-only flag so base suite and fleet run in separate windows; owed scheduling split) |
 |  N04 | FIXED (2026-11-19, qa/regress_all.py: wait_ready after gate(r) before reading unlock_hero text; owed one clean full run to confirm) |
 |  X25 | FIXED (2026-11-19, qa/fleetkit.py: check-in selector re-keyed to the curly apostrophe in "Start tonight’s check-in" after the 11-16 redesign; all four fleet.*.day_logged PASS live. It was harness drift, not a product bug) |
