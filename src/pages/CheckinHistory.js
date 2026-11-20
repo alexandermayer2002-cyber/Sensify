@@ -278,7 +278,6 @@ const SCORE_METRICS = [
 function CheckinCard({ checkin: c, index: i, fallbackWeek, profile, formatDate, complianceColors, styles: s }) {
   const [expanded, setExpanded] = useState(false)
   const compliance = c.answers?.compliance
-  const compStyle = complianceColors[compliance] || { bg: '#FAF8F4', color: '#7A7A72' }
   // Legacy rows with no week_number count from the OLDEST entry (QA 2026-11-05
   // minor): the list renders newest-first, so `i + 1` numbered the newest
   // entry "Week 1".
@@ -304,32 +303,30 @@ function CheckinCard({ checkin: c, index: i, fallbackWeek, profile, formatDate, 
         </div>
       </div>
 
-      {/* Always visible. scores */}
+      {/* The week's numbers, in words against day zero. Verdict colours never
+          appear here; a worse week says so. */}
       <div style={s.checkinScores}>
         {scores.map(m => {
           const val = c.answers[m.id]
           const baseline = profile?.[`baseline_${m.id}`]
-          const change = baseline ? Math.round(((val - baseline) / baseline) * 100) : null
           const lowerIsBetter = ['bloating', 'gas', 'reflux'].includes(m.id)
-          const improved = lowerIsBetter ? change < 0 : change > 0
+          let word = ''
+          if (baseline != null && val !== baseline) {
+            const improved = lowerIsBetter ? val < baseline : val > baseline
+            word = improved ? 'better' : 'worse'
+          } else if (baseline != null) word = 'no change'
           return (
             <div key={m.id} style={s.scoreChip}>
-              <div style={s.scoreLabel}>{m.label}</div>
-              <div style={s.scoreVal}>{val}</div>
-              {change !== null && (
-                <div style={{ fontSize: '10px', fontWeight: 500, color: improved ? '#4A8C6A' : change === 0 ? '#7A7A72' : '#C95B5B', marginTop: '1px' }}>
-                  {change > 0 ? '+' : ''}{change}%
-                </div>
-              )}
+              <span style={s.scoreLabel}>{m.label}</span>
+              <span style={s.scoreVal}>{val}</span>
+              {baseline != null && <span style={s.scoreWord}>{baseline} at day zero{word ? `, ${word}` : ''}</span>}
             </div>
           )
         })}
       </div>
 
       {compliance && (
-        <div style={{ ...s.compliancePill, background: compStyle.bg, color: compStyle.color }}>
-          {compliance} compliant
-        </div>
+        <div style={s.compLine}>{compliance === 'Fully' ? 'On plan all week.' : compliance === 'Mostly' ? 'On plan most of the week.' : compliance === 'Some slip-ups' ? 'Some slips this week, logged as leads.' : compliance === 'Not at all' ? 'Off plan this week, on the record.' : `${compliance} on plan.`}</div>
       )}
 
       {/* Expanded section */}
@@ -339,7 +336,7 @@ function CheckinCard({ checkin: c, index: i, fallbackWeek, profile, formatDate, 
           {overallFeeling && (
             <div style={{ marginBottom: '12px' }}>
               <div className="sn-micro sn-micro-dim" style={{ marginBottom: '5px' }}>Overall feeling</div>
-              <div style={{ fontSize: '13px', color: '#1C1C1C', fontWeight: 500 }}>{overallFeeling} compared to last week</div>
+              <div style={{ fontSize: '14px', color: '#151E18', fontWeight: 500 }}>{overallFeeling} compared to last week</div>
             </div>
           )}
 
@@ -348,7 +345,7 @@ function CheckinCard({ checkin: c, index: i, fallbackWeek, profile, formatDate, 
               <div className="sn-micro sn-micro-dim" style={{ marginBottom: '6px' }}>What changed</div>
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {contextChanges.map(ch => (
-                  <span key={ch} style={{ background: 'var(--tint-warm)', border: 'none', borderRadius: '999px', fontSize: '11px', padding: '5px 11px', color: '#1C1C1C' }}>{ch}</span>
+                  <span key={ch} style={{ background: '#EEEFE8', border: 'none', borderRadius: '999px', fontSize: '12.5px', padding: '5px 11px', color: '#151E18' }}>{ch}</span>
                 ))}
               </div>
             </div>
@@ -356,8 +353,8 @@ function CheckinCard({ checkin: c, index: i, fallbackWeek, profile, formatDate, 
 
           {notes && (
             <div style={{ marginBottom: '12px' }}>
-              <div className="sn-micro sn-micro-dim" style={{ marginBottom: '5px' }}>Notes</div>
-              <div style={{ fontSize: '13px', color: '#7A7A72', fontStyle: 'normal', lineHeight: 1.6 }}>"{notes}"</div>
+              <div className="sn-micro sn-micro-dim" style={{ marginBottom: '5px' }}>Your note</div>
+              <div style={{ fontSize: '14px', color: '#434B44', lineHeight: 1.6 }}>{notes}</div>
             </div>
           )}
 
@@ -368,6 +365,7 @@ function CheckinCard({ checkin: c, index: i, fallbackWeek, profile, formatDate, 
         <div style={s.insightBox}>
           <div style={s.insightTag}>Weekly insight</div>
           <div style={s.insightText}>{c.ai_insight}</div>
+          <div style={s.insightSign}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
         </div>
       )}
     </div>
@@ -413,19 +411,21 @@ const s = {
 
   // Check-in cards
   secLabel: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, letterSpacing: '-0.015em', color: '#151E18', margin: '28px 0 12px' },
-  checkinCard: { background: '#FCFBF8', border: 'none', borderRadius: '14px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 16px 32px -24px rgba(22,31,25,.3)', padding: '18px 20px', marginBottom: '12px' },
+  checkinCard: { background: '#FCFBF8', border: 'none', borderRadius: '14px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 16px 32px -24px rgba(22,31,25,.3)', padding: '22px 24px', marginBottom: '12px' },
   checkinHeader: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' },
-  checkinWeek: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300 },
+  checkinWeek: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 400, letterSpacing: '-0.015em' },
   checkinWeekEm: { fontStyle: 'normal', color: '#3D5C3C' },
   checkinDate: { fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 500, color: '#737B73' },
-  checkinScores: { display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' },
-  scoreChip: { display: 'flex', align: 'center', gap: '5px', background: 'var(--tint-warm)', border: 'none', borderRadius: '10px', padding: '7px 11px' },
-  scoreLabel: { fontFamily: 'var(--font-body)', fontSize: '12.5px', color: '#737B73', fontWeight: 500 },
-  scoreVal: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 300, lineHeight: 1, marginTop: '1px' },
-  compliancePill: { fontSize: '11px', fontWeight: 500, padding: '4px 11px', borderRadius: '999px', display: 'inline-block', marginBottom: '10px' },
-  insightBox: { background: '#EDF3ED', borderRadius: '16px', padding: '11px 13px' },
-  insightTag: { fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--forest-500)', marginBottom: '5px' },
-  insightText: { fontSize: '12px', color: '#1C1C1C', lineHeight: 1.65 },
+  checkinScores: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '6px 18px', marginBottom: '12px' },
+  scoreChip: { display: 'flex', alignItems: 'baseline', gap: '8px', padding: '7px 0', borderTop: '1px solid rgba(21,30,24,.07)' },
+  scoreLabel: { fontFamily: 'var(--font-body)', fontSize: '14px', color: '#151E18', fontWeight: 500, flex: 1 },
+  scoreVal: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, lineHeight: 1 },
+  scoreWord: { fontSize: '12.5px', color: '#737B73', whiteSpace: 'nowrap' },
+  compLine: { fontSize: '14px', color: '#434B44', marginBottom: '12px' },
+  insightBox: { borderTop: '1px solid rgba(21,30,24,.08)', paddingTop: '14px', marginTop: '4px' },
+  insightTag: { fontFamily: 'Fraunces, serif', fontSize: '18px', fontWeight: 400, letterSpacing: '-0.01em', color: '#151E18', marginBottom: '8px' },
+  insightText: { fontSize: '14.5px', color: '#434B44', lineHeight: 1.7, maxWidth: 680 },
+  insightSign: { fontFamily: 'Fraunces, serif', fontSize: '16px', color: '#151E18', marginTop: '12px' },
 
   // Empty state
   emptyWrap: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', textAlign: 'center' },
