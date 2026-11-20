@@ -1,7 +1,7 @@
 {
- "date": "2611191429",
- "passed": 57,
- "total": 57,
+ "date": "2611201645",
+ "passed": 63,
+ "total": 63,
  "results": [
   {
    "check": "mkt.example_labels",
@@ -116,7 +116,7 @@
   {
    "check": "p5.file_stored",
    "ok": true,
-   "detail": "[{'file_path': 'aa4dd1f3-eed8-496d-83d8-6a74318d8979-1795117091646.pdf'}]"
+   "detail": "[{'file_path': 'b077afaf-601a-4141-be59-89af3d4a71b9-1795211616056.pdf'}]"
   },
   {
    "check": "fleet.elimearly.no_overflow",
@@ -141,12 +141,12 @@
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-19"
+   "detail": "no daily_factors row for 2026-11-20"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=2 expected=2 start=2026-11-18"
+   "detail": "shown=3 expected=3 start=2026-11-18"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -176,12 +176,12 @@
   {
    "check": "fleet.elimlate.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-19"
+   "detail": "no daily_factors row for 2026-11-20"
   },
   {
    "check": "fleet.elimlate.day_counter",
    "ok": true,
-   "detail": "shown=49 expected=49 start=2026-10-02"
+   "detail": "shown=50 expected=50 start=2026-10-02"
   },
   {
    "check": "fleet.elimlate.console_clean",
@@ -211,12 +211,12 @@
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-19"
+   "detail": "no daily_factors row for 2026-11-20"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=6 expected=6 start=2026-11-14"
+   "detail": "shown=7 expected=7 start=2026-11-14"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -246,7 +246,7 @@
   {
    "check": "fleet.reintro.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-19"
+   "detail": "no daily_factors row for 2026-11-20"
   },
   {
    "check": "fleet.reintro.verdict_count",
@@ -281,12 +281,42 @@
   {
    "check": "fleet.tracking.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-19"
+   "detail": "no daily_factors row for 2026-11-20"
   },
   {
    "check": "fleet.tracking.console_clean",
    "ok": true,
    "detail": "[]"
+  },
+  {
+   "check": "sentinel.silent_writes",
+   "ok": true,
+   "detail": "0 NEW unchecked writes"
+  },
+  {
+   "check": "sentinel.safety",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "sentinel.rls_boundary",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "sentinel.data_integrity",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fault.intake_complete_surfaces",
+   "ok": true,
+   "detail": "errored=True escaped_to_dashboard=False | \u2190 Back\nSensify.\nStep 5 of 5\nA bit about\nyour normal.\nSleep, stress, and a few habits shape how you feel as much as foo"
+  },
+  {
+   "check": "fault.meal_log_surfaces",
+   "ok": true,
+   "detail": "retry=True false_success=False"
   }
  ]
 }

@@ -28,6 +28,12 @@
    "code": "// CLINICAL THRESHOLDS LIVE HERE in one place so a physician"
   },
   {
+   "file": "src/utils/verdictEngine.js",
+   "line": 33,
+   "kind": "physician-claim",
+   "code": "// FLAGGED FOR PHYSICIAN REVIEW (default values)."
+  },
+  {
    "file": "src/utils/confoundAnalysis.js",
    "line": 30,
    "kind": "physician-claim",
@@ -70,6 +76,12 @@
    "code": "<div style={s.sub}>Enter your email and we'll send you a reset link.</div>"
   },
   {
+   "file": "src/pages/ReintroTab.js",
+   "line": 1032,
+   "kind": "physician-claim",
+   "code": "/* P01: static red-flag card on every exposure day (flagged for physician review) */"
+  },
+  {
    "file": "src/pages/AdminDashboard.js",
    "line": 866,
    "kind": "physician-claim",
@@ -98,6 +110,12 @@
    "line": 80,
    "kind": "physician-claim",
    "code": "// causal connections are Layer 2's job, gated behind physician sign-off."
+  },
+  {
+   "file": "src/pages/IntakeSurvey.js",
+   "line": 134,
+   "kind": "physician-claim",
+   "code": "// FLAGGED FOR PHYSICIAN REVIEW: the question list and the stop rule."
   },
   {
    "file": "netlify/functions/ai-proxy.js",
