@@ -128,7 +128,7 @@ const css = `
   /* Greeting */
   .snfy-greeting { margin-bottom: 16px; }
   .snfy-greeting h1 { font-family: var(--font-display); font-size: 30px; font-weight: 300; line-height: 1.2; margin-bottom: 5px; letter-spacing: -0.5px; }
-  .snfy-greeting h1 em { font-style: italic; color: var(--forest-500); }
+  .snfy-greeting h1 em { font-style: normal; }
   .snfy-greeting p { font-size: 13px; color: var(--gray); line-height: 1.55; }
 
   /* Dark protocol card */
@@ -162,7 +162,7 @@ const css = `
   .snfy-action-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--forest-500); animation: snfy-pulse 2s infinite; }
   @keyframes snfy-pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
   .snfy-action h2 { font-family: var(--font-display); font-size: 21px; font-weight: 300; margin-bottom: 6px; line-height: 1.3; letter-spacing: -0.3px; }
-  .snfy-action h2 em { font-style: italic; color: var(--forest-500); }
+  .snfy-action h2 em { font-style: normal; }
   .snfy-action h2 em.amber { color: var(--limit-700); }
   .snfy-action h2 em.red { color: var(--avoid-700); }
   .snfy-action p { font-size: 13px; color: var(--gray); line-height: 1.65; margin-bottom: 14px; }
