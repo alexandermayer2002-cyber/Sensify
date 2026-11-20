@@ -187,7 +187,7 @@ def maybe_start_cycle(r):
 
 def daily_checkin(r, stage, v):
     opened = False
-    for txt in ["How's today going", re.compile(r"(Today|Tonight)['\u2019]s check-in", re.I)]:
+    for txt in ["How's today going", re.compile(r"(Today|Tonight)['\u2019]s (check-in|washout check)", re.I)]:
         try:
             r.page.get_by_text(txt).first.click(timeout=4000)
             r.sleep(1.6); r.wait_ready(10); opened = True; break
