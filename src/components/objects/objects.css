@@ -93,3 +93,21 @@
 /* ---- Day counter ---- */
 .ob-day { font-size: 16px; color: var(--ob-ink-2); display: inline-flex; align-items: baseline; gap: 8px; }
 .ob-day b { font-family: var(--font-display, 'Fraunces', serif); font-weight: 400; font-size: 30px; color: var(--ob-ink); letter-spacing: -.02em; line-height: 1; }
+
+/* ---- The verdict moment ---- */
+@keyframes obSquare { from { opacity: 0; transform: translateY(6px) scale(.9); } to { opacity: 1; transform: none; } }
+@keyframes obLand { from { opacity: 0; transform: translateY(18px); letter-spacing: -.02em; } to { opacity: 1; transform: none; letter-spacing: -.04em; } }
+@keyframes obLine { from { opacity: 0; } to { opacity: 1; } }
+.ob-moment { display: block; }
+.ob-moment-food { font-size: 15px; color: var(--ob-mute); margin-bottom: 14px; }
+.ob-moment-strip .ob-strip i { animation: obSquare .32s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i, 0) * 75ms); }
+.ob-moment-word { font-family: var(--font-display, 'Fraunces', serif); font-weight: 300; line-height: .92; letter-spacing: -.04em; margin-top: 22px; animation: obLand .7s cubic-bezier(.2,.8,.2,1) 1.15s both; }
+.ob-moment-word.safe { color: var(--safe, #1F9C87); }
+.ob-moment-word.limit { color: var(--limit, #D98A1C); }
+.ob-moment-word.avoid { color: var(--avoid, #CF4B4B); }
+.ob-moment-line { font-size: 16px; color: var(--ob-ink-2); line-height: 1.55; max-width: 520px; margin-top: 18px; animation: obLine .5s ease 1.9s both; }
+.ob-payoff-head { animation: obLand .6s cubic-bezier(.2,.8,.2,1) .6s both; }
+.ob-payoff-line { animation: obLine .5s ease 1.05s both; }
+@media (prefers-reduced-motion: reduce) {
+  .ob-moment-strip .ob-strip i, .ob-moment-word, .ob-moment-line, .ob-payoff-head, .ob-payoff-line { animation: none; }
+}

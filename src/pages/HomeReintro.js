@@ -336,6 +336,12 @@ const CSS = `
 .hr-panel .hr-link, .hr-panel .hr-quiet { align-self: flex-start; margin-top: 6px; }
 @media (max-width: 860px) {
   .hr-hero, .hr-panels { grid-template-columns: 1fr; }
+@media (max-width: 440px) {
+  .hr-page .ob-strip.ob-lg i { width: 18px; height: 18px; border-radius: 4px; }
+  .hr-page .ob-strip.ob-lg { gap: 6px; }
+  .hr-herocard .ob-btn { width: 100%; justify-content: center; }
+  .hr-herocard .ob-btn small { display: none; }
+}
   .hr-page { padding: 12px 14px 64px; }
 }
 `

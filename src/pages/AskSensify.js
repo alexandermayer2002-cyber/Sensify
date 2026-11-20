@@ -161,10 +161,10 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
     <div style={s.wrap}>
       <style>{css}</style>
       <div style={s.header}>
-        <div style={s.headerTitle}>Ask <em style={s.em}>Sensify</em></div>
+        <div style={s.headerTitle}>Ask Sensify</div>
         {/* Phase-aware status (QA 2026-10-28 #7): "READING YOUR VERDICTS" was
             false for tracking users and pre-verdict eliminators. */}
-        <div style={s.headerStatus}><span style={s.statusDot}></span><span style={s.statusText}>{observationMode ? 'TRACKING MODE · LOGGING LIVE' : foodMap.some(f => f.verdict) ? 'READING YOUR VERDICTS · LIVE' : 'READING YOUR MAP · LIVE'}</span></div>
+        <div style={s.headerStatus}><span style={s.statusDot}></span><span style={s.statusText}>{observationMode ? 'Tracking mode, logging live' : foodMap.some(f => f.verdict) ? 'Reading your verdicts' : 'Reading your map'}</span></div>
       </div>
 
       <div style={s.thread} ref={scrollRef}>
@@ -203,7 +203,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                 <button key={i} className={`sn-chip ${['sn-rise-2', 'sn-rise-3', 'sn-rise-4'][i] || 'sn-rise-4'}`} style={s.capCard} onClick={() => setInput(c.example)}>
                   <div style={s.capTitle}>{c.title}</div>
                   <div style={s.capDesc}>{c.desc}</div>
-                  <div style={s.capExample}>"{c.example}"</div>
+                  <div style={s.capExample}>Try: {c.example}</div>
                 </button>
               ))}
             </div>
@@ -244,9 +244,9 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                 {/* Type B. guidance list */}
                 {m.guide && (m.guide.safe.length > 0 || m.guide.skip.length > 0 || m.guide.ask.length > 0) && (
                   <div style={s.guide}>
-                    {m.guide.safe.length > 0 && <GuideRow dot="#2C9D8A" label="Safe picks" items={m.guide.safe} />}
-                    {m.guide.skip.length > 0 && <GuideRow dot="#D64545" label="Skip" items={m.guide.skip} />}
-                    {m.guide.ask.length > 0 && <GuideRow dot="#E8941F" label="Ask about" items={m.guide.ask} />}
+                    {m.guide.safe.length > 0 && <GuideRow label="Order freely" items={m.guide.safe} />}
+                    {m.guide.skip.length > 0 && <GuideRow label="Skip" items={m.guide.skip} />}
+                    {m.guide.ask.length > 0 && <GuideRow label="Ask the kitchen" items={m.guide.ask} />}
                   </div>
                 )}
 
@@ -256,7 +256,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
                     <div style={s.logCheck}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg></div>
                     <div>
                       <div style={s.logText}>Added to today's log</div>
-                      <div style={s.logFoods}>{m.logged.join(' · ')}</div>
+                      <div style={s.logFoods}>{m.logged.join(', ')}</div>
                     </div>
                   </div>
                 )}
@@ -291,7 +291,7 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
             menu screenshots unpickable on phones. */}
         <input ref={fileRef} type="file" accept="image/*" onChange={pickImage} style={{ display: 'none' }} />
         <button style={s.camera} onClick={() => fileRef.current?.click()} title="Upload a menu or label photo">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#151E18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         </button>
         <textarea
           style={s.input}
@@ -310,11 +310,14 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
   )
 }
 
-function GuideRow({ dot, label, items }) {
+/* Guidance reads as three plain sections, no coloured dots: Order freely,
+   Skip, Ask the kitchen. Verdict colour stays on the readout, which is the
+   ruling; a list of menu items is advice, not a verdict. */
+function GuideRow({ label, items }) {
   return (
-    <div className="sn-row" style={s.guideRow}>
-      <span style={{ ...s.guideDot, background: dot }} />
-      <span style={s.guideText}><b style={{ fontWeight: 600 }}>{label}</b>: {items.join(', ')}</span>
+    <div style={s.guideRow}>
+      <div style={s.guideLabel}>{label}</div>
+      <div style={s.guideText}>{items.join(', ')}</div>
     </div>
   )
 }
@@ -340,59 +343,58 @@ const s = {
   priorHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--gray-faint)', margin: '4px 0 12px' },
   priorHide: { background: 'none', border: 'none', color: 'var(--forest-500)', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, cursor: 'pointer', textTransform: 'none', letterSpacing: '0' },
   priorDivider: { textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 500, textTransform: 'none', letterSpacing: '0', color: 'var(--gray-faint)', margin: '8px 0 16px', paddingTop: '12px', borderTop: '1px solid rgba(0,0,0,0.06)' },
-  wrap: { display: 'flex', flexDirection: 'column', height: 'calc(100% - 24px)', maxWidth: '680px', margin: '12px auto', width: 'calc(100% - 24px)', background: 'var(--paper)', border: 'none', boxShadow: 'var(--shadow-2)', borderRadius: '24px', overflow: 'hidden' },
-  header: { padding: '20px 20px 14px', background: 'var(--paper)' },
-  headerTitle: { fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300 },
-  em: { fontStyle: 'italic', color: '#3D5C3C' },
+  wrap: { display: 'flex', flexDirection: 'column', height: 'calc(100% - 24px)', maxWidth: '720px', margin: '12px auto', width: 'calc(100% - 24px)', background: 'transparent' },
+  header: { padding: '12px 4px 14px' },
+  headerTitle: { fontFamily: 'Fraunces, serif', fontSize: '30px', fontWeight: 300, letterSpacing: '-0.02em', color: '#151E18' },
   headerStatus: { display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' },
-  statusDot: { width: '6px', height: '6px', borderRadius: '50%', background: 'var(--forest-300)', boxShadow: '0 0 8px rgba(139,174,138,0.8)', animation: 'asPulse 1.6s infinite' },
-  statusText: { fontFamily: 'var(--font-body)', fontSize: '12px', color: '#7A7A72', letterSpacing: '0' },
-  thread: { flex: 1, overflowY: 'auto', padding: '8px 16px 16px', display: 'flex', flexDirection: 'column', gap: '12px' },
+  statusDot: { width: '6px', height: '6px', borderRadius: '50%', background: '#3C6A4B' },
+  statusText: { fontFamily: 'var(--font-body)', fontSize: '13.5px', color: '#737B73', letterSpacing: '0' },
+  thread: { flex: 1, overflowY: 'auto', padding: '8px 4px 16px', display: 'flex', flexDirection: 'column', gap: '12px' },
   empty: { textAlign: 'center', padding: '36px 16px', margin: 'auto 0' },
-  emptyTitle: { fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '10px' },
-  emptyText: { fontSize: '14px', color: '#7A7A72', lineHeight: 1.6, maxWidth: '420px', margin: '0 auto 22px' },
-  capList: { display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '380px', margin: '0 auto' },
-  capCard: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '3px', textAlign: 'left', padding: '14px 16px', borderRadius: '16px', width: '100%' },
-  capTitle: { fontSize: '14px', fontWeight: 600, color: '#1C1C1C', marginBottom: '3px' },
-  capDesc: { fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.5, marginBottom: '8px' },
-  capExample: { fontSize: '12.5px', color: '#3D5C3C' },
-  emptyFoot: { fontSize: '12px', color: '#A8A69E', marginTop: '18px' },
+  emptyTitle: { fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, marginBottom: '10px', letterSpacing: '-0.015em', color: '#151E18' },
+  emptyText: { fontSize: '15px', color: '#434B44', lineHeight: 1.6, maxWidth: '440px', margin: '0 auto 22px' },
+  capList: { display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '420px', margin: '0 auto' },
+  capCard: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '3px', textAlign: 'left', padding: '16px 18px', borderRadius: '14px', width: '100%', background: '#FCFBF8', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 16px 32px -24px rgba(22,31,25,.3)' },
+  capTitle: { fontFamily: 'Fraunces, serif', fontSize: '19px', fontWeight: 400, color: '#151E18', marginBottom: '3px' },
+  capDesc: { fontSize: '13.5px', color: '#434B44', lineHeight: 1.5, marginBottom: '8px' },
+  capExample: { fontSize: '13px', color: '#737B73' },
+  emptyFoot: { fontSize: '13px', color: '#737B73', marginTop: '18px' },
   chips: { display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '320px', margin: '0 auto' },
   userRow: { display: 'flex', justifyContent: 'flex-end' },
   aiRow: { display: 'flex', justifyContent: 'flex-start' },
-  userBubble: { background: 'var(--forest-100)', color: 'var(--forest-900)', padding: '11px 16px', borderRadius: '18px 18px 6px 18px', fontSize: '14px', lineHeight: 1.5, maxWidth: '80%', whiteSpace: 'pre-wrap' },
-  aiPanel: { background: 'var(--paper)', border: 'none', borderRadius: '18px 18px 18px 6px', padding: '17px 18px', maxWidth: '90%', boxShadow: 'var(--shadow-1)' },
-  aiMeta: { fontFamily: 'var(--font-body)', fontSize: '12px', color: '#A8A69E', letterSpacing: '0', textTransform: 'none', marginBottom: '9px' },
-  aiText: { color: '#1C1C1C', fontSize: '14px', lineHeight: 1.65, whiteSpace: 'pre-wrap' },
+  userBubble: { background: '#151E18', color: '#FCFBF8', padding: '12px 16px', borderRadius: '16px 16px 4px 16px', fontSize: '15px', lineHeight: 1.5, maxWidth: '80%', whiteSpace: 'pre-wrap' },
+  aiPanel: { background: '#FCFBF8', border: 'none', borderRadius: '16px 16px 16px 4px', padding: '18px 20px', maxWidth: '92%', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 16px 32px -24px rgba(22,31,25,.3)' },
+  aiMeta: { fontFamily: 'var(--font-body)', fontSize: '13px', color: '#737B73', letterSpacing: '0', textTransform: 'none', marginBottom: '8px' },
+  aiText: { color: '#151E18', fontSize: '15px', lineHeight: 1.6, whiteSpace: 'pre-wrap' },
 
   readout: { display: 'flex', borderRadius: '16px', overflow: 'hidden', border: 'none', boxShadow: 'var(--shadow-1)', marginTop: '14px' },
   readoutAccent: { width: '4px', flexShrink: 0 },
   readoutBody: { flex: 1, padding: '11px 14px', background: '#FCFBF9' },
   readoutTop: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2px' },
-  readoutVerdict: { fontSize: '12.5px', fontWeight: 700, letterSpacing: '0' },
+  readoutVerdict: { fontFamily: 'Fraunces, serif', fontSize: '20px', fontWeight: 400, letterSpacing: '-0.01em' },
   readoutMeta: { fontFamily: 'var(--font-body)', fontSize: '12px', color: '#A8A69E' },
-  readoutDetail: { fontSize: '11.5px', color: '#7A7A72', lineHeight: 1.4 },
+  readoutDetail: { fontSize: '13px', color: '#434B44', lineHeight: 1.45 },
 
-  guide: { marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '7px' },
-  guideRow: { alignItems: 'flex-start', gap: '9px', padding: '10px 13px' },
-  guideDot: { width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0, marginTop: '5px' },
-  guideText: { fontSize: '12.5px', color: '#1C1C1C', lineHeight: 1.45 },
+  guide: { marginTop: '12px', display: 'flex', flexDirection: 'column' },
+  guideRow: { padding: '10px 0', borderTop: '1px solid rgba(21,30,24,.08)' },
+  guideLabel: { fontSize: '14.5px', fontWeight: 500, color: '#151E18' },
+  guideText: { fontSize: '14px', color: '#434B44', lineHeight: 1.5, marginTop: '2px' },
 
-  log: { marginTop: '14px', display: 'flex', alignItems: 'center', gap: '11px', padding: '12px 14px', borderRadius: '16px', background: 'var(--forest-050)', border: 'none' },
-  logCheck: { width: '26px', height: '26px', borderRadius: '50%', background: '#3D5C3C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  logText: { fontSize: '12.5px', color: '#2D4A2C', fontWeight: 600 },
-  logFoods: { fontFamily: 'var(--font-body)', fontSize: '10px', color: '#7A7A72', marginTop: '2px' },
+  log: { marginTop: '14px', display: 'flex', alignItems: 'center', gap: '11px', padding: '12px 0 0', borderTop: '1px solid rgba(21,30,24,.08)' },
+  logCheck: { width: '24px', height: '24px', borderRadius: '50%', background: '#151E18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  logText: { fontSize: '14px', color: '#151E18', fontWeight: 500 },
+  logFoods: { fontFamily: 'var(--font-body)', fontSize: '13px', color: '#737B73', marginTop: '2px' },
 
-  dots: { letterSpacing: '0', color: '#3D5C3C', animation: 'asPulse 1.2s infinite' },
-  inputBar: { display: 'flex', gap: '8px', padding: '8px 8px 8px 10px', margin: '6px 14px 10px', alignItems: 'flex-end', background: 'var(--paper)', borderRadius: '24px', boxShadow: 'var(--shadow-2)' },
-  camera: { width: '42px', height: '42px', borderRadius: '999px', border: 'none', background: 'var(--forest-100)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  previewBar: { display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', margin: '0 14px', background: 'var(--forest-050)', borderRadius: '16px' },
+  dots: { letterSpacing: '0', color: '#3C6A4B', animation: 'asPulse 1.2s infinite' },
+  inputBar: { display: 'flex', gap: '8px', padding: '8px 8px 8px 10px', margin: '6px 0 10px', alignItems: 'flex-end', background: '#FCFBF8', borderRadius: '999px', boxShadow: '0 1px 0 rgba(255,255,255,.9) inset, 0 16px 32px -24px rgba(22,31,25,.35)' },
+  camera: { width: '42px', height: '42px', borderRadius: '999px', border: 'none', background: '#EEEFE8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  previewBar: { display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', margin: '0', background: '#FCFBF8', borderRadius: '14px' },
   previewThumb: { position: 'relative', width: '52px', height: '52px', flexShrink: 0 },
   previewImg: { width: '52px', height: '52px', objectFit: 'cover', borderRadius: '10px', border: 'none', boxShadow: 'var(--shadow-1)' },
   previewRemove: { position: 'absolute', top: '-7px', right: '-7px', width: '20px', height: '20px', borderRadius: '50%', background: '#1C1C1C', color: 'white', border: '2px solid white', cursor: 'pointer', fontSize: '12px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 },
-  previewLabel: { fontSize: '12.5px', color: '#3D5C3C', fontWeight: 500 },
+  previewLabel: { fontSize: '13px', color: '#434B44', fontWeight: 500 },
   input: { flex: 1, resize: 'none', border: 'none', borderRadius: '16px', padding: '12px 6px', fontSize: '16px', lineHeight: 1.4, maxHeight: '120px', outline: 'none', background: 'transparent' },
-  send: { width: '42px', height: '42px', borderRadius: '999px', border: 'none', background: '#3D5C3C', boxShadow: 'var(--shadow-pill)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  sendOff: { width: '42px', height: '42px', borderRadius: '999px', border: 'none', background: '#C8C6BE', cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  disclaimer: { fontSize: '10.5px', color: '#A8A69E', textAlign: 'center', padding: '0 16px 12px', lineHeight: 1.5 },
+  send: { width: '42px', height: '42px', borderRadius: '999px', border: 'none', background: '#151E18', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  sendOff: { width: '42px', height: '42px', borderRadius: '999px', border: 'none', background: '#D4D5CD', cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  disclaimer: { fontSize: '12px', color: '#737B73', textAlign: 'center', padding: '0 16px 12px', lineHeight: 1.5 },
 }

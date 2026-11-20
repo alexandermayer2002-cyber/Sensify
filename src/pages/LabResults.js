@@ -573,7 +573,7 @@ Rules:
             {extractedFoods.length === 0 && noSensitivitiesToggle}
 
             <button className="sn-btn" style={s.cta} onClick={() => handleSave()} disabled={saving}>
-              {saving ? 'Submitting...' : 'Looks right, submit for review →'}
+              {saving ? 'Submitting...' : 'Looks right, submit for review'}
             </button>
             <button className="sn-btn sn-btn-quiet" style={s.secBtn} onClick={() => setExtractedFoods(null)}>Re-analyze</button>
           </>
@@ -665,7 +665,7 @@ Rules:
               onClick={() => handleSave()}
               disabled={saving || (Object.keys(manualFoods).length === 0 && !noSensitivities)}
             >
-              {saving ? 'Submitting...' : !reviewing ? 'Review my entry →' : 'Looks right, submit for review →'}
+              {saving ? 'Submitting...' : !reviewing ? 'Review my entry' : 'Looks right, submit for review'}
             </button>
           </>
         )}

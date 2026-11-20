@@ -227,7 +227,21 @@ const css = `
   .snfy-insight p { font-size: 13px; line-height: 1.7; color: var(--ink-soft); }
   @keyframes snfyPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 
-  .snfy-loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; font-size: 14px; color: var(--gray); }
+  /* Loading is a skeleton in the page's own shapes (refresh 2026-11-20):
+     the hero card and the strip card, breathing, with the text kept for
+     screen readers and the harness. */
+  .snfy-loading { max-width: 1180px; margin: 0 auto; padding: 24px 20px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; min-height: 60vh; align-content: start; }
+  .snfy-loading > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .snfy-sk { background: #FCFBF8; border-radius: 14px; padding: 30px 32px; box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35); animation: snfyBreathe 1.6s ease-in-out infinite; }
+  .snfy-sk i { display: block; height: 12px; border-radius: 6px; background: #EEEFE8; margin-bottom: 12px; }
+  .snfy-sk i.t { height: 28px; width: 70%; margin: 10px 0 18px; }
+  .snfy-sk i.s { width: 55%; }
+  .snfy-sk i.l { width: 85%; }
+  .snfy-sk-strip { display: flex; gap: 6px; margin-top: 10px; }
+  .snfy-sk-strip b { width: 18px; height: 18px; border-radius: 4px; background: #EEEFE8; display: block; }
+  @keyframes snfyBreathe { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+  @media (max-width: 860px) { .snfy-loading { grid-template-columns: 1fr; padding: 12px 14px; } }
+  @media (prefers-reduced-motion: reduce) { .snfy-sk { animation: none; } }
 `
 // Confetti overlay. brand colors, 3.5 seconds, fades out
 function ConfettiOverlay() {
@@ -1550,7 +1564,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           }}
         />
       ) : loading ? (
-        <div className="snfy-loading">Loading your program...</div>
+        <div className="snfy-loading" aria-busy="true">
+          <span>Loading your program...</span>
+          <div className="snfy-sk"><i className="s" /><i className="t" /><i className="l" /><i className="l" /><i className="s" /></div>
+          <div className="snfy-sk"><i className="s" /><div className="snfy-sk-strip">{Array.from({ length: 14 }).map((_, k) => <b key={k} />)}</div><i className="l" style={{ marginTop: 18 }} /></div>
+        </div>
       ) : (cockpitActive && calculatedPhase === 'elimination') ? (
         /* Refresh 2026-11-13: elimination Home is assembled from the seven
            shared objects (src/components/objects). Reintro Home still renders
@@ -1730,7 +1748,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <button className="snfy-action sn-card-hov sn-rise" style={{ width: '100%', textAlign: 'left', cursor: 'pointer', background: 'linear-gradient(135deg, rgba(139,174,138,0.12), rgba(139,174,138,0.04)), var(--paper)' }} onClick={() => setScreen('daily-checkin')}>
                 <div className="sn-micro" style={{ marginBottom: '6px' }}>Daily check-in</div>
                 <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--ink)', marginBottom: '3px' }}>How's today going?</div>
-                <div style={{ fontSize: '13px', color: '#5A6A55' }}>A few quick taps to log how you slept, your stress, and more. Tap to start →</div>
+                <div style={{ fontSize: '13px', color: '#5A6A55' }}>A few quick taps to log how you slept, your stress, and more. Tap to start</div>
               </button>
             )}
 
@@ -1870,16 +1888,16 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 <div className="snfy-action-tag"><div className="snfy-action-dot"></div>Complete your setup</div>
                 <h2>Start your <em>intake survey.</em></h2>
                 <p>Tell us about your symptoms and how often you eat certain foods. 15–20 minutes, and your progress saves as you go.</p>
-                <button className="snfy-btn" onClick={() => setScreen('intake')}>Start intake survey →</button>
+                <button className="snfy-btn" onClick={() => setScreen('intake')}>Start intake survey</button>
               </div>
             )}
 
             {showLabCard && (
               <div className="snfy-action">
                 <div className="snfy-action-tag"><div className="snfy-action-dot"></div>Action needed</div>
-                <h2>Upload your <em>lab results.</em></h2>
+                <h2>Upload your lab results.</h2>
                 <p>PDF, photo, or manual entry. The AI reads your results and drafts your elimination list; our team checks it before it's final.</p>
-                <button className="snfy-btn" onClick={() => setScreen('labresults')}>Upload results →</button>
+                <button className="snfy-btn" onClick={() => setScreen('labresults')}>Upload results</button>
               </div>
             )}
 
@@ -1900,7 +1918,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 <div className="snfy-action-tag amber">3 days off plan</div>
                 <h2>Let's <em className="amber">figure this out together.</em></h2>
                 <p>Three days in a row is hard. Let's treat it as information, not failure. Takes about 3 minutes.</p>
-                <button className="snfy-btn amber" onClick={() => setScreen('audit')}>Let's talk →</button>
+                <button className="snfy-btn amber" onClick={() => setScreen('audit')}>Let's talk</button>
               </div>
             )}
 
@@ -1937,7 +1955,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 <div className="snfy-action-tag amber">Slip-up logged today</div>
                 <h2>What <em className="amber">happened today?</em></h2>
                 <p>Takes 60 seconds. No judgment, just data that makes your weekly insights more accurate.</p>
-                <button className="snfy-btn amber" onClick={() => setScreen('slipup')}>Tell us what happened →</button>
+                <button className="snfy-btn amber" onClick={() => setScreen('slipup')}>Tell us what happened</button>
               </div>
             )}
 
@@ -2083,7 +2101,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                   <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--ink)' }}>Weekly check-in</div>
                   <div style={{ fontSize: 10.5, color: checkinLate ? 'var(--limit-700)' : 'var(--forest-500)', marginTop: 1 }}>{checkinLate ? "Catch up, your data still matters" : 'Due now · takes 2 minutes'}</div>
                 </div>
-                <button className={`snfy-btn${checkinLate ? ' amber' : ''}`} style={{ padding: '9px 15px', fontSize: 12.5 }} onClick={() => setScreen('checkin')}>Start →</button>
+                <button className={`snfy-btn${checkinLate ? ' amber' : ''}`} style={{ padding: '9px 15px', fontSize: 12.5 }} onClick={() => setScreen('checkin')}>Start</button>
               </div>
             ) : (
               <div className="sn-row" style={{ justifyContent: 'space-between', marginTop: 14 }}>

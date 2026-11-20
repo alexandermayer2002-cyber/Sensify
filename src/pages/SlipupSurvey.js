@@ -271,7 +271,7 @@ export default function SlipupSurvey({ session, profile, labResult, currentDay, 
           onClick={handleSubmit}
           title={!canSubmit ? (selectedFoods.length === 0 ? 'Add the food you ate above first' : 'Pick how it happened above first') : undefined}
         >
-          {submitting ? 'Logging...' : 'Submit →'}
+          {submitting ? 'Logging...' : 'Submit'}
         </button>
         {submitError && <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 12, padding: '10px 13px', fontSize: 12.5, lineHeight: 1.55, marginTop: 10 }}>{submitError}</div>}
       </div>

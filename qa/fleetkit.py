@@ -138,7 +138,7 @@ def seed(r, stage, email):
 # ---------- a lived day ----------
 
 def walk_weekly(r):
-    r.xclick("Weekly check-in", "Start →", required=False); r.sleep(2.2); r.wait_ready(12)
+    r.xclick("Weekly check-in", "Start", required=False); r.sleep(2.2); r.wait_ready(12)
     if "Submit check-in" not in r.text(): return  # the form didn't actually open
     n = r.page.get_by_role("button", name=re.compile("^5$")).count()
     for i in range(n):
@@ -187,7 +187,7 @@ def maybe_start_cycle(r):
 
 def daily_checkin(r, stage, v):
     opened = False
-    for txt in ["How's today going", re.compile(r"(Today|Tonight)['\u2019]s check-in", re.I)]:
+    for txt in ["How's today going", re.compile(r"(Today|Tonight)['\u2019]s (check-in|washout check)", re.I)]:
         try:
             r.page.get_by_text(txt).first.click(timeout=4000)
             r.sleep(1.6); r.wait_ready(10); opened = True; break
