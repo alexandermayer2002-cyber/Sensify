@@ -16,6 +16,10 @@ have closed some of these; night one must re-test every item rather than trust t
 
 ## OPEN
 
+**Re-test 2026-11-20 (Friday; deploys 0603700 + 2a558f1 + ff2a85b + 625430c within 36h; bundle now main.879221d5, was dbcfe342):** probes M03/M01/D01 FAIL (Alex decisions); M06 M07 M09 M09b M12 D17 D03 PASS; M08 flipped FAIL = harness drift (copy is now "Example: a finished program", probe was case-sensitive "EXAMPLE"; probe re-keyed case-insensitive, now PASS). regress_all 61 PASS / 1 FAIL (reintro day_logged, X25 date drift); run hit the 25-min cap before the last 1 check. Targeted walk: marketing text (no \\u, NaN, undefined; console clean). Added diff-grep of 394 added src lines: no literal \\u in JSX text, no silent empty catches. No item closed (live re-walk of code-fixed X01 X08 X23 X07 X10 X13 X20 X04 X17 X18 still owed Sunday 11-22). One new: N06.
+
+| N06 | 11-20 | marketing | LOW | Hero mock insight (Marketing.js:400): "Six clean weeks is exactly the signal we need before testing" while the program shows 42 of 56 days and 14 days to reintroduction; reads as reintro after six weeks, contradicting eight | change to "Eight clean weeks" or drop the number | grep live main.js: no "Six clean weeks" | OPEN (found 2026-11-20) |
+
 **Re-test 2026-11-19 (Thursday; no src/netlify/public commits in 36h, bundle main.dbcfe342 unchanged, no deep walk):** probes M03/M01/D01 FAIL (Alex decisions), M06 M07 M08 M09 M09b M12 D17 D03 PASS. N03 and N05 still live in bundle (1 each). X25 unchanged (same 4 fleet day_logged FAILs, sandbox vs app date). Full regress_all completed this time: 59/63. No item closed, none new. Code-fixed items still await the Sunday 11-22 live walk.
 
 **Re-test 2026-11-18 (Wednesday; no src/netlify/public commits in 36h, bundle main.dbcfe342 unchanged, no deep walk):** probes M03/M01/D01 FAIL (Alex decisions), M06 M07 M08 M09 M09b M12 D17 D03 PASS. N03 and N05 still present in live bundle (grep 1 each). X25 unchanged (4 fleet day_logged FAILs, sandbox vs app date). No item closed, none new. Code-fixed items (X01, X08, X23, X07, X10, X13, X20) still await the Sunday 11-22 live walk.

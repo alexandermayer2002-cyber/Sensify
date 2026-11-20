@@ -11,7 +11,7 @@ with sync_playwright() as p:
     P("M03",bool(re.search(r"brain fog|bloating|reflux",t[:1500],re.I)),"hero names symptoms? (Alex chose symptom-vague)")
     P("M06",bool(re.search(r"months",t,re.I)),"duration 'months' on home")
     P("M07",len(re.findall("clinical standard",t,re.I))==0,f"'clinical standard' x{len(re.findall('clinical standard',t,re.I))}")
-    P("M08",bool(re.search(r"EXAMPLE",t)),"EXAMPLE label on home")
+    P("M08",bool(re.search(r"example",t,re.I)),"Example label on home (case-insens, re-keyed 11-20)")
     P("M09",bool(re.search(r"safe to (cut|eliminate|remove)|nutrition|dietitian|physician|doctor",t,re.I)),"safety FAQ/physician line on home")
     P("M01",bool(re.search(r"guarantee|money.back|refund",t,re.I)),"risk reversal text (Alex: refunds silent)")
     h=[ (e.inner_text()[:25], e.bounding_box()["height"]) for e in pg.query_selector_all("nav button, header button, nav a") if e.is_visible() and e.bounding_box()]
