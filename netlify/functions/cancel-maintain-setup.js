@@ -27,12 +27,13 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'subscription already active' }) }
     }
 
-    // Detach every saved card for this customer. Card detach first, flag
+    // Detach ONLY the card the Maintain setup saved (tagged at verify time),
+    // never another card on the customer (ledger N01). Card detach first, flag
     // second: if the detach fails we refuse to pretend the cancel happened.
     let detached = 0
     if (profile.stripe_customer_id) {
       const pms = await stripe.paymentMethods.list({ customer: profile.stripe_customer_id, type: 'card' })
-      for (const pm of pms.data) {
+      for (const pm of pms.data.filter(p => p.metadata && p.metadata.sensify_maintain === '1')) {
         await stripe.paymentMethods.detach(pm.id)
         detached++
       }

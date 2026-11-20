@@ -128,6 +128,19 @@ const s = {
   padWarn: { marginTop: 8, padding: '8px 11px', background: '#FBF0DF', color: '#9A6212', borderRadius: 10, fontSize: '11.5px', lineHeight: 1.5 },
 }
 
+// ---- SAFETY SCREENING (ledger P01) ------------------------------------------
+// Static, deterministic, no AI. Any "yes" stops the intake: the elimination and
+// food-challenge steps are not appropriate without a clinician's guidance.
+// FLAGGED FOR PHYSICIAN REVIEW: the question list and the stop rule.
+export const SCREEN_QUESTIONS = [
+  { id: 'screen_anaphylaxis', q: 'Have you ever had a severe allergic reaction to a food (hives with trouble breathing, throat or tongue swelling, fainting), or been told you are at risk of one?' },
+  { id: 'screen_dx_allergy', q: 'Has a doctor diagnosed you with a food allergy, celiac disease, or an eosinophilic condition?' },
+  { id: 'screen_pregnant', q: 'Are you pregnant, trying to become pregnant, or breastfeeding?' },
+  { id: 'screen_under18', q: 'Are you under 18?' },
+  { id: 'screen_ed', q: 'Do you have, or have you had, an eating disorder?' },
+  { id: 'screen_medical', q: 'Do you have diabetes, kidney disease, or take medication that needs a steady diet (for example insulin or a blood thinner)?' },
+]
+
 export default function IntakeSurvey({ session, onComplete, onBack }) {
   const [step, setStep] = useState(-1)
   const [agreed, setAgreed] = useState(false)
@@ -404,7 +417,9 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
     onComplete()
   }
 
-  const canProceedFromAgreement = agreed && signatureName.trim().length >= 2
+  const screenAnswered = SCREEN_QUESTIONS.every(q => answers[q.id] === 'yes' || answers[q.id] === 'no')
+  const screenFlagged = SCREEN_QUESTIONS.some(q => answers[q.id] === 'yes')
+  const canProceedFromAgreement = agreed && signatureName.trim().length >= 2 && screenAnswered && !screenFlagged
 
   // STEP -1. Agreement
   if (step === -1) return (
@@ -492,6 +507,31 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
           </div>
         </div>
 
+        {/* Safety screening: static, no AI. Any yes stops the intake. */}
+        <div className="sn-card" style={{ padding: '18px', marginBottom: '20px' }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#1C1C1C', marginBottom: '4px' }}>Six quick safety questions</div>
+          <div style={{ fontSize: '12.5px', color: '#7A7A72', lineHeight: 1.6, marginBottom: '14px' }}>Removing and re-adding foods isn't right for everyone. Answer honestly; this stays private.</div>
+          {SCREEN_QUESTIONS.map(q => (
+            <div key={q.id} style={{ marginBottom: '14px' }}>
+              <div style={{ fontSize: '13px', color: '#1C1C1C', lineHeight: 1.55, marginBottom: '8px' }}>{q.q}</div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {['no', 'yes'].map(v => (
+                  <button key={v} type="button" onClick={() => setAnswers(a => ({ ...a, [q.id]: v }))}
+                    aria-pressed={answers[q.id] === v}
+                    style={{ minHeight: 44, minWidth: 72, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: answers[q.id] === v ? '#3D5C3C' : '#F2EFE6', color: answers[q.id] === v ? '#FFFFFF' : '#1C1C1C' }}>
+                    {v === 'yes' ? 'Yes' : 'No'}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+          {screenFlagged && (
+            <div style={{ fontSize: 13, color: '#1C1C1C', background: '#FBF0DF', borderRadius: 12, padding: '12px 14px', lineHeight: 1.6 }}>
+              Please speak with your doctor before starting. A diet like this needs a clinician's guidance in your situation, so we can't start it for you here. Email <a href="mailto:alex@sensifyhealth.com" style={{ color: '#3D5C3C' }}>alex@sensifyhealth.com</a> and we'll sort out next steps with you.
+            </div>
+          )}
+        </div>
+
         {/* Signature */}
         <div style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 500, color: '#1C1C1C' }}>
           Type your full name as your signature
@@ -511,7 +551,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
         {!canProceedFromAgreement && (
           <div style={{ fontSize: 12, color: '#9A6212', background: '#FBF0DF', borderRadius: 10, padding: '8px 12px', marginBottom: 8, lineHeight: 1.5 }}>
             {/* A dead button always says why (QA 2026-11-06 First-Timer #7) */}
-            To continue: {!agreed ? 'tick the agreement statement above' : ''}{!agreed && signatureName.trim().length < 2 ? ' and ' : ''}{signatureName.trim().length < 2 ? 'type your full name as your signature' : ''}.
+            To continue: {[!screenAnswered && 'answer all six safety questions', screenAnswered && screenFlagged && 'a "Yes" answer needs your doctor first (see above)', !agreed && 'tick the agreement statement above', signatureName.trim().length < 2 && 'type your full name as your signature'].filter(Boolean).join(', ')}.
           </div>
         )}
         <button

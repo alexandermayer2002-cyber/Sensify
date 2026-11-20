@@ -397,7 +397,7 @@ function ShowcaseScreen({ tab }) {
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2C9D8A' }} />
           <span style={{ fontFamily: mono, fontSize: 7, letterSpacing: '0.8px', color: '#3D5C3C', textTransform: 'uppercase' }}>Week 6 insight</span>
         </div>
-        <div style={{ fontSize: 9.5, lineHeight: 1.65, color: '#1C1C1C' }}>Your bloating score has dropped for the third straight week, and your energy is holding above baseline. Six clean weeks is exactly the signal we need before testing begins.</div>
+        <div style={{ fontSize: 9.5, lineHeight: 1.65, color: '#1C1C1C' }}>Your bloating score has dropped for the third straight week, and your energy is holding above baseline. Staying the course to day 56 gives us the clean baseline we need before testing begins.</div>
       </div>
       <div style={{ background: '#FFFFFF', borderRadius: 16, boxShadow: '0 2px 10px rgba(56,62,48,0.09)', padding: 11 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
@@ -642,7 +642,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="mk-hero-orb2"></div>
           <div className="mk-hero-eyebrow sn-rise" style={{ position: 'relative' }}>Test. Eliminate. Reintroduce. Know.</div>
           <div className="mk-h1 centered sn-rise-2" style={{ position: 'relative' }}>Stop guessing what your body <em>can't{' '}handle.</em></div>
-          <div className="mk-sub centered sn-rise-3" style={{ position: 'relative' }}>Symptoms that keep coming back, and no way to know which food is behind them. A lab test only gives you suspects. Sensify puts each one on trial in your real life and rules it: Safe, Limit, or Avoid.</div>
+          <div className="mk-sub centered sn-rise-3" style={{ position: 'relative' }}>Bloating, brain fog, reflux, fatigue that keep coming back, and no way to know which food is behind them. A lab test only gives you suspects. Sensify puts each one on trial in your real life and rules it: Safe, Limit, or Avoid.</div>
           <div className="mk-actions centered sn-rise-4" style={{ position: 'relative' }}>
             <button className="btn-p" onClick={onGetStarted}>Start your program</button>
             <button className="btn-g" onClick={() => setTab('how')}>See how it works</button>
@@ -1018,7 +1018,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
               { title: 'Elimination & reintroduction', desc: 'The standard clinical approach for identifying food triggers, used by gastroenterologists and dietitians to separate real reactions from suspicion.', badge: null },
               { title: '14-day reintroduction cycles', desc: 'Each food is reintroduced for 3 days then removed for 11. This exposure-washout pattern isolates symptom responses with enough signal to draw reliable conclusions.', badge: null },
               { title: 'Daily compliance tracking', desc: 'Daily check-ins give seven data points per week instead of one. That resolution makes it possible to spot patterns, like symptoms spiking the day after a slip-up, that weekly surveys miss entirely.', badge: null },
-              { title: 'Built on the clinical standard', desc: 'Our elimination timelines and reintroduction structure follow the clinical elimination diet method: the same structured approach dietitians have used for decades.', badge: 'Established method' },
+              { title: 'Built on an established method', desc: 'Our elimination and reintroduction structure follows the general approach dietitians use. Sensify is a wellness program, not a medical service.', badge: 'Established method' },
             ].map((item, i) => (
               <div key={i} className="sci-card">
                 <div className="sci-icon">
@@ -1040,7 +1040,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
           <div className="sci-answer">
             <div className="sci-answer-tag">What you walk away with</div>
             <div className="sci-answer-h">An answer either way.</div>
-            <div className="sci-answer-p">Most people who suspect food never get certainty. They cut things out, feel unsure, and second-guess forever. The protocol ends that. If a food is a trigger, you will know. And if your body turns out to tolerate everything well, you will know that too, with the same confidence. That is not a disappointing result. It means food is not the thing holding you back, which saves you years of needless restriction and tells you where to look instead. We will never invent a problem to justify the program. The honest answer is the whole point.</div>
+            <div className="sci-answer-p">Most people who suspect food never get a clear answer. They cut things out, feel unsure, and second-guess forever. The protocol gives you a structured way to find out. If a food is a trigger for you, your own record will point to it. And if your body tolerates everything well, your record will show that too. One cycle gives you a strong signal from your own data, not a laboratory-grade certainty. That is not a disappointing result. It means food is not the thing holding you back, which saves you years of needless restriction and tells you where to look instead. We will never invent a problem to justify the program. The honest answer is the whole point.</div>
           </div>
 
           {/* What happens based on your results — honest path for every outcome */}
@@ -1123,7 +1123,7 @@ export default function Marketing({ onGetStarted, onSignIn }) {
                 'Weekly symptom insights from your check-ins',
                 'Compliance audit system with human review',
                 'Every food ruled: your verdicts at completion',
-                'Structured protocol built on the clinical standard',
+                'Structured protocol built on an established method',
               ].map((item, i) => (
                 <div key={i} className="price-item">
                   <div className="p-check"><CheckIcon /></div>

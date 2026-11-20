@@ -13,6 +13,16 @@ exports.handler = async (event) => {
     if (session.status !== 'complete' || !session.client_reference_id) {
       return { statusCode: 200, body: JSON.stringify({ ok: false }) }
     }
+    // Tag the card THIS setup saved (ledger N01) so cancelling Maintain can detach
+    // only it and never any other card on the customer. Best-effort: a tagging
+    // failure must not block recording the opt-in.
+    try {
+      if (session.setup_intent) {
+        const si = await stripe.setupIntents.retrieve(typeof session.setup_intent === 'string' ? session.setup_intent : session.setup_intent.id)
+        const pmId = typeof si.payment_method === 'string' ? si.payment_method : si.payment_method?.id
+        if (pmId) await stripe.paymentMethods.update(pmId, { metadata: { sensify_maintain: '1' } })
+      }
+    } catch (e) { /* tagging is best-effort */ }
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
     // THE WRITE IS CHECKED (QA 2026-11-09 scout #1, approved by Alex): a
     // silent failure here is the exact card-saved-but-never-recorded state

@@ -1028,6 +1028,12 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                       ? `Exposure complete. All 3 ${activeReintro.food.toLowerCase()} days are logged. Washout begins tomorrow: from then, keep it out completely while we watch for delayed reactions.`
                       : `Keep ${activeReintro.food.toLowerCase()} out today. Washout day ${washoutDay - 1} of ${WASHOUT_LENGTH}. Your elimination continues as usual.`}
                   </p>
+                  {cycleDay >= 1 && isExposure && !loggedToday && (
+                    /* P01: static red-flag card on every exposure day (flagged for physician review) */
+                    <div role="note" style={{ marginTop: 12, fontSize: 13, color: '#1C1C1C', background: '#FBF0DF', borderRadius: 12, padding: '12px 14px', lineHeight: 1.6 }}>
+                      Stop eating it and get medical help right away (call emergency services) if you have trouble breathing, swelling of the lips, tongue or throat, widespread hives, repeated vomiting, or feel faint.
+                    </div>
+                  )}
                   {cycleDay < 1 && <p style={{ marginTop: 10, fontSize: 13, color: 'var(--ob-mute)' }}>Your first check-in for this trial unlocks with day 1.</p>}
                   {cycleDay >= 1 && (
                     <div style={{ marginTop: 14 }}>

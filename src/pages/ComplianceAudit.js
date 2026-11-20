@@ -87,7 +87,7 @@ RULES:
 - Never diagnose or make medical claims
 - Sound like a warm, smart health coach
 - Reference what they actually said, never generic
-- Do NOT give a plan recommendation. End by saying personal guidance usually lands on their dashboard within a day
+- Do NOT give a plan recommendation. End by saying personal guidance will land on their dashboard
 - Do not start with "Great" or "Well done"
 
 Write only the message text, no labels or formatting.`
@@ -95,7 +95,7 @@ Write only the message text, no labels or formatting.`
   try {
     return await aiPrompt(prompt, 200)
   } catch (e) {
-    return "Thank you for sharing what's been going on. We're reviewing everything you told us — personal guidance usually lands on your dashboard within a day."
+    return "Thank you for sharing what's been going on. We're reviewing everything you told us — personal guidance will land on your dashboard."
   }
 }
 
@@ -640,7 +640,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             <div style={s.submittedMsg}>{aiMessage}</div>
             <div style={{ ...s.pendingCard, marginBottom: '12px' }}>
               <div className="sn-micro" style={s.pendingLabel}>What happens next</div>
-              <div style={s.pendingText}>We're reviewing everything you shared. Personal guidance usually lands within a day — it will meet you right here on your dashboard.</div>
+              <div style={s.pendingText}>We're reviewing everything you shared. Personal guidance will land when it's ready — it will meet you right here on your dashboard.</div>
             </div>
           </>
         )}

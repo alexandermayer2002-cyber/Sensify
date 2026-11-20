@@ -237,7 +237,7 @@ export default function Support({ session, onUnreadChange }) {
             <div className="sn-card sn-rise" style={{ padding: '24px 20px', marginTop: 8 }}>
               <div style={{ width: 42, height: 42, borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, color: '#3D5C3C', fontSize: 17 }}>✉</div>
               <div style={{ fontFamily: 'Fraunces, serif', fontSize: 21, fontWeight: 400, color: '#1C1C1C', lineHeight: 1.25, marginBottom: 7 }}>Talk to us.</div>
-              <div style={{ fontSize: 13, color: '#7A7A72', lineHeight: 1.65, marginBottom: 18 }}>Questions about your program, your results, your account, anything. A real person reads every message and replies here, usually within a day.</div>
+              <div style={{ fontSize: 13, color: '#7A7A72', lineHeight: 1.65, marginBottom: 18 }}>Questions about your program, your results, your account, anything. A real person reads every message and replies here.</div>
               <textarea className="sup-input" style={{ minHeight: 96, resize: 'none', marginBottom: 10 }} placeholder="What can we help with?" value={body} onChange={e => setBody(e.target.value)} maxLength={4000} />
               <button className="sup-primary" style={{ width: '100%' }} disabled={sending || !body.trim()} onClick={() => {
                 const firstLine = body.trim().split('\n')[0]

@@ -1395,6 +1395,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               approved by Alex 2026-11-10): the app collected health data with
               no privacy link anywhere inside it. */}
           <button className="snfy-more-item" onClick={() => { setMoreOpen(false); window.open('/privacy.html', '_blank', 'noopener') }}>Privacy</button>
+          <button className="snfy-more-item" onClick={() => { setMoreOpen(false); window.location.href = 'mailto:alex@sensifyhealth.com?subject=Export%20or%20delete%20my%20Sensify%20data' }}>Export or delete my data</button>
           <button className="snfy-more-item" onClick={onLogout}>Sign out</button>
         </div>
       )}
@@ -1563,6 +1564,8 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           onOpenWeekly={() => setScreen('checkin')}
           onOpenHistory={() => { setTab('history'); setScreen('checkin-history') }}
           onOpenReintro={() => goTab('Reintro')}
+          showSlipupCard={showSlipupCard} showAuditCard={showAuditCard}
+          onOpenSlipup={() => setScreen('slipup')} onOpenAudit={() => setScreen('audit')}
         />
       ) : (cockpitActive && calculatedPhase === 'reintroduction') ? (
         <HomeReintro
@@ -1875,7 +1878,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
               <div className="snfy-action">
                 <div className="snfy-action-tag"><div className="snfy-action-dot"></div>Action needed</div>
                 <h2>Upload your <em>lab results.</em></h2>
-                <p>PDF, photo, or manual entry. The AI reads your results and builds your elimination list in seconds.</p>
+                <p>PDF, photo, or manual entry. The AI reads your results and drafts your elimination list; our team checks it before it's final.</p>
                 <button className="snfy-btn" onClick={() => setScreen('labresults')}>Upload results →</button>
               </div>
             )}
@@ -1887,7 +1890,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Results under review</div>
-                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Alex M. checks every entry, usually within a day. When it's approved, this page updates, your elimination list appears, and your Day 1 is scheduled for the next morning. Nothing for you to do until then.</div>
+                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Every entry is checked by our team before your list is final. When it's approved, this page updates, your elimination list appears, and your Day 1 is scheduled for the next morning. Nothing for you to do until then.</div>
                 </div>
               </div>
             )}
@@ -1908,7 +1911,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 </div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>Guidance being prepared</div>
-                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>Usually ready within a day, it will meet you here.</div>
+                  <div style={{ fontSize: '12px', color: '#7A7A72' }}>It will meet you here when it's ready.</div>
                 </div>
               </div>
             )}
@@ -2349,7 +2352,7 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
                 <div style={{ padding: '20px 0', textAlign: 'center' }}>
                   <div style={{ fontSize: '13px', fontWeight: 500, color: '#1C1C1C', marginBottom: '6px' }}>No foods yet</div>
                   <div style={{ fontSize: '12px', color: '#7A7A72', lineHeight: 1.65 }}>
-                    {!labResult ? 'Your elimination list, the foods you\'ll avoid for 8 weeks, appears here once your results are in and we\'ve reviewed them (usually within a day).'
+                    {!labResult ? 'Your elimination list, the foods you\'ll avoid for 8 weeks, appears here once your results are in and we\'ve reviewed them.'
                       : labResult.status === 'pending_review' ? 'Your lab results are under review.'
                       : 'No foods flagged on your elimination list.'}
                   </div>

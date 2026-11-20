@@ -26,6 +26,13 @@ export const VERDICT_THRESHOLDS = {
   // the food) escalates one level toward Avoid
   washoutFlareEscalates: true,
 
+  // P02 (ledger): one symptom on one washout day is background noise, not a
+  // delayed reaction. A washout flare counts only if it appears on at least
+  // this many washout days, or on any washout day at moderate intensity, and,
+  // when the exposure days had symptoms, shares a symptom name with them.
+  // FLAGGED FOR PHYSICIAN REVIEW (default values).
+  washoutFlareMinDays: 2,
+
   // How much the AI is allowed to move the provisional verdict
   aiMaxAdjustmentLevels: 1,
 }
@@ -74,7 +81,14 @@ export const computeProvisionalVerdict = (logs = []) => {
     logs.filter(l => parseSymptoms(l.symptoms).some(s => String(s.intensity || '').toLowerCase() === 'moderate')).map(l => l.log_date)
   ).size
   const mildCount = allSymptoms.filter(s => String(s.intensity || '').toLowerCase() === 'mild').length
-  const washoutFlareDays = washoutLogs.filter(l => l.had_symptoms).length
+  const washoutSymDays = washoutLogs.filter(l => l.had_symptoms)
+  const nm = (s) => String(s.name || s.symptom || '').trim().toLowerCase()
+  const expNames = new Set(exposureLogs.flatMap(l => parseSymptoms(l.symptoms)).map(nm).filter(Boolean))
+  const matchesExposure = (l) => expNames.size === 0 || parseSymptoms(l.symptoms).some(s => expNames.has(nm(s)))
+  const hasModerateWashout = washoutSymDays.some(l => parseSymptoms(l.symptoms).some(s => String(s.intensity || '').toLowerCase() === 'moderate'))
+  const matchedWashout = washoutSymDays.filter(matchesExposure)
+  // Meaningful flare = enough matching days, or a matching moderate day.
+  const washoutFlareDays = (matchedWashout.length >= t.washoutFlareMinDays || (hasModerateWashout && matchedWashout.length > 0)) ? matchedWashout.length : 0
 
   let idx // index into LEVELS
 

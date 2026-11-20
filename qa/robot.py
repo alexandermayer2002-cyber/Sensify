@@ -235,6 +235,12 @@ class Robot:
             self.page.get_by_placeholder("Your full name").first.fill(full_name); self.sleep(0.3)
         except Exception:
             self.find(f"[{self.tag}] consent signature input not fillable")
+        # P01 safety screening (2026-11-20): six static yes/no questions, answer all No
+        try:
+            for b in self.page.get_by_role("button", name="No", exact=True).all():
+                b.click(); self.sleep(0.1)
+        except Exception:
+            self.find(f"[{self.tag}] screening No buttons not clickable")
         # the custom checkbox row: click its statement text to toggle agreed
         self.click("I understand that Sensify is a wellness program", exact=False, required=False)
         self.sleep(0.4)

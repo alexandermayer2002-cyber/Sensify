@@ -44,6 +44,7 @@ export default function HomeElimination({
   checkins = [], complianceData = [], weekFactors = [], awayDates = new Set(),
   milestoneMessage, session,
   onOpenDaily, onOpenWeekly, onOpenHistory, onOpenReintro,
+  showSlipupCard = false, showAuditCard = false, onOpenSlipup, onOpenAudit,
 }) {
   const firstName = (profile?.full_name || profile?.first_name || '').split(' ')[0] || null
   const hour = new Date().getHours()
@@ -242,6 +243,16 @@ export default function HomeElimination({
   return (
     <div className="he-page">
       <style>{CSS}</style>
+      {/* X02: the slip-up and audit asks were only reachable from the legacy Home. */}
+      {(showAuditCard || showSlipupCard) && (
+        <section className="ob-paper he-note" style={{ marginBottom: 16 }}>
+          <h3>{showAuditCard ? 'Three days off plan.' : 'What happened today?'}</h3>
+          <p>{showAuditCard
+            ? "Three days in a row is hard. Let's treat it as information, not failure. Takes about 3 minutes."
+            : 'You logged a slip-up. Takes 60 seconds, no judgment, and it makes your weekly insight more accurate.'}</p>
+          <button className="he-link" onClick={showAuditCard ? onOpenAudit : onOpenSlipup}>{showAuditCard ? "Let's talk" : 'Tell us what happened'}</button>
+        </section>
+      )}
       {stretch === 'early' && (
         <>
           <section className="he-hero">{Hero}{StripCard}</section>
