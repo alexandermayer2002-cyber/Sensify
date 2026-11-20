@@ -13,6 +13,61 @@ const BASELINE_LABELS = {
   baseline_wellbeing: { label: 'Overall wellbeing', lowerIsBetter: false },
 }
 
+/* The History chart object (refresh 2026-11-20). One small chart per symptom,
+   all in moss, week on the x axis, your score on the y axis, day zero as the
+   first hollow point. No categorical colour: each symptom is read against its
+   own baseline, so identity comes from the label, not a hue. Thin line, round
+   markers, the latest value labelled, a tooltip on hover. Verdict colours
+   never appear here; a week that is worse than baseline says so in words. */
+function SymptomChart({ rows }) {
+  const [tip, setTip] = React.useState(null)
+  const W = 320, H = 84, PL = 10, PR = 30, PT = 12, PB = 18
+  const n = Math.max(...rows.map(r => r.series.length))
+  const slots = Math.max(8, n)
+  const x = i => PL + (i / slots) * (W - PL - PR)
+  const y = v => PT + (1 - (Math.max(0, Math.min(10, v)) / 10)) * (H - PT - PB)
+  const fmt = at => { try { return new Date(at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) } catch (e) { return '' } }
+  return (
+    <div className="ch-grid">
+      {rows.map(r => {
+        const pts = [{ v: r.baseline, i: 0, label: 'Day zero' }].concat(r.series.map((p, i) => ({ v: p.v, i: i + 1, label: `Week ${i + 1}`, at: p.at })).filter(p => p.v != null))
+        const d = pts.map((p, k) => `${k === 0 ? 'M' : 'L'}${x(p.i)},${y(p.v)}`).join(' ')
+        const last = pts[pts.length - 1]
+        return (
+          <div key={r.label} className="ch-cell">
+            <div className="ch-head"><span className="ch-name">{r.label}</span><span className="ch-delta" style={{ color: r.deltaCls === 'bad' ? '#8A4F6E' : r.deltaCls === 'good' ? '#3C6A4B' : '#737B73' }}>{r.deltaText}</span></div>
+            <svg className="ch-svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${r.label}, ${r.deltaText}`}>
+              {[0, 5, 10].map(g => <line key={g} x1={PL} x2={W - PR} y1={y(g)} y2={y(g)} stroke="rgba(21,30,24,.08)" strokeWidth="1" />)}
+              <line x1={PL} x2={W - PR} y1={y(r.baseline)} y2={y(r.baseline)} stroke="#737B73" strokeOpacity=".7" strokeWidth="1" strokeDasharray="3 4" />
+              <path d={d} fill="none" stroke="#3C6A4B" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+              {pts.map((p, k) => (
+                <g key={k} onMouseEnter={() => setTip({ key: r.label, k, text: `${p.label}${p.at ? ', ' + fmt(p.at) : ''}: ${p.v}` })} onMouseLeave={() => setTip(null)} style={{ cursor: 'default' }}>
+                  <circle cx={x(p.i)} cy={y(p.v)} r="9" fill="transparent" />
+                  <circle cx={x(p.i)} cy={y(p.v)} r="4" fill={k === 0 ? '#FCFBF8' : '#3C6A4B'} stroke="#3C6A4B" strokeWidth="2" />
+                </g>
+              ))}
+              {last && <text x={x(last.i) + 9} y={y(last.v) + 4} fontSize="11.5" fill="#151E18" fontWeight="500">{last.v}</text>}
+              <text x={PL} y={H - 4} fontSize="10" fill="#737B73">day 0</text>
+              <text x={W - PR} y={H - 4} fontSize="10" fill="#737B73" textAnchor="end">week {slots}</text>
+            </svg>
+            {tip && tip.key === r.label && <div className="ch-tip">{tip.text}</div>}
+          </div>
+        )
+      })}
+      <style>{`
+        .ch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+        .ch-cell { position: relative; }
+        .ch-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+        .ch-name { font-size: 15px; font-weight: 500; color: #151E18; }
+        .ch-delta { font-size: 12.5px; font-weight: 500; text-align: right; }
+        .ch-svg { display: block; width: 100%; height: auto; }
+        .ch-tip { position: absolute; left: 0; bottom: 6px; background: #151E18; color: #FCFBF8; font-size: 12px; padding: 5px 9px; border-radius: 8px; pointer-events: none; }
+        @media (max-width: 640px) { .ch-grid { grid-template-columns: 1fr; gap: 14px; } }
+      `}</style>
+    </div>
+  )
+}
+
 function SymptomProgress({ profile, checkins }) {
   const [lens, setLens] = React.useState('average') // 'average' | 'week'
   const sorted = [...checkins].sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at))
@@ -37,21 +92,21 @@ function SymptomProgress({ profile, checkins }) {
       const magnitude = Math.abs(rawPct)
       let deltaText, deltaCls, barColor
       if (now === baseline) {
-        deltaText = lens === 'average' ? `avg ${now} · no change` : `${baseline} \u2192 ${now} · no change`
+        deltaText = lens === 'average' ? `Average ${now}, no change` : `${baseline} to ${now}, no change`
         deltaCls = 'flat'; barColor = '#C8C6BE'
       } else if (improved) {
         const dir = meta.lowerIsBetter ? 'down' : 'up'
-        deltaText = lens === 'average' ? `avg ${now} · ${dir} ${magnitude}%` : `${baseline} \u2192 ${now} · ${dir} ${magnitude}%`
+        deltaText = lens === 'average' ? `Average ${now}, ${dir} ${magnitude}%` : `${baseline} to ${now}, ${dir} ${magnitude}%`
         deltaCls = 'good'; barColor = '#3C6A4B'
       } else {
         // Say "worse" in words (QA 2026-11-06 full-run #9, approved by Alex):
         // a decline used to read in the same grammar as an improvement, with
         // only the bar color differing.
         const dir = meta.lowerIsBetter ? 'up' : 'down'
-        deltaText = lens === 'average' ? `avg ${now} · ${dir} ${magnitude}% · worse than baseline` : `${baseline} \u2192 ${now} · ${dir} ${magnitude}% · worse than baseline`
+        deltaText = lens === 'average' ? `Average ${now}, ${dir} ${magnitude}%, worse than baseline` : `${baseline} to ${now}, ${dir} ${magnitude}%, worse than baseline`
         deltaCls = 'bad'; barColor = '#8A4F6E'
       }
-      return { label: meta.label, baseline, now, deltaText, deltaCls, barColor }
+      return { label: meta.label, baseline, now, deltaText, deltaCls, barColor, series: sorted.map(ci => ({ v: ci.answers?.[answerKey], at: ci.submitted_at })), lowerIsBetter: meta.lowerIsBetter }
     })
     .filter(Boolean)
 
@@ -116,25 +171,8 @@ function SymptomProgress({ profile, checkins }) {
         <div style={pg.reassure}>One rough week doesn't erase your trend. You're still ahead of where you started.</div>
       )}
 
-      <div style={pg.legend}>
-        <div style={pg.lgi}><span style={pg.lgtick}></span>Where you started</div>
-        <div style={pg.lgi}><span style={pg.lgbar}></span>{lens === 'average' ? 'Your average' : 'Where you are now'}</div>
-      </div>
-
-      {rows.map((r, i) => (
-        <div key={i} style={pg.row}>
-          <div style={pg.rtop}>
-            <span style={pg.rname}>{r.label}</span>
-            <span style={{ ...pg.rdelta, color: deltaColor[r.deltaCls] }}>{r.deltaText}</span>
-          </div>
-          <div style={pg.tube}>
-            <div style={{ ...pg.now, width: `${(r.now / 10) * 100}%`, background: r.barColor }}></div>
-            <div style={{ ...pg.base, left: `${(r.baseline / 10) * 100}%` }}></div>
-          </div>
-        </div>
-      ))}
-
-      <div style={pg.scaleline}><span style={pg.sc}>0</span><span style={pg.sc}>5</span><span style={pg.sc}>10</span></div>
+      <div style={{ fontSize: 13, color: '#737B73', margin: '0 0 16px', paddingBottom: 14, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>Each week's score against day zero, the dashed line. Lower is better for symptoms, higher for energy, sleep and wellbeing.</div>
+      <SymptomChart rows={rows} />
     </div>
   )
 }

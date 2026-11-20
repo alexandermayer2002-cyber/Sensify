@@ -804,7 +804,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
   if (loading) return (
     <div className="rt-wrap">
       <style>{css}</style>
-      <div className="rt-content"><div className="rt-spinner" /></div>
+      <div className="rt-content" aria-busy="true"><div className="ob-paper" style={{ padding: '28px 30px', animation: 'snfyBreathe 1.6s ease-in-out infinite' }}><div style={{ height: 28, width: '50%', borderRadius: 6, background: '#EEEFE8', marginBottom: 16 }} /><div style={{ height: 12, width: '80%', borderRadius: 6, background: '#EEEFE8', marginBottom: 10 }} /><div style={{ height: 12, width: '60%', borderRadius: 6, background: '#EEEFE8' }} /></div></div>
     </div>
   )
 

@@ -227,7 +227,21 @@ const css = `
   .snfy-insight p { font-size: 13px; line-height: 1.7; color: var(--ink-soft); }
   @keyframes snfyPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 
-  .snfy-loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; font-size: 14px; color: var(--gray); }
+  /* Loading is a skeleton in the page's own shapes (refresh 2026-11-20):
+     the hero card and the strip card, breathing, with the text kept for
+     screen readers and the harness. */
+  .snfy-loading { max-width: 1180px; margin: 0 auto; padding: 24px 20px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; min-height: 60vh; align-content: start; }
+  .snfy-loading > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .snfy-sk { background: #FCFBF8; border-radius: 14px; padding: 30px 32px; box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 20px 40px -28px rgba(22,31,25,.35); animation: snfyBreathe 1.6s ease-in-out infinite; }
+  .snfy-sk i { display: block; height: 12px; border-radius: 6px; background: #EEEFE8; margin-bottom: 12px; }
+  .snfy-sk i.t { height: 28px; width: 70%; margin: 10px 0 18px; }
+  .snfy-sk i.s { width: 55%; }
+  .snfy-sk i.l { width: 85%; }
+  .snfy-sk-strip { display: flex; gap: 6px; margin-top: 10px; }
+  .snfy-sk-strip b { width: 18px; height: 18px; border-radius: 4px; background: #EEEFE8; display: block; }
+  @keyframes snfyBreathe { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+  @media (max-width: 860px) { .snfy-loading { grid-template-columns: 1fr; padding: 12px 14px; } }
+  @media (prefers-reduced-motion: reduce) { .snfy-sk { animation: none; } }
 `
 // Confetti overlay. brand colors, 3.5 seconds, fades out
 function ConfettiOverlay() {
@@ -1549,7 +1563,11 @@ export default function Dashboard({ session, onLogout, isAdmin, onAdmin }) {
           }}
         />
       ) : loading ? (
-        <div className="snfy-loading">Loading your program...</div>
+        <div className="snfy-loading" aria-busy="true">
+          <span>Loading your program...</span>
+          <div className="snfy-sk"><i className="s" /><i className="t" /><i className="l" /><i className="l" /><i className="s" /></div>
+          <div className="snfy-sk"><i className="s" /><div className="snfy-sk-strip">{Array.from({ length: 14 }).map((_, k) => <b key={k} />)}</div><i className="l" style={{ marginTop: 18 }} /></div>
+        </div>
       ) : (cockpitActive && calculatedPhase === 'elimination') ? (
         /* Refresh 2026-11-13: elimination Home is assembled from the seven
            shared objects (src/components/objects). Reintro Home still renders
