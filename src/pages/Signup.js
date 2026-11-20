@@ -102,10 +102,10 @@ export default function Signup({ onSuccess, onLogin, prefillEmail }) {
             {confirmPassword && confirmPassword !== password && (
               <div style={{ fontSize: '12px', color: '#C95B5B', marginTop: '-8px', marginBottom: '10px' }}>Passwords do not match</div>
             )}
-            <button className="sn-btn" style={s.btn} type="submit" disabled={loading}>{loading ? 'Creating account...' : 'Create account →'}</button>
+            <button className="sn-btn" style={s.btn} type="submit" disabled={loading}>{loading ? 'Creating account...' : 'Create account'}</button>
           </form>
         )}
-        {success && <button className="sn-btn" style={s.btn} onClick={onLogin}>Go to sign in →</button>}
+        {success && <button className="sn-btn" style={s.btn} onClick={onLogin}>Go to sign in </button>}
         <div style={s.disclaimer}>By continuing you agree to our <a href="/terms.html" target="_blank" rel="noopener noreferrer" style={{ color: '#3D5C3C', textDecoration: 'underline' }}>Terms of Service</a> and <a href="/privacy.html" target="_blank" rel="noopener noreferrer" style={{ color: '#3D5C3C', textDecoration: 'underline' }}>Privacy Policy</a>. This program is for wellness purposes only and is not a medical diagnosis.</div>
         <div style={{ ...s.footer, marginTop: '12px' }}>Already have an account? <span style={s.link} onClick={onLogin}>Sign in</span></div>
       </div>

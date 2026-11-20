@@ -151,8 +151,8 @@ export default function CommonTrackDecision({ session, profile, flaggedCount = 0
             <button className="ctd-x" onClick={dismissPopup}>✕</button>
             <div className="ctd-eyebrow">Your results are in</div>
             {flaggedCount > 0
-              ? <div className="ctd-h">Your flags are real. <em>So is what labs miss.</em></div>
-              : <div className="ctd-h">A clean panel is <em>still an answer.</em></div>}
+              ? <div className="ctd-h">Your flags are real. So is what labs miss.</div>
+              : <div className="ctd-h">A clean panel is still an answer.</div>}
             <ExplanationBody profile={profile} flaggedCount={flaggedCount} />
             <button className="ctd-btn primary" onClick={dismissPopup}>Got it</button>
           </div>

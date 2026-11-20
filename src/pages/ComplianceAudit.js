@@ -194,12 +194,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }` + PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={onBack}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
       <div className="sn-rise" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 24px 100px', maxWidth: '560px', margin: '0 auto', width: '100%' }}>
         <div style={{ fontFamily: 'Fraunces, serif', fontSize: '32px', fontWeight: 300, lineHeight: 1.3, marginBottom: '20px', letterSpacing: '-0.3px' }}>
-          Three days is hard.<br /><em style={{ fontStyle: 'italic', color: '#3D5C3C' }}>Let's not treat it as failure.</em>
+          Three days is hard.<br />Let's not treat it as failure.
         </div>
         <div style={{ fontSize: '15px', color: '#7A7A72', lineHeight: 1.8, marginBottom: '24px' }}>
           What we know from experience is that most elimination slip-ups aren't about willpower. They're about friction. Something in your environment or routine is making it hard to follow the plan.
@@ -209,7 +209,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         </div>
       </div>
       <div style={s.footer}>
-        <button className="sn-btn" style={s.cta} onClick={() => setPhase('q1')}>Okay, let's figure it out →</button>
+        <button className="sn-btn" style={s.cta} onClick={() => setPhase('q1')}>Okay, let's figure it out </button>
       </div>
     </div>
   )
@@ -220,12 +220,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={() => setPhase('opening')}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
       <div className="sn-rise" style={s.content}>
         <div className="sn-micro" style={s.eyebrow}>Tell us what's going on</div>
-        <div style={s.title}>What's been the<br /><em style={s.titleEm}>hardest part?</em></div>
+        <div style={s.title}>What's been the<br />hardest part?</div>
         <div style={s.hint}>Select everything that applies. We'll go through each one.</div>
         <div style={s.optionGrid}>
           {HARDEST_PARTS.map(h => (
@@ -258,7 +258,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             else handleSubmit()
           }}
         >
-          Continue →
+          Continue
         </button>
       </div>
     </div>
@@ -273,12 +273,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
-          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Food cravings</div>
         </div>
         <div className="sn-rise" style={s.content}>
           <div className="sn-micro" style={s.eyebrow}>Let's talk cravings</div>
-          <div style={s.title}>Is there a specific<br /><em style={s.titleEm}>food you're missing?</em></div>
+          <div style={s.title}>Is there a specific<br />food you're missing?</div>
           <div style={s.hint}>This helps us give you more relevant context about what you're going through.</div>
           <input
             className="sn-input"
@@ -298,7 +298,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         </div>
         <div style={s.footer}>
           <button className="sn-btn" style={s.cta} onClick={() => advanceBranch({ craving_food: craving })}>
-            {hasMoreBranches || hasOther ? 'Continue →' : 'Submit →'}
+            {hasMoreBranches || hasOther ? 'Continue' : 'Submit'}
           </button>
         </div>
       </div>
@@ -310,12 +310,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
-          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Social situations</div>
         </div>
         <div className="sn-rise" style={s.content}>
           <div className="sn-micro" style={s.eyebrow}>Let's talk social eating</div>
-          <div style={s.title}>When does it<br /><em style={s.titleEm}>happen most?</em></div>
+          <div style={s.title}>When does it<br />happen most?</div>
           <div style={s.hint}>Knowing when helps us give you a specific strategy rather than general advice.</div>
           <div style={s.optionGrid}>
             {[
@@ -350,7 +350,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             disabled={!socialWhen}
             onClick={() => advanceBranch({ social_when: socialWhen })}
           >
-            {hasMoreBranches || hasOther ? 'Continue →' : 'Submit →'}
+            {hasMoreBranches || hasOther ? 'Continue' : 'Submit'}
           </button>
         </div>
       </div>
@@ -362,12 +362,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
-          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Hidden ingredients</div>
         </div>
         <div className="sn-rise" style={s.content}>
           <div className="sn-micro" style={s.eyebrow}>Hidden ingredients</div>
-          <div style={s.title}>This is more<br /><em style={s.titleEm}>common than you think.</em></div>
+          <div style={s.title}>This is more<br />common than you think.</div>
           <div style={s.hint}>Hidden ingredients are one of the most common reasons people don't see improvement, and it's almost never the person's fault. Labels are confusing by design.</div>
 
           <div style={s.infoCard}>
@@ -388,7 +388,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         </div>
         <div style={s.footer}>
           <button className="sn-btn" style={s.cta} onClick={() => advanceBranch({ hidden_reviewed: true })}>
-            {hasMoreBranches || hasOther ? 'Got it, continue →' : 'Got it, submit →'}
+            {hasMoreBranches || hasOther ? 'Got it, continue' : 'Got it, submit'}
           </button>
         </div>
       </div>
@@ -400,12 +400,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
-          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Life got in the way</div>
         </div>
         <div className="sn-rise" style={s.content}>
           <div className="sn-micro" style={s.eyebrow}>Let's check in on you</div>
-          <div style={s.title}>How stressed have<br />you been <em style={s.titleEm}>this week?</em></div>
+          <div style={s.title}>How stressed have<br />you been this week?</div>
           <div style={s.hint}>Stress genuinely affects digestion and food choices. This isn't an excuse. It's important context.</div>
           <div style={s.scaleWrap}>
             <div style={s.scaleLabels}><span>Completely fine</span><span>Extremely stressed</span></div>
@@ -437,7 +437,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             disabled={!stressScore}
             onClick={() => advanceBranch({ stress_score: stressScore })}
           >
-            {hasMoreBranches || hasOther ? 'Continue →' : 'Submit →'}
+            {hasMoreBranches || hasOther ? 'Continue' : 'Submit'}
           </button>
         </div>
       </div>
@@ -449,12 +449,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
-          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Cooking for others</div>
         </div>
         <div className="sn-rise" style={s.content}>
           <div className="sn-micro" style={s.eyebrow}>Let's talk about cooking</div>
-          <div style={s.title}>Are you the main<br /><em style={s.titleEm}>cook at home?</em></div>
+          <div style={s.title}>Are you the main<br />cook at home?</div>
           <div style={s.hint}>Cooking for others while on an elimination protocol is genuinely one of the hardest situations.</div>
           <div style={s.optionGrid}>
             {[
@@ -485,7 +485,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             disabled={!cookingRole}
             onClick={() => advanceBranch({ cooking_role: cookingRole })}
           >
-            {hasMoreBranches || hasOther ? 'Continue →' : 'Submit →'}
+            {hasMoreBranches || hasOther ? 'Continue' : 'Submit'}
           </button>
         </div>
       </div>
@@ -497,12 +497,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
-          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Cost</div>
         </div>
         <div className="sn-rise" style={s.content}>
           <div className="sn-micro" style={s.eyebrow}>Let's talk about cost</div>
-          <div style={s.title}>This is a<br /><em style={s.titleEm}>real challenge.</em></div>
+          <div style={s.title}>This is a<br />real challenge.</div>
           <div style={s.hint}>Eating on an elimination protocol can genuinely cost more, especially if you're replacing staple foods. You're not alone in this.</div>
           <div style={s.infoCard}>
             <div className="sn-micro" style={s.infoLabel}>What helps</div>
@@ -519,7 +519,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         </div>
         <div style={s.footer}>
           <button className="sn-btn" style={s.cta} onClick={() => advanceBranch({ cost_acknowledged: true })}>
-            {hasMoreBranches || hasOther ? 'Continue →' : 'Submit →'}
+            {hasMoreBranches || hasOther ? 'Continue' : 'Submit'}
           </button>
         </div>
       </div>
@@ -531,12 +531,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         <style>{PAGE_CSS}</style>
         <div style={s.topBar}>
           <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
-          <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+          <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
           <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Meal ideas</div>
         </div>
         <div className="sn-rise" style={s.content}>
           <div className="sn-micro" style={s.eyebrow}>Let's fix this</div>
-          <div style={s.title}>Running out of<br /><em style={s.titleEm}>ideas is fixable.</em></div>
+          <div style={s.title}>Running out of<br />ideas is fixable.</div>
           <div style={s.hint}>The most sustainable approach is building a small rotation of meals you actually like rather than trying to eat something different every day.</div>
           <div style={s.infoCard}>
             <div className="sn-micro" style={s.infoLabel}>Simple meal frameworks</div>
@@ -555,7 +555,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
         </div>
         <div style={s.footer}>
           <button className="sn-btn" style={s.cta} onClick={() => advanceBranch({ ideas_reviewed: true })}>
-            {hasMoreBranches || hasOther ? 'Continue →' : 'Submit →'}
+            {hasMoreBranches || hasOther ? 'Continue' : 'Submit'}
           </button>
         </div>
       </div>
@@ -568,12 +568,12 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <button style={s.back} onClick={() => { setCurrentBranch(0); setPhase('q1') }}>← Back</button>
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
         <div style={{ fontSize: '11px', color: '#7A7A72', background: '#EDF3ED', padding: '4px 10px', borderRadius: '20px', fontWeight: 500 }}>Other</div>
       </div>
       <div className="sn-rise" style={s.content}>
         <div className="sn-micro" style={s.eyebrow}>Tell us more</div>
-        <div style={s.title}>What else is<br /><em style={s.titleEm}>going on?</em></div>
+        <div style={s.title}>What else is<br />going on?</div>
         <div style={s.hint}>Sometimes it's something we haven't thought to ask about. Tell us what's actually happening and we'll factor it into your guidance.</div>
         <textarea
           className="sn-input"
@@ -591,7 +591,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
           disabled={otherText.trim().length === 0 || submitting}
           onClick={handleSubmit}
         >
-          {submitting ? 'Submitting...' : 'Submit →'}
+          {submitting ? 'Submitting...' : 'Submit'}
         </button>
       </div>
     </div>
@@ -605,13 +605,13 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
         <div style={{ width: 40 }} />
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
       <div className="sn-rise" style={s.content}>
         <div style={{ background: '#FAEAEA', color: '#8B2E2E', borderRadius: 16, padding: '14px 16px', fontSize: 13.5, lineHeight: 1.6, marginBottom: 16 }}>{submitError}</div>
         <button className="sn-btn" style={s.cta} disabled={submitting} onClick={handleSubmit}>
-          {submitting ? 'Sending...' : 'Try again →'}
+          {submitting ? 'Sending...' : 'Try again'}
         </button>
       </div>
     </div>
@@ -622,7 +622,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }` + PAGE_CSS}</style>
       <div style={s.topBar}>
         <div style={{ width: 40 }} />
-        <div style={s.logo}>sensi<em style={s.logoEm}>fy</em></div>
+        <div style={s.logo}>Sensify<span style={{ color: '#3C6A4B' }}>.</span></div>
         <div style={{ width: 40 }} />
       </div>
       <div className="sn-rise" style={s.submittedWrap}>
@@ -636,7 +636,7 @@ export default function ComplianceAudit({ session, eliminatedFoods = [], onCompl
             <div style={s.submittedIcon}>
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3D5C3C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <div style={s.submittedTitle}>Thank you, <em style={s.submittedTitleEm}>{name}.</em></div>
+            <div style={s.submittedTitle}>Thank you, {name}.</div>
             <div style={s.submittedMsg}>{aiMessage}</div>
             <div style={{ ...s.pendingCard, marginBottom: '12px' }}>
               <div className="sn-micro" style={s.pendingLabel}>What happens next</div>

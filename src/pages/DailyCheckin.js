@@ -406,19 +406,22 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
           <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
           <div style={{ width: 40 }} />
         </div>
-        <div className="sn-rise" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 28px', maxWidth: 560, width: '100%', margin: '0 auto' }}>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 44, fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.02, color: '#151E18', marginBottom: 14 }}>Logged for tonight.</div>
-          <StreakLine state={reward.streak > 0 ? 'active' : 'none'} count={Math.max(0, reward.streak - 1)} loggedTonight className="" />
-          <div className="ob-paper" style={{ marginTop: 26, padding: '18px 20px', width: '100%' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 28px', maxWidth: 560, width: '100%', margin: '0 auto' }}>
+          {/* The nightly payoff is the small cousin of the verdict moment: the
+              week's squares arrive one by one, tonight's last, and only then
+              does the headline land. Same keyframes, same timing language. */}
+          <div className="ob-paper ob-moment-strip" style={{ padding: '18px 20px', width: '100%' }}>
             <div style={{ fontSize: 13.5, color: '#737B73', marginBottom: 12 }}>This week, one square per night</div>
             <Strip days={days} size="lg" label="This week" />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 12, color: '#737B73' }}>
               {reward.weekDays.map((d, i) => <span key={i} style={{ width: 28, textAlign: 'center' }}>{d.label}</span>)}
             </div>
           </div>
-          <p style={{ fontSize: 16, lineHeight: 1.55, color: '#434B44', marginTop: 24, maxWidth: 440 }}>{reward.reflection}</p>
-          {reward.onRecord && <p style={{ fontSize: 14, lineHeight: 1.55, color: '#737B73', marginTop: 10, maxWidth: 440 }}>{reward.onRecord}</p>}
-          <button type="button" className="ob-btn tonight" style={{ marginTop: 30 }} onClick={() => { onComplete && onComplete() }}>Back to Home</button>
+          <div className="ob-payoff-head" style={{ fontFamily: 'Fraunces, serif', fontSize: 44, fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.02, color: '#151E18', margin: '26px 0 14px' }}>Logged for tonight.</div>
+          <div className="ob-payoff-line"><StreakLine state={reward.streak > 0 ? 'active' : 'none'} count={Math.max(0, reward.streak - 1)} loggedTonight className="" /></div>
+          <p className="ob-payoff-line" style={{ fontSize: 16, lineHeight: 1.55, color: '#434B44', marginTop: 24, maxWidth: 440 }}>{reward.reflection}</p>
+          {reward.onRecord && <p className="ob-payoff-line" style={{ fontSize: 14, lineHeight: 1.55, color: '#737B73', marginTop: 10, maxWidth: 440 }}>{reward.onRecord}</p>}
+          <button type="button" className="ob-btn tonight ob-payoff-line" style={{ marginTop: 30 }} onClick={() => { onComplete && onComplete() }}>Back to Home</button>
         </div>
       </div>
     )
@@ -428,7 +431,7 @@ export default function DailyCheckin({ session, profile, onBack, onComplete }) {
     <div style={s.wrap}>
       <style>{PAGE_CSS}</style>
       <div style={s.topBar}>
-        <button style={s.back} onClick={onBack}>← Back</button>
+        <button style={s.back} onClick={onBack}>Back</button>
         <div style={s.logo}>Sensify<span style={{ color: '#3D5C3C' }}>.</span></div>
         <div style={{ width: 40 }} />
       </div>

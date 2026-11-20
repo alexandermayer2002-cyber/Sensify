@@ -138,7 +138,7 @@ def seed(r, stage, email):
 # ---------- a lived day ----------
 
 def walk_weekly(r):
-    r.xclick("Weekly check-in", "Start →", required=False); r.sleep(2.2); r.wait_ready(12)
+    r.xclick("Weekly check-in", "Start", required=False); r.sleep(2.2); r.wait_ready(12)
     if "Submit check-in" not in r.text(): return  # the form didn't actually open
     n = r.page.get_by_role("button", name=re.compile("^5$")).count()
     for i in range(n):

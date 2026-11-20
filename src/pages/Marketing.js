@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Strip, VerdictCard, SuspectCard, StreakLine, CheckinButton } from '../components/objects'
+import { Strip, VerdictCard, SuspectCard, StreakLine, CheckinButton, VerdictMoment } from '../components/objects'
 
 /* MARKETING, refresh 2026-11-19. The page is the product's own material:
    stone page, paper objects, ink type, one forest panel (the hero). Every
@@ -49,6 +49,10 @@ const css = `
   .mk-hero-objects .ob-paper { padding: 22px 24px; }
   .mk-hero-objects .ob-vc { min-height: 0; }
   .mk-hero-objects .ob-vc .ob-v { margin-top: 12px; font-size: 44px; }
+  .mk-hero-moment { padding: 24px 26px !important; }
+  .mk-hero-moment .ob-moment-line { font-size: 14.5px; margin-top: 12px; }
+  .mk-hero-moment .ob-moment-word { margin-top: 14px; }
+  .mk-hero-moment .ob-moment-food { font-size: 13.5px; }
 
   .mk-section { padding: 56px 40px; }
   .mk-section-inner { max-width: 1180px; margin: 0 auto; }
@@ -473,8 +477,10 @@ export default function Marketing({ onGetStarted, onSignIn }) {
             </div>
             <div className="mk-price-line">$399, lab test included, one payment.</div>
           </div>
-          <div className="mk-hero-objects" aria-label="Example verdicts">
-            <VerdictCard food="Cow milk" meta="Ruled on day 14, example" state="ruled" verdict="Avoid" evidence="Reacted on three of three exposure days" days={SAMPLE.milk} />
+          <div className="mk-hero-objects" aria-label="Example verdict">
+            <div className="ob-paper mk-hero-moment">
+              <VerdictMoment food="Cow milk. 14 logged days on the record, example." verdict="Avoid" days={SAMPLE.milk} size="md" wordSize="clamp(56px, 6vw, 84px)" line="Reacted on three of three exposure days. Ruled by your own record, not the lab." loop />
+            </div>
             <VerdictCard food="Oats" meta="Ruled on day 14, example" state="ruled" verdict="Safe" evidence="No reaction across fourteen days" days={SAMPLE.oats} />
           </div>
         </div>

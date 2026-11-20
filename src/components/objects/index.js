@@ -24,8 +24,32 @@ export function Strip({ days = [], size = 'md', label, startDay = 1 }) {
       {days.map((s, i) => {
         const st = STRIP_STATES.has(s) ? s : 'future'
         const cls = st === 'today-exposure' ? 'today exposure' : st === 'today-on' ? 'today on' : st === 'today-slipped' ? 'today slipped' : st === 'exposure-reacted' ? 'exposure reacted' : st === 'reacted' ? 'on reacted' : st
-        return <i key={i} className={cls} title={`Day ${startDay + i}: ${STRIP_WORDS[st]}`} />
+        return <i key={i} className={cls} style={{ '--i': i }} title={`Day ${startDay + i}: ${STRIP_WORDS[st]}`} />
       })}
+    </div>
+  )
+}
+
+/* ---- The verdict moment ----
+   The one orchestrated piece of motion in the product. The fourteen squares
+   arrive one by one, left to right, and only once the record is complete
+   does the ruling land on top of it. Verdict colour appears on the word
+   alone. `loop` replays it (marketing); reduced motion shows the finished
+   state at once. */
+export function VerdictMoment({ food, verdict, days = [], line, loop = false, size = 'lg', wordSize = 'clamp(84px, 16vw, 132px)' }) {
+  const [run, setRun] = React.useState(0)
+  React.useEffect(() => {
+    if (!loop) return undefined
+    const id = setInterval(() => setRun(r => r + 1), 6500)
+    return () => clearInterval(id)
+  }, [loop])
+  const v = String(verdict || '').toLowerCase()
+  return (
+    <div className="ob-moment" key={run}>
+      {food && <div className="ob-moment-food">{food}</div>}
+      <div className="ob-moment-strip"><Strip days={days} size={size} label={`Fourteen-day record for ${food || 'this food'}`} /></div>
+      <div className={`ob-moment-word ${v}`} style={{ fontSize: wordSize }}>{verdict}.</div>
+      {line && <div className="ob-moment-line">{line}</div>}
     </div>
   )
 }

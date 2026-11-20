@@ -48,7 +48,7 @@ export default function Onboarding({ onComplete }) {
       </div>
       <div style={s.footer}>
         <button className="sn-btn" style={s.cta} onClick={onComplete}>
-          Go to my dashboard →
+          Go to my dashboard
         </button>
       </div>
     </div>

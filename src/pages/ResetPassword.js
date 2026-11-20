@@ -55,7 +55,7 @@ export default function ResetPassword({ onDone }) {
           <input className="sn-input" style={s.input} type="password" autoComplete="new-password" placeholder="At least 8 characters" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} />
           <label className="sn-micro" style={s.label}>Confirm new password</label>
           <input className="sn-input" style={s.input} type="password" autoComplete="new-password" placeholder="••••••••" value={confirm} onChange={e => setConfirm(e.target.value)} required />
-          <button className="sn-btn" style={s.btn} type="submit" disabled={loading}>{loading ? 'Saving…' : 'Save new password →'}</button>
+          <button className="sn-btn" style={s.btn} type="submit" disabled={loading}>{loading ? 'Saving…' : 'Save new password'}</button>
         </form>
       </div>
     </div>

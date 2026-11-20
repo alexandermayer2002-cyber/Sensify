@@ -330,4 +330,11 @@ const CSS = `
   .he-lrow { grid-template-columns: 96px 1fr 64px; }
   .he-compact { flex-direction: column; align-items: flex-start; }
 }
+@media (max-width: 440px) {
+  .he-strip .ob-strip i { width: 15px; height: 15px; border-radius: 3px; }
+  .he-strip .ob-strip { gap: 5px; }
+  .he-strip-head { flex-direction: column; gap: 6px; }
+  .he-herotext .ob-btn { width: 100%; justify-content: center; }
+  .he-herotext .ob-btn small { display: none; }
+}
 `

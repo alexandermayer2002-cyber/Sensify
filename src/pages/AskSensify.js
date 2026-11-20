@@ -161,10 +161,10 @@ export default function AskSensify({ session, foodMap: foodMapProp = null }) {
     <div style={s.wrap}>
       <style>{css}</style>
       <div style={s.header}>
-        <div style={s.headerTitle}>Ask <em style={s.em}>Sensify</em></div>
+        <div style={s.headerTitle}>Ask Sensify</div>
         {/* Phase-aware status (QA 2026-10-28 #7): "READING YOUR VERDICTS" was
             false for tracking users and pre-verdict eliminators. */}
-        <div style={s.headerStatus}><span style={s.statusDot}></span><span style={s.statusText}>{observationMode ? 'TRACKING MODE · LOGGING LIVE' : foodMap.some(f => f.verdict) ? 'READING YOUR VERDICTS · LIVE' : 'READING YOUR MAP · LIVE'}</span></div>
+        <div style={s.headerStatus}><span style={s.statusDot}></span><span style={s.statusText}>{observationMode ? 'Tracking mode, logging live' : foodMap.some(f => f.verdict) ? 'Reading your verdicts' : 'Reading your map'}</span></div>
       </div>
 
       <div style={s.thread} ref={scrollRef}>

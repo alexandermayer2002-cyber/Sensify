@@ -305,7 +305,7 @@ const css = `
   .rt-content { max-width: 1180px; margin: 0 auto; padding: 24px 20px 72px; }
   .rt-pre { display: grid; grid-template-columns: 1fr 1.4fr; gap: 28px; align-items: center; }
   .rt-pre-strip .ob-strip { flex-wrap: wrap; }
-  @media (max-width: 640px) { .rt-pre { grid-template-columns: 1fr; gap: 18px; } }
+  @media (max-width: 640px) { .rt-pre { grid-template-columns: 1fr; gap: 18px; } .rt-pre-strip .ob-strip i { width: 15px; height: 15px; border-radius: 3px; } .rt-pre-strip .ob-strip { gap: 5px; } }
   .rt-header { margin-bottom: 24px; }
   .rt-title { font-family: var(--font-display); font-size: 38px; font-weight: 300; margin-bottom: 8px; letter-spacing: -0.02em; line-height: 1.05; color: #151E18; }
   .rt-title em { font-style: italic; color: #3D5C3C; }
@@ -1114,7 +1114,7 @@ export default function ReintroTab({ session, profile, labResult, currentDay, on
                   </div>
                 ) : (
                   <button onClick={() => setConfirmStop(true)} style={{ width: '100%', textAlign: 'center', background: 'transparent', border: 'none', padding: '6px', fontSize: 12, color: 'var(--gray)', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer' }}>
-                    Severe reaction? You can stop this cycle →
+                    Severe reaction? You can stop this cycle
                   </button>
                 )}
               </div>

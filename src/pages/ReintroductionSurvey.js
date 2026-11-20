@@ -3,7 +3,7 @@ import { supabase } from '../supabase'
 import { sleepHours } from '../utils/confoundAnalysis'
 import { computeProvisionalVerdict, applyAiAdjustment } from '../utils/verdictEngine'
 import { generateReintroVerdict } from '../utils/aiInsights'
-import { Strip, cycleStripDays } from '../components/objects'
+import { VerdictMoment, cycleStripDays } from '../components/objects'
 
 const s = {
   wrap: { minHeight: '100vh', background: 'transparent', display: 'flex', flexDirection: 'column' },
@@ -384,18 +384,16 @@ export default function ReintroductionSurvey({ session, food: foodProp = '', cyc
               card. Food small, the ruling alone at display scale in its colour,
               the fourteen-day record beneath it as the evidence, then the words. */}
           <div style={{ textAlign: 'left', margin: '18px 0 26px' }}>
-            <div style={{ fontSize: 15, color: '#737B73', marginBottom: 10 }}>{(() => { const n = new Set((dailyLogs || []).filter(l => l && l.log_date).map(l => String(l.log_date).slice(0, 10))).size; return `${food}. ${n > 0 ? `${n} logged day${n === 1 ? '' : 's'} on the record.` : 'Ruled.'}` })()}</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(84px, 16vw, 132px)', fontWeight: 300, letterSpacing: '-0.04em', color: config.color, lineHeight: .92 }}>{verdict}.</div>
-            <div style={{ margin: '26px 0 18px' }}>
-              <Strip days={cycleStripDays({ washout_started_at: (dailyLogs || []).filter(l => l.ate_food === true).sort((a, b) => String(a.log_date).localeCompare(String(b.log_date)))[2]?.log_date || null }, dailyLogs || [])} size="lg" label="Fourteen-day record" />
-              <div style={{ display: 'flex', gap: 16, marginTop: 10, fontSize: 12.5, color: '#737B73', flexWrap: 'wrap' }}>
-                <span>dark: exposure day</span><span>green: washout, logged</span><span>dot: symptoms logged</span>
-              </div>
-            </div>
-            <div style={{ fontSize: '16px', color: '#434B44', lineHeight: 1.55, maxWidth: 520 }}>
-              {accuracy && accuracy !== 'accurate'
+            <VerdictMoment
+              food={(() => { const n = new Set((dailyLogs || []).filter(l => l && l.log_date).map(l => String(l.log_date).slice(0, 10))).size; return `${food}. ${n > 0 ? `${n} logged day${n === 1 ? '' : 's'} on the record.` : 'Ruled.'}` })()}
+              verdict={verdict}
+              days={cycleStripDays({ washout_started_at: (dailyLogs || []).filter(l => l.ate_food === true).sort((a, b) => String(a.log_date).localeCompare(String(b.log_date)))[2]?.log_date || null }, dailyLogs || [])}
+              line={accuracy && accuracy !== 'accurate'
                 ? `Your daily logs and your account of the two weeks were weighed together. ${food} has been added to your ${verdict} list.`
                 : config.sub.replace(/{food}/g, food)}
+            />
+            <div style={{ display: 'flex', gap: 16, marginTop: 14, fontSize: 12.5, color: '#737B73', flexWrap: 'wrap' }}>
+              <span>dark: exposure day</span><span>green: washout, logged</span><span>dot: symptoms logged</span>
             </div>
           </div>
 

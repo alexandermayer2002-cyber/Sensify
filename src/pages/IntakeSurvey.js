@@ -899,7 +899,7 @@ export default function IntakeSurvey({ session, onComplete, onBack }) {
             </div>
           )}
           <button className="sn-btn" style={s.cta} disabled={!lifestyleComplete || saving} onClick={() => { setCompleteError(''); handleComplete() }}>
-            {saving ? 'Saving your program...' : 'Complete intake →'}
+            {saving ? 'Saving your program...' : 'Complete intake'}
           </button>
         </div>
       </div>
