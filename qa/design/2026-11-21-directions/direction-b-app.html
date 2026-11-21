@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sensify, direction B: Home, day 41</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,200..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#0D1316; --panel:#121A1E; --line:#25313A; --line-2:#1B252B;
+  --text:#E7ECEE; --mute:#8C99A0; --faint:#5A6870; --cell:#1F2B33; --hi:#F1F4F5; --on:#A3B0B6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080C0E;color:var(--text);font-family:'Archivo',system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+em,i{font-style:normal}
+:focus-visible{outline:2px solid var(--hi);outline-offset:3px}
+.note{margin:0;padding:12px 20px;background:#0A0F11;border-bottom:1px solid var(--line-2);font-size:13px;color:var(--faint)}
+.app{max-width:430px;margin:0 auto;background:var(--ground);min-height:100vh;display:flex;flex-direction:column}
+@media (min-width:600px){.app{min-height:0;margin-bottom:48px;border:1px solid var(--line)}}
+.pad{padding:0 20px}
+.mark{font-stretch:125%;font-weight:600;font-size:17px;letter-spacing:-.01em}
+.bar{display:flex;justify-content:space-between;align-items:center;height:60px;border-bottom:1px solid var(--line-2)}
+.bar span{font-size:13.5px;color:var(--mute)}
+.phase{padding-top:26px;padding-bottom:22px;border-bottom:1px solid var(--line-2)}
+.ph-l{font-size:13px;color:var(--faint)}
+.day{display:flex;justify-content:space-between;align-items:flex-end;margin-top:4px}
+.day b{font-stretch:125%;font-weight:200;font-size:68px;white-space:nowrap;line-height:.9;letter-spacing:-.05em;margin-left:-.03em}
+.day span{font-size:14px;color:var(--mute);text-align:right;padding-bottom:4px;line-height:1.35;white-space:nowrap}
+.day span strong{display:block;font-stretch:125%;font-weight:300;font-size:26px;color:var(--text);letter-spacing:-.02em}
+.prog{display:grid;grid-template-columns:repeat(56,1fr);gap:1.5px;height:14px;margin-top:20px}
+.prog i{background:var(--cell);display:block}
+.prog .f{background:var(--on)}
+.prog .t{background:var(--hi)}
+.pl{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-top:6px}
+.togo{font-size:14.5px;color:var(--mute);margin-top:14px}
+.togo b{color:var(--text);font-weight:500}
+
+.sec{padding-top:22px;padding-bottom:22px;border-bottom:1px solid var(--line-2)}
+.sh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.sh b{font-weight:500;font-size:15px}
+.sh span{font-size:13px;color:var(--mute)}
+.strip{display:grid;grid-template-columns:repeat(14,1fr);gap:3px}
+.strip i{aspect-ratio:1;background:var(--cell);display:block;position:relative;border-radius:1px}
+.strip .on{background:var(--on)}
+.strip .sl{background:repeating-linear-gradient(135deg,var(--on) 0 2px,transparent 2px 5px);box-shadow:inset 0 0 0 1px var(--on)}
+.strip .aw{background:transparent;box-shadow:inset 0 0 0 1px var(--on)}
+.strip .aw::after{content:"";position:absolute;inset:34%;border-radius:50%;background:var(--on)}
+.strip .td{background:transparent;box-shadow:inset 0 0 0 2px var(--hi)}
+.nums{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:6px;font-size:10.5px;color:var(--faint);text-align:center}
+.nums span:last-child{color:var(--text)}
+.lg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;font-size:12.5px;color:var(--mute)}
+.lg i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px;position:relative}
+.lg .on{background:var(--on)}
+.lg .sl{background:repeating-linear-gradient(135deg,var(--on) 0 1.5px,transparent 1.5px 3.5px);box-shadow:inset 0 0 0 1px var(--on)}
+.lg .aw{box-shadow:inset 0 0 0 1px var(--on)}
+.lg .aw::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--on)}
+
+.btn{display:flex;justify-content:space-between;align-items:center;width:100%;height:58px;padding:0 18px;background:var(--hi);color:var(--ground);border:0;border-radius:2px;font:600 16px 'Archivo',sans-serif;cursor:pointer;transition:transform .15s ease}
+.btn:active{transform:scale(.99)}
+.btn small{font-weight:400;font-size:13.5px;color:#55626a}
+.btn-note{font-size:13px;color:var(--mute);margin-top:10px}
+
+table{width:100%;border-collapse:collapse}
+th{font-weight:400;font-size:12px;color:var(--faint);text-align:right;padding-bottom:8px}
+th:first-child{text-align:left}
+td{padding:12px 0;border-top:1px solid var(--line-2);text-align:right;font-size:15px;vertical-align:middle}
+td:first-child{text-align:left}
+td.n{font-stretch:125%;font-weight:300;font-size:20px;letter-spacing:-.02em;width:58px}
+td.c{color:var(--mute);font-size:13.5px;width:84px}
+.mini{position:relative;height:16px;margin-top:6px}
+.mini::before{content:"";position:absolute;left:0;right:0;top:7.5px;height:1px;background:var(--line)}
+.mini .s{position:absolute;top:6px;height:4px;background:var(--on)}
+.mini .b{position:absolute;top:2px;width:1.5px;height:12px;background:var(--mute)}
+.mini .n{position:absolute;top:3px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--hi)}
+.tnote{font-size:12.5px;color:var(--faint);margin-top:10px}
+
+.sus{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line-2)}
+.sus div{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line-2);font-size:14.5px}
+.sus div:nth-child(odd){padding-right:14px;border-right:1px solid var(--line-2)}
+.sus div:nth-child(even){padding-left:14px}
+.sus span{color:var(--faint);font-size:13px}
+
+.spacer{height:24px}
+.tabs{position:sticky;bottom:0;margin-top:auto;background:rgba(13,19,22,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:10px 8px 24px}
+.tabs a{text-align:center;font-size:13px;color:var(--mute);text-decoration:none;padding:6px 0}
+.tabs a.cur{color:var(--text);font-weight:600;box-shadow:inset 0 2px 0 var(--hi)}
+</style>
+</head>
+<body>
+<main class="app">
+  <p class="note">Example screen from a sample program. Sarah is an example, not a customer.</p>
+  <div class="bar pad"><span class="mark">Sensify</span><span>Good evening, Sarah</span></div>
+
+  <div class="phase pad">
+    <div class="ph-l">Elimination</div>
+    <div class="day"><b>Day 41</b><span><strong>of 56</strong>16 nights to go</span></div>
+    <div class="prog" id="prog" role="img" aria-label="Day 41 of 56"></div>
+    <div class="pl"><span>Day 1</span><span>Testing opens on day 57</span></div>
+  </div>
+
+  <div class="sec pad">
+    <div class="sh"><b>Last fourteen nights</b><span>Five in a row, tonight makes six</span></div>
+    <div class="strip" role="img" aria-label="Days 28 to 41: on plan, a slip on day 31, a night away on day 36, tonight not yet logged">
+      <i class="on"></i><i class="on"></i><i class="on"></i><i class="sl"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="aw"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="td"></i>
+    </div>
+    <div class="nums"><span>28</span><span>29</span><span>30</span><span>31</span><span>32</span><span>33</span><span>34</span><span>35</span><span>36</span><span>37</span><span>38</span><span>39</span><span>40</span><span>41</span></div>
+    <div class="lg"><span><i class="on"></i>On plan</span><span><i class="sl"></i>Honest slip, never counted against you</span><span><i class="aw"></i>Away, on plan</span></div>
+  </div>
+
+  <div class="sec pad">
+    <button class="btn" type="button">Start tonight’s check-in <small>30 seconds</small></button>
+    <p class="btn-note">Sleep, stress, on plan or not, and anything your body did.</p>
+  </div>
+
+  <div class="sec pad">
+    <div class="sh"><b>Against your baseline</b><span>Out of 10</span></div>
+    <table>
+      <tr><th>Symptom</th><th>Baseline</th><th>Now</th><th>Change</th></tr>
+      <tr>
+        <td>Bloating<div class="mini"><i class="s" style="left:40%;width:30%"></i><i class="b" style="left:70%"></i><i class="n" style="left:40%"></i></div></td>
+        <td class="n">7</td><td class="n">4</td><td class="c">Better</td>
+      </tr>
+      <tr>
+        <td>Energy<div class="mini"><i class="s" style="left:40%;width:20%"></i><i class="b" style="left:40%"></i><i class="n" style="left:60%"></i></div></td>
+        <td class="n">4</td><td class="n">6</td><td class="c">Better</td>
+      </tr>
+      <tr>
+        <td>Sleep<div class="mini"><i class="b" style="left:50%"></i><i class="n" style="left:50%"></i></div></td>
+        <td class="n">5</td><td class="n">5</td><td class="c">No change</td>
+      </tr>
+    </table>
+    <p class="tnote">The line marks your baseline from intake. The dot is this week.</p>
+  </div>
+
+  <div class="sec pad">
+    <div class="sh"><b>Off your plate until day 57</b><span>Six suspects</span></div>
+    <div class="sus">
+      <div>Cow milk <span>Out</span></div><div>Oats <span>Out</span></div>
+      <div>Coffee <span>Out</span></div><div>Eggs <span>Out</span></div>
+      <div>Wheat <span>Out</span></div><div>Soy <span>Out</span></div>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <nav class="tabs" aria-label="App">
+    <a class="cur" href="#">Home</a><a href="#">Trials</a><a href="#">Food Map</a><a href="#">Ask</a>
+  </nav>
+</main>
+<script>
+document.getElementById('prog').innerHTML = '<i class="f"></i>'.repeat(40) + '<i class="t"></i>' + '<i></i>'.repeat(15)
+</script>
+</body>
+</html>
