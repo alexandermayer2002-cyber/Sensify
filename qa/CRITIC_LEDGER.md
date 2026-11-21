@@ -18,9 +18,11 @@ have closed some of these; night one must re-test every item rather than trust t
 
 **Fix deploy 2026-11-20 (f8d50ff, Alex approved in session, main.52b72da9):** P01 screen + red flags, P02, P04/M07 copy, M03 hero, D05/D09/D15 timing copy, N01, X21, X02, N06. M01 WONTFIX by Alex. Live verified tonight: P01 screen, M03, M07 probes. QA harness robot.consent now answers the six screening questions No.
 
+**Re-test 2026-11-21 (Saturday; deploys cbc0afd/d9a7a63/e05e532/8a542c2/2f1c868/505bf56 within 36h; bundle now main.72136695, was 52b72da9):** regress_all 61 PASS / 0 FAIL (cut by 25-min cap, last ~2 checks unrun). Probes: M03 M06 M07 M08 M09 M09b D17 D03 N03 N05 X04 X17 X18 PASS; M01 WONTFIX; D01 FAIL (Alex decision); **M12 FAIL: reopened, real regression of the marketing redesign**. N06 closed. New: N07. Diff-grep of 831 added src lines: no literal \\u in JSX, no silent catches, no new emoji. Full ten-area live walk owed Sunday 11-22 (X01 X08 X23 X07 X10 X13 X20 X04 X17 X18 P03 live re-walks).
+
 **Re-test 2026-11-20 (Friday; deploys 0603700 + 2a558f1 + ff2a85b + 625430c within 36h; bundle now main.879221d5, was dbcfe342):** probes M03/M01/D01 FAIL (Alex decisions); M06 M07 M09 M09b M12 D17 D03 PASS; M08 flipped FAIL = harness drift (copy is now "Example: a finished program", probe was case-sensitive "EXAMPLE"; probe re-keyed case-insensitive, now PASS). regress_all 61 PASS / 1 FAIL (reintro day_logged, X25 date drift); run hit the 25-min cap before the last 1 check. Targeted walk: marketing text (no \\u, NaN, undefined; console clean). Added diff-grep of 394 added src lines: no literal \\u in JSX text, no silent empty catches. No item closed (live re-walk of code-fixed X01 X08 X23 X07 X10 X13 X20 X04 X17 X18 still owed Sunday 11-22). One new: N06.
 
-| N06 | 11-20 | marketing | LOW | Hero mock insight (Marketing.js:400): "Six clean weeks is exactly the signal we need before testing" while the program shows 42 of 56 days and 14 days to reintroduction; reads as reintro after six weeks, contradicting eight | change to "Eight clean weeks" or drop the number | grep live main.js: no "Six clean weeks" | OPEN: copy replaced f8d50ff (deployed 2026-11-20, bundle main.52b72da9); probe owed |
+| N06 | 11-20 | marketing | LOW | Hero mock insight (Marketing.js:400): "Six clean weeks is exactly the signal we need before testing" while the program shows 42 of 56 days and 14 days to reintroduction; reads as reintro after six weeks, contradicting eight | change to "Eight clean weeks" or drop the number | grep live main.js: no "Six clean weeks" | FIXED (2026-11-21, f8d50ff; bundle_probes.py N06 PASS live on main.72136695) |
 **Re-test 2026-11-19 (Thursday; no src/netlify/public commits in 36h, bundle main.dbcfe342 unchanged, no deep walk):** probes M03/M01/D01 FAIL (Alex decisions), M06 M07 M08 M09 M09b M12 D17 D03 PASS. N03 and N05 still live in bundle (1 each). X25 unchanged (same 4 fleet day_logged FAILs, sandbox vs app date). Full regress_all completed this time: 59/63. No item closed, none new. Code-fixed items still await the Sunday 11-22 live walk.
 
 **Re-test 2026-11-18 (Wednesday; no src/netlify/public commits in 36h, bundle main.dbcfe342 unchanged, no deep walk):** probes M03/M01/D01 FAIL (Alex decisions), M06 M07 M08 M09 M09b M12 D17 D03 PASS. N03 and N05 still present in live bundle (grep 1 each). X25 unchanged (4 fleet day_logged FAILs, sandbox vs app date). No item closed, none new. Code-fixed items (X01, X08, X23, X07, X10, X13, X20) still await the Sunday 11-22 live walk.
@@ -101,6 +103,13 @@ have closed some of these; night one must re-test every item rather than trust t
 | id | found | area | sev | finding | fix | probe | status |
 |---|---|---|---|---|---|---|---|
 
+### New (Critic, 2026-11-21)
+| id | found | area | sev | finding | fix | probe | status |
+|---|---|---|---|---|---|---|---|
+| M12 | 11-21 | marketing | MED | REGRESSION of a closed item. After the marketing redesign (62bf5e8/8a542c2, bundle main.72136695) the phone nav buttons measure Menu 36px, Sign in 28px, Get started 34px at 430 wide; tap targets under 44 (Marketing.js:23 `.mk-signin` padding 8px 12px, :25 `.mk-cta` padding 11px 20px, :27 `.mk-menu-btn` padding 9px 14px) | min-height:44px on the three classes | ledger_probes.py M12 | OPEN (2026-11-21, probe FAIL live) |
+| N07 | 11-21 | marketing/home | MED | Marketing promises "Thirty seconds a night" / "thirty-second check-in each night" (Marketing.js:337,616,661) but the app's own nightly check-in is labelled "2 minutes" (objects/index.js:234 tonight.time; Dashboard.js:2102 "Due now · takes 2 minutes") and the marketing Home mock itself shows "Start tonight's check-in 2 minutes". A $399 buyer is told two different durations (related X05) | one number everywhere: measure the real check-in and fix whichever copy is wrong | bundle_probes.py N07 | OPEN (2026-11-21, probe FAIL live) |
+| N08 | 11-21 | marketing | LOW | "A lab test alone costs $150 to $300" (Marketing.js:604) is an unsourced price claim, same class as M07 | cite or cut | - | OPEN |
+
 ### New (Critic, 2026-11-15 Sunday full pass)
 | id | found | area | sev | finding | fix | probe | status |
 |---|---|---|---|---|---|---|---|
@@ -147,7 +156,7 @@ have closed some of these; night one must re-test every item rather than trust t
 |  M06 | FIXED (2026-11-11, 9fb7045; live home text has "months") |
 |  M08 | FIXED (2026-11-11, 1a5820d; live home shows EXAMPLE label) |
 |  M09 | FIXED (2026-11-11, 9fb7045; live home + /faq carry safety/physician answer) |
-|  M12 | FIXED (2026-11-11, 9fb7045; nav buttons measure 44px at 430) |
+|  M12 | FIXED (2026-11-11, 9fb7045; nav buttons measure 44px at 430). REOPENED 2026-11-21, see OPEN New 2026-11-21 |
 |  D10 | FIXED (2026-11-11, 7782255; live bundle: "Low flags sit out the full stretch too...") |
 |  D17 | FIXED (2026-11-11, e4fabbe; live bundle gate regex ^alexandermayer2002\+(fable|qa|robot)[^@]*@gmail\.com$; logged-out home lacks TEST MODE) |
 |  F09 | FIXED (2026-11-11, 52abce4; live bundle: "worse than baseline" wording) |

@@ -10,6 +10,11 @@ P("N03",not any(re.search(f,js) for f in frag),m)
 P("N05",not re.search(r'children:"\\\\u',js),"no literal \\u escape as JSX text")
 P("X04",js.count("Tap to fix it")>=3,"persistent pad warning present")
 P("X17",'lab-error' in js and "to continue." in js,"lab error scroll + hint")
+P("N06",not re.search("Six clean weeks",js),"hero mock no longer says Six clean weeks")
+P("X20",not re.search(r"foods total",js),"no '1 foods total' string in bundle")
+P("N07",not (re.search(r"takes 2 minutes|time:.?.2 minutes",js,re.I) and re.search(r"thirty seconds",js,re.I)),"app says 2 minutes for nightly check-in while marketing says thirty seconds (FAIL while contradictory)")
+P("F06",not re.search(r"14 days per cycle",js),"no '14 days per cycle' string")
+P("X15",not re.search(r"clearest signal so far",js),"no 'clearest signal so far' string")
 from playwright.sync_api import sync_playwright
 with sync_playwright() as p:
     b=p.chromium.launch(); pg=b.new_context(viewport={"width":430,"height":932}).new_page()
