@@ -1,0 +1,88 @@
+{
+ "form_mild": "Back\nSensify.\nToday\u2019s check-in.\nTwo minutes. Sleep, stress and water move how you feel as much as food does, so logging them is how a real change gets told apart from an ordinary day.\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\n7 hours\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\n6 cups\nWhere are you in your cycle?\nOn my period\nNot on it\nNot sure\nAnything off today? optional\nThis is where day-to-day symptoms get on the record. Your weekly check-in is where they're scored against your baseline.\nFelt fine\nSomething mild\nSomething notable\nWhat was it?\nBloating\nGas\nCramping\nReflux\nLoose stools\nOther\nWhen did it hit?\nMorning\nAfter a meal\nEvening\nAll day\nWhat have you eaten in the last few hours? (optional, your own words)\nMemory after a symptom is a lead, never a ruling. Skipping is fine; an honest blank beats a guess.\nDone for today",
+ "payoff": "Sensify.\nThis week, one square per night\nSa\nSu\nMo\nTu\nWe\nTh\nFr\nLogged for tonight.\n\nOne night in a row, tonight included.\n\nThat's 2 check-ins this week. Every one adds to the picture.\n\nBack to Home",
+ "home_after": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nLoading your program...",
+ "daily_factors": {
+  "status": 200,
+  "body": [
+   {
+    "id": "9597ffc4-4f35-4a3a-96fa-7c194212c67e",
+    "user_id": "c5fad693-024a-4277-a239-44fe18335e6e",
+    "log_date": "2026-11-21",
+    "followed_protocol": true,
+    "sleep": "7",
+    "stress": "low",
+    "hydration": "6",
+    "cycle_phase": null,
+    "drinks": null,
+    "created_at": "2026-11-22T07:54:18.752618+00:00"
+   },
+   {
+    "id": "014b2db0-d0a9-4173-9f75-dda5f8bd70f3",
+    "user_id": "c5fad693-024a-4277-a239-44fe18335e6e",
+    "log_date": "2026-11-20",
+    "followed_protocol": true,
+    "sleep": "7",
+    "stress": "low",
+    "hydration": "6",
+    "cycle_phase": null,
+    "drinks": null,
+    "created_at": "2026-11-22T07:54:19.065238+00:00"
+   },
+   {
+    "id": "5727f01c-ab52-4f84-84cb-74fbe54de4e4",
+    "user_id": "c5fad693-024a-4277-a239-44fe18335e6e",
+    "log_date": "2026-11-22",
+    "followed_protocol": false,
+    "sleep": "7",
+    "stress": "low",
+    "hydration": "6",
+    "cycle_phase": "unsure",
+    "drinks": null,
+    "created_at": "2026-11-22T07:57:26.543985+00:00"
+   }
+  ]
+ },
+ "compliance": {
+  "status": 200,
+  "body": [
+   {
+    "id": "59aaa4ae-3af7-4804-8890-d15012c5ea77",
+    "user_id": "c5fad693-024a-4277-a239-44fe18335e6e",
+    "date": "2026-11-21",
+    "response": "YES",
+    "slip_up_foods": null,
+    "slip_up_reason": null,
+    "logged_at": "2026-11-21T20:00:00+00:00"
+   },
+   {
+    "id": "6a911e5f-202a-4cb9-93bb-36bed3d9ea03",
+    "user_id": "c5fad693-024a-4277-a239-44fe18335e6e",
+    "date": "2026-11-20",
+    "response": "YES",
+    "slip_up_foods": null,
+    "slip_up_reason": null,
+    "logged_at": "2026-11-20T20:00:00+00:00"
+   },
+   {
+    "id": "d75ba11e-8e4f-49be-9e8a-2eb37045161f",
+    "user_id": "c5fad693-024a-4277-a239-44fe18335e6e",
+    "date": "2026-11-22",
+    "response": "NO",
+    "slip_up_foods": null,
+    "slip_up_reason": null,
+    "logged_at": "2026-11-22T07:57:26.612+00:00"
+   }
+  ]
+ },
+ "streak": {
+  "status": 200,
+  "body": [
+   {
+    "streak": 0,
+    "current_day": 0
+   }
+  ]
+ },
+ "more": "History\nSupport\nPrivacy\nExport or delete my data\nSign out"
+}

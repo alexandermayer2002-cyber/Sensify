@@ -1,0 +1,114 @@
+{
+ "home": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\n\nGood night, QA. Day 2 of 56, elimination.\n\nOne job tonight: the check-in.\n\nThis week is about keeping the suspects out and getting the habit in. Nothing is measured yet; the record is built one night at a time.\n\nStart tonight\u2019s check-in\n\nOne night in a row. Tonight makes two.\n\nYour nights so far\n\nTonight is still open. One square per night. A slipped night still counts as logged.\n\nSee the whole record\n\nRough night? The check-in has a place to say what you felt and what you ate. Kept against the night as a lead, never a ruling.\n\nOff the plate, for now\n\nCow Milk, Wheat, Crab. They go on trial one at a time, from day 57, in this order.\n\nSee the order\nA card for whoever cooks for you.\n\nOne link that shows what is off your plate right now, nothing more. It updates itself as the protocol moves, so nobody has to ask.\n\nCow Milk\nWheat\nCrab\nCreate the link",
+ "more": "asured yet; the record is built one night at a time.\n\nStart tonight\u2019s check-in\n\nOne night in a row. Tonight makes two.\n\nYour nights so far\n\nTonight is still open. One square per night. A slipped night still counts as logged.\n\nSee the whole record\n\nRough night? The check-in has a place to say what you felt and what you ate. Kept against the night as a lead, never a ruling.\n\nOff the plate, for now\n\nCow Milk, Wheat, Crab. They go on trial one at a time, from day 57, in this order.\n\nSee the order\nA card for whoever cooks for you.\n\nOne link that shows what is off your plate right now, nothing more. It updates itself as the protocol moves, so nobody has to ask.\n\nCow Milk\nWheat\nCrab\nCreate the link",
+ "daily_open": "Back\nSensify.\nToday\u2019s check-in.\nTwo minutes. Sleep, stress and water move how you feel as much as food does, so logging them is how a real change gets told apart from an ordinary day.\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\nTap to enter\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\nTap to enter\nWhere are you in your cycle?\nOn my period\nNot on it\nNot sure\nAnything off today? optional\nThis is where day-to-day symptoms get on the record. Your weekly check-in is where they're scored against your baseline.\nFelt fine\nSomething mild\nSomething notable\nDone for today",
+ "after75": "Back\nSensify.\nToday\u2019s check-in.\nTwo minutes. Sleep, stress and water move how you feel as much as food does, so logging them is how a real change gets told apart from an ordinary day.\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\n75 hours\n75\nhours\n1\n2\n3\n4\n5\n6\n7\n8\n9\n.\n0\n\u2713\n\u232b delete\nBetween 0 and 14 hours.\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\nTap to enter\nWhere are you in your cycle?\nOn my period\nNot on it\nNot sure\nAnything off today? optional\nThis is where day-to-day symptoms get on the record. Your weekly check-in is where they're scored against your baseline.\nFelt fine\nSomething mild\nSomething notable\nDone for today",
+ "donebtn_disabled": true,
+ "payoff": "Back\nSensify.\nToday\u2019s check-in.\nTwo minutes. Sleep, stress and water move how you feel as much as food does, so logging them is how a real change gets told apart from an ordinary day.\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\n75 hours\nBetween 0 and 14 hours. Tap to fix it.\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\n7 cups\nWhere are you in your cycle?\nOn my period\nNot on it\nNot sure\nAnything off today? optional\nThis is where day-to-day symptoms get on the record. Your weekly check-in is where they're scored against your baseline.\nFelt fine\nSomething mild\nSomething notable\nDone for today",
+ "home_after": "Back\nSensify.\nToday\u2019s check-in.\nTwo minutes. Sleep, stress and water move how you feel as much as food does, so logging them is how a real change gets told apart from an ordinary day.\nDid you stay on your plan today?\nYes\nNo\nHow many hours did you sleep last night? to the half hour is fine\n75 hours\nBetween 0 and 14 hours. Tap to fix it.\nHow's your stress today?\nLow\nMild\nModerate\nHigh\nSevere\nHow many cups of water today?\n7 cups\nWhere are you in your cycle?\nOn my period\nNot on it\nNot sure\nAnything off today? optional\nThis is where day-to-day symptoms get on the record. Your weekly check-in is where they're scored against your baseline.\nFelt fine\nSomething mild\nSomething notable\nDone for today",
+ "rest_logs": {
+  "status": 404,
+  "body": {
+   "code": "PGRST205",
+   "details": null,
+   "hint": "Perhaps you meant the table 'public.daily_factors'",
+   "message": "Could not find the table 'public.daily_logs' in the schema cache"
+  }
+ },
+ "rest_comp": {
+  "status": 404,
+  "body": {
+   "code": "PGRST205",
+   "details": null,
+   "hint": "Perhaps you meant the table 'public.compliance_audit'",
+   "message": "Could not find the table 'public.compliance_log' in the schema cache"
+  }
+ },
+ "rest_prof": {
+  "status": 200,
+  "body": [
+   {
+    "id": "c5fad693-024a-4277-a239-44fe18335e6e",
+    "full_name": "QA Bee",
+    "symptoms": [
+     "Digestive"
+    ],
+    "baseline_bloating": 6,
+    "baseline_energy": null,
+    "program_phase": "elimination",
+    "created_at": "2026-11-22T07:52:38.09+00:00",
+    "latest_insight": null,
+    "latest_insight_week": null,
+    "last_checkin_at": null,
+    "current_week": 1,
+    "current_day": 0,
+    "streak": 0,
+    "food_frequency": {
+     "Crab": "1-2x",
+     "Wheat": "3-5x",
+     "Cow Milk": "daily"
+    },
+    "intake_completed_at": "2026-11-22T07:53:48.513+00:00",
+    "current_reintro_food": null,
+    "current_reintro_day": null,
+    "reintro_cycle": 1,
+    "phone_number": null,
+    "text_time_preference": null,
+    "sms_opted_in": false,
+    "is_admin": false,
+    "baseline_digestive": 5,
+    "baseline_clarity": null,
+    "intake_answers": {
+     "screen_ed": "no",
+     "reflux_freq": "Occasionally",
+     "baseline_gas": 5,
+     "bloating_freq": "Daily",
+     "screen_medical": "no",
+     "screen_under18": "no",
+     "baseline_reflux": 5,
+     "bloating_timing": "After specific foods",
+     "screen_pregnant": "no",
+     "baseline_bloating": 6,
+     "gas_cramping_freq": "A few times a week",
+     "screen_dx_allergy": "no",
+     "baseline_digestive": 5,
+     "digestive_duration": "More than 3 years",
+     "screen_anaphylaxis": "no",
+     "digestion_regularity": "Often irregular or uncomfortable"
+    },
+    "baseline_gas": 5,
+    "baseline_reflux": 5,
+    "baseline_afternoon": null,
+    "baseline_sleep": null,
+    "baseline_wellbeing": null,
+    "protocol_start_date": "2026-11-21",
+    "reintro_started_at": null,
+    "consent_agreed": true,
+    "consent_name": "Fleet Elimearly",
+    "consent_timestamp": "2026-11-22T07:53:48.514+00:00",
+    "shown_milestones": [],
+    "protocol_track": "flagged",
+    "track_foods": null,
+    "track_assigned_at": "2026-11-22T07:54:09.639+00:00",
+    "track_note": "TEST AUTO-APPROVE",
+    "protocol_tier": null,
+    "track_decision": null,
+    "tier_escalated": false,
+    "seen_track_intro": false,
+    "gender": "female",
+    "baseline_avg_sleep": "7",
+    "baseline_avg_stress": "moderate",
+    "baseline_avg_hydration": "6",
+    "drinks_alcohol": false,
+    "baseline_avg_drinks_week": null,
+    "email": "alexandermayer2002+qa2611220252b@gmail.com",
+    "maintain_opt_in": false,
+    "stripe_customer_id": null,
+    "maintain_active": false,
+    "maintain_subscription_id": null,
+    "intake_draft": null
+   }
+  ]
+ },
+ "email": "alexandermayer2002+qa2611220252B@gmail.com"
+}
