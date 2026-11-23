@@ -69,3 +69,11 @@ The ground is a deep blue-slate with a real hue, not a tinted black, and there i
 - Strips follow the shared objects' meaning: three exposure days, then eleven washout days. The cow milk strip now shows symptoms on all three exposure days and on day four, so it matches its evidence line, "Reacted on three of three exposure days". The current sample data in Marketing.js marks day one as clean while its copy says three of three, which is a small contradiction to fix there.
 - The wheat, almond, soy and eggs strips in the example maps reuse the oats, coffee and milk patterns. They are example data, labelled as such.
 - Screenshots were made with a scratch Playwright script outside this folder. It waits for the motion to finish and grows the viewport to full height so sticky tab bars render at the true bottom.
+
+## Direction C: Lit (2026-11-23, Opus review of A and B)
+
+Why A and B read as budget: flat squares and hairlines with no light or depth, grey "photo goes here" blocks, default colours (white plus web blue; flat near-black), small grey body text and small square buttons, and a phone drawn as a white box.
+
+C merges the strongest idea from each (A's verdict word, B's lab-versus-record comparison and the protocol to scale) and sells real objects instead of placeholders: a rendered phone showing the verdict landing and the Food Map as a printed card, lit on a deep green-black field with grain. Light bone sections between. Newsreader display, Geist text at 18px, 58px pill buttons. Verdict colours only on Safe, Limit, Avoid. No fake kit.
+
+Files: `direction-c.html`, `direction-c-app.html`, with 1440 and 390 renders.

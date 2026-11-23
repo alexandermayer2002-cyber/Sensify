@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sensify, Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #0C1311; --bone: #F4F3EF; --paper: #FFFFFF; --ink: #121614; --ink-2: #3A403C; --mute: #6E7570; --line: #E4E3DE;
+    --sage: #9DB2A7; --sage-dim: #DCE3DE; --moon: #F3F1EC; --moon-2: rgba(243,241,236,.66);
+    --serif: 'Newsreader', Georgia, serif; --sans: 'Geist', -apple-system, sans-serif;
+    --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    --lift: 0 1px 0 #fff inset, 0 30px 60px -40px rgba(18,22,20,.35), 0 8px 18px -14px rgba(18,22,20,.18);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; }
+  body { font-family: var(--sans); background: var(--bone); color: var(--ink); font-size: 16px; line-height: 1.55; }
+  .app { max-width: 460px; margin: 0 auto; padding: 0 0 120px; }
+  .note { font-size: 12.5px; color: var(--mute); text-align: center; padding: 12px 20px 0; }
+
+  .top { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px 14px; }
+  .mark { font-family: var(--serif); font-size: 24px; letter-spacing: -.02em; display: inline-flex; align-items: baseline; }
+  .mark i { width: 6px; height: 6px; background: var(--ink); border-radius: 1.5px; margin-left: 3px; display: inline-block; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--moon); font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: center; }
+
+  /* tonight: the one dark, lit object on the screen */
+  .tonight { margin: 4px 12px 0; border-radius: 28px; background: var(--night); color: var(--moon); padding: 26px 22px 22px; position: relative; overflow: hidden; isolation: isolate; box-shadow: 0 40px 70px -40px rgba(12,19,17,.8); }
+  .tonight::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(90% 70% at 85% 0%, rgba(255,246,228,.12), transparent 60%); }
+  .tonight::after { content: ""; position: absolute; inset: 0; z-index: -1; background-image: var(--grain); opacity: .07; mix-blend-mode: screen; }
+  .greet { font-size: 15px; color: var(--moon-2); }
+  .day { display: flex; align-items: baseline; gap: 12px; margin: 22px 0 4px; }
+  .day b { font-family: var(--serif); font-weight: 300; font-size: 112px; letter-spacing: -.06em; line-height: .86; font-variation-settings: "opsz" 72; }
+  .day span { font-family: var(--serif); font-size: 22px; letter-spacing: -.01em; line-height: 1.1; color: var(--moon); }
+  .day span em { display: block; font-style: normal; font-family: var(--sans); font-size: 14px; color: var(--moon-2); margin-top: 4px; }
+  .run { display: grid; grid-template-columns: repeat(56, 1fr); gap: 1.5px; margin: 22px 0 8px; height: 26px; align-items: end; }
+  .run i { display: block; height: 100%; border-radius: 1.5px; background: var(--sage); }
+  .run i.f { background: rgba(243,241,236,.14); height: 60%; }
+  .run i.s { background: repeating-linear-gradient(135deg, var(--sage) 0 2px, transparent 2px 4px); }
+  .run i.t { background: var(--moon); }
+  .run-k { display: flex; justify-content: space-between; font-size: 12px; color: rgba(243,241,236,.5); }
+  .go { margin-top: 22px; height: 60px; border-radius: 999px; background: var(--moon); color: var(--ink); display: flex; align-items: center; justify-content: space-between; padding: 0 10px 0 24px; font-size: 16.5px; font-weight: 500; box-shadow: 0 1px 0 #fff inset, 0 20px 40px -20px rgba(0,0,0,.8); }
+  .go small { font-size: 13px; color: var(--mute); font-weight: 400; margin-left: 8px; }
+  .go .dot { width: 42px; height: 42px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; }
+  .go .dot svg { display: block; }
+  .tonight-sub { font-size: 13.5px; color: var(--moon-2); margin-top: 12px; text-align: center; }
+
+  .card { margin: 14px 12px 0; background: var(--paper); border-radius: 24px; padding: 24px 22px; box-shadow: var(--lift); }
+  .h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; gap: 12px; }
+  .h b { font-family: var(--serif); font-weight: 400; font-size: 24px; letter-spacing: -.02em; }
+  .h span { font-size: 13px; color: var(--mute); }
+
+  .nights { display: grid; grid-template-columns: repeat(14, 1fr); gap: 5px; }
+  .nights i { aspect-ratio: 1; border-radius: 6px; background: var(--sage); display: block; position: relative; }
+  .nights i.s { background: repeating-linear-gradient(135deg, var(--sage) 0 3px, #fff 3px 6px); box-shadow: 0 0 0 1px var(--sage) inset; }
+  .nights i.a { background: var(--sage-dim); }
+  .nights i.a::after { content: ""; position: absolute; inset: 34%; border-radius: 50%; background: var(--ink-2); }
+  .nights i.t { background: #fff; box-shadow: 0 0 0 2px var(--ink) inset; }
+  .dates { display: grid; grid-template-columns: repeat(14, 1fr); gap: 5px; margin-top: 6px; font-size: 10.5px; color: var(--mute); text-align: center; }
+  .streak { font-size: 15.5px; color: var(--ink-2); margin-top: 16px; }
+  .streak b { color: var(--ink); font-weight: 500; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--mute); margin-top: 12px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--sage); display: inline-block; }
+
+  .sym { padding: 14px 0; border-top: 1px solid var(--line); }
+  .sym:last-child { padding-bottom: 2px; }
+  .sym-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .sym-top b { font-size: 16px; font-weight: 500; }
+  .sym-top span { font-size: 14px; color: var(--ink-2); }
+  .sym-top span strong { font-family: var(--serif); font-weight: 400; font-size: 24px; letter-spacing: -.02em; color: var(--ink); margin-right: 6px; }
+  .track { position: relative; height: 18px; margin-top: 8px; }
+  .track::before { content: ""; position: absolute; left: 0; right: 0; top: 8px; height: 2px; border-radius: 1px; background: #EEEEEA; }
+  .seg { position: absolute; top: 8px; height: 2px; background: var(--ink); }
+  .pt { position: absolute; top: 3px; width: 12px; height: 12px; border-radius: 50%; transform: translateX(-50%); }
+  .pt.b { background: #fff; box-shadow: 0 0 0 2px var(--mute) inset; }
+  .pt.n { background: var(--ink); }
+  .scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--mute); margin-top: 2px; }
+
+  .sus { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 14px 0; border-top: 1px solid var(--line); align-items: baseline; }
+  .sus b { font-family: var(--serif); font-weight: 400; font-size: 21px; letter-spacing: -.015em; }
+  .sus span { font-size: 13px; color: var(--mute); text-align: right; }
+  .sus em { grid-column: 1 / -1; font-style: normal; font-size: 14px; color: var(--ink-2); }
+
+  .tabs { position: fixed; left: 50%; transform: translateX(-50%); bottom: 14px; width: min(436px, calc(100% - 24px)); height: 64px; border-radius: 999px; background: rgba(18,22,20,.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 20px 40px -20px rgba(0,0,0,.6); }
+  .tabs a { font-size: 13px; color: rgba(243,241,236,.55); text-decoration: none; padding: 10px 6px; }
+  .tabs a.on { color: var(--moon); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="note">Example screen from a sample program. Sarah is an example, not a customer.</div>
+  <div class="top"><div class="mark">Sensify<i></i></div><div class="avatar">S</div></div>
+
+  <div class="tonight">
+    <div class="greet">Good evening, Sarah.</div>
+    <div class="day"><b>41</b><span>of 56<em>Elimination. Sixteen nights to go.</em></span></div>
+    <div class="run" id="run" aria-label="Days 1 to 56, day 41 today"></div>
+    <div class="run-k"><span>Day 1</span><span>Testing opens on day 57</span></div>
+    <div class="go">Tonight’s check-in<small style="margin-right:14px">30 seconds</small></div>
+  </div>
+
+  <div class="card">
+    <div class="h"><b>Your last fourteen nights</b><span>Days 28 to 41</span></div>
+    <div class="nights" id="nights"></div>
+    <div class="dates" id="dates"></div>
+    <div class="streak"><b>Five nights in a row.</b> Tonight makes six.</div>
+    <div class="legend"><span><i></i>On plan</span><span><i style="background:repeating-linear-gradient(135deg,#9DB2A7 0 2px,#fff 2px 4px)"></i>An honest slip, never held against you</span><span><i style="background:#DCE3DE;box-shadow:inset 0 0 0 3px #DCE3DE;position:relative"></i>Away, still on plan</span></div>
+  </div>
+
+  <div class="card">
+    <div class="h"><b>Against your baseline</b><span>Out of 10</span></div>
+    <div class="sym"><div class="sym-top"><b>Bloating</b><span><strong>4</strong>from 7, better</span></div>
+      <div class="track"><div class="seg" style="left:40%;width:30%"></div><div class="pt b" style="left:70%"></div><div class="pt n" style="left:40%"></div></div></div>
+    <div class="sym"><div class="sym-top"><b>Energy</b><span><strong>6</strong>from 4, better</span></div>
+      <div class="track"><div class="seg" style="left:40%;width:20%"></div><div class="pt b" style="left:40%"></div><div class="pt n" style="left:60%"></div></div></div>
+    <div class="sym"><div class="sym-top"><b>Sleep</b><span><strong>5</strong>from 5, no change</span></div>
+      <div class="track"><div class="pt b" style="left:50%"></div><div class="pt n" style="left:50%;width:8px;height:8px;top:5px"></div></div>
+      <div class="scale"><span>0</span><span>Hollow is day zero, solid is this week</span><span>10</span></div></div>
+  </div>
+
+  <div class="card">
+    <div class="h"><b>On trial from day 57</b><span>In order</span></div>
+    <div class="sus"><b>Cow milk</b><span>First</span><em>Lab flagged it high, and you had it most days.</em></div>
+    <div class="sus"><b>Eggs</b><span>Second</span><em>Flagged moderate, eaten weekly.</em></div>
+    <div class="sus"><b>Wheat</b><span>Third</span><em>Flagged moderate. Four more after it.</em></div>
+  </div>
+</div>
+
+<nav class="tabs"><a class="on" href="#">Home</a><a href="#">Trials</a><a href="#">Map</a><a href="#">Ask</a><a href="#">History</a></nav>
+
+<script>
+  const run = document.getElementById('run');
+  for (let d = 1; d <= 56; d++) { const i = document.createElement('i'); if (d > 41) i.className = 'f'; else if (d === 41) i.className = 't'; else if (d === 31 || d === 12) i.className = 's'; run.appendChild(i); }
+  const n = document.getElementById('nights'), dt = document.getElementById('dates');
+  const st = ['', '', '', 's', '', '', '', '', 'a', '', '', '', '', 't'];
+  st.forEach((c, k) => { const i = document.createElement('i'); if (c) i.className = c; n.appendChild(i); const s = document.createElement('span'); s.textContent = 28 + k; dt.appendChild(s); });
+</script>
+</body>
+</html>
