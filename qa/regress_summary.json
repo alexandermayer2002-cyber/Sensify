@@ -1,7 +1,7 @@
 {
- "date": "2611201747",
- "passed": 57,
- "total": 57,
+ "date": "2611240251",
+ "passed": 62,
+ "total": 63,
  "results": [
   {
    "check": "mkt.example_labels",
@@ -31,7 +31,7 @@
   {
    "check": "p1.unlock_hero",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\n\nGood evening, QA. Day 1 of reintroduction.\n\nTesting is open. Choose your first food.\n\nElimination is done. Eac"
+   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\n\nGood night, QA. Day 1 of reintroduction.\n\nTesting is open. Choose your first food.\n\nElimination is done. Each "
   },
   {
    "check": "p1.no_false_complete",
@@ -111,12 +111,12 @@
   {
    "check": "p5.upload_no_error",
    "ok": true,
-   "detail": "Sensify.\nSign out\nHome\nReintro\nVerdicts\nAsk\nMore\nGood evening,\nQA.\n\nYou're set. Day 1 begins tomorrow.\n\nElimination phase\nStarts tomorrow.\nYour elimination phas"
+   "detail": "\u2190 Back\nSensify.\nYour lab results\nAdd your test results.\nYour test report lists foods with a reaction level next to each (words like \"elevated\", \"high\", or a col"
   },
   {
    "check": "p5.file_stored",
    "ok": true,
-   "detail": "[{'file_path': '56e2e576-1cc0-4667-939d-15c145135b18-1795215363158.pdf'}]"
+   "detail": "[{'file_path': '52f7d78a-3652-4099-8d1a-d7d08052628a-1795507224857.pdf'}]"
   },
   {
    "check": "fleet.elimearly.no_overflow",
@@ -141,12 +141,12 @@
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-20"
+   "detail": "no daily_factors row for 2026-11-24"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=3 expected=3 start=2026-11-18"
+   "detail": "shown=7 expected=7 start=2026-11-18"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -176,12 +176,12 @@
   {
    "check": "fleet.elimlate.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-20"
+   "detail": "no daily_factors row for 2026-11-24"
   },
   {
    "check": "fleet.elimlate.day_counter",
    "ok": true,
-   "detail": "shown=50 expected=50 start=2026-10-02"
+   "detail": "shown=54 expected=54 start=2026-10-02"
   },
   {
    "check": "fleet.elimlate.console_clean",
@@ -211,12 +211,12 @@
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-20"
+   "detail": "no daily_factors row for 2026-11-24"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=7 expected=7 start=2026-11-14"
+   "detail": "shown=11 expected=11 start=2026-11-14"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -245,13 +245,13 @@
   },
   {
    "check": "fleet.reintro.day_logged",
-   "ok": true,
-   "detail": "no daily_factors row for 2026-11-20"
+   "ok": false,
+   "detail": "no daily_factors row for 2026-11-24 | latest rows: [{\"log_date\": \"2026-11-23\", \"created_at\": \"2026-11-23T08:10:39.510158+00:00\"}, {\"log_date\": \"2026-11-22\", \"cr"
   },
   {
    "check": "fleet.reintro.verdict_count",
    "ok": true,
-   "detail": "shown=1 of 3 ruled db_ruled=1"
+   "detail": "shown=2 of 3 ruled db_ruled=2"
   },
   {
    "check": "fleet.reintro.console_clean",
@@ -281,12 +281,42 @@
   {
    "check": "fleet.tracking.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-20"
+   "detail": "no daily_factors row for 2026-11-24"
   },
   {
    "check": "fleet.tracking.console_clean",
    "ok": true,
    "detail": "[]"
+  },
+  {
+   "check": "sentinel.silent_writes",
+   "ok": true,
+   "detail": "0 NEW unchecked writes"
+  },
+  {
+   "check": "sentinel.safety",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "sentinel.rls_boundary",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "sentinel.data_integrity",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "fault.intake_complete_surfaces",
+   "ok": true,
+   "detail": "errored=True escaped_to_dashboard=False | \u2190 Back\nSensify.\nStep 5 of 5\nA bit about\nyour normal.\nSleep, stress, and a few habits shape how you feel as much as foo"
+  },
+  {
+   "check": "fault.meal_log_surfaces",
+   "ok": true,
+   "detail": "retry=True false_success=False"
   }
  ]
 }
