@@ -16,6 +16,8 @@ have closed some of these; night one must re-test every item rather than trust t
 
 ## OPEN
 
+**Re-test 2026-11-25 (Wednesday; no src/netlify/public commits in 36h, bundle main.72136695 unchanged, no deep walk):** doors sealed; regress_all 62/63 (only fleet.reintro.day_logged = X25 date drift); ledger_probes, bundle_probes, grep probes identical to 11-24 (M12 D01 N07 X16 X33 X51 still open). No item closed, none new.
+
 **Re-test 2026-11-24 (Tuesday; no src/netlify/public commits in 36h, bundle main.72136695 unchanged, no deep walk):** doors sealed; regress_all 62/63 (only FAIL fleet.reintro.day_logged = X25 sandbox-vs-app date drift, environmental); ledger_probes M03 M06 M07 M08 M09 M09b D17 D03 PASS, M12 D01 FAIL (unchanged), M01 WONTFIX; bundle_probes N05 X04 X17 X18 N06 X20 F06 X15 PASS, N07 FAIL (unchanged); grep probes X34 X37 N08 X24 X31 PASS (already closed or fixed), X16 X33 X51 FAIL (still open 2026-11-24). No item closed, none new. Owed Sunday 11-29: post-intake lab screen, intake step 5, weekly check-in, Maintain, live verdict ruling.
 
 **Re-test 2026-11-23 (Monday; no src/netlify/public commits in 36h, bundle main.72136695 unchanged, no deep walk):** doors sealed; regress_all 61 PASS / 0 FAIL (25-min cap); ledger_probes M03 M06 M07 M08 M09 M09b D17 D03 PASS, M12 D01 FAIL (unchanged), M01 WONTFIX; bundle_probes N03 N05 X04 X17 X18 N06 X20 F06 X15 PASS, N07 FAIL (unchanged). New qa/ledger_grep_probes.py (src greps, valid while src is unchanged) re-tested X16 X33 X34 X37 N08 X24 X51 X31: all STILL OPEN 2026-11-23. No item closed, none new. Owed: live walks of post-intake lab screen, intake step 5, weekly check-in (X01), Maintain (N01), live verdict ruling (P03, X08) next deploy or Sunday 11-29.
