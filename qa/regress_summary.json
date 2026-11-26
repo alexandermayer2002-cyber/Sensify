@@ -1,5 +1,5 @@
 {
- "date": "2611250250",
+ "date": "2611260250",
  "passed": 62,
  "total": 63,
  "results": [
@@ -116,7 +116,7 @@
   {
    "check": "p5.file_stored",
    "ok": true,
-   "detail": "[{'file_path': 'c4aae3a6-123e-4d77-a623-d640eca9d618-1795593564136.pdf'}]"
+   "detail": "[{'file_path': 'd8d9777b-010f-4217-b96f-c2e128e0758e-1795679940394.pdf'}]"
   },
   {
    "check": "fleet.elimearly.no_overflow",
@@ -136,17 +136,17 @@
   {
    "check": "fleet.elimearly.seeded",
    "ok": true,
-   "detail": "{\"protocol_start_date\": \"2026-11-18\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+   "detail": "{\"protocol_start_date\": \"2026-11-25\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
   },
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-25"
+   "detail": "no daily_factors row for 2026-11-26"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=8 expected=8 start=2026-11-18"
+   "detail": "shown=2 expected=2 start=2026-11-25"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -171,17 +171,17 @@
   {
    "check": "fleet.elimlate.seeded",
    "ok": true,
-   "detail": "{\"protocol_start_date\": \"2026-10-02\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+   "detail": "{\"protocol_start_date\": \"2026-10-16\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
   },
   {
    "check": "fleet.elimlate.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-25"
+   "detail": "no daily_factors row for 2026-11-26"
   },
   {
    "check": "fleet.elimlate.day_counter",
    "ok": true,
-   "detail": "shown=55 expected=55 start=2026-10-02"
+   "detail": "shown=42 expected=42 start=2026-10-16"
   },
   {
    "check": "fleet.elimlate.console_clean",
@@ -211,12 +211,12 @@
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-25"
+   "detail": "no daily_factors row for 2026-11-26"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=12 expected=12 start=2026-11-14"
+   "detail": "shown=13 expected=13 start=2026-11-14"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -241,17 +241,17 @@
   {
    "check": "fleet.reintro.seeded",
    "ok": true,
-   "detail": "{\"protocol_start_date\": \"2026-09-03\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
+   "detail": "{\"protocol_start_date\": \"2026-10-01\", \"program_phase\": \"elimination\", \"protocol_track\": \"flagged\", \"track_decision\": null}"
   },
   {
    "check": "fleet.reintro.day_logged",
    "ok": false,
-   "detail": "no daily_factors row for 2026-11-25 | latest rows: [{\"log_date\": \"2026-11-23\", \"created_at\": \"2026-11-23T08:10:39.510158+00:00\"}, {\"log_date\": \"2026-11-22\", \"cr"
+   "detail": "no daily_factors row for 2026-11-26 | latest rows: [{\"log_date\": \"2026-11-25\", \"created_at\": \"2026-11-26T08:12:58.809963+00:00\"}, {\"log_date\": \"2026-11-24\", \"cr"
   },
   {
    "check": "fleet.reintro.verdict_count",
    "ok": true,
-   "detail": "shown=2 of 3 ruled db_ruled=2"
+   "detail": "shown=0 of 3 ruled db_ruled=0"
   },
   {
    "check": "fleet.reintro.console_clean",
@@ -281,7 +281,7 @@
   {
    "check": "fleet.tracking.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-25"
+   "detail": "no daily_factors row for 2026-11-26"
   },
   {
    "check": "fleet.tracking.console_clean",
