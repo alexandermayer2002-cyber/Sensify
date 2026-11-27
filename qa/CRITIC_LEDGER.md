@@ -16,6 +16,8 @@ have closed some of these; night one must re-test every item rather than trust t
 
 ## OPEN
 
+**Re-test 2026-11-27 (Friday; no src/netlify/public commits in 36h, bundle main.72136695 unchanged, no deep walk):** doors sealed; regress_all 62/63 (only fleet.reintro.day_logged = X25 date drift); ledger_probes, bundle_probes, grep probes identical to 11-26 (M12 D01 N07 X16 X33 X51 still open; M01 WONTFIX). No item closed, none new.
+
 **Re-test 2026-11-26 (Thursday; no src/netlify/public commits in 36h, bundle main.72136695 unchanged, no deep walk):** doors sealed; regress_all 62/63 (only fleet.reintro.day_logged = X25 date drift); ledger_probes, bundle_probes, grep probes identical to 11-25 (M12 D01 N07 X16 X33 X51 still open; M01 WONTFIX). No item closed, none new.
 
 **Re-test 2026-11-25 (Wednesday; no src/netlify/public commits in 36h, bundle main.72136695 unchanged, no deep walk):** doors sealed; regress_all 62/63 (only fleet.reintro.day_logged = X25 date drift); ledger_probes, bundle_probes, grep probes identical to 11-24 (M12 D01 N07 X16 X33 X51 still open). No item closed, none new.
