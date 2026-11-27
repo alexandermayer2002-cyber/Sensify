@@ -1,5 +1,5 @@
 {
- "date": "2611260250",
+ "date": "2611270250",
  "passed": 62,
  "total": 63,
  "results": [
@@ -116,7 +116,7 @@
   {
    "check": "p5.file_stored",
    "ok": true,
-   "detail": "[{'file_path': 'd8d9777b-010f-4217-b96f-c2e128e0758e-1795679940394.pdf'}]"
+   "detail": "[{'file_path': '65e5d6c1-3ff9-4a65-83f2-f1d748e8c081-1795766359907.pdf'}]"
   },
   {
    "check": "fleet.elimearly.no_overflow",
@@ -141,12 +141,12 @@
   {
    "check": "fleet.elimearly.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-26"
+   "detail": "no daily_factors row for 2026-11-27"
   },
   {
    "check": "fleet.elimearly.day_counter",
    "ok": true,
-   "detail": "shown=2 expected=2 start=2026-11-25"
+   "detail": "shown=3 expected=3 start=2026-11-25"
   },
   {
    "check": "fleet.elimearly.console_clean",
@@ -176,12 +176,12 @@
   {
    "check": "fleet.elimlate.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-26"
+   "detail": "no daily_factors row for 2026-11-27"
   },
   {
    "check": "fleet.elimlate.day_counter",
    "ok": true,
-   "detail": "shown=42 expected=42 start=2026-10-16"
+   "detail": "shown=43 expected=43 start=2026-10-16"
   },
   {
    "check": "fleet.elimlate.console_clean",
@@ -211,12 +211,12 @@
   {
    "check": "fleet.audit.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-26"
+   "detail": "no daily_factors row for 2026-11-27"
   },
   {
    "check": "fleet.audit.day_counter",
    "ok": true,
-   "detail": "shown=13 expected=13 start=2026-11-14"
+   "detail": "shown=14 expected=14 start=2026-11-14"
   },
   {
    "check": "fleet.audit.console_clean",
@@ -246,7 +246,7 @@
   {
    "check": "fleet.reintro.day_logged",
    "ok": false,
-   "detail": "no daily_factors row for 2026-11-26 | latest rows: [{\"log_date\": \"2026-11-25\", \"created_at\": \"2026-11-26T08:12:58.809963+00:00\"}, {\"log_date\": \"2026-11-24\", \"cr"
+   "detail": "no daily_factors row for 2026-11-27 | latest rows: [{\"log_date\": \"2026-11-25\", \"created_at\": \"2026-11-26T08:12:58.809963+00:00\"}, {\"log_date\": \"2026-11-24\", \"cr"
   },
   {
    "check": "fleet.reintro.verdict_count",
@@ -281,7 +281,7 @@
   {
    "check": "fleet.tracking.day_logged",
    "ok": true,
-   "detail": "no daily_factors row for 2026-11-26"
+   "detail": "no daily_factors row for 2026-11-27"
   },
   {
    "check": "fleet.tracking.console_clean",
