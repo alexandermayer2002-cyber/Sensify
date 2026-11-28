@@ -16,6 +16,8 @@ have closed some of these; night one must re-test every item rather than trust t
 
 ## OPEN
 
+**Re-test 2026-11-28 (Saturday; no src/netlify/public commits in 36h, bundle main.72136695 unchanged, no deep walk):** doors sealed; regress_all 62/63 (only fleet.reintro.day_logged = X25 date drift); ledger_probes and bundle_probes identical to 11-27 (M12 D01 N07 still open; M01 WONTFIX). **HARNESS DRIFT FOUND:** ledger_grep_probes.py ran greps relative to qa/, so src/ was never searched and X34 X37 N08 X24 X31 showed false PASS on 11-26/27. Re-keyed (chdir to repo root; X73/X13 paths now src/pages/). Real result: X34 X37 N08 X24 X31 X73 all STILL OPEN (strings present in src and live bundle); X13 Dashboard emoji gone but arrow ReintroductionSurvey.js:546 and SlipupSurvey italics (X52) remain. No item closed, none new.
+
 **Re-test 2026-11-27 (Friday; no src/netlify/public commits in 36h, bundle main.72136695 unchanged, no deep walk):** doors sealed; regress_all 62/63 (only fleet.reintro.day_logged = X25 date drift); ledger_probes, bundle_probes, grep probes identical to 11-26 (M12 D01 N07 X16 X33 X51 still open; M01 WONTFIX). No item closed, none new.
 
 **Re-test 2026-11-26 (Thursday; no src/netlify/public commits in 36h, bundle main.72136695 unchanged, no deep walk):** doors sealed; regress_all 62/63 (only fleet.reintro.day_logged = X25 date drift); ledger_probes, bundle_probes, grep probes identical to 11-25 (M12 D01 N07 X16 X33 X51 still open; M01 WONTFIX). No item closed, none new.
